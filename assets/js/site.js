@@ -47,6 +47,9 @@
         if (v != null) el.setAttribute(p[0], v);
       });
     });
+    document.querySelectorAll("[data-lang-block]").forEach(function (el) {
+      el.hidden = el.getAttribute("data-lang-block") !== current;
+    });
     document.querySelectorAll(".lang-switch button").forEach(function (b) {
       b.setAttribute("aria-pressed", String(b.dataset.lang === current));
     });

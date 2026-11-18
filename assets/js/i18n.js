@@ -154,6 +154,12 @@ window.RUNNEL_I18N = {
     "footer.imprint": "Legal notice",
     "footer.privacy": "Privacy",
     "footer.copy": "© 2026 The Runnel authors · MIT license",
-    "footer.local": "This site loads no external fonts or trackers."
+    "footer.local": "This site loads no external fonts or trackers.",
+
+    "meta.title.imprint": "Legal notice – Runnel",
+    "meta.description.imprint": "Legal notice and provider identification for the Runnel website.",
+    "meta.title.privacy": "Privacy – Runnel",
+    "meta.description.privacy": "Privacy policy of the Runnel website: no cookies, no tracking, hosted on GitHub Pages.",
+    "legal.placeholderNote": "Draft with placeholders. Fill in the marked details and have the text legally reviewed before publishing."
   }
 };

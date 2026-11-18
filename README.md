@@ -5,7 +5,9 @@ Website von [Runnel](https://github.com/runnelhq/runnel) – **Leicht. Lokal. Im
 Statische Seite für GitHub Pages, ohne Build-Schritt. Zweisprachig (Deutsch/Englisch), responsiv, heller und dunkler Modus.
 
 ```
-index.html              # einzige Seite, deutsche Texte direkt im HTML
+index.html              # Startseite, deutsche Texte direkt im HTML
+impressum.html          # Impressum (DE/EN, Platzhalter)
+datenschutz.html        # Datenschutzerklärung (DE/EN, Platzhalter)
 favicon.svg, favicon.ico
 assets/
 ├─ css/runnel.css       # Design Tokens – Kopie aus runnel/design/tokens/runnel.css (nicht hier ändern)
@@ -38,5 +40,8 @@ Farben, Schriften, Logos und Ton stammen aus [`runnel/design`](https://github.co
 
 ## Offen (Mockup)
 
-- Impressum und Datenschutz verlinken noch auf `#`.
+- Impressum und Datenschutz enthalten Platzhalter (gelb gestrichelt markiert, Klasse `ph`). Vor dem Livegang ausfüllen,
+  den Hinweiskasten `legal-notice` entfernen und die Texte rechtlich prüfen lassen.
+- Header und Footer der Unterseiten sind Kopien aus `index.html` – Änderungen dort mit übernehmen.
+- Rechtstexte stehen je Sprache in einem eigenen Block (`data-lang-block="de|en"`); die deutsche Fassung ist maßgeblich.
 - Kennzahlen und Vergleich sind Zielwerte aus dem Konzept; die Terminal-Ausgabe zeigt das geplante `runnel run`.
