@@ -52,7 +52,7 @@
     });
     var url = new URL(window.location.href);
     url.searchParams.set("lang", current);
-    history.replaceState(null, "", url);
+    try { history.replaceState(null, "", url); } catch (e) { /* Sandbox */ }
   }
 
   function initialLang() {
