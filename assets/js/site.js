@@ -33,9 +33,18 @@
     return (dict[current] && dict[current][key]) || de[key];
   }
 
+  // Unterseiten (tools/build.py): Titel und Beschreibung auf Englisch als <meta name="title-en"> usw.
+  var titleEn = document.querySelector('meta[name="title-en"]');
+  var descEn = document.querySelector('meta[name="description-en"]');
+  var descMeta = document.querySelector('meta[name="description"]');
+  var titleDe = document.title;
+  var descDe = descMeta ? descMeta.getAttribute("content") : "";
+
   function apply(lang) {
     current = SUPPORTED.indexOf(lang) >= 0 ? lang : "de";
     document.documentElement.lang = current;
+    if (titleEn) document.title = current === "en" ? titleEn.content : titleDe;
+    if (descEn && descMeta) descMeta.setAttribute("content", current === "en" ? descEn.content : descDe);
     document.querySelectorAll("[data-i18n]").forEach(function (el) {
       var v = t(el.getAttribute("data-i18n"));
       if (v != null) el.innerHTML = v;

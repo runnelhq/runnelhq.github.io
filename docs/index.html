@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="de" data-theme="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entwicklerdokumentation – Runnel</title>
+  <meta name="description" content="Einstieg in die Entwicklung von Runnel: Voraussetzungen, Befehle, Projektstruktur, Konventionen und Ablauf eines Beitrags.">
+  <meta name="title-en" content="Developer documentation – Runnel">
+  <meta name="description-en" content="Getting started with Runnel development: prerequisites, commands, project structure, conventions and how to contribute.">
+  <meta name="theme-color" content="#0A6DA6">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="../assets/img/runnel-icon-180.png">
+  <link rel="preload" href="../assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/runnel.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+
+<!-- Erzeugt von tools/build.py aus _src/docs-index.html – nicht von Hand bearbeiten. -->
+<!-- Wiederverwendbare Symbole -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></g></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7 10.5l5 5 5-5"/><path d="M5 20h14"/></g></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="logo" viewBox="0 0 204 64"><rect width="64" height="64" rx="15" fill="#0A6DA6"/><circle cx="14.5" cy="22" r="6.5" fill="#FFFFFF"/><path d="M25 22C33.5 22 30.5 42 37.5 42" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/><circle cx="48.5" cy="42" r="5.25" fill="none" stroke="#7CC5EB" stroke-width="4.75"/><path transform="translate(80 43.25) scale(0.020134)" fill="currentColor" d="M138 0V-1118H390V-931H402Q432 -1028 507 -1080.5Q582 -1133 678 -1133Q700 -1133 727 -1131Q754 -1129 773 -1126V-887Q757 -892 721 -896Q685 -900 650 -900Q578 -900 520.5 -869Q463 -838 430.5 -783.5Q398 -729 398 -658V0Z M1293 14Q1178 14 1091.5 -35Q1005 -84 957.5 -178.5Q910 -273 910 -407V-1118H1170V-447Q1170 -335 1228.5 -271Q1287 -207 1389 -207Q1458 -207 1512 -237Q1566 -267 1596.5 -325Q1627 -383 1627 -463V-1118H1888V0H1641L1638 -276H1658Q1611 -130 1519 -58Q1427 14 1293 14Z M2383.1 -655V0H2123.1V-1118H2369.1L2373.1 -842H2352.1Q2399.1 -987 2490.1 -1059.5Q2581.1 -1132 2718.1 -1132Q2833.1 -1132 2919.1 -1083Q3005.1 -1034 3052.6 -940Q3100.1 -846 3100.1 -711V0H2840.1V-671Q2840.1 -783 2782.1 -847Q2724.1 -911 2622.1 -911Q2553.1 -911 2499.1 -881Q2445.1 -851 2414.1 -793.5Q2383.1 -736 2383.1 -655Z M3595.1 -655V0H3335.1V-1118H3581.1L3585.1 -842H3564.1Q3611.1 -987 3702.1 -1059.5Q3793.1 -1132 3930.1 -1132Q4045.1 -1132 4131.1 -1083Q4217.1 -1034 4264.6 -940Q4312.1 -846 4312.1 -711V0H4052.1V-671Q4052.1 -783 3994.1 -847Q3936.1 -911 3834.1 -911Q3765.1 -911 3711.1 -881Q3657.1 -851 3626.1 -793.5Q3595.1 -736 3595.1 -655Z M5041.2 23Q4872.2 23 4750.7 -48Q4629.2 -119 4563.7 -248Q4498.2 -377 4498.2 -552Q4498.2 -725 4562.7 -855Q4627.2 -985 4745.7 -1058.5Q4864.2 -1132 5024.2 -1132Q5126.2 -1132 5218.7 -1099Q5311.2 -1066 5382.7 -997Q5454.2 -928 5494.7 -821.5Q5535.2 -715 5535.2 -568V-486H4621.2V-663H5406.2L5284.2 -611Q5284.2 -705 5255.2 -776.5Q5226.2 -848 5168.7 -888Q5111.2 -928 5025.2 -928Q4939.2 -928 4879.2 -887.5Q4819.2 -847 4787.7 -779.5Q4756.2 -712 4756.2 -629V-507Q4756.2 -401 4792.2 -328Q4828.2 -255 4893.2 -218Q4958.2 -181 5044.2 -181Q5101.2 -181 5147.7 -197.5Q5194.2 -214 5228.2 -246.5Q5262.2 -279 5279.2 -326L5518.2 -277Q5491.2 -187 5426.2 -119.5Q5361.2 -52 5263.7 -14.5Q5166.2 23 5041.2 23Z M5977.2 -1490V0H5717.2V-1490Z"/></symbol>
+  <!-- Strömungslinien (Gestaltungselement aus dem Corporate Design) -->
+  <symbol id="flow" viewBox="0 0 640 640" preserveAspectRatio="xMaxYMin meet">
+    <g fill="none" stroke-linecap="round">
+      <path d="M120 -40 C 340 -40 300 300 520 300 S 700 260 760 260" stroke="#0A6DA6" stroke-width="28" opacity=".55"/>
+      <path d="M60 120 C 280 120 240 460 460 460 S 660 420 760 420" stroke="#1688C6" stroke-width="18" opacity=".45"/>
+      <path d="M200 300 C 360 300 340 620 500 620 S 680 600 760 600" stroke="#3FA6DD" stroke-width="10" opacity=".35"/>
+    </g>
+    <circle cx="520" cy="300" r="34" fill="none" stroke="#7CC5EB" stroke-width="22"/>
+  </symbol>
+</svg>
+
+<a class="sr-only" href="#main" data-i18n="a11y.skip">Zum Inhalt springen</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html#top" aria-label="Runnel">
+      <svg viewBox="0 0 204 64" aria-hidden="true"><use href="#logo"/></svg>
+    </a>
+    <nav class="nav" aria-label="Hauptnavigation" data-i18n-attr="aria-label:nav.label">
+      <a href="../index.html#features" data-i18n="nav.features">Funktionen</a>
+      <a href="../index.html#model" data-i18n="nav.model">Modell</a>
+      <a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a>
+      <a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a>
+      <a href="../index.html#roadmap" data-i18n="nav.roadmap">Roadmap</a>
+      <a href="../docs/" aria-current="page" data-i18n="nav.docs">Doku</a>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Sprache" data-i18n-attr="aria-label:lang.label">
+        <button type="button" data-lang="de" aria-pressed="true" lang="de" title="Deutsch">DE</button>
+        <button type="button" data-lang="en" aria-pressed="false" lang="en" title="English">EN</button>
+      </div>
+      <a class="icon-btn gh-link" href="https://github.com/runnelhq/runnel" aria-label="GitHub"><svg aria-hidden="true"><use href="#i-github"/></svg></a>
+      <a class="btn btn--primary btn--sm" href="https://github.com/runnelhq/runnel/releases" data-i18n="cta.download">Herunterladen</a>
+      <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Menü öffnen" data-i18n-attr="aria-label:nav.open">
+        <svg aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-nav" id="mobile-nav" data-open="false">
+    <div class="wrap">
+      <ul>
+        <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+        <li><a href="../index.html#model" data-i18n="nav.model">Modell</a></li>
+        <li><a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a></li>
+        <li><a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a></li>
+        <li><a href="../index.html#roadmap" data-i18n="nav.roadmap">Roadmap</a></li>
+        <li><a href="../docs/" aria-current="page" data-i18n="nav.docs">Doku</a></li>
+      </ul>
+      <div class="mobile-ctas">
+        <a class="btn btn--primary" href="https://github.com/runnelhq/runnel/releases"><svg aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="cta.download">Herunterladen</span></a>
+        <a class="btn btn--outline" href="https://github.com/runnelhq/runnel"><svg aria-hidden="true"><use href="#i-github"/></svg>GitHub</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="docs-page">
+<div class="wrap docs-layout">
+      <details class="docs-side docs-side--mobile"><summary><span data-lang-block="de">Inhalt</span><span data-lang-block="en" hidden>Contents</span></summary><p class="docs-side-title"><span data-lang-block="de">Entwicklerdoku</span><span data-lang-block="en" hidden>Developer docs</span></p><ul class="docs-nav"><li><a href="../docs/" aria-current="page"><span data-lang-block="de">Übersicht</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../docs/actions.html"><span data-lang-block="de">Actions entwickeln</span><span data-lang-block="en" hidden>Developing actions</span></a></li><li><span class="docs-nav-soon"><span data-lang-block="de">Transforms entwickeln</span><span data-lang-block="en" hidden>Developing transforms</span><small><span data-lang-block="de">folgt mit S12/S13</span><span data-lang-block="en" hidden>coming with S12/S13</span></small></span></li><li><span class="docs-nav-soon"><span data-lang-block="de">Plugins entwickeln</span><span data-lang-block="en" hidden>Developing plugins</span><small><span data-lang-block="de">folgt mit S49–S51</span><span data-lang-block="en" hidden>coming with S49–S51</span></small></span></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#schnellstart">Schnellstart</a></li><li><a href="#befehle">Befehle</a></li><li><a href="#struktur">Projektstruktur</a></li><li><a href="#konventionen">Konventionen</a></li><li><a href="#beitrag">Ablauf eines Beitrags</a></li><li><a href="#regeln">Regeln</a></li><li><a href="#ki-agenten">Hinweise für KI-Agenten</a></li><li><a href="#weiter">Weiterführend</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#quick-start">Quick start</a></li><li><a href="#commands">Commands</a></li><li><a href="#structure">Project structure</a></li><li><a href="#conventions">Conventions</a></li><li><a href="#contributing">How to contribute</a></li><li><a href="#rules">Rules</a></li><li><a href="#ai-agents">Notes for AI agents</a></li><li><a href="#further">Further reading</a></li></ul></details>
+<aside class="docs-side docs-side--desktop" aria-label="Dokumentation"><p class="docs-side-title"><span data-lang-block="de">Entwicklerdoku</span><span data-lang-block="en" hidden>Developer docs</span></p><ul class="docs-nav"><li><a href="../docs/" aria-current="page"><span data-lang-block="de">Übersicht</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../docs/actions.html"><span data-lang-block="de">Actions entwickeln</span><span data-lang-block="en" hidden>Developing actions</span></a></li><li><span class="docs-nav-soon"><span data-lang-block="de">Transforms entwickeln</span><span data-lang-block="en" hidden>Developing transforms</span><small><span data-lang-block="de">folgt mit S12/S13</span><span data-lang-block="en" hidden>coming with S12/S13</span></small></span></li><li><span class="docs-nav-soon"><span data-lang-block="de">Plugins entwickeln</span><span data-lang-block="en" hidden>Developing plugins</span><small><span data-lang-block="de">folgt mit S49–S51</span><span data-lang-block="en" hidden>coming with S49–S51</span></small></span></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#schnellstart">Schnellstart</a></li><li><a href="#befehle">Befehle</a></li><li><a href="#struktur">Projektstruktur</a></li><li><a href="#konventionen">Konventionen</a></li><li><a href="#beitrag">Ablauf eines Beitrags</a></li><li><a href="#regeln">Regeln</a></li><li><a href="#ki-agenten">Hinweise für KI-Agenten</a></li><li><a href="#weiter">Weiterführend</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#quick-start">Quick start</a></li><li><a href="#commands">Commands</a></li><li><a href="#structure">Project structure</a></li><li><a href="#conventions">Conventions</a></li><li><a href="#contributing">How to contribute</a></li><li><a href="#rules">Rules</a></li><li><a href="#ai-agents">Notes for AI agents</a></li><li><a href="#further">Further reading</a></li></ul></aside>
+
+      <div class="docs-content">
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Entwicklerdoku</p>
+          <h1>Runnel entwickeln</h1>
+          <p class="docs-lead">Runnel ist in Go geschrieben und besteht aus einer einzigen <code>runnel.exe</code>. Diese Seiten richten sich an alle, die am Kern mitarbeiten oder eigene Bausteine entwickeln – Menschen wie KI-Agenten.</p>
+          <p class="docs-source">Stand: <code>main</code> vom 19.11.2026 · Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>, <a href="https://github.com/runnelhq/runnel/blob/main/AGENTS.md">AGENTS.md</a>. Bei Abweichungen gilt das Repository.</p>
+
+          <div class="docs-cards">
+            <a class="docs-card" href="actions.html">
+              <strong>Actions entwickeln</strong>
+              <span>Neue Bausteine für Workflows: Typname, Konfiguration, <code>Execute</code>, Tests und Checkliste.</span>
+            </a>
+            <div class="docs-card docs-card--soon">
+              <strong>Transforms entwickeln</strong>
+              <span>Bausteine für Pipelines. Die Anleitung folgt mit den Roadmap-Schritten S12/S13.</span>
+            </div>
+            <div class="docs-card docs-card--soon">
+              <strong>Plugins entwickeln</strong>
+              <span>Bausteine in beliebiger Sprache über JSON-RPC. Die Anleitung folgt mit S49–S51.</span>
+            </div>
+          </div>
+
+          <h2 id="schnellstart">Schnellstart</h2>
+          <p>Voraussetzungen: <a href="https://go.dev/dl/">Go</a> in der Version aus <code>go.mod</code> (derzeit Go 1.26), <a href="https://golangci-lint.run/">golangci-lint</a> v2.15.0 für <code>make lint</code> und <code>make</code> – unter Windows zum Beispiel über Git Bash. Alle Befehle funktionieren auch ohne <code>make</code>, siehe <a href="https://github.com/runnelhq/runnel#entwicklung">README</a>.</p>
+<div class="code">
+  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-19"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-19"><code class="lang-bash">git clone https://github.com/runnelhq/runnel.git
+cd runnel
+make build                    <span class="tok-c"># bin/runnel</span>
+make test                     <span class="tok-c"># Tests mit Race-Detector</span>
+bin/runnel validate examples
+bin/runnel run -v examples/hello/workflows/hello.workflow.yaml</code></pre>
+</div>
+
+          <h2 id="befehle">Befehle</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Zweck</th><th>Befehl</th></tr></thead>
+            <tbody>
+              <tr><td>Bauen</td><td><code>make build</code> → <code>bin/runnel</code></td></tr>
+              <tr><td>Tests mit Race-Detector</td><td><code>make test</code></td></tr>
+              <tr><td>Lint (golangci-lint v2.15.0)</td><td><code>make lint</code></td></tr>
+              <tr><td>Formatieren</td><td><code>make fmt</code> oder <code>gofmt -w</code></td></tr>
+              <tr><td>Fuzzing</td><td><code>make fuzz FUZZTIME=1m</code></td></tr>
+              <tr><td>Golden-Dateien neu erzeugen</td><td><code>go test ./internal/&lt;paket&gt; -update</code> – danach den Diff prüfen</td></tr>
+              <tr><td>Bekannte Sicherheitslücken prüfen</td><td><code>make vulncheck</code></td></tr>
+            </tbody>
+          </table></div>
+          <p>Vor jedem Commit müssen <code>make lint</code> und <code>make test</code> grün sein.</p>
+
+          <h2 id="struktur">Projektstruktur</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Pfad</th><th>Inhalt</th></tr></thead>
+            <tbody>
+              <tr><td><code>cmd/runnel/</code></td><td>Einstiegspunkt, Signalbehandlung</td></tr>
+              <tr><td><code>internal/cli/</code></td><td>Befehle <code>version</code>, <code>validate</code>, <code>run</code></td></tr>
+              <tr><td><code>internal/model/</code></td><td>Dateiformate (Workflow, Project, Environment), Laden, Feld- und Graph-Prüfung, Namensräume</td></tr>
+              <tr><td><code>internal/vars/</code></td><td><code>${…}</code>-Variablen und ihre Ebenen</td></tr>
+              <tr><td><code>internal/engine/workflow/</code></td><td>Workflow-Engine: <code>engine.go</code> (Prepare/Run), <code>scheduler.go</code> (Parallelität, Join, Timeouts)</td></tr>
+              <tr><td><code>internal/action/</code></td><td>Schnittstelle zwischen Engine und Actions, Registry</td></tr>
+              <tr><td><code>internal/actions/</code></td><td>Eingebaute Actions: <code>actions.go</code> mit <code>Builtin()</code>, je Namensraum ein Paket, eine Datei je Action</td></tr>
+              <tr><td><code>examples/</code></td><td>Beispiele, in den Tests mitgeprüft</td></tr>
+              <tr><td><code>docs/</code></td><td>Konzept, Roadmap, ADRs, Testplan, Entwickleranleitungen (<code>docs/dev/</code>)</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="konventionen">Konventionen</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><th scope="row">Sprache</th><td>Code, Kommentare, CLI-Ausgaben und Fehlermeldungen <strong>englisch</strong>; Dokumentation, ADRs und PR-Beschreibungen <strong>deutsch</strong>.</td></tr>
+              <tr><th scope="row">Typnamen</th><td><code>&lt;namensraum&gt;.&lt;name&gt;</code>; Actions und Transforms haben getrennte Namensräume, kein <code>-transform</code>-Suffix (<a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a>).</td></tr>
+              <tr><th scope="row">Meldungen</th><td>Fehler in Dateien mit Position: <code>datei:zeile:spalte: error|warning: text</code> – für Anwender verständlich, ohne Go-Typnamen.</td></tr>
+              <tr><th scope="row">Tests</th><td>Golden-Files für Formate und Ausgaben, <code>t.TempDir()</code> statt echter Pfade, plattformunabhängig – die CI läuft unter Linux und Windows.</td></tr>
+              <tr><th scope="row">Windows-first</th><td>Pfade über <code>path/filepath</code>, UNC-Pfade, Kodierungen (BOM, UTF-16) und CRLF berücksichtigen.</td></tr>
+              <tr><th scope="row">Kein Vorgriff</th><td>Nur umsetzen, was der aktuelle Roadmap-Schritt verlangt. Nicht Unterstütztes klar melden statt still ignorieren.</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="beitrag">Ablauf eines Beitrags</h2>
+          <ol class="steps">
+            <li><strong>Thema wählen:</strong> einen offenen Schritt aus der <a href="https://github.com/runnelhq/runnel/blob/main/docs/ROADMAP.md">Roadmap</a> oder ein Issue. Größere Vorhaben vorher in einem Issue abstimmen.</li>
+            <li><strong>Branch anlegen</strong> von <code>main</code>.</li>
+            <li><strong>Umsetzen</strong> und klein halten: ein Roadmap-Schritt bzw. ein Thema je Pull Request, Richtwert höchstens ca. 1.000 geänderte Zeilen inklusive Tests.</li>
+            <li><strong>Prüfen:</strong> <code>make lint</code> und <code>make test</code>, bei Parser-Änderungen zusätzlich <code>make fuzz</code>.</li>
+            <li><strong>Pull Request</strong> nach <code>main</code> mit deutscher Beschreibung: Zusammenfassung, Änderungen, Entscheidungen fürs Review und „Prüfen“ – wie man das Ergebnis selbst ausprobiert.</li>
+            <li><strong>CI und Review:</strong> Lint, Schwachstellen-Check, Tests unter Linux und Windows, Build und Packen. Gemergt wird bei grüner CI und abgeschlossenem Review.</li>
+          </ol>
+
+          <h2 id="regeln">Regeln</h2>
+          <ul>
+            <li><strong>Tests gehören zum PR:</strong> Unit-Tests, Golden-File-Tests für Formate und Ausgaben, <code>-race</code> für nebenläufigen Code.</li>
+            <li><strong>Doku gehört zum PR:</strong> Konzept, Roadmap (Schritt mit ✅ markieren), ADRs, README und Anleitungen unter <code>docs/dev/</code> im selben PR anpassen.</li>
+            <li><strong>Grundsätzliche Entscheidungen</strong> – Formate, Semantik, neue Abhängigkeiten, Namensregeln – als <a href="https://github.com/runnelhq/runnel/tree/main/docs/adr">ADR</a> festhalten und vorher mit dem Maintainer abstimmen.</li>
+            <li><strong>Abhängigkeiten</strong> nur mit Begründung, MIT-kompatibler Lizenz (ADR 0004) und fest gepinnter Version.</li>
+            <li><strong>Nicht tun:</strong> Tests überspringen oder abschwächen, um die CI grün zu bekommen; Golden-Dateien ohne Prüfung überschreiben; Secrets in Code, Tests oder Logs; Release- und CI-Workflows ohne Auftrag ändern.</li>
+          </ul>
+
+          <h2 id="ki-agenten">Hinweise für KI-Agenten</h2>
+          <p>Für Coding-Agenten wie Claude Code, Copilot oder Codex fasst <a href="https://github.com/runnelhq/runnel/blob/main/AGENTS.md"><code>AGENTS.md</code></a> im Repository dieselben Regeln kompakt zusammen; <code>CLAUDE.md</code> verweist darauf. Agenten arbeiten nach denselben Regeln wie Menschen – insbesondere „ein Roadmap-Schritt = ein PR“ und „Doku im selben PR“.</p>
+
+          <h2 id="weiter">Weiterführend</h2>
+          <ul class="link-list">
+            <li><a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md">Konzept und Architektur</a></li>
+            <li><a href="https://github.com/runnelhq/runnel/blob/main/docs/ROADMAP.md">Roadmap</a></li>
+            <li><a href="https://github.com/runnelhq/runnel/blob/main/docs/TESTPLAN.md">Testplan und bekannte Einschränkungen</a></li>
+            <li><a href="https://github.com/runnelhq/runnel/tree/main/docs/adr">Architekturentscheidungen (ADR)</a></li>
+            <li><a href="https://github.com/runnelhq/runnel/issues">Fehler melden</a> – mit <code>runnel version</code>, Windows-Version, Workflow (ohne Secrets) und vollständiger Ausgabe</li>
+          </ul>
+        </article>
+
+        <article class="prose" data-lang-block="en" hidden lang="en">
+          <p class="docs-eyebrow">Developer docs</p>
+          <h1>Developing Runnel</h1>
+          <p class="docs-lead">Runnel is written in Go and ships as a single <code>runnel.exe</code>. These pages are for everyone who works on the core or builds their own components – humans and AI agents alike.</p>
+          <p class="docs-source">As of <code>main</code> on 2026-11-19 · Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>, <a href="https://github.com/runnelhq/runnel/blob/main/AGENTS.md">AGENTS.md</a>. If anything differs, the repository is authoritative.</p>
+
+          <div class="docs-cards">
+            <a class="docs-card" href="actions.html">
+              <strong>Developing actions</strong>
+              <span>New workflow components: type name, configuration, <code>Execute</code>, tests and checklist.</span>
+            </a>
+            <div class="docs-card docs-card--soon">
+              <strong>Developing transforms</strong>
+              <span>Pipeline components. The guide follows with roadmap steps S12/S13.</span>
+            </div>
+            <div class="docs-card docs-card--soon">
+              <strong>Developing plugins</strong>
+              <span>Components in any language via JSON-RPC. The guide follows with S49–S51.</span>
+            </div>
+          </div>
+
+          <h2 id="quick-start">Quick start</h2>
+          <p>Prerequisites: <a href="https://go.dev/dl/">Go</a> as specified in <code>go.mod</code> (currently Go 1.26), <a href="https://golangci-lint.run/">golangci-lint</a> v2.15.0 for <code>make lint</code>, and <code>make</code> – on Windows e.g. via Git Bash. Every command also works without <code>make</code>, see the <a href="https://github.com/runnelhq/runnel#entwicklung">README</a>.</p>
+<div class="code">
+  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-20"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-20"><code class="lang-bash">git clone https://github.com/runnelhq/runnel.git
+cd runnel
+make build                    <span class="tok-c"># bin/runnel</span>
+make test                     <span class="tok-c"># tests with race detector</span>
+bin/runnel validate examples
+bin/runnel run -v examples/hello/workflows/hello.workflow.yaml</code></pre>
+</div>
+
+          <h2 id="commands">Commands</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Purpose</th><th>Command</th></tr></thead>
+            <tbody>
+              <tr><td>Build</td><td><code>make build</code> → <code>bin/runnel</code></td></tr>
+              <tr><td>Tests with race detector</td><td><code>make test</code></td></tr>
+              <tr><td>Lint (golangci-lint v2.15.0)</td><td><code>make lint</code></td></tr>
+              <tr><td>Format</td><td><code>make fmt</code> or <code>gofmt -w</code></td></tr>
+              <tr><td>Fuzzing</td><td><code>make fuzz FUZZTIME=1m</code></td></tr>
+              <tr><td>Regenerate golden files</td><td><code>go test ./internal/&lt;package&gt; -update</code> – then review the diff</td></tr>
+              <tr><td>Check for known vulnerabilities</td><td><code>make vulncheck</code></td></tr>
+            </tbody>
+          </table></div>
+          <p><code>make lint</code> and <code>make test</code> must pass before every commit.</p>
+
+          <h2 id="structure">Project structure</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Path</th><th>Contents</th></tr></thead>
+            <tbody>
+              <tr><td><code>cmd/runnel/</code></td><td>Entry point, signal handling</td></tr>
+              <tr><td><code>internal/cli/</code></td><td>Commands <code>version</code>, <code>validate</code>, <code>run</code></td></tr>
+              <tr><td><code>internal/model/</code></td><td>File formats (workflow, project, environment), loading, field and graph checks, namespaces</td></tr>
+              <tr><td><code>internal/vars/</code></td><td><code>${…}</code> variables and their levels</td></tr>
+              <tr><td><code>internal/engine/workflow/</code></td><td>Workflow engine: <code>engine.go</code> (prepare/run), <code>scheduler.go</code> (parallelism, join, timeouts)</td></tr>
+              <tr><td><code>internal/action/</code></td><td>Interface between engine and actions, registry</td></tr>
+              <tr><td><code>internal/actions/</code></td><td>Built-in actions: <code>actions.go</code> with <code>Builtin()</code>, one package per namespace, one file per action</td></tr>
+              <tr><td><code>examples/</code></td><td>Examples, checked by the tests</td></tr>
+              <tr><td><code>docs/</code></td><td>Concept, roadmap, ADRs, test plan, developer guides (<code>docs/dev/</code>)</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="conventions">Conventions</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><th scope="row">Language</th><td>Code, comments, CLI output and error messages in <strong>English</strong>; documentation, ADRs and PR descriptions in <strong>German</strong>.</td></tr>
+              <tr><th scope="row">Type names</th><td><code>&lt;namespace&gt;.&lt;name&gt;</code>; actions and transforms have separate namespaces, no <code>-transform</code> suffix (<a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a>).</td></tr>
+              <tr><th scope="row">Messages</th><td>Errors in files carry a position: <code>file:line:column: error|warning: text</code> – understandable for users, no Go type names.</td></tr>
+              <tr><th scope="row">Tests</th><td>Golden files for formats and output, <code>t.TempDir()</code> instead of real paths, platform-independent – CI runs on Linux and Windows.</td></tr>
+              <tr><th scope="row">Windows first</th><td>Use <code>path/filepath</code>; handle UNC paths, encodings (BOM, UTF-16) and CRLF.</td></tr>
+              <tr><th scope="row">No anticipation</th><td>Only implement what the current roadmap step requires. Report what is unsupported instead of silently ignoring it.</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="contributing">How to contribute</h2>
+          <ol class="steps">
+            <li><strong>Pick a topic:</strong> an open step from the <a href="https://github.com/runnelhq/runnel/blob/main/docs/ROADMAP.md">roadmap</a> or an issue. Discuss larger changes in an issue first.</li>
+            <li><strong>Create a branch</strong> from <code>main</code>.</li>
+            <li><strong>Implement</strong> and keep it small: one roadmap step or topic per pull request, roughly 1,000 changed lines at most, tests included.</li>
+            <li><strong>Check:</strong> <code>make lint</code> and <code>make test</code>; for parser changes also <code>make fuzz</code>.</li>
+            <li><strong>Pull request</strong> to <code>main</code> with a German description: summary, changes, decisions for the review and “Prüfen” – how to try the result yourself.</li>
+            <li><strong>CI and review:</strong> lint, vulnerability check, tests on Linux and Windows, build and packaging. Merged when CI is green and the review is done.</li>
+          </ol>
+
+          <h2 id="rules">Rules</h2>
+          <ul>
+            <li><strong>Tests belong in the PR:</strong> unit tests, golden-file tests for formats and output, <code>-race</code> for concurrent code.</li>
+            <li><strong>Docs belong in the PR:</strong> update concept, roadmap (mark the step with ✅), ADRs, README and the guides in <code>docs/dev/</code> in the same PR.</li>
+            <li><strong>Fundamental decisions</strong> – formats, semantics, new dependencies, naming rules – are recorded as an <a href="https://github.com/runnelhq/runnel/tree/main/docs/adr">ADR</a> and agreed with the maintainer first.</li>
+            <li><strong>Dependencies</strong> only with a reason, an MIT-compatible license (ADR 0004) and a pinned version.</li>
+            <li><strong>Don't:</strong> skip or weaken tests to get CI green; overwrite golden files without review; put secrets in code, tests or logs; change release or CI workflows without being asked.</li>
+          </ul>
+
+          <h2 id="ai-agents">Notes for AI agents</h2>
+          <p>For coding agents such as Claude Code, Copilot or Codex, <a href="https://github.com/runnelhq/runnel/blob/main/AGENTS.md"><code>AGENTS.md</code></a> in the repository sums up the same rules; <code>CLAUDE.md</code> points to it. Agents follow the same rules as humans – in particular “one roadmap step = one PR” and “docs in the same PR”.</p>
+
+          <h2 id="further">Further reading</h2>
+          <ul class="link-list">
+            <li><a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md">Concept and architecture</a> (German)</li>
+            <li><a href="https://github.com/runnelhq/runnel/blob/main/docs/ROADMAP.md">Roadmap</a> (German)</li>
+            <li><a href="https://github.com/runnelhq/runnel/blob/main/docs/TESTPLAN.md">Test plan and known limitations</a> (German)</li>
+            <li><a href="https://github.com/runnelhq/runnel/tree/main/docs/adr">Architecture decision records</a> (German)</li>
+            <li><a href="https://github.com/runnelhq/runnel/issues">Report a bug</a> – with <code>runnel version</code>, Windows version, workflow (without secrets) and full output</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <svg viewBox="0 0 204 64" role="img" aria-label="Runnel"><use href="#logo"/></svg>
+        <p data-i18n="footer.claim">Leicht. Lokal. Im Fluss. Workflows und Datenintegration für Windows.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.product">Produkt</h4>
+        <ul>
+          <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/releases" data-i18n="footer.releases">Releases</a></li>
+          <li><a href="../index.html#roadmap">Roadmap</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.docs">Dokumentation</h4>
+        <ul>
+          <li><a href="../docs/" data-i18n="footer.devdocs">Entwicklerdoku</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md" data-i18n="footer.concept">Konzept</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/docs/adr" data-i18n="footer.adr">Entscheidungen (ADR)</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/design" data-i18n="footer.design">Corporate Design</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.project">Projekt</h4>
+        <ul>
+          <li><a href="https://github.com/runnelhq/runnel">GitHub</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/issues" data-i18n="footer.issues">Fehler melden</a></li>
+          <li><a href="../impressum.html" data-i18n="footer.imprint">Impressum</a></li>
+          <li><a href="../datenschutz.html" data-i18n="footer.privacy">Datenschutz</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n="footer.copy">© 2026 The Runnel authors · MIT-Lizenz</span>
+      <span data-i18n="footer.local">Diese Seite lädt keine externen Schriften oder Tracker.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!-- {
+  "out": "docs/actions.html",
+  "title": {"de": "Actions entwickeln", "en": "Developing actions"},
+  "description": {
+    "de": "Anleitung für eingebaute Runnel-Actions: Namensraum und Typname, Konfiguration, Execute, Windows-Besonderheiten, Tests und Checkliste für den Pull Request.",
+    "en": "Guide to built-in Runnel actions: namespace and type name, configuration, Execute, Windows specifics, tests and pull request checklist."
+  },
+  "nav": "docs/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Entwicklerdoku · Bausteine</p>
+          <h1>Eine neue Action entwickeln</h1>
+          <p class="docs-lead">Actions sind die Bausteine von Workflows: Sie tun einmal pro Lauf etwas – eine Datei kopieren, einen HTTP-Aufruf senden, warten. Diese Anleitung beschreibt eingebaute Actions im Go-Code von Runnel.</p>
+          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/ACTIONS.md"><code>docs/dev/ACTIONS.md</code></a> · Grundlagen: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a>, <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md#61-workflow-engine">Konzept Kap. 6.1</a> und <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md#12-mitgelieferte-bausteine-zielumfang">Kap. 12</a>. Die Anleitung wird mit jedem Schritt aktualisiert, der den Vertrag einer Action ändert.</p>
+
+          <div class="callout">
+            <strong>Vertragstest</strong>
+            <p>Ein Teil der Regeln wird automatisch geprüft: <code>internal/actions/actions_test.go</code> testet jede eingebaute Action auf gültigen Typnamen, reservierten Namensraum, Beschreibung, Ablehnung unbekannter Felder und Ende bei abgebrochenem Lauf.</p>
+          </div>
+
+          <h2 id="art">1. Action, Transform oder Plugin?</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Wenn …</th><th>dann</th></tr></thead>
+            <tbody>
+              <tr><td>ein Schritt einmal pro Workflow-Lauf etwas tut (Datei kopieren, HTTP-Aufruf, Mail senden)</td><td><strong>Action</strong></td></tr>
+              <tr><td>Datensätze in einer Pipeline verarbeitet werden (lesen, umformen, schreiben)</td><td><strong>Transform</strong> – Anleitung folgt mit S12/S13</td></tr>
+              <tr><td>der Baustein ein fremdes System anbindet, das nicht zum Kern gehört (SAP, Spezial-APIs), oder in einer anderen Sprache geschrieben ist</td><td><strong>Plugin</strong> – Anleitung folgt mit S49–S51</td></tr>
+            </tbody>
+          </table></div>
+          <p>Derselbe Name darf als Action <em>und</em> als Transform existieren, zum Beispiel <code>http.request</code>. Welche Registry gilt, ergibt sich aus der Datei: <code>*.workflow.yaml</code> → Actions, <code>*.pipeline.yaml</code> → Transforms. In Doku und Editor wird die Art deshalb immer mitgenannt: „Action <code>http.request</code>“.</p>
+
+          <h2 id="typname">2. Namensraum und Typname</h2>
+          <ul>
+            <li>Typnamen haben die Form <code>&lt;namensraum&gt;.&lt;name&gt;</code>: Kleinbuchstaben, Ziffern und <code>-</code>, z. B. <code>file.copy</code>, <code>http.request</code>.</li>
+            <li>Der Name beschreibt die Tätigkeit (<code>copy</code>, <code>wait</code>, <code>send</code>), nicht die Technik.</li>
+            <li>Eingebaute Actions liegen in einem <strong>reservierten Namensraum</strong> (<code>internal/model/namespaces.go</code>). Plugins können eingebaute Bausteine daher weder überschreiben noch mit anderen Plugins kollidieren.</li>
+          </ul>
+          <p class="chips-label">Reservierte Namensräume</p>
+          <ul class="ns-list" aria-label="Reservierte Namensräume">
+            <li class="is-live">core</li><li>ai</li><li>csv</li><li>db</li><li>excel</li><li>file</li><li>ftp</li><li>http</li><li>json</li><li>mail</li><li>mcp</li><li>sftp</li><li>shell</li><li>xml</li><li>zip</li><li>mcp-&lt;connection&gt;</li>
+          </ul>
+          <p class="legal-hint">Hervorgehoben: Namensraum mit bereits umgesetzten Actions. <code>mcp-&lt;connection&gt;</code> steht für Werkzeuge eines als Connection eingebundenen MCP-Servers (ADR 0012).</p>
+          <p><strong>Neuer Namensraum?</strong> Nur wenn kein bestehender passt:</p>
+          <ol class="steps">
+            <li>in <code>reservedNamespaces</code> eintragen, falls noch nicht vorhanden,</li>
+            <li>Paket <code>internal/actions/&lt;namensraum&gt;/</code> mit <code>register.go</code> anlegen,</li>
+            <li>dessen <code>Register</code> in <code>internal/actions/actions.go</code> (<code>namespaces</code>) eintragen.</li>
+          </ol>
+
+          <h2 id="dateien">3. Dateien und Registrierung</h2>
+          <p>Ein Paket je Namensraum, eine Datei je Action, die Tests direkt daneben:</p>
+          {{snippet:files.txt|Aufbau}}
+          <p>Die Registrierung hat zwei Ebenen. <code>register.go</code> listet die Actions des Namensraums – eine neue Action ändert also nur ihr eigenes Paket, und die Definitionen bleiben unexportiert. <code>actions.go</code> listet die Namensräume und liefert <code>Builtin()</code> für CLI, Server und MCP; die Engine kennt keine konkreten Actions.</p>
+          {{snippet:register.go|internal/actions/core/register.go}}
+          {{snippet:actions.go|internal/actions/actions.go (Auszug)}}
+          <p>Bewusst nicht gewählt (ADR 0013): eine zentrale Liste aller einzelnen Actions (Merge-Konflikte, exportierte Definitionen), Selbstregistrierung über <code>init()</code> (implizit, schwer zu testen) und ein Paket je Action (zu kleinteilig).</p>
+          <p>Kopiervorlage ist <a href="#vorlage"><code>core.wait</code></a> samt Test. Mehrere eng verwandte Actions dürfen sich eine Datei teilen, wenn sie dieselbe Implementierung nutzen – Beispiel: <code>core.success</code> und <code>core.abort</code> in <code>end.go</code>.</p>
+
+          <h2 id="konfiguration">4. Definition und Konfiguration</h2>
+          {{snippet:copy-definition.go|Beispiel: file.copy}}
+          <p><strong>Lebenszyklus:</strong> <code>New</code> wird zweimal aufgerufen. Deshalb prüft es nur die Struktur – Werte erst in <code>Execute</code>.</p>
+          <ol class="lifecycle" aria-label="Lebenszyklus einer Action">
+            <li><span class="lc-k">Prüfen</span><code>New(with)</code><span>mit dem Text aus der Datei – Werte können noch <code>${…}</code> enthalten</span></li>
+            <li><span class="lc-k">Auflösen</span><code>${VAR}</code><span>Variablen und Parameter werden eingesetzt</span></li>
+            <li><span class="lc-k">Erzeugen</span><code>New(with)</code><span>erneut, mit aufgelösten Werten, vor jeder Ausführung</span></li>
+            <li><span class="lc-k">Ausführen</span><code>Execute(ctx, ec)</code><span>Ergebnis oder Fehler – entscheidet über Erfolgs- und Fehler-Links</span></li>
+          </ol>
+          <p>Regeln:</p>
+          <ul>
+            <li><strong>Felder</strong> der Konfiguration (<code>with:</code>) als Struct mit <code>json</code>-Tags; Feldnamen in <code>camelCase</code>, wie im YAML.</li>
+            <li><strong><code>DecodeConfig</code></strong> verwenden – es lehnt unbekannte Felder ab, sodass Tippfehler im Workflow gemeldet werden. Der Vertragstest prüft das.</li>
+            <li><strong><code>New</code> prüft nur die Struktur:</strong> Pflichtfelder, Typen, unbekannte Felder. Werte wie Dauern, Zahlen in Textform oder Pfade werden erst in <code>Execute</code> geprüft.</li>
+            <li><strong>Zeitangaben</strong> als <code>string</code> übernehmen und in <code>Execute</code> mit <code>model.Duration(s).Value()</code> umwandeln.</li>
+            <li><strong>Actions ohne Konfiguration</strong> lehnen jedes Feld ab (<code>len(with) &gt; 0</code> → Fehler); Vorlage: <code>core/dummy.go</code>.</li>
+            <li><strong>Beschreibung</strong> (<code>Description</code>): ein kurzer englischer Satz ohne Punkt; erscheint später in der Palette des Editors.</li>
+            <li>Kommentar über der Definition: was die Action tut, Besonderheiten, neue Konfigurationsfelder – später die Grundlage für das Schema im Editor.</li>
+          </ul>
+          {{snippet:dummy.go|internal/actions/core/dummy.go – Action ohne Konfiguration}}
+
+          <h2 id="ausfuehren">5. Ausführen (<code>Execute</code>)</h2>
+          {{snippet:copy-execute.go|Beispiel: file.copy}}
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Thema</th><th>Regel</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Abbruch und Timeout</th><td><code>ctx</code> an alle blockierenden Aufrufe weitergeben (HTTP, DB, Prozesse) bzw. regelmäßig <code>ctx.Err()</code> prüfen; bei Abbruch <code>ctx.Err()</code> zurückgeben. Der Vertragstest prüft, dass eine Action bei abgebrochenem Lauf endet.</td></tr>
+              <tr><th scope="row">Fehler</th><td>Ein zurückgegebener Fehler bedeutet „fehlgeschlagen“ → Fehler-Links, Retry. Meldungen für Anwender formulieren: was, wo, warum – englisch, ohne Stacktrace, z. B. <code>cannot copy "a.csv" to "D:\out": access denied</code>.</td></tr>
+              <tr><th scope="row">Keine Panics</th><td>Fehler zurückgeben, nie <code>panic</code>; keine globalen Zustände ändern.</td></tr>
+              <tr><th scope="row">Log</th><td><code>ec.Log</code> / <code>ec.Logf</code>: <code>Info</code> für das Ergebnis (eine Zeile), <code>Debug</code> für Details (sichtbar mit <code>-v</code>), <code>Warn</code> für Auffälliges, das kein Fehler ist.</td></tr>
+              <tr><th scope="row">Secrets</th><td>Passwörter, Tokens und <code>${secret:…}</code>-Werte nie loggen und nicht in Fehlermeldungen aufnehmen.</td></tr>
+              <tr><th scope="row"><code>Result.End</code></th><td>Nur für Actions, die den Workflow beenden (<code>core.success</code>, <code>core.abort</code>); sonst leeres <code>Result</code>.</td></tr>
+              <tr><th scope="row">Ausgabedaten</th><td><span class="soon">kommt mit S08</span> Strukturierte Ergebnisse (z. B. Dateiliste, Statuscode) für nachfolgende Actions über <code>result.output</code>.</td></tr>
+              <tr><th scope="row">Wiederholbarkeit</th><td>Eine Action kann wiederholt werden (<code>retry</code>, Schleifen) und sollte bei erneutem Aufruf sinnvoll funktionieren – z. B. Zieldatei überschreiben oder klar melden.</td></tr>
+              <tr><th scope="row">Nebenläufigkeit</th><td>Mehrere Instanzen können gleichzeitig laufen (parallele Zweige, <code>join: each</code>); keine gemeinsamen veränderlichen Variablen.</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="windows">6. Windows-Besonderheiten</h2>
+          <p>Runnel ist Windows-first. Actions, die mit Dateien, Prozessen oder Netzwerk arbeiten, beachten:</p>
+          <ul>
+            <li><strong>Pfade:</strong> <code>path/filepath</code> statt <code>path</code>; Laufwerke (<code>D:\</code>), UNC-Pfade (<code>\\server\share\…</code>), Leerzeichen, lange Pfade (&gt; 260 Zeichen).</li>
+            <li><strong>Groß-/Kleinschreibung:</strong> Dateinamen sind unter Windows nicht case-sensitiv.</li>
+            <li><strong>Gesperrte Dateien:</strong> Dateien, die ein anderes Programm geöffnet hat, verständlich melden.</li>
+            <li><strong>Kodierungen:</strong> Textdateien können UTF-8 (mit oder ohne BOM), UTF-16 oder Windows-1252 sein.</li>
+            <li><strong>Prozesse:</strong> Argumente nicht über eine Shell zusammensetzen (keine Injection); Kindprozesse bei Abbruch beenden.</li>
+          </ul>
+
+          <h2 id="tests">7. Tests</h2>
+          {{snippet:copy-test.go|Beispiel: file.copy}}
+          <p>Pflicht:</p>
+          <ul>
+            <li><strong>Konfigurationsfehler</strong> (fehlende Pflichtfelder, falsche Werte) mit <code>actiontest.ConfigError</code>.</li>
+            <li><strong>Erfolgsfall</strong> und die wichtigsten <strong>Fehlerfälle</strong> von <code>Execute</code>, inklusive Meldungstext.</li>
+            <li><strong>Abbruch</strong> für Actions, die länger laufen können (<code>context.WithCancel</code> / <code>WithTimeout</code>).</li>
+            <li><strong>Vertragstest:</strong> Braucht die Action Pflichtfelder, eine Beispielkonfiguration in <code>samples</code> von <code>TestContractCancellation</code> (<code>internal/actions/actions_test.go</code>) ergänzen – der Test meldet sich sonst.</li>
+            <li>Nur <code>t.TempDir()</code> und lokale Testserver (<code>httptest</code>) – keine Abhängigkeit von Netz oder Rechnernamen.</li>
+            <li>Tests dürfen nicht die <strong>vollständige Liste</strong> aller Action-Typen erwarten; sie wächst mit jeder neuen Action.</li>
+            <li>Tests müssen unter Linux und Windows laufen – die CI prüft beides.</li>
+          </ul>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Hilfe aus <code>actiontest</code></th><th>Zweck</th></tr></thead>
+            <tbody>
+              <tr><td><code>New(t, def, with)</code></td><td>Erzeugt die Action; ein Konfigurationsfehler lässt den Test fehlschlagen.</td></tr>
+              <tr><td><code>ConfigError(t, def, with, want)</code></td><td>Erwartet, dass <code>New</code> mit einer Meldung scheitert, die <code>want</code> enthält.</td></tr>
+              <tr><td><code>Execute(ctx, a)</code></td><td>Führt die Action aus (Run-ID <code>run</code>, Action-ID <code>act</code>) und liefert Ergebnis, Log-Meldungen und Fehler.</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="doku">8. Dokumentation und Beispiel im selben PR</h2>
+          <ul>
+            <li>Bausteinliste im <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md#12-mitgelieferte-bausteine-zielumfang">Konzept, Kap. 12</a> bzw. den Roadmap-Schritt als erledigt markieren.</li>
+            <li>Neue Konfigurationsfelder kurz im Kommentar der Definition beschreiben.</li>
+            <li>Bei Bedarf ein Beispiel-Workflow unter <code>examples/</code>, der in <code>internal/cli/validate_test.go</code> mitgeprüft wird. Ein neues Beispiel ändert die Anzahl geprüfter Dateien: Erwartung in <code>TestValidateExamples</code> anpassen, <code>go test ./internal/cli -update</code> ausführen und den Diff der Golden-Datei prüfen.</li>
+          </ul>
+
+          <h2 id="checkliste">9. Checkliste für den PR</h2>
+          <ul class="checklist">
+            <li>Typname im passenden, reservierten Namensraum; bei neuem Namensraum: <code>namespaces.go</code>, <code>register.go</code>, <code>actions.go</code></li>
+            <li>Eine Datei je Action, Tests daneben, Eintrag in <code>register.go</code></li>
+            <li>Konfiguration über <code>DecodeConfig</code>; <code>New</code> prüft nur Struktur, Werte werden in <code>Execute</code> geprüft</li>
+            <li><code>ctx</code> wird beachtet (Abbruch, Timeout); keine Panics; keine Secrets im Log</li>
+            <li>Verständliche englische Fehlermeldungen</li>
+            <li>Tests: Konfiguration, Erfolg, Fehler, Abbruch; ggf. Beispielkonfiguration im Vertragstest</li>
+            <li><code>make lint</code> und <code>make test</code> grün</li>
+            <li>Doku und ggf. Beispiel aktualisiert</li>
+          </ul>
+
+          <h2 id="vorlage">Vorlage: <code>core.wait</code></h2>
+          <p>Die vollständige Action aus dem Repository – kurz genug zum Kopieren und zeigt alle Regeln: Pflichtfeld in <code>New</code>, Dauer erst in <code>Execute</code> umwandeln, Abbruch über <code>ctx.Done()</code>.</p>
+          {{snippet:wait.go|internal/actions/core/wait.go}}
+          {{snippet:wait_test.go|internal/actions/core/wait_test.go}}
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">Developer docs · Components</p>
+          <h1>Developing a new action</h1>
+          <p class="docs-lead">Actions are the building blocks of workflows: each does something once per run – copy a file, send an HTTP request, wait. This guide covers built-in actions in Runnel's Go code.</p>
+          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/ACTIONS.md"><code>docs/dev/ACTIONS.md</code></a> · Background: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a>, <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md#61-workflow-engine">concept ch. 6.1</a> and <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md#12-mitgelieferte-bausteine-zielumfang">ch. 12</a>. The guide is updated with every step that changes the action contract.</p>
+
+          <div class="callout">
+            <strong>Contract test</strong>
+            <p>Some rules are checked automatically: <code>internal/actions/actions_test.go</code> tests every built-in action for a valid type name, a reserved namespace, a description, rejection of unknown fields and termination when the run is cancelled.</p>
+          </div>
+
+          <h2 id="kind">1. Action, transform or plugin?</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>If …</th><th>then</th></tr></thead>
+            <tbody>
+              <tr><td>a step does something once per workflow run (copy a file, HTTP call, send mail)</td><td><strong>Action</strong></td></tr>
+              <tr><td>records are processed in a pipeline (read, transform, write)</td><td><strong>Transform</strong> – guide follows with S12/S13</td></tr>
+              <tr><td>the component connects a third-party system outside the core (SAP, special APIs) or is written in another language</td><td><strong>Plugin</strong> – guide follows with S49–S51</td></tr>
+            </tbody>
+          </table></div>
+          <p>The same name may exist as an action <em>and</em> as a transform, for example <code>http.request</code>. The file decides which registry applies: <code>*.workflow.yaml</code> → actions, <code>*.pipeline.yaml</code> → transforms. Docs and editor therefore always name the kind: “action <code>http.request</code>”.</p>
+
+          <h2 id="type-name">2. Namespace and type name</h2>
+          <ul>
+            <li>Type names have the form <code>&lt;namespace&gt;.&lt;name&gt;</code>: lowercase letters, digits and <code>-</code>, e.g. <code>file.copy</code>, <code>http.request</code>.</li>
+            <li>The name describes the activity (<code>copy</code>, <code>wait</code>, <code>send</code>), not the technology.</li>
+            <li>Built-in actions live in a <strong>reserved namespace</strong> (<code>internal/model/namespaces.go</code>). Plugins can therefore neither override built-in components nor collide with other plugins.</li>
+          </ul>
+          <p class="chips-label">Reserved namespaces</p>
+          <ul class="ns-list" aria-label="Reserved namespaces">
+            <li class="is-live">core</li><li>ai</li><li>csv</li><li>db</li><li>excel</li><li>file</li><li>ftp</li><li>http</li><li>json</li><li>mail</li><li>mcp</li><li>sftp</li><li>shell</li><li>xml</li><li>zip</li><li>mcp-&lt;connection&gt;</li>
+          </ul>
+          <p class="legal-hint">Highlighted: namespace with actions already implemented. <code>mcp-&lt;connection&gt;</code> stands for the tools of an MCP server added as a connection (ADR 0012).</p>
+          <p><strong>New namespace?</strong> Only if no existing one fits:</p>
+          <ol class="steps">
+            <li>add it to <code>reservedNamespaces</code> if it is not there yet,</li>
+            <li>create the package <code>internal/actions/&lt;namespace&gt;/</code> with a <code>register.go</code>,</li>
+            <li>add its <code>Register</code> to <code>internal/actions/actions.go</code> (<code>namespaces</code>).</li>
+          </ol>
+
+          <h2 id="files">3. Files and registration</h2>
+          <p>One package per namespace, one file per action, tests right next to it:</p>
+          {{snippet:files-en.txt|Layout}}
+          <p>Registration has two levels. <code>register.go</code> lists the actions of the namespace – so a new action only touches its own package and the definitions stay unexported. <code>actions.go</code> lists the namespaces and provides <code>Builtin()</code> for CLI, server and MCP; the engine knows no concrete actions.</p>
+          {{snippet:register.go|internal/actions/core/register.go}}
+          {{snippet:actions.go|internal/actions/actions.go (excerpt)}}
+          <p>Deliberately not chosen (ADR 0013): one central list of every single action (merge conflicts, exported definitions), self-registration via <code>init()</code> (implicit, hard to test) and one package per action (too fine-grained).</p>
+          <p>Use <a href="#template"><code>core.wait</code></a> and its test as a template. Several closely related actions may share a file if they share their implementation – for example <code>core.success</code> and <code>core.abort</code> in <code>end.go</code>.</p>
+
+          <h2 id="configuration">4. Definition and configuration</h2>
+          {{snippet:copy-definition.go|Example: file.copy}}
+          <p><strong>Lifecycle:</strong> <code>New</code> is called twice. That is why it only checks the structure – values are checked in <code>Execute</code>.</p>
+          <ol class="lifecycle" aria-label="Lifecycle of an action">
+            <li><span class="lc-k">Validate</span><code>New(with)</code><span>with the text from the file – values may still contain <code>${…}</code></span></li>
+            <li><span class="lc-k">Resolve</span><code>${VAR}</code><span>variables and parameters are substituted</span></li>
+            <li><span class="lc-k">Create</span><code>New(with)</code><span>again, with resolved values, before every execution</span></li>
+            <li><span class="lc-k">Execute</span><code>Execute(ctx, ec)</code><span>result or error – decides between success and failure links</span></li>
+          </ol>
+          <p>Rules:</p>
+          <ul>
+            <li><strong>Configuration fields</strong> (<code>with:</code>) as a struct with <code>json</code> tags; field names in <code>camelCase</code>, as in the YAML.</li>
+            <li>Use <strong><code>DecodeConfig</code></strong> – it rejects unknown fields so typos in workflows are reported. The contract test checks this.</li>
+            <li><strong><code>New</code> only checks the structure:</strong> required fields, types, unknown fields. Values such as durations, numbers as text or paths are checked in <code>Execute</code>.</li>
+            <li>Take <strong>durations</strong> as a <code>string</code> and convert them in <code>Execute</code> with <code>model.Duration(s).Value()</code>.</li>
+            <li><strong>Actions without configuration</strong> reject every field (<code>len(with) &gt; 0</code> → error); template: <code>core/dummy.go</code>.</li>
+            <li><strong>Description</strong> (<code>Description</code>): a short English sentence without a full stop; later shown in the editor's palette.</li>
+            <li>Comment above the definition: what the action does, special cases, new configuration fields – later the basis for the editor schema.</li>
+          </ul>
+          {{snippet:dummy.go|internal/actions/core/dummy.go – action without configuration}}
+
+          <h2 id="execute">5. Executing (<code>Execute</code>)</h2>
+          {{snippet:copy-execute.go|Example: file.copy}}
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Topic</th><th>Rule</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Cancellation and timeout</th><td>Pass <code>ctx</code> to every blocking call (HTTP, DB, processes) or check <code>ctx.Err()</code> regularly; return <code>ctx.Err()</code> when cancelled. The contract test checks that an action ends when the run is cancelled.</td></tr>
+              <tr><th scope="row">Errors</th><td>A returned error means “failed” → failure links, retry. Write messages for users: what, where, why – in English, no stack trace, e.g. <code>cannot copy "a.csv" to "D:\out": access denied</code>.</td></tr>
+              <tr><th scope="row">No panics</th><td>Return errors, never <code>panic</code>; don't change global state.</td></tr>
+              <tr><th scope="row">Log</th><td><code>ec.Log</code> / <code>ec.Logf</code>: <code>Info</code> for the result (one line), <code>Debug</code> for details (visible with <code>-v</code>), <code>Warn</code> for anything notable that is not an error.</td></tr>
+              <tr><th scope="row">Secrets</th><td>Never log passwords, tokens or <code>${secret:…}</code> values, and keep them out of error messages.</td></tr>
+              <tr><th scope="row"><code>Result.End</code></th><td>Only for actions that end the workflow (<code>core.success</code>, <code>core.abort</code>); otherwise an empty <code>Result</code>.</td></tr>
+              <tr><th scope="row">Output data</th><td><span class="soon">coming with S08</span> Structured results (e.g. file list, status code) for subsequent actions via <code>result.output</code>.</td></tr>
+              <tr><th scope="row">Repeatability</th><td>An action can be repeated (<code>retry</code>, loops) and should behave sensibly when called again – e.g. overwrite the target file or report clearly.</td></tr>
+              <tr><th scope="row">Concurrency</th><td>Several instances can run at once (parallel branches, <code>join: each</code>); no shared mutable variables.</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="windows-en">6. Windows specifics</h2>
+          <p>Runnel is Windows first. Actions that work with files, processes or the network take care of:</p>
+          <ul>
+            <li><strong>Paths:</strong> <code>path/filepath</code> instead of <code>path</code>; drives (<code>D:\</code>), UNC paths (<code>\\server\share\…</code>), spaces, long paths (&gt; 260 characters).</li>
+            <li><strong>Case:</strong> file names are not case-sensitive on Windows.</li>
+            <li><strong>Locked files:</strong> report files opened by another program in an understandable way.</li>
+            <li><strong>Encodings:</strong> text files may be UTF-8 (with or without BOM), UTF-16 or Windows-1252.</li>
+            <li><strong>Processes:</strong> don't build arguments through a shell (no injection); end child processes on cancellation.</li>
+          </ul>
+
+          <h2 id="tests-en">7. Tests</h2>
+          {{snippet:copy-test-en.go|Example: file.copy}}
+          <p>Required:</p>
+          <ul>
+            <li><strong>Configuration errors</strong> (missing required fields, wrong values) with <code>actiontest.ConfigError</code>.</li>
+            <li>The <strong>success case</strong> and the most important <strong>failure cases</strong> of <code>Execute</code>, including the message text.</li>
+            <li><strong>Cancellation</strong> for actions that can run for a while (<code>context.WithCancel</code> / <code>WithTimeout</code>).</li>
+            <li><strong>Contract test:</strong> if the action has required fields, add a sample configuration to <code>samples</code> in <code>TestContractCancellation</code> (<code>internal/actions/actions_test.go</code>) – otherwise the test complains.</li>
+            <li>Only <code>t.TempDir()</code> and local test servers (<code>httptest</code>) – no dependency on the network or machine names.</li>
+            <li>Tests must not expect the <strong>complete list</strong> of action types; it grows with every new action.</li>
+            <li>Tests must run on Linux and Windows – CI checks both.</li>
+          </ul>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Helper from <code>actiontest</code></th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>New(t, def, with)</code></td><td>Creates the action; a configuration error fails the test.</td></tr>
+              <tr><td><code>ConfigError(t, def, with, want)</code></td><td>Expects <code>New</code> to fail with a message containing <code>want</code>.</td></tr>
+              <tr><td><code>Execute(ctx, a)</code></td><td>Runs the action (run ID <code>run</code>, action ID <code>act</code>) and returns the result, log messages and error.</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="docs-en">8. Docs and example in the same PR</h2>
+          <ul>
+            <li>Mark the component list in the <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md#12-mitgelieferte-bausteine-zielumfang">concept, ch. 12</a> or the roadmap step as done.</li>
+            <li>Briefly describe new configuration fields in the comment above the definition.</li>
+            <li>If useful, add an example workflow under <code>examples/</code>; it is checked by <code>internal/cli/validate_test.go</code>. A new example changes the number of checked files: adjust the expectation in <code>TestValidateExamples</code>, run <code>go test ./internal/cli -update</code> and review the golden-file diff.</li>
+          </ul>
+
+          <h2 id="checklist">9. Pull request checklist</h2>
+          <ul class="checklist">
+            <li>Type name in the matching reserved namespace; for a new namespace: <code>namespaces.go</code>, <code>register.go</code>, <code>actions.go</code></li>
+            <li>One file per action, tests next to it, entry in <code>register.go</code></li>
+            <li>Configuration via <code>DecodeConfig</code>; <code>New</code> only checks structure, values are checked in <code>Execute</code></li>
+            <li><code>ctx</code> is respected (cancellation, timeout); no panics; no secrets in the log</li>
+            <li>Understandable English error messages</li>
+            <li>Tests: configuration, success, failure, cancellation; sample configuration in the contract test if needed</li>
+            <li><code>make lint</code> and <code>make test</code> pass</li>
+            <li>Docs and, if needed, example updated</li>
+          </ul>
+
+          <h2 id="template">Template: <code>core.wait</code></h2>
+          <p>The complete action from the repository – short enough to copy, and it shows every rule: required field in <code>New</code>, duration converted only in <code>Execute</code>, cancellation via <code>ctx.Done()</code>.</p>
+          {{snippet:wait.go|internal/actions/core/wait.go}}
+          {{snippet:wait_test.go|internal/actions/core/wait_test.go}}
+        </article>
+      </div>
+    </div>

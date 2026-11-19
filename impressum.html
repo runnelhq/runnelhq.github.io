@@ -3,20 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title data-i18n="meta.title.imprint">Impressum – Runnel</title>
-  <meta name="description" data-i18n-attr="content:meta.description.imprint" content="Impressum und Anbieterkennzeichnung der Runnel-Website.">
+  <title>Impressum – Runnel</title>
+  <meta name="description" content="Impressum und Anbieterkennzeichnung der Runnel-Website.">
+  <meta name="title-en" content="Legal notice – Runnel">
+  <meta name="description-en" content="Legal notice and provider identification for the Runnel website.">
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#0A6DA6">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="assets/img/runnel-icon-180.png">
   <link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/fonts/inter-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/css/runnel.css">
   <link rel="stylesheet" href="assets/css/site.css">
 </head>
 <body>
 
+<!-- Erzeugt von tools/build.py aus _src/impressum.html – nicht von Hand bearbeiten. -->
 <!-- Wiederverwendbare Symbole -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></g></symbol>
@@ -41,7 +43,7 @@
 
 <header class="site-header">
   <div class="wrap header-inner">
-    <a class="brand" href="index.html" aria-label="Runnel">
+    <a class="brand" href="index.html#top" aria-label="Runnel">
       <svg viewBox="0 0 204 64" aria-hidden="true"><use href="#logo"/></svg>
     </a>
     <nav class="nav" aria-label="Hauptnavigation" data-i18n-attr="aria-label:nav.label">
@@ -50,6 +52,7 @@
       <a href="index.html#modes" data-i18n="nav.modes">Betrieb</a>
       <a href="index.html#compare" data-i18n="nav.compare">Vergleich</a>
       <a href="index.html#roadmap" data-i18n="nav.roadmap">Roadmap</a>
+      <a href="docs/" data-i18n="nav.docs">Doku</a>
     </nav>
     <div class="header-actions">
       <div class="lang-switch" role="group" aria-label="Sprache" data-i18n-attr="aria-label:lang.label">
@@ -71,6 +74,7 @@
         <li><a href="index.html#modes" data-i18n="nav.modes">Betrieb</a></li>
         <li><a href="index.html#compare" data-i18n="nav.compare">Vergleich</a></li>
         <li><a href="index.html#roadmap" data-i18n="nav.roadmap">Roadmap</a></li>
+        <li><a href="docs/" data-i18n="nav.docs">Doku</a></li>
       </ul>
       <div class="mobile-ctas">
         <a class="btn btn--primary" href="https://github.com/runnelhq/runnel/releases"><svg aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="cta.download">Herunterladen</span></a>
@@ -81,7 +85,7 @@
 </header>
 
 <main id="main" class="legal-page">
-    <div class="wrap legal-wrap">
+<div class="wrap legal-wrap">
       <div class="legal-notice" role="note">
         <span class="sym" aria-hidden="true">⚠</span>
         <p data-i18n="legal.placeholderNote">Entwurf mit Platzhaltern. Markierte Angaben vor der Veröffentlichung ausfüllen und den Text rechtlich prüfen lassen.</p>
@@ -165,7 +169,7 @@
         <p>The Runnel source code is licensed under the <a href="https://github.com/runnelhq/runnel/blob/main/LICENSE">MIT license</a>. The Runnel logo and wordmark are part of the corporate design; their use follows the rules in the <a href="https://github.com/runnelhq/runnel/tree/main/design">design handbook</a>. The Inter and JetBrains Mono typefaces are licensed under the SIL Open Font License 1.1.</p>
       </article>
     </div>
-  </main>
+</main>
 
 <footer class="site-footer">
   <div class="wrap">
@@ -185,6 +189,7 @@
       <div class="footer-col">
         <h4 data-i18n="footer.docs">Dokumentation</h4>
         <ul>
+          <li><a href="docs/" data-i18n="footer.devdocs">Entwicklerdoku</a></li>
           <li><a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md" data-i18n="footer.concept">Konzept</a></li>
           <li><a href="https://github.com/runnelhq/runnel/tree/main/docs/adr" data-i18n="footer.adr">Entscheidungen (ADR)</a></li>
           <li><a href="https://github.com/runnelhq/runnel/tree/main/design" data-i18n="footer.design">Corporate Design</a></li>
