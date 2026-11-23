@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="de" data-theme="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Actions entwickeln – Runnel</title>
+  <meta name="description" content="Anleitung für eingebaute Runnel-Actions: Namensraum und Typname, Konfiguration, Execute, Windows-Besonderheiten, Tests und Checkliste für den Pull Request.">
+  <meta name="title-en" content="Developing actions – Runnel">
+  <meta name="description-en" content="Guide to built-in Runnel actions: namespace and type name, configuration, Execute, Windows specifics, tests and pull request checklist.">
+  <meta name="theme-color" content="#0A6DA6">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="../assets/img/runnel-icon-180.png">
+  <link rel="preload" href="../assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/runnel.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+
+<!-- Erzeugt von tools/build.py aus _src/docs-actions.html – nicht von Hand bearbeiten. -->
+<!-- Wiederverwendbare Symbole -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></g></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7 10.5l5 5 5-5"/><path d="M5 20h14"/></g></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="logo" viewBox="0 0 204 64"><rect width="64" height="64" rx="15" fill="#0A6DA6"/><circle cx="14.5" cy="22" r="6.5" fill="#FFFFFF"/><path d="M25 22C33.5 22 30.5 42 37.5 42" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/><circle cx="48.5" cy="42" r="5.25" fill="none" stroke="#7CC5EB" stroke-width="4.75"/><path transform="translate(80 43.25) scale(0.020134)" fill="currentColor" d="M138 0V-1118H390V-931H402Q432 -1028 507 -1080.5Q582 -1133 678 -1133Q700 -1133 727 -1131Q754 -1129 773 -1126V-887Q757 -892 721 -896Q685 -900 650 -900Q578 -900 520.5 -869Q463 -838 430.5 -783.5Q398 -729 398 -658V0Z M1293 14Q1178 14 1091.5 -35Q1005 -84 957.5 -178.5Q910 -273 910 -407V-1118H1170V-447Q1170 -335 1228.5 -271Q1287 -207 1389 -207Q1458 -207 1512 -237Q1566 -267 1596.5 -325Q1627 -383 1627 -463V-1118H1888V0H1641L1638 -276H1658Q1611 -130 1519 -58Q1427 14 1293 14Z M2383.1 -655V0H2123.1V-1118H2369.1L2373.1 -842H2352.1Q2399.1 -987 2490.1 -1059.5Q2581.1 -1132 2718.1 -1132Q2833.1 -1132 2919.1 -1083Q3005.1 -1034 3052.6 -940Q3100.1 -846 3100.1 -711V0H2840.1V-671Q2840.1 -783 2782.1 -847Q2724.1 -911 2622.1 -911Q2553.1 -911 2499.1 -881Q2445.1 -851 2414.1 -793.5Q2383.1 -736 2383.1 -655Z M3595.1 -655V0H3335.1V-1118H3581.1L3585.1 -842H3564.1Q3611.1 -987 3702.1 -1059.5Q3793.1 -1132 3930.1 -1132Q4045.1 -1132 4131.1 -1083Q4217.1 -1034 4264.6 -940Q4312.1 -846 4312.1 -711V0H4052.1V-671Q4052.1 -783 3994.1 -847Q3936.1 -911 3834.1 -911Q3765.1 -911 3711.1 -881Q3657.1 -851 3626.1 -793.5Q3595.1 -736 3595.1 -655Z M5041.2 23Q4872.2 23 4750.7 -48Q4629.2 -119 4563.7 -248Q4498.2 -377 4498.2 -552Q4498.2 -725 4562.7 -855Q4627.2 -985 4745.7 -1058.5Q4864.2 -1132 5024.2 -1132Q5126.2 -1132 5218.7 -1099Q5311.2 -1066 5382.7 -997Q5454.2 -928 5494.7 -821.5Q5535.2 -715 5535.2 -568V-486H4621.2V-663H5406.2L5284.2 -611Q5284.2 -705 5255.2 -776.5Q5226.2 -848 5168.7 -888Q5111.2 -928 5025.2 -928Q4939.2 -928 4879.2 -887.5Q4819.2 -847 4787.7 -779.5Q4756.2 -712 4756.2 -629V-507Q4756.2 -401 4792.2 -328Q4828.2 -255 4893.2 -218Q4958.2 -181 5044.2 -181Q5101.2 -181 5147.7 -197.5Q5194.2 -214 5228.2 -246.5Q5262.2 -279 5279.2 -326L5518.2 -277Q5491.2 -187 5426.2 -119.5Q5361.2 -52 5263.7 -14.5Q5166.2 23 5041.2 23Z M5977.2 -1490V0H5717.2V-1490Z"/></symbol>
+  <!-- Strömungslinien (Gestaltungselement aus dem Corporate Design) -->
+  <symbol id="flow" viewBox="0 0 640 640" preserveAspectRatio="xMaxYMin meet">
+    <g fill="none" stroke-linecap="round">
+      <path d="M120 -40 C 340 -40 300 300 520 300 S 700 260 760 260" stroke="#0A6DA6" stroke-width="28" opacity=".55"/>
+      <path d="M60 120 C 280 120 240 460 460 460 S 660 420 760 420" stroke="#1688C6" stroke-width="18" opacity=".45"/>
+      <path d="M200 300 C 360 300 340 620 500 620 S 680 600 760 600" stroke="#3FA6DD" stroke-width="10" opacity=".35"/>
+    </g>
+    <circle cx="520" cy="300" r="34" fill="none" stroke="#7CC5EB" stroke-width="22"/>
+  </symbol>
+</svg>
+
+<a class="sr-only" href="#main" data-i18n="a11y.skip">Zum Inhalt springen</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html#top" aria-label="Runnel">
+      <svg viewBox="0 0 204 64" aria-hidden="true"><use href="#logo"/></svg>
+    </a>
+    <nav class="nav" aria-label="Hauptnavigation" data-i18n-attr="aria-label:nav.label">
+      <a href="../index.html#features" data-i18n="nav.features">Funktionen</a>
+      <a href="../index.html#model" data-i18n="nav.model">Modell</a>
+      <a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a>
+      <a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a>
+      <a href="../index.html#roadmap" data-i18n="nav.roadmap">Roadmap</a>
+      <a href="../docs/" aria-current="page" data-i18n="nav.docs">Doku</a>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Sprache" data-i18n-attr="aria-label:lang.label">
+        <button type="button" data-lang="de" aria-pressed="true" lang="de" title="Deutsch">DE</button>
+        <button type="button" data-lang="en" aria-pressed="false" lang="en" title="English">EN</button>
+      </div>
+      <a class="icon-btn gh-link" href="https://github.com/runnelhq/runnel" aria-label="GitHub"><svg aria-hidden="true"><use href="#i-github"/></svg></a>
+      <a class="btn btn--primary btn--sm" href="https://github.com/runnelhq/runnel/releases" data-i18n="cta.download">Herunterladen</a>
+      <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Menü öffnen" data-i18n-attr="aria-label:nav.open">
+        <svg aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-nav" id="mobile-nav" data-open="false">
+    <div class="wrap">
+      <ul>
+        <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+        <li><a href="../index.html#model" data-i18n="nav.model">Modell</a></li>
+        <li><a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a></li>
+        <li><a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a></li>
+        <li><a href="../index.html#roadmap" data-i18n="nav.roadmap">Roadmap</a></li>
+        <li><a href="../docs/" aria-current="page" data-i18n="nav.docs">Doku</a></li>
+      </ul>
+      <div class="mobile-ctas">
+        <a class="btn btn--primary" href="https://github.com/runnelhq/runnel/releases"><svg aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="cta.download">Herunterladen</span></a>
+        <a class="btn btn--outline" href="https://github.com/runnelhq/runnel"><svg aria-hidden="true"><use href="#i-github"/></svg>GitHub</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="docs-page">
+<div class="wrap docs-layout">
+      <details class="docs-side docs-side--mobile"><summary><span data-lang-block="de">Inhalt</span><span data-lang-block="en" hidden>Contents</span></summary><p class="docs-side-title"><span data-lang-block="de">Entwicklerdoku</span><span data-lang-block="en" hidden>Developer docs</span></p><ul class="docs-nav"><li><a href="../docs/"><span data-lang-block="de">Übersicht</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../docs/actions.html" aria-current="page"><span data-lang-block="de">Actions entwickeln</span><span data-lang-block="en" hidden>Developing actions</span></a></li><li><span class="docs-nav-soon"><span data-lang-block="de">Transforms entwickeln</span><span data-lang-block="en" hidden>Developing transforms</span><small><span data-lang-block="de">folgt mit S12/S13</span><span data-lang-block="en" hidden>coming with S12/S13</span></small></span></li><li><span class="docs-nav-soon"><span data-lang-block="de">Plugins entwickeln</span><span data-lang-block="en" hidden>Developing plugins</span><small><span data-lang-block="de">folgt mit S49–S51</span><span data-lang-block="en" hidden>coming with S49–S51</span></small></span></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#art">1. Action, Transform oder Plugin?</a></li><li><a href="#typname">2. Namensraum und Typname</a></li><li><a href="#dateien">3. Dateien und Registrierung</a></li><li><a href="#konfiguration">4. Definition und Konfiguration</a></li><li><a href="#ausfuehren">5. Ausführen (Execute)</a></li><li><a href="#windows">6. Windows-Besonderheiten</a></li><li><a href="#tests">7. Tests</a></li><li><a href="#doku">8. Dokumentation und Beispiel im selben PR</a></li><li><a href="#checkliste">9. Checkliste für den PR</a></li><li><a href="#vorlage">Vorlage: core.wait</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#kind">1. Action, transform or plugin?</a></li><li><a href="#type-name">2. Namespace and type name</a></li><li><a href="#files">3. Files and registration</a></li><li><a href="#configuration">4. Definition and configuration</a></li><li><a href="#execute">5. Executing (Execute)</a></li><li><a href="#windows-en">6. Windows specifics</a></li><li><a href="#tests-en">7. Tests</a></li><li><a href="#docs-en">8. Docs and example in the same PR</a></li><li><a href="#checklist">9. Pull request checklist</a></li><li><a href="#template">Template: core.wait</a></li></ul></details>
+<aside class="docs-side docs-side--desktop" aria-label="Dokumentation"><p class="docs-side-title"><span data-lang-block="de">Entwicklerdoku</span><span data-lang-block="en" hidden>Developer docs</span></p><ul class="docs-nav"><li><a href="../docs/"><span data-lang-block="de">Übersicht</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../docs/actions.html" aria-current="page"><span data-lang-block="de">Actions entwickeln</span><span data-lang-block="en" hidden>Developing actions</span></a></li><li><span class="docs-nav-soon"><span data-lang-block="de">Transforms entwickeln</span><span data-lang-block="en" hidden>Developing transforms</span><small><span data-lang-block="de">folgt mit S12/S13</span><span data-lang-block="en" hidden>coming with S12/S13</span></small></span></li><li><span class="docs-nav-soon"><span data-lang-block="de">Plugins entwickeln</span><span data-lang-block="en" hidden>Developing plugins</span><small><span data-lang-block="de">folgt mit S49–S51</span><span data-lang-block="en" hidden>coming with S49–S51</span></small></span></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#art">1. Action, Transform oder Plugin?</a></li><li><a href="#typname">2. Namensraum und Typname</a></li><li><a href="#dateien">3. Dateien und Registrierung</a></li><li><a href="#konfiguration">4. Definition und Konfiguration</a></li><li><a href="#ausfuehren">5. Ausführen (Execute)</a></li><li><a href="#windows">6. Windows-Besonderheiten</a></li><li><a href="#tests">7. Tests</a></li><li><a href="#doku">8. Dokumentation und Beispiel im selben PR</a></li><li><a href="#checkliste">9. Checkliste für den PR</a></li><li><a href="#vorlage">Vorlage: core.wait</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#kind">1. Action, transform or plugin?</a></li><li><a href="#type-name">2. Namespace and type name</a></li><li><a href="#files">3. Files and registration</a></li><li><a href="#configuration">4. Definition and configuration</a></li><li><a href="#execute">5. Executing (Execute)</a></li><li><a href="#windows-en">6. Windows specifics</a></li><li><a href="#tests-en">7. Tests</a></li><li><a href="#docs-en">8. Docs and example in the same PR</a></li><li><a href="#checklist">9. Pull request checklist</a></li><li><a href="#template">Template: core.wait</a></li></ul></aside>
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Entwicklerdoku · Bausteine</p>
+          <h1>Eine neue Action entwickeln</h1>
+          <p class="docs-lead">Actions sind die Bausteine von Workflows: Sie tun einmal pro Lauf etwas – eine Datei kopieren, einen HTTP-Aufruf senden, warten. Diese Anleitung beschreibt eingebaute Actions im Go-Code von Runnel.</p>
+          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/ACTIONS.md"><code>docs/dev/ACTIONS.md</code></a> · Grundlagen: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a>, <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md#61-workflow-engine">Konzept Kap. 6.1</a> und <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md#12-mitgelieferte-bausteine-zielumfang">Kap. 12</a>. Die Anleitung wird mit jedem Schritt aktualisiert, der den Vertrag einer Action ändert.</p>
+
+          <div class="callout">
+            <strong>Vertragstest</strong>
+            <p>Ein Teil der Regeln wird automatisch geprüft: <code>internal/actions/actions_test.go</code> testet jede eingebaute Action auf gültigen Typnamen, reservierten Namensraum, Beschreibung, Ablehnung unbekannter Felder und Ende bei abgebrochenem Lauf.</p>
+          </div>
+
+          <h2 id="art">1. Action, Transform oder Plugin?</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Wenn …</th><th>dann</th></tr></thead>
+            <tbody>
+              <tr><td>ein Schritt einmal pro Workflow-Lauf etwas tut (Datei kopieren, HTTP-Aufruf, Mail senden)</td><td><strong>Action</strong></td></tr>
+              <tr><td>Datensätze in einer Pipeline verarbeitet werden (lesen, umformen, schreiben)</td><td><strong>Transform</strong> – Anleitung folgt mit S12/S13</td></tr>
+              <tr><td>der Baustein ein fremdes System anbindet, das nicht zum Kern gehört (SAP, Spezial-APIs), oder in einer anderen Sprache geschrieben ist</td><td><strong>Plugin</strong> – Anleitung folgt mit S49–S51</td></tr>
+            </tbody>
+          </table></div>
+          <p>Derselbe Name darf als Action <em>und</em> als Transform existieren, zum Beispiel <code>http.request</code>. Welche Registry gilt, ergibt sich aus der Datei: <code>*.workflow.yaml</code> → Actions, <code>*.pipeline.yaml</code> → Transforms. In Doku und Editor wird die Art deshalb immer mitgenannt: „Action <code>http.request</code>“.</p>
+
+          <h2 id="typname">2. Namensraum und Typname</h2>
+          <ul>
+            <li>Typnamen haben die Form <code>&lt;namensraum&gt;.&lt;name&gt;</code>: Kleinbuchstaben, Ziffern und <code>-</code>, z. B. <code>file.copy</code>, <code>http.request</code>.</li>
+            <li>Der Name beschreibt die Tätigkeit (<code>copy</code>, <code>wait</code>, <code>send</code>), nicht die Technik.</li>
+            <li>Eingebaute Actions liegen in einem <strong>reservierten Namensraum</strong> (<code>internal/model/namespaces.go</code>). Plugins können eingebaute Bausteine daher weder überschreiben noch mit anderen Plugins kollidieren.</li>
+          </ul>
+          <p class="chips-label">Reservierte Namensräume</p>
+          <ul class="ns-list" aria-label="Reservierte Namensräume">
+            <li class="is-live">core</li><li>ai</li><li>csv</li><li>db</li><li>excel</li><li>file</li><li>ftp</li><li>http</li><li>json</li><li>mail</li><li>mcp</li><li>sftp</li><li>shell</li><li>xml</li><li>zip</li><li>mcp-&lt;connection&gt;</li>
+          </ul>
+          <p class="legal-hint">Hervorgehoben: Namensraum mit bereits umgesetzten Actions. <code>mcp-&lt;connection&gt;</code> steht für Werkzeuge eines als Connection eingebundenen MCP-Servers (ADR 0012).</p>
+          <p><strong>Neuer Namensraum?</strong> Nur wenn kein bestehender passt:</p>
+          <ol class="steps">
+            <li>in <code>reservedNamespaces</code> eintragen, falls noch nicht vorhanden,</li>
+            <li>Paket <code>internal/actions/&lt;namensraum&gt;/</code> mit <code>register.go</code> anlegen,</li>
+            <li>dessen <code>Register</code> in <code>internal/actions/actions.go</code> (<code>namespaces</code>) eintragen.</li>
+          </ol>
+
+          <h2 id="dateien">3. Dateien und Registrierung</h2>
+          <p>Ein Paket je Namensraum, eine Datei je Action, die Tests direkt daneben:</p>
+          <div class="code">
+  <div class="code-head"><span>Aufbau</span><button class="copy-btn" type="button" data-copy-from="code-1"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-1"><code class="lang-bash">internal/actions/&lt;namensraum&gt;/
+  register.go          <span class="tok-c"># eine Zeile je Action ergänzen</span>
+  &lt;name&gt;.go            <span class="tok-c"># die Action</span>
+  &lt;name&gt;_test.go       <span class="tok-c"># ihre Tests</span></code></pre>
+</div>
+          <p>Die Registrierung hat zwei Ebenen. <code>register.go</code> listet die Actions des Namensraums – eine neue Action ändert also nur ihr eigenes Paket, und die Definitionen bleiben unexportiert. <code>actions.go</code> listet die Namensräume und liefert <code>Builtin()</code> für CLI, Server und MCP; die Engine kennt keine konkreten Actions.</p>
+          <div class="code">
+  <div class="code-head"><span>internal/actions/core/register.go</span><button class="copy-btn" type="button" data-copy-from="code-2"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-2"><code class="lang-go"><span class="tok-c">// Package core contains the basic workflow actions of the namespace "core":</span>
+<span class="tok-c">// core.start, core.success, core.abort, core.log, core.wait and core.dummy.</span>
+<span class="tok-c">//</span>
+<span class="tok-c">// Each action lives in a file of its own (&lt;name&gt;.go) with its tests next to it</span>
+<span class="tok-c">// (&lt;name&gt;_test.go); Register lists all actions of the namespace (ADR 0013).</span>
+<span class="tok-k">package</span> core
+
+<span class="tok-k">import</span> <span class="tok-s">"github.com/runnelhq/runnel/internal/action"</span>
+
+<span class="tok-c">// Register adds all actions of the namespace "core" to a registry.</span>
+<span class="tok-k">func</span> Register(r *action.Registry) {
+	r.Register(startDefinition)
+	r.Register(successDefinition)
+	r.Register(abortDefinition)
+	r.Register(logDefinition)
+	r.Register(waitDefinition)
+	r.Register(dummyDefinition)
+}</code></pre>
+</div>
+          <div class="code">
+  <div class="code-head"><span>internal/actions/actions.go (Auszug)</span><button class="copy-btn" type="button" data-copy-from="code-3"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-3"><code class="lang-go"><span class="tok-c">// namespaces lists the Register functions of all built-in namespaces.</span>
+<span class="tok-c">// A new namespace is added here and nowhere else.</span>
+<span class="tok-k">var</span> namespaces = []<span class="tok-k">func</span>(*action.Registry){
+	core.Register,
+}
+
+<span class="tok-c">// Builtin returns a new registry with all built-in actions.</span>
+<span class="tok-k">func</span> Builtin() *action.Registry {
+	r := action.NewRegistry()
+	<span class="tok-k">for</span> _, register := <span class="tok-k">range</span> namespaces {
+		register(r)
+	}
+	<span class="tok-k">return</span> r
+}</code></pre>
+</div>
+          <p>Bewusst nicht gewählt (ADR 0013): eine zentrale Liste aller einzelnen Actions (Merge-Konflikte, exportierte Definitionen), Selbstregistrierung über <code>init()</code> (implizit, schwer zu testen) und ein Paket je Action (zu kleinteilig).</p>
+          <p>Kopiervorlage ist <a href="#vorlage"><code>core.wait</code></a> samt Test. Mehrere eng verwandte Actions dürfen sich eine Datei teilen, wenn sie dieselbe Implementierung nutzen – Beispiel: <code>core.success</code> und <code>core.abort</code> in <code>end.go</code>.</p>
+
+          <h2 id="konfiguration">4. Definition und Konfiguration</h2>
+          <div class="code">
+  <div class="code-head"><span>Beispiel: file.copy</span><button class="copy-btn" type="button" data-copy-from="code-4"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-4"><code class="lang-go"><span class="tok-c">// file.copy copies files; it ends early when the run is cancelled.</span>
+<span class="tok-k">var</span> copyDefinition = action.Definition{
+	Type:        <span class="tok-s">"file.copy"</span>,
+	Description: <span class="tok-s">"Copies files or folders"</span>,
+	New:         newCopy,
+}
+
+<span class="tok-k">type</span> copyAction <span class="tok-k">struct</span> {
+	Source    string <span class="tok-s">`json:"source"`</span>
+	Target    string <span class="tok-s">`json:"target"`</span>
+	Overwrite bool   <span class="tok-s">`json:"overwrite"`</span>
+}
+
+<span class="tok-k">func</span> newCopy(with <span class="tok-k">map</span>[string]any) (action.Action, error) {
+	a := &amp;copyAction{}
+	<span class="tok-k">if</span> err := action.DecodeConfig(with, a); err != <span class="tok-k">nil</span> {
+		<span class="tok-k">return</span> <span class="tok-k">nil</span>, err <span class="tok-c">// unknown fields, wrong types</span>
+	}
+	<span class="tok-k">if</span> a.Source == <span class="tok-s">""</span> {
+		<span class="tok-k">return</span> <span class="tok-k">nil</span>, errors.New(<span class="tok-s">`missing required field "source"`</span>)
+	}
+	<span class="tok-k">return</span> a, <span class="tok-k">nil</span>
+}</code></pre>
+</div>
+          <p><strong>Lebenszyklus:</strong> <code>New</code> wird zweimal aufgerufen. Deshalb prüft es nur die Struktur – Werte erst in <code>Execute</code>.</p>
+          <ol class="lifecycle" aria-label="Lebenszyklus einer Action">
+            <li><span class="lc-k">Prüfen</span><code>New(with)</code><span>mit dem Text aus der Datei – Werte können noch <code>${…}</code> enthalten</span></li>
+            <li><span class="lc-k">Auflösen</span><code>${VAR}</code><span>Variablen und Parameter werden eingesetzt</span></li>
+            <li><span class="lc-k">Erzeugen</span><code>New(with)</code><span>erneut, mit aufgelösten Werten, vor jeder Ausführung</span></li>
+            <li><span class="lc-k">Ausführen</span><code>Execute(ctx, ec)</code><span>Ergebnis oder Fehler – entscheidet über Erfolgs- und Fehler-Links</span></li>
+          </ol>
+          <p>Regeln:</p>
+          <ul>
+            <li><strong>Felder</strong> der Konfiguration (<code>with:</code>) als Struct mit <code>json</code>-Tags; Feldnamen in <code>camelCase</code>, wie im YAML.</li>
+            <li><strong><code>DecodeConfig</code></strong> verwenden – es lehnt unbekannte Felder ab, sodass Tippfehler im Workflow gemeldet werden. Der Vertragstest prüft das.</li>
+            <li><strong><code>New</code> prüft nur die Struktur:</strong> Pflichtfelder, Typen, unbekannte Felder. Werte wie Dauern, Zahlen in Textform oder Pfade werden erst in <code>Execute</code> geprüft.</li>
+            <li><strong>Zeitangaben</strong> als <code>string</code> übernehmen und in <code>Execute</code> mit <code>model.Duration(s).Value()</code> umwandeln.</li>
+            <li><strong>Actions ohne Konfiguration</strong> lehnen jedes Feld ab (<code>len(with) &gt; 0</code> → Fehler); Vorlage: <code>core/dummy.go</code>.</li>
+            <li><strong>Beschreibung</strong> (<code>Description</code>): ein kurzer englischer Satz ohne Punkt; erscheint später in der Palette des Editors.</li>
+            <li>Kommentar über der Definition: was die Action tut, Besonderheiten, neue Konfigurationsfelder – später die Grundlage für das Schema im Editor.</li>
+          </ul>
+          <div class="code">
+  <div class="code-head"><span>internal/actions/core/dummy.go – Action ohne Konfiguration</span><button class="copy-btn" type="button" data-copy-from="code-5"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-5"><code class="lang-go"><span class="tok-k">package</span> core
+
+<span class="tok-k">import</span> (
+	<span class="tok-s">"context"</span>
+	<span class="tok-s">"errors"</span>
+
+	<span class="tok-s">"github.com/runnelhq/runnel/internal/action"</span>
+)
+
+<span class="tok-c">// core.dummy does nothing and always succeeds. It serves as a collection point in the</span>
+<span class="tok-c">// design: several branches lead into the dummy (with the join mode of choice, e.g.</span>
+<span class="tok-c">// join: all or first), and the following steps hang off the dummy only. When the</span>
+<span class="tok-c">// branches change, the following steps keep their links (as known from Apache Hop).</span>
+<span class="tok-k">var</span> dummyDefinition = action.Definition{
+	Type:        <span class="tok-s">"core.dummy"</span>,
+	Description: <span class="tok-s">"Does nothing; collects branches into one point"</span>,
+	New:         newDummy,
+}
+
+<span class="tok-k">type</span> dummy <span class="tok-k">struct</span>{}
+
+<span class="tok-k">func</span> newDummy(with <span class="tok-k">map</span>[string]any) (action.Action, error) {
+	<span class="tok-k">if</span> len(with) &gt; <span class="tok-n">0</span> {
+		<span class="tok-k">return</span> <span class="tok-k">nil</span>, errors.New(<span class="tok-s">"core.dummy has no configuration"</span>)
+	}
+	<span class="tok-k">return</span> dummy{}, <span class="tok-k">nil</span>
+}
+
+<span class="tok-k">func</span> (dummy) Execute(context.Context, *action.ExecContext) (action.Result, error) {
+	<span class="tok-k">return</span> action.Result{}, <span class="tok-k">nil</span>
+}</code></pre>
+</div>
+
+          <h2 id="ausfuehren">5. Ausführen (<code>Execute</code>)</h2>
+          <div class="code">
+  <div class="code-head"><span>Beispiel: file.copy</span><button class="copy-btn" type="button" data-copy-from="code-6"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-6"><code class="lang-go"><span class="tok-k">func</span> (a *copyAction) Execute(ctx context.Context, ec *action.ExecContext) (action.Result, error) {
+	ec.Logf(slog.LevelDebug, <span class="tok-s">"copying %s to %s"</span>, a.Source, a.Target)
+	…
+	<span class="tok-k">if</span> err := ctx.Err(); err != <span class="tok-k">nil</span> {
+		<span class="tok-k">return</span> action.Result{}, err
+	}
+	ec.Logf(slog.LevelInfo, <span class="tok-s">"copied %d files"</span>, n)
+	<span class="tok-k">return</span> action.Result{}, <span class="tok-k">nil</span>
+}</code></pre>
+</div>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Thema</th><th>Regel</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Abbruch und Timeout</th><td><code>ctx</code> an alle blockierenden Aufrufe weitergeben (HTTP, DB, Prozesse) bzw. regelmäßig <code>ctx.Err()</code> prüfen; bei Abbruch <code>ctx.Err()</code> zurückgeben. Der Vertragstest prüft, dass eine Action bei abgebrochenem Lauf endet.</td></tr>
+              <tr><th scope="row">Fehler</th><td>Ein zurückgegebener Fehler bedeutet „fehlgeschlagen“ → Fehler-Links, Retry. Meldungen für Anwender formulieren: was, wo, warum – englisch, ohne Stacktrace, z. B. <code>cannot copy "a.csv" to "D:\out": access denied</code>.</td></tr>
+              <tr><th scope="row">Keine Panics</th><td>Fehler zurückgeben, nie <code>panic</code>; keine globalen Zustände ändern.</td></tr>
+              <tr><th scope="row">Log</th><td><code>ec.Log</code> / <code>ec.Logf</code>: <code>Info</code> für das Ergebnis (eine Zeile), <code>Debug</code> für Details (sichtbar mit <code>-v</code>), <code>Warn</code> für Auffälliges, das kein Fehler ist.</td></tr>
+              <tr><th scope="row">Secrets</th><td>Passwörter, Tokens und <code>${secret:…}</code>-Werte nie loggen und nicht in Fehlermeldungen aufnehmen.</td></tr>
+              <tr><th scope="row"><code>Result.End</code></th><td>Nur für Actions, die den Workflow beenden (<code>core.success</code>, <code>core.abort</code>); sonst leeres <code>Result</code>.</td></tr>
+              <tr><th scope="row">Ausgabedaten</th><td><span class="soon">kommt mit S08</span> Strukturierte Ergebnisse (z. B. Dateiliste, Statuscode) für nachfolgende Actions über <code>result.output</code>.</td></tr>
+              <tr><th scope="row">Wiederholbarkeit</th><td>Eine Action kann wiederholt werden (<code>retry</code>, Schleifen) und sollte bei erneutem Aufruf sinnvoll funktionieren – z. B. Zieldatei überschreiben oder klar melden.</td></tr>
+              <tr><th scope="row">Nebenläufigkeit</th><td>Mehrere Instanzen können gleichzeitig laufen (parallele Zweige, <code>join: each</code>); keine gemeinsamen veränderlichen Variablen.</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="windows">6. Windows-Besonderheiten</h2>
+          <p>Runnel ist Windows-first. Actions, die mit Dateien, Prozessen oder Netzwerk arbeiten, beachten:</p>
+          <ul>
+            <li><strong>Pfade:</strong> <code>path/filepath</code> statt <code>path</code>; Laufwerke (<code>D:\</code>), UNC-Pfade (<code>\\server\share\…</code>), Leerzeichen, lange Pfade (&gt; 260 Zeichen).</li>
+            <li><strong>Groß-/Kleinschreibung:</strong> Dateinamen sind unter Windows nicht case-sensitiv.</li>
+            <li><strong>Gesperrte Dateien:</strong> Dateien, die ein anderes Programm geöffnet hat, verständlich melden.</li>
+            <li><strong>Kodierungen:</strong> Textdateien können UTF-8 (mit oder ohne BOM), UTF-16 oder Windows-1252 sein.</li>
+            <li><strong>Prozesse:</strong> Argumente nicht über eine Shell zusammensetzen (keine Injection); Kindprozesse bei Abbruch beenden.</li>
+          </ul>
+
+          <h2 id="tests">7. Tests</h2>
+          <div class="code">
+  <div class="code-head"><span>Beispiel: file.copy</span><button class="copy-btn" type="button" data-copy-from="code-7"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-7"><code class="lang-go"><span class="tok-k">func</span> TestCopy(t *testing.T) {
+	dir := t.TempDir()                       <span class="tok-c">// nie echte Pfade</span>
+	…
+	a := actiontest.New(t, copyDefinition, <span class="tok-k">map</span>[string]any{<span class="tok-s">"source"</span>: src, <span class="tok-s">"target"</span>: dst})
+	res, logs, err := actiontest.Execute(context.Background(), a)
+	…
+}
+
+<span class="tok-k">func</span> TestCopyConfig(t *testing.T) {
+	actiontest.ConfigError(t, copyDefinition, <span class="tok-k">nil</span>, <span class="tok-s">`missing required field "source"`</span>)
+}</code></pre>
+</div>
+          <p>Pflicht:</p>
+          <ul>
+            <li><strong>Konfigurationsfehler</strong> (fehlende Pflichtfelder, falsche Werte) mit <code>actiontest.ConfigError</code>.</li>
+            <li><strong>Erfolgsfall</strong> und die wichtigsten <strong>Fehlerfälle</strong> von <code>Execute</code>, inklusive Meldungstext.</li>
+            <li><strong>Abbruch</strong> für Actions, die länger laufen können (<code>context.WithCancel</code> / <code>WithTimeout</code>).</li>
+            <li><strong>Vertragstest:</strong> Braucht die Action Pflichtfelder, eine Beispielkonfiguration in <code>samples</code> von <code>TestContractCancellation</code> (<code>internal/actions/actions_test.go</code>) ergänzen – der Test meldet sich sonst.</li>
+            <li>Nur <code>t.TempDir()</code> und lokale Testserver (<code>httptest</code>) – keine Abhängigkeit von Netz oder Rechnernamen.</li>
+            <li>Tests dürfen nicht die <strong>vollständige Liste</strong> aller Action-Typen erwarten; sie wächst mit jeder neuen Action.</li>
+            <li>Tests müssen unter Linux und Windows laufen – die CI prüft beides.</li>
+          </ul>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Hilfe aus <code>actiontest</code></th><th>Zweck</th></tr></thead>
+            <tbody>
+              <tr><td><code>New(t, def, with)</code></td><td>Erzeugt die Action; ein Konfigurationsfehler lässt den Test fehlschlagen.</td></tr>
+              <tr><td><code>ConfigError(t, def, with, want)</code></td><td>Erwartet, dass <code>New</code> mit einer Meldung scheitert, die <code>want</code> enthält.</td></tr>
+              <tr><td><code>Execute(ctx, a)</code></td><td>Führt die Action aus (Run-ID <code>run</code>, Action-ID <code>act</code>) und liefert Ergebnis, Log-Meldungen und Fehler.</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="doku">8. Dokumentation und Beispiel im selben PR</h2>
+          <ul>
+            <li>Bausteinliste im <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md#12-mitgelieferte-bausteine-zielumfang">Konzept, Kap. 12</a> bzw. den Roadmap-Schritt als erledigt markieren.</li>
+            <li>Neue Konfigurationsfelder kurz im Kommentar der Definition beschreiben.</li>
+            <li>Bei Bedarf ein Beispiel-Workflow unter <code>examples/</code>, der in <code>internal/cli/validate_test.go</code> mitgeprüft wird. Ein neues Beispiel ändert die Anzahl geprüfter Dateien: Erwartung in <code>TestValidateExamples</code> anpassen, <code>go test ./internal/cli -update</code> ausführen und den Diff der Golden-Datei prüfen.</li>
+          </ul>
+
+          <h2 id="checkliste">9. Checkliste für den PR</h2>
+          <ul class="checklist">
+            <li>Typname im passenden, reservierten Namensraum; bei neuem Namensraum: <code>namespaces.go</code>, <code>register.go</code>, <code>actions.go</code></li>
+            <li>Eine Datei je Action, Tests daneben, Eintrag in <code>register.go</code></li>
+            <li>Konfiguration über <code>DecodeConfig</code>; <code>New</code> prüft nur Struktur, Werte werden in <code>Execute</code> geprüft</li>
+            <li><code>ctx</code> wird beachtet (Abbruch, Timeout); keine Panics; keine Secrets im Log</li>
+            <li>Verständliche englische Fehlermeldungen</li>
+            <li>Tests: Konfiguration, Erfolg, Fehler, Abbruch; ggf. Beispielkonfiguration im Vertragstest</li>
+            <li><code>make lint</code> und <code>make test</code> grün</li>
+            <li>Doku und ggf. Beispiel aktualisiert</li>
+          </ul>
+
+          <h2 id="vorlage">Vorlage: <code>core.wait</code></h2>
+          <p>Die vollständige Action aus dem Repository – kurz genug zum Kopieren und zeigt alle Regeln: Pflichtfeld in <code>New</code>, Dauer erst in <code>Execute</code> umwandeln, Abbruch über <code>ctx.Done()</code>.</p>
+          <div class="code">
+  <div class="code-head"><span>internal/actions/core/wait.go</span><button class="copy-btn" type="button" data-copy-from="code-8"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-8"><code class="lang-go"><span class="tok-k">package</span> core
+
+<span class="tok-k">import</span> (
+	<span class="tok-s">"context"</span>
+	<span class="tok-s">"errors"</span>
+	<span class="tok-s">"log/slog"</span>
+	<span class="tok-s">"time"</span>
+
+	<span class="tok-s">"github.com/runnelhq/runnel/internal/action"</span>
+	<span class="tok-s">"github.com/runnelhq/runnel/internal/model"</span>
+)
+
+<span class="tok-c">// core.wait waits for a given time; it ends early when the run is cancelled.</span>
+<span class="tok-k">var</span> waitDefinition = action.Definition{
+	Type:        <span class="tok-s">"core.wait"</span>,
+	Description: <span class="tok-s">"Waits for a given time"</span>,
+	New:         newWait,
+}
+
+<span class="tok-k">type</span> wait <span class="tok-k">struct</span> {
+	Duration string <span class="tok-s">`json:"duration"`</span>
+}
+
+<span class="tok-k">func</span> newWait(with <span class="tok-k">map</span>[string]any) (action.Action, error) {
+	a := &amp;wait{}
+	<span class="tok-k">if</span> err := action.DecodeConfig(with, a); err != <span class="tok-k">nil</span> {
+		<span class="tok-k">return</span> <span class="tok-k">nil</span>, err
+	}
+	<span class="tok-k">if</span> a.Duration == <span class="tok-s">""</span> {
+		<span class="tok-k">return</span> <span class="tok-k">nil</span>, errors.New(<span class="tok-s">`missing required field "duration"`</span>)
+	}
+	<span class="tok-k">return</span> a, <span class="tok-k">nil</span>
+}
+
+<span class="tok-k">func</span> (a *wait) Execute(ctx context.Context, ec *action.ExecContext) (action.Result, error) {
+	d, err := model.Duration(a.Duration).Value()
+	<span class="tok-k">if</span> err != <span class="tok-k">nil</span> {
+		<span class="tok-k">return</span> action.Result{}, err
+	}
+	ec.Logf(slog.LevelDebug, <span class="tok-s">"waiting %s"</span>, d)
+	t := time.NewTimer(d)
+	<span class="tok-k">defer</span> t.Stop()
+	<span class="tok-k">select</span> {
+	<span class="tok-k">case</span> &lt;-t.C:
+		<span class="tok-k">return</span> action.Result{}, <span class="tok-k">nil</span>
+	<span class="tok-k">case</span> &lt;-ctx.Done():
+		<span class="tok-k">return</span> action.Result{}, ctx.Err()
+	}
+}</code></pre>
+</div>
+          <div class="code">
+  <div class="code-head"><span>internal/actions/core/wait_test.go</span><button class="copy-btn" type="button" data-copy-from="code-9"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-9"><code class="lang-go"><span class="tok-k">package</span> core
+
+<span class="tok-k">import</span> (
+	<span class="tok-s">"context"</span>
+	<span class="tok-s">"errors"</span>
+	<span class="tok-s">"strings"</span>
+	<span class="tok-s">"testing"</span>
+	<span class="tok-s">"time"</span>
+
+	<span class="tok-s">"github.com/runnelhq/runnel/internal/actions/actiontest"</span>
+)
+
+<span class="tok-k">func</span> TestWaitConfig(t *testing.T) {
+	actiontest.ConfigError(t, waitDefinition, <span class="tok-k">nil</span>, <span class="tok-s">`missing required field "duration"`</span>)
+}
+
+<span class="tok-k">func</span> TestWait(t *testing.T) {
+	a := actiontest.New(t, waitDefinition, <span class="tok-k">map</span>[string]any{<span class="tok-s">"duration"</span>: <span class="tok-s">"20ms"</span>})
+	start := time.Now()
+	<span class="tok-k">if</span> _, _, err := actiontest.Execute(context.Background(), a); err != <span class="tok-k">nil</span> || time.Since(start) &lt; <span class="tok-n">20</span>*time.Millisecond {
+		t.Errorf(<span class="tok-s">"returned after %v, err %v"</span>, time.Since(start), err)
+	}
+
+	a = actiontest.New(t, waitDefinition, <span class="tok-k">map</span>[string]any{<span class="tok-s">"duration"</span>: <span class="tok-s">"soon"</span>})
+	<span class="tok-k">if</span> _, _, err := actiontest.Execute(context.Background(), a); err == <span class="tok-k">nil</span> || !strings.Contains(err.Error(), <span class="tok-s">"invalid duration"</span>) {
+		t.Errorf(<span class="tok-s">"invalid duration: %v"</span>, err)
+	}
+}
+
+<span class="tok-k">func</span> TestWaitCancelled(t *testing.T) {
+	a := actiontest.New(t, waitDefinition, <span class="tok-k">map</span>[string]any{<span class="tok-s">"duration"</span>: <span class="tok-s">"1h"</span>})
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	<span class="tok-k">if</span> _, _, err := actiontest.Execute(ctx, a); !errors.Is(err, context.Canceled) {
+		t.Errorf(<span class="tok-s">"cancelled wait: %v"</span>, err)
+	}
+}</code></pre>
+</div>
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" hidden lang="en">
+          <p class="docs-eyebrow">Developer docs · Components</p>
+          <h1>Developing a new action</h1>
+          <p class="docs-lead">Actions are the building blocks of workflows: each does something once per run – copy a file, send an HTTP request, wait. This guide covers built-in actions in Runnel's Go code.</p>
+          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/ACTIONS.md"><code>docs/dev/ACTIONS.md</code></a> · Background: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a>, <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md#61-workflow-engine">concept ch. 6.1</a> and <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md#12-mitgelieferte-bausteine-zielumfang">ch. 12</a>. The guide is updated with every step that changes the action contract.</p>
+
+          <div class="callout">
+            <strong>Contract test</strong>
+            <p>Some rules are checked automatically: <code>internal/actions/actions_test.go</code> tests every built-in action for a valid type name, a reserved namespace, a description, rejection of unknown fields and termination when the run is cancelled.</p>
+          </div>
+
+          <h2 id="kind">1. Action, transform or plugin?</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>If …</th><th>then</th></tr></thead>
+            <tbody>
+              <tr><td>a step does something once per workflow run (copy a file, HTTP call, send mail)</td><td><strong>Action</strong></td></tr>
+              <tr><td>records are processed in a pipeline (read, transform, write)</td><td><strong>Transform</strong> – guide follows with S12/S13</td></tr>
+              <tr><td>the component connects a third-party system outside the core (SAP, special APIs) or is written in another language</td><td><strong>Plugin</strong> – guide follows with S49–S51</td></tr>
+            </tbody>
+          </table></div>
+          <p>The same name may exist as an action <em>and</em> as a transform, for example <code>http.request</code>. The file decides which registry applies: <code>*.workflow.yaml</code> → actions, <code>*.pipeline.yaml</code> → transforms. Docs and editor therefore always name the kind: “action <code>http.request</code>”.</p>
+
+          <h2 id="type-name">2. Namespace and type name</h2>
+          <ul>
+            <li>Type names have the form <code>&lt;namespace&gt;.&lt;name&gt;</code>: lowercase letters, digits and <code>-</code>, e.g. <code>file.copy</code>, <code>http.request</code>.</li>
+            <li>The name describes the activity (<code>copy</code>, <code>wait</code>, <code>send</code>), not the technology.</li>
+            <li>Built-in actions live in a <strong>reserved namespace</strong> (<code>internal/model/namespaces.go</code>). Plugins can therefore neither override built-in components nor collide with other plugins.</li>
+          </ul>
+          <p class="chips-label">Reserved namespaces</p>
+          <ul class="ns-list" aria-label="Reserved namespaces">
+            <li class="is-live">core</li><li>ai</li><li>csv</li><li>db</li><li>excel</li><li>file</li><li>ftp</li><li>http</li><li>json</li><li>mail</li><li>mcp</li><li>sftp</li><li>shell</li><li>xml</li><li>zip</li><li>mcp-&lt;connection&gt;</li>
+          </ul>
+          <p class="legal-hint">Highlighted: namespace with actions already implemented. <code>mcp-&lt;connection&gt;</code> stands for the tools of an MCP server added as a connection (ADR 0012).</p>
+          <p><strong>New namespace?</strong> Only if no existing one fits:</p>
+          <ol class="steps">
+            <li>add it to <code>reservedNamespaces</code> if it is not there yet,</li>
+            <li>create the package <code>internal/actions/&lt;namespace&gt;/</code> with a <code>register.go</code>,</li>
+            <li>add its <code>Register</code> to <code>internal/actions/actions.go</code> (<code>namespaces</code>).</li>
+          </ol>
+
+          <h2 id="files">3. Files and registration</h2>
+          <p>One package per namespace, one file per action, tests right next to it:</p>
+          <div class="code">
+  <div class="code-head"><span>Layout</span><button class="copy-btn" type="button" data-copy-from="code-10"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-10"><code class="lang-bash">internal/actions/&lt;namespace&gt;/
+  register.go          <span class="tok-c"># add one line per action</span>
+  &lt;name&gt;.go            <span class="tok-c"># the action</span>
+  &lt;name&gt;_test.go       <span class="tok-c"># its tests</span></code></pre>
+</div>
+          <p>Registration has two levels. <code>register.go</code> lists the actions of the namespace – so a new action only touches its own package and the definitions stay unexported. <code>actions.go</code> lists the namespaces and provides <code>Builtin()</code> for CLI, server and MCP; the engine knows no concrete actions.</p>
+          <div class="code">
+  <div class="code-head"><span>internal/actions/core/register.go</span><button class="copy-btn" type="button" data-copy-from="code-11"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-11"><code class="lang-go"><span class="tok-c">// Package core contains the basic workflow actions of the namespace "core":</span>
+<span class="tok-c">// core.start, core.success, core.abort, core.log, core.wait and core.dummy.</span>
+<span class="tok-c">//</span>
+<span class="tok-c">// Each action lives in a file of its own (&lt;name&gt;.go) with its tests next to it</span>
+<span class="tok-c">// (&lt;name&gt;_test.go); Register lists all actions of the namespace (ADR 0013).</span>
+<span class="tok-k">package</span> core
+
+<span class="tok-k">import</span> <span class="tok-s">"github.com/runnelhq/runnel/internal/action"</span>
+
+<span class="tok-c">// Register adds all actions of the namespace "core" to a registry.</span>
+<span class="tok-k">func</span> Register(r *action.Registry) {
+	r.Register(startDefinition)
+	r.Register(successDefinition)
+	r.Register(abortDefinition)
+	r.Register(logDefinition)
+	r.Register(waitDefinition)
+	r.Register(dummyDefinition)
+}</code></pre>
+</div>
+          <div class="code">
+  <div class="code-head"><span>internal/actions/actions.go (excerpt)</span><button class="copy-btn" type="button" data-copy-from="code-12"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-12"><code class="lang-go"><span class="tok-c">// namespaces lists the Register functions of all built-in namespaces.</span>
+<span class="tok-c">// A new namespace is added here and nowhere else.</span>
+<span class="tok-k">var</span> namespaces = []<span class="tok-k">func</span>(*action.Registry){
+	core.Register,
+}
+
+<span class="tok-c">// Builtin returns a new registry with all built-in actions.</span>
+<span class="tok-k">func</span> Builtin() *action.Registry {
+	r := action.NewRegistry()
+	<span class="tok-k">for</span> _, register := <span class="tok-k">range</span> namespaces {
+		register(r)
+	}
+	<span class="tok-k">return</span> r
+}</code></pre>
+</div>
+          <p>Deliberately not chosen (ADR 0013): one central list of every single action (merge conflicts, exported definitions), self-registration via <code>init()</code> (implicit, hard to test) and one package per action (too fine-grained).</p>
+          <p>Use <a href="#template"><code>core.wait</code></a> and its test as a template. Several closely related actions may share a file if they share their implementation – for example <code>core.success</code> and <code>core.abort</code> in <code>end.go</code>.</p>
+
+          <h2 id="configuration">4. Definition and configuration</h2>
+          <div class="code">
+  <div class="code-head"><span>Example: file.copy</span><button class="copy-btn" type="button" data-copy-from="code-13"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-13"><code class="lang-go"><span class="tok-c">// file.copy copies files; it ends early when the run is cancelled.</span>
+<span class="tok-k">var</span> copyDefinition = action.Definition{
+	Type:        <span class="tok-s">"file.copy"</span>,
+	Description: <span class="tok-s">"Copies files or folders"</span>,
+	New:         newCopy,
+}
+
+<span class="tok-k">type</span> copyAction <span class="tok-k">struct</span> {
+	Source    string <span class="tok-s">`json:"source"`</span>
+	Target    string <span class="tok-s">`json:"target"`</span>
+	Overwrite bool   <span class="tok-s">`json:"overwrite"`</span>
+}
+
+<span class="tok-k">func</span> newCopy(with <span class="tok-k">map</span>[string]any) (action.Action, error) {
+	a := &amp;copyAction{}
+	<span class="tok-k">if</span> err := action.DecodeConfig(with, a); err != <span class="tok-k">nil</span> {
+		<span class="tok-k">return</span> <span class="tok-k">nil</span>, err <span class="tok-c">// unknown fields, wrong types</span>
+	}
+	<span class="tok-k">if</span> a.Source == <span class="tok-s">""</span> {
+		<span class="tok-k">return</span> <span class="tok-k">nil</span>, errors.New(<span class="tok-s">`missing required field "source"`</span>)
+	}
+	<span class="tok-k">return</span> a, <span class="tok-k">nil</span>
+}</code></pre>
+</div>
+          <p><strong>Lifecycle:</strong> <code>New</code> is called twice. That is why it only checks the structure – values are checked in <code>Execute</code>.</p>
+          <ol class="lifecycle" aria-label="Lifecycle of an action">
+            <li><span class="lc-k">Validate</span><code>New(with)</code><span>with the text from the file – values may still contain <code>${…}</code></span></li>
+            <li><span class="lc-k">Resolve</span><code>${VAR}</code><span>variables and parameters are substituted</span></li>
+            <li><span class="lc-k">Create</span><code>New(with)</code><span>again, with resolved values, before every execution</span></li>
+            <li><span class="lc-k">Execute</span><code>Execute(ctx, ec)</code><span>result or error – decides between success and failure links</span></li>
+          </ol>
+          <p>Rules:</p>
+          <ul>
+            <li><strong>Configuration fields</strong> (<code>with:</code>) as a struct with <code>json</code> tags; field names in <code>camelCase</code>, as in the YAML.</li>
+            <li>Use <strong><code>DecodeConfig</code></strong> – it rejects unknown fields so typos in workflows are reported. The contract test checks this.</li>
+            <li><strong><code>New</code> only checks the structure:</strong> required fields, types, unknown fields. Values such as durations, numbers as text or paths are checked in <code>Execute</code>.</li>
+            <li>Take <strong>durations</strong> as a <code>string</code> and convert them in <code>Execute</code> with <code>model.Duration(s).Value()</code>.</li>
+            <li><strong>Actions without configuration</strong> reject every field (<code>len(with) &gt; 0</code> → error); template: <code>core/dummy.go</code>.</li>
+            <li><strong>Description</strong> (<code>Description</code>): a short English sentence without a full stop; later shown in the editor's palette.</li>
+            <li>Comment above the definition: what the action does, special cases, new configuration fields – later the basis for the editor schema.</li>
+          </ul>
+          <div class="code">
+  <div class="code-head"><span>internal/actions/core/dummy.go – action without configuration</span><button class="copy-btn" type="button" data-copy-from="code-14"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-14"><code class="lang-go"><span class="tok-k">package</span> core
+
+<span class="tok-k">import</span> (
+	<span class="tok-s">"context"</span>
+	<span class="tok-s">"errors"</span>
+
+	<span class="tok-s">"github.com/runnelhq/runnel/internal/action"</span>
+)
+
+<span class="tok-c">// core.dummy does nothing and always succeeds. It serves as a collection point in the</span>
+<span class="tok-c">// design: several branches lead into the dummy (with the join mode of choice, e.g.</span>
+<span class="tok-c">// join: all or first), and the following steps hang off the dummy only. When the</span>
+<span class="tok-c">// branches change, the following steps keep their links (as known from Apache Hop).</span>
+<span class="tok-k">var</span> dummyDefinition = action.Definition{
+	Type:        <span class="tok-s">"core.dummy"</span>,
+	Description: <span class="tok-s">"Does nothing; collects branches into one point"</span>,
+	New:         newDummy,
+}
+
+<span class="tok-k">type</span> dummy <span class="tok-k">struct</span>{}
+
+<span class="tok-k">func</span> newDummy(with <span class="tok-k">map</span>[string]any) (action.Action, error) {
+	<span class="tok-k">if</span> len(with) &gt; <span class="tok-n">0</span> {
+		<span class="tok-k">return</span> <span class="tok-k">nil</span>, errors.New(<span class="tok-s">"core.dummy has no configuration"</span>)
+	}
+	<span class="tok-k">return</span> dummy{}, <span class="tok-k">nil</span>
+}
+
+<span class="tok-k">func</span> (dummy) Execute(context.Context, *action.ExecContext) (action.Result, error) {
+	<span class="tok-k">return</span> action.Result{}, <span class="tok-k">nil</span>
+}</code></pre>
+</div>
+
+          <h2 id="execute">5. Executing (<code>Execute</code>)</h2>
+          <div class="code">
+  <div class="code-head"><span>Example: file.copy</span><button class="copy-btn" type="button" data-copy-from="code-15"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-15"><code class="lang-go"><span class="tok-k">func</span> (a *copyAction) Execute(ctx context.Context, ec *action.ExecContext) (action.Result, error) {
+	ec.Logf(slog.LevelDebug, <span class="tok-s">"copying %s to %s"</span>, a.Source, a.Target)
+	…
+	<span class="tok-k">if</span> err := ctx.Err(); err != <span class="tok-k">nil</span> {
+		<span class="tok-k">return</span> action.Result{}, err
+	}
+	ec.Logf(slog.LevelInfo, <span class="tok-s">"copied %d files"</span>, n)
+	<span class="tok-k">return</span> action.Result{}, <span class="tok-k">nil</span>
+}</code></pre>
+</div>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Topic</th><th>Rule</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Cancellation and timeout</th><td>Pass <code>ctx</code> to every blocking call (HTTP, DB, processes) or check <code>ctx.Err()</code> regularly; return <code>ctx.Err()</code> when cancelled. The contract test checks that an action ends when the run is cancelled.</td></tr>
+              <tr><th scope="row">Errors</th><td>A returned error means “failed” → failure links, retry. Write messages for users: what, where, why – in English, no stack trace, e.g. <code>cannot copy "a.csv" to "D:\out": access denied</code>.</td></tr>
+              <tr><th scope="row">No panics</th><td>Return errors, never <code>panic</code>; don't change global state.</td></tr>
+              <tr><th scope="row">Log</th><td><code>ec.Log</code> / <code>ec.Logf</code>: <code>Info</code> for the result (one line), <code>Debug</code> for details (visible with <code>-v</code>), <code>Warn</code> for anything notable that is not an error.</td></tr>
+              <tr><th scope="row">Secrets</th><td>Never log passwords, tokens or <code>${secret:…}</code> values, and keep them out of error messages.</td></tr>
+              <tr><th scope="row"><code>Result.End</code></th><td>Only for actions that end the workflow (<code>core.success</code>, <code>core.abort</code>); otherwise an empty <code>Result</code>.</td></tr>
+              <tr><th scope="row">Output data</th><td><span class="soon">coming with S08</span> Structured results (e.g. file list, status code) for subsequent actions via <code>result.output</code>.</td></tr>
+              <tr><th scope="row">Repeatability</th><td>An action can be repeated (<code>retry</code>, loops) and should behave sensibly when called again – e.g. overwrite the target file or report clearly.</td></tr>
+              <tr><th scope="row">Concurrency</th><td>Several instances can run at once (parallel branches, <code>join: each</code>); no shared mutable variables.</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="windows-en">6. Windows specifics</h2>
+          <p>Runnel is Windows first. Actions that work with files, processes or the network take care of:</p>
+          <ul>
+            <li><strong>Paths:</strong> <code>path/filepath</code> instead of <code>path</code>; drives (<code>D:\</code>), UNC paths (<code>\\server\share\…</code>), spaces, long paths (&gt; 260 characters).</li>
+            <li><strong>Case:</strong> file names are not case-sensitive on Windows.</li>
+            <li><strong>Locked files:</strong> report files opened by another program in an understandable way.</li>
+            <li><strong>Encodings:</strong> text files may be UTF-8 (with or without BOM), UTF-16 or Windows-1252.</li>
+            <li><strong>Processes:</strong> don't build arguments through a shell (no injection); end child processes on cancellation.</li>
+          </ul>
+
+          <h2 id="tests-en">7. Tests</h2>
+          <div class="code">
+  <div class="code-head"><span>Example: file.copy</span><button class="copy-btn" type="button" data-copy-from="code-16"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-16"><code class="lang-go"><span class="tok-k">func</span> TestCopy(t *testing.T) {
+	dir := t.TempDir()                       <span class="tok-c">// never real paths</span>
+	…
+	a := actiontest.New(t, copyDefinition, <span class="tok-k">map</span>[string]any{<span class="tok-s">"source"</span>: src, <span class="tok-s">"target"</span>: dst})
+	res, logs, err := actiontest.Execute(context.Background(), a)
+	…
+}
+
+<span class="tok-k">func</span> TestCopyConfig(t *testing.T) {
+	actiontest.ConfigError(t, copyDefinition, <span class="tok-k">nil</span>, <span class="tok-s">`missing required field "source"`</span>)
+}</code></pre>
+</div>
+          <p>Required:</p>
+          <ul>
+            <li><strong>Configuration errors</strong> (missing required fields, wrong values) with <code>actiontest.ConfigError</code>.</li>
+            <li>The <strong>success case</strong> and the most important <strong>failure cases</strong> of <code>Execute</code>, including the message text.</li>
+            <li><strong>Cancellation</strong> for actions that can run for a while (<code>context.WithCancel</code> / <code>WithTimeout</code>).</li>
+            <li><strong>Contract test:</strong> if the action has required fields, add a sample configuration to <code>samples</code> in <code>TestContractCancellation</code> (<code>internal/actions/actions_test.go</code>) – otherwise the test complains.</li>
+            <li>Only <code>t.TempDir()</code> and local test servers (<code>httptest</code>) – no dependency on the network or machine names.</li>
+            <li>Tests must not expect the <strong>complete list</strong> of action types; it grows with every new action.</li>
+            <li>Tests must run on Linux and Windows – CI checks both.</li>
+          </ul>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Helper from <code>actiontest</code></th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>New(t, def, with)</code></td><td>Creates the action; a configuration error fails the test.</td></tr>
+              <tr><td><code>ConfigError(t, def, with, want)</code></td><td>Expects <code>New</code> to fail with a message containing <code>want</code>.</td></tr>
+              <tr><td><code>Execute(ctx, a)</code></td><td>Runs the action (run ID <code>run</code>, action ID <code>act</code>) and returns the result, log messages and error.</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="docs-en">8. Docs and example in the same PR</h2>
+          <ul>
+            <li>Mark the component list in the <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md#12-mitgelieferte-bausteine-zielumfang">concept, ch. 12</a> or the roadmap step as done.</li>
+            <li>Briefly describe new configuration fields in the comment above the definition.</li>
+            <li>If useful, add an example workflow under <code>examples/</code>; it is checked by <code>internal/cli/validate_test.go</code>. A new example changes the number of checked files: adjust the expectation in <code>TestValidateExamples</code>, run <code>go test ./internal/cli -update</code> and review the golden-file diff.</li>
+          </ul>
+
+          <h2 id="checklist">9. Pull request checklist</h2>
+          <ul class="checklist">
+            <li>Type name in the matching reserved namespace; for a new namespace: <code>namespaces.go</code>, <code>register.go</code>, <code>actions.go</code></li>
+            <li>One file per action, tests next to it, entry in <code>register.go</code></li>
+            <li>Configuration via <code>DecodeConfig</code>; <code>New</code> only checks structure, values are checked in <code>Execute</code></li>
+            <li><code>ctx</code> is respected (cancellation, timeout); no panics; no secrets in the log</li>
+            <li>Understandable English error messages</li>
+            <li>Tests: configuration, success, failure, cancellation; sample configuration in the contract test if needed</li>
+            <li><code>make lint</code> and <code>make test</code> pass</li>
+            <li>Docs and, if needed, example updated</li>
+          </ul>
+
+          <h2 id="template">Template: <code>core.wait</code></h2>
+          <p>The complete action from the repository – short enough to copy, and it shows every rule: required field in <code>New</code>, duration converted only in <code>Execute</code>, cancellation via <code>ctx.Done()</code>.</p>
+          <div class="code">
+  <div class="code-head"><span>internal/actions/core/wait.go</span><button class="copy-btn" type="button" data-copy-from="code-17"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-17"><code class="lang-go"><span class="tok-k">package</span> core
+
+<span class="tok-k">import</span> (
+	<span class="tok-s">"context"</span>
+	<span class="tok-s">"errors"</span>
+	<span class="tok-s">"log/slog"</span>
+	<span class="tok-s">"time"</span>
+
+	<span class="tok-s">"github.com/runnelhq/runnel/internal/action"</span>
+	<span class="tok-s">"github.com/runnelhq/runnel/internal/model"</span>
+)
+
+<span class="tok-c">// core.wait waits for a given time; it ends early when the run is cancelled.</span>
+<span class="tok-k">var</span> waitDefinition = action.Definition{
+	Type:        <span class="tok-s">"core.wait"</span>,
+	Description: <span class="tok-s">"Waits for a given time"</span>,
+	New:         newWait,
+}
+
+<span class="tok-k">type</span> wait <span class="tok-k">struct</span> {
+	Duration string <span class="tok-s">`json:"duration"`</span>
+}
+
+<span class="tok-k">func</span> newWait(with <span class="tok-k">map</span>[string]any) (action.Action, error) {
+	a := &amp;wait{}
+	<span class="tok-k">if</span> err := action.DecodeConfig(with, a); err != <span class="tok-k">nil</span> {
+		<span class="tok-k">return</span> <span class="tok-k">nil</span>, err
+	}
+	<span class="tok-k">if</span> a.Duration == <span class="tok-s">""</span> {
+		<span class="tok-k">return</span> <span class="tok-k">nil</span>, errors.New(<span class="tok-s">`missing required field "duration"`</span>)
+	}
+	<span class="tok-k">return</span> a, <span class="tok-k">nil</span>
+}
+
+<span class="tok-k">func</span> (a *wait) Execute(ctx context.Context, ec *action.ExecContext) (action.Result, error) {
+	d, err := model.Duration(a.Duration).Value()
+	<span class="tok-k">if</span> err != <span class="tok-k">nil</span> {
+		<span class="tok-k">return</span> action.Result{}, err
+	}
+	ec.Logf(slog.LevelDebug, <span class="tok-s">"waiting %s"</span>, d)
+	t := time.NewTimer(d)
+	<span class="tok-k">defer</span> t.Stop()
+	<span class="tok-k">select</span> {
+	<span class="tok-k">case</span> &lt;-t.C:
+		<span class="tok-k">return</span> action.Result{}, <span class="tok-k">nil</span>
+	<span class="tok-k">case</span> &lt;-ctx.Done():
+		<span class="tok-k">return</span> action.Result{}, ctx.Err()
+	}
+}</code></pre>
+</div>
+          <div class="code">
+  <div class="code-head"><span>internal/actions/core/wait_test.go</span><button class="copy-btn" type="button" data-copy-from="code-18"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-18"><code class="lang-go"><span class="tok-k">package</span> core
+
+<span class="tok-k">import</span> (
+	<span class="tok-s">"context"</span>
+	<span class="tok-s">"errors"</span>
+	<span class="tok-s">"strings"</span>
+	<span class="tok-s">"testing"</span>
+	<span class="tok-s">"time"</span>
+
+	<span class="tok-s">"github.com/runnelhq/runnel/internal/actions/actiontest"</span>
+)
+
+<span class="tok-k">func</span> TestWaitConfig(t *testing.T) {
+	actiontest.ConfigError(t, waitDefinition, <span class="tok-k">nil</span>, <span class="tok-s">`missing required field "duration"`</span>)
+}
+
+<span class="tok-k">func</span> TestWait(t *testing.T) {
+	a := actiontest.New(t, waitDefinition, <span class="tok-k">map</span>[string]any{<span class="tok-s">"duration"</span>: <span class="tok-s">"20ms"</span>})
+	start := time.Now()
+	<span class="tok-k">if</span> _, _, err := actiontest.Execute(context.Background(), a); err != <span class="tok-k">nil</span> || time.Since(start) &lt; <span class="tok-n">20</span>*time.Millisecond {
+		t.Errorf(<span class="tok-s">"returned after %v, err %v"</span>, time.Since(start), err)
+	}
+
+	a = actiontest.New(t, waitDefinition, <span class="tok-k">map</span>[string]any{<span class="tok-s">"duration"</span>: <span class="tok-s">"soon"</span>})
+	<span class="tok-k">if</span> _, _, err := actiontest.Execute(context.Background(), a); err == <span class="tok-k">nil</span> || !strings.Contains(err.Error(), <span class="tok-s">"invalid duration"</span>) {
+		t.Errorf(<span class="tok-s">"invalid duration: %v"</span>, err)
+	}
+}
+
+<span class="tok-k">func</span> TestWaitCancelled(t *testing.T) {
+	a := actiontest.New(t, waitDefinition, <span class="tok-k">map</span>[string]any{<span class="tok-s">"duration"</span>: <span class="tok-s">"1h"</span>})
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	<span class="tok-k">if</span> _, _, err := actiontest.Execute(ctx, a); !errors.Is(err, context.Canceled) {
+		t.Errorf(<span class="tok-s">"cancelled wait: %v"</span>, err)
+	}
+}</code></pre>
+</div>
+        </article>
+      </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <svg viewBox="0 0 204 64" role="img" aria-label="Runnel"><use href="#logo"/></svg>
+        <p data-i18n="footer.claim">Leicht. Lokal. Im Fluss. Workflows und Datenintegration für Windows.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.product">Produkt</h4>
+        <ul>
+          <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/releases" data-i18n="footer.releases">Releases</a></li>
+          <li><a href="../index.html#roadmap">Roadmap</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.docs">Dokumentation</h4>
+        <ul>
+          <li><a href="../docs/" data-i18n="footer.devdocs">Entwicklerdoku</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md" data-i18n="footer.concept">Konzept</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/docs/adr" data-i18n="footer.adr">Entscheidungen (ADR)</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/design" data-i18n="footer.design">Corporate Design</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.project">Projekt</h4>
+        <ul>
+          <li><a href="https://github.com/runnelhq/runnel">GitHub</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/issues" data-i18n="footer.issues">Fehler melden</a></li>
+          <li><a href="../impressum.html" data-i18n="footer.imprint">Impressum</a></li>
+          <li><a href="../datenschutz.html" data-i18n="footer.privacy">Datenschutz</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n="footer.copy">© 2026 The Runnel authors · MIT-Lizenz</span>
+      <span data-i18n="footer.local">Diese Seite lädt keine externen Schriften oder Tracker.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/site.js"></script>
+</body>
+</html>

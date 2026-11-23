@@ -1,0 +1,4 @@
+internal/actions/<namespace>/
+  register.go          # add one line per action
+  <name>.go            # the action
+  <name>_test.go       # its tests

@@ -14,6 +14,7 @@ window.RUNNEL_I18N = {
     "nav.modes": "Operation",
     "nav.compare": "Comparison",
     "nav.roadmap": "Roadmap",
+    "nav.docs": "Docs",
     "lang.label": "Language",
     "cta.download": "Download",
     "cta.github": "View on GitHub",
@@ -25,10 +26,7 @@ window.RUNNEL_I18N = {
     "hero.title": "Lightweight. Local.<br><em>Flowing.</em>",
     "hero.lead": "Workflows and data integration for Windows – one executable, no runtime, no database. Design visually in the editor, run via CLI, server or Windows service.",
     "hero.meta": "For Windows and Linux (amd64) · <span class=\"nw\"><code>runnel.exe</code> &lt; 40 MB</span>",
-    "hero.termLabel": "Sample output of runnel run",
-    "term.rows": "rows  ",
-    "term.warn": "Field \"plz\" is not declared",
-    "term.done": "Run succeeded",
+    "hero.termLabel": "Output of runnel run for the hello example",
 
     "facts.size.label": "File size",
     "facts.size": "one executable, batteries included",
@@ -74,7 +72,6 @@ window.RUNNEL_I18N = {
     "modes.title": "One program, six ways to run it",
     "modes.lead": "From a one-off run in Task Scheduler to 24/7 operation as a Windows service – always the same <code>runnel.exe</code>.",
     "modes.now": "Available",
-    "modes.v01": "from v0.1",
     "modes.v03": "from v0.3",
     "modes.v04": "from v0.4",
     "modes.v05": "from v0.5",
@@ -127,7 +124,7 @@ window.RUNNEL_I18N = {
     "rm.planned": "planned",
     "rm.1.title": "Runner core",
     "rm.1.text": "Workflows with file and HTTP steps run via CLI and Windows Task Scheduler.",
-    "rm.1.progress": "5 of 13 steps done",
+    "rm.1.progress": "14 of 19 steps done",
     "rm.2.title": "Pipelines",
     "rm.2.text": "ETL with CSV, JSON and databases (SQL Server, PostgreSQL, SQLite) via CLI.",
     "rm.3.title": "Server and editor",
@@ -146,6 +143,7 @@ window.RUNNEL_I18N = {
     "footer.product": "Product",
     "footer.releases": "Releases",
     "footer.docs": "Documentation",
+    "footer.devdocs": "Developer docs",
     "footer.concept": "Concept (German)",
     "footer.adr": "Decisions (ADR)",
     "footer.design": "Corporate design",
@@ -155,11 +153,6 @@ window.RUNNEL_I18N = {
     "footer.privacy": "Privacy",
     "footer.copy": "© 2026 The Runnel authors · MIT license",
     "footer.local": "This site loads no external fonts or trackers.",
-
-    "meta.title.imprint": "Legal notice – Runnel",
-    "meta.description.imprint": "Legal notice and provider identification for the Runnel website.",
-    "meta.title.privacy": "Privacy – Runnel",
-    "meta.description.privacy": "Privacy policy of the Runnel website: no cookies, no tracking, hosted on GitHub Pages.",
     "legal.placeholderNote": "Draft with placeholders. Fill in the marked details and have the text legally reviewed before publishing."
   }
 };

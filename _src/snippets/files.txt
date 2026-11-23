@@ -1,0 +1,4 @@
+internal/actions/<namensraum>/
+  register.go          # eine Zeile je Action ergänzen
+  <name>.go            # die Action
+  <name>_test.go       # ihre Tests
