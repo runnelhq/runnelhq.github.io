@@ -553,3 +553,6 @@ a.docs-card:hover { border-color: var(--ring); box-shadow: var(--rn-shadow-sm); 
   .lifecycle li + li::before { left: 22px; top: -6px; transform: rotate(135deg); }
   .prose h2 { margin-top: 44px; }
 }
+
+/* Terminal: lange Log-Zeilen umbrechen wie in einer echten Konsole */
+.terminal pre { white-space: pre-wrap; overflow-wrap: anywhere; }

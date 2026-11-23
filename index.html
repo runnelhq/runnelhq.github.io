@@ -111,22 +111,20 @@
           <p class="meta" data-i18n="hero.meta">Für Windows und Linux (amd64) · <span class="nw"><code>runnel.exe</code> &lt; 40 MB</span></p>
         </div>
 
-        <div class="terminal" role="figure" aria-label="Beispielausgabe von runnel run" data-i18n-attr="aria-label:hero.termLabel">
+        <div class="terminal" role="figure" aria-label="Ausgabe von runnel run für das Beispiel hello" data-i18n-attr="aria-label:hero.termLabel">
           <div class="terminal-bar">
             <span>PowerShell</span>
-            <button class="copy-btn" type="button" data-copy="runnel run nightly.workflow.yaml --env prod">
+            <button class="copy-btn" type="button" data-copy=".\runnel.exe run --env prod examples\hello\workflows\hello.workflow.yaml">
               <svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span>
             </button>
           </div>
-<pre><span class="t-prompt">&gt;</span> <span class="t-cmd">runnel run nightly.workflow.yaml --env prod</span>
-
-<span class="t-head">runnel run nightly.workflow.yaml</span>  <span class="t-dim">env=prod</span>
-<span class="t-dim">14:02:09</span>  <span class="t-ok">✔</span> start
-<span class="t-dim">14:02:11</span>  <span class="t-ok">✔</span> download  <span class="t-dim">  3 Dateien    2,1 s</span>
-<span class="t-dim">14:02:13</span>  <span class="t-ok">✔</span> load      <span class="t-dim">12.430 <span data-i18n="term.rows">Zeilen</span>   1,8 s</span>
-<span class="t-dim">14:02:13</span>  <span class="t-warn">⚠</span> <span data-i18n="term.warn">Feld "plz" ist nicht deklariert</span>
-<span class="t-dim">14:02:14</span>  <span class="t-ok">✔</span> archive   <span class="t-dim">              0,4 s</span>
-<span class="t-dim">14:02:14</span>  <span class="t-ok">✔</span> <span data-i18n="term.done">Lauf erfolgreich</span>  <span class="t-dim">5,2 s · exit 0</span></pre>
+<pre><span class="t-prompt">&gt;</span> <span class="t-cmd">.\runnel.exe run --env prod examples\hello\workflows\hello.workflow.yaml</span>
+<span class="t-dim">11:16:43.537</span> INFO  workflow "hello" started (environment prod), <span class="t-dim">run 01M841YQWHHS7NSWGNB9VHSAS7</span>
+<span class="t-dim">11:16:43.537</span> INFO  <span class="t-head">[greet]</span> Hello, Production! (production on SRV01, files in \\fileserver\exchange\runnel-hello)
+<span class="t-dim">11:16:44.538</span> INFO  output MESSAGE = "Hello, Production!"
+<span class="t-dim">11:16:44.538</span> INFO  workflow "hello" <span class="t-ok">succeeded</span> in 1s
+<span class="t-prompt">&gt;</span> <span class="t-cmd">$LASTEXITCODE</span>
+0</pre>
         </div>
       </div>
 
@@ -218,32 +216,45 @@
       <div class="demo">
         <div class="demo-code">
           <div class="demo-pane-head">
-            <span>examples/hello/hello.workflow.yaml</span>
+            <span>examples/hello/workflows/hello.workflow.yaml</span>
             <button class="copy-btn" type="button" data-copy-from="yaml-hello">
               <svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span>
             </button>
           </div>
-<pre id="yaml-hello"><span class="y-k">kind</span>: Workflow
-<span class="y-k">apiVersion</span>: runnel/v1
-<span class="y-k">name</span>: hello
-<span class="y-k">parameters</span>:
-  - <span class="y-k">name</span>: GREETING
-    <span class="y-k">default</span>: <span class="y-s">Hello from Runnel</span>
-<span class="y-k">actions</span>:
-  - { <span class="y-k">id</span>: start,  <span class="y-k">type</span>: core.start }
-  - <span class="y-k">id</span>: greet
-    <span class="y-k">type</span>: core.log
-    <span class="y-k">with</span>: { <span class="y-k">message</span>: <span class="y-v">"${GREETING}"</span> }
-  - <span class="y-k">id</span>: pause
-    <span class="y-k">type</span>: core.wait
-    <span class="y-k">with</span>: { <span class="y-k">duration</span>: <span class="y-s">2s</span> }
-  - { <span class="y-k">id</span>: done,   <span class="y-k">type</span>: core.success }
-  - { <span class="y-k">id</span>: failed, <span class="y-k">type</span>: core.abort }
-<span class="y-k">links</span>:
-  - { <span class="y-k">from</span>: start, <span class="y-k">to</span>: greet }
-  - { <span class="y-k">from</span>: greet, <span class="y-k">to</span>: pause }
-  - { <span class="y-k">from</span>: pause, <span class="y-k">to</span>: done }
-  - { <span class="y-k">from</span>: pause, <span class="y-k">to</span>: failed, <span class="y-k">when</span>: failure }</pre>
+<pre id="yaml-hello"><span class="tok-c"># A small, valid workflow. Check it with:  runnel validate examples/hello</span>
+<span class="tok-t">kind</span>: Workflow
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: hello
+<span class="tok-t">description</span>: Greets, waits a moment and reports success or failure.
+<span class="tok-t">parameters</span>:
+  - <span class="tok-t">name</span>: GREETING
+    <span class="tok-t">description</span>: Word to greet with
+    <span class="tok-t">enum</span>: [Hello, Hi, Moin]
+    <span class="tok-t">default</span>: Hello
+<span class="tok-t">outputs</span>:
+  - <span class="tok-t">name</span>: MESSAGE
+    <span class="tok-t">description</span>: The greeting that was logged
+    <span class="tok-t">value</span>: <span class="tok-s">"${GREETING}, ${TARGET}!"</span>
+<span class="tok-t">actions</span>:
+  - <span class="tok-t">id</span>: start
+    <span class="tok-t">type</span>: core.start
+  - <span class="tok-t">id</span>: greet
+    <span class="tok-t">type</span>: core.log
+    <span class="tok-t">with</span>:
+      <span class="tok-t">message</span>: <span class="tok-s">"${GREETING}, ${TARGET}! (${STAGE} on ${env:COMPUTERNAME}, files in ${OUTBOX})"</span>
+  - <span class="tok-t">id</span>: pause
+    <span class="tok-t">type</span>: core.wait
+    <span class="tok-t">with</span>:
+      <span class="tok-t">duration</span>: 1s
+  - <span class="tok-t">id</span>: done
+    <span class="tok-t">type</span>: core.success
+  - <span class="tok-t">id</span>: failed
+    <span class="tok-t">type</span>: core.abort
+<span class="tok-t">links</span>:
+  - { <span class="tok-t">from</span>: start, <span class="tok-t">to</span>: greet }
+  - { <span class="tok-t">from</span>: greet, <span class="tok-t">to</span>: pause }
+  - { <span class="tok-t">from</span>: pause, <span class="tok-t">to</span>: done }
+  - { <span class="tok-t">from</span>: pause, <span class="tok-t">to</span>: failed, <span class="tok-t">when</span>: failure }</pre>
         </div>
 
         <div class="demo-canvas">
@@ -310,7 +321,7 @@
               </g>
               <!-- Zeitangabe am laufenden Knoten -->
               <rect class="counter-bg" x="420" y="128" width="60" height="20" rx="10"/>
-              <text class="counter" x="450" y="138.5">1,2 / 2 s</text>
+              <text class="counter" x="450" y="138.5">0,6 / 1 s</text>
             </svg>
           </div>
         </div>

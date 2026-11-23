@@ -26,10 +26,7 @@ window.RUNNEL_I18N = {
     "hero.title": "Lightweight. Local.<br><em>Flowing.</em>",
     "hero.lead": "Workflows and data integration for Windows – one executable, no runtime, no database. Design visually in the editor, run via CLI, server or Windows service.",
     "hero.meta": "For Windows and Linux (amd64) · <span class=\"nw\"><code>runnel.exe</code> &lt; 40 MB</span>",
-    "hero.termLabel": "Sample output of runnel run",
-    "term.rows": "rows  ",
-    "term.warn": "Field \"plz\" is not declared",
-    "term.done": "Run succeeded",
+    "hero.termLabel": "Output of runnel run for the hello example",
 
     "facts.size.label": "File size",
     "facts.size": "one executable, batteries included",
