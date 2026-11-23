@@ -98,8 +98,8 @@
           <h2 id="beispiel">Beispiel</h2>
           <p>Wartet auf die Kundendatei des Vortags, lädt sie über eine Pipeline, archiviert sie – und meldet einen Fehler, wenn die Datei nicht kommt oder der Import scheitert. Geprüft mit <code>runnel validate</code>.</p>
           <div class="code">
-  <div class="code-head"><span>workflows/nightly-import.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-179"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-179"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
+  <div class="code-head"><span>workflows/nightly-import.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-183"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-183"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: nightly-import
 <span class="tok-t">description</span>: Imports the customers of the previous day
@@ -185,8 +185,8 @@
 
           <h2 id="links">Links und Bedingungen</h2>
 <div class="code">
-  <div class="code-head"><span>links</span><button class="copy-btn" type="button" data-copy-from="code-183"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-183"><code class="lang-yaml"><span class="tok-t">links</span>:
+  <div class="code-head"><span>links</span><button class="copy-btn" type="button" data-copy-from="code-187"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-187"><code class="lang-yaml"><span class="tok-t">links</span>:
   - { <span class="tok-t">from</span>: start, <span class="tok-t">to</span>: fetch }                       <span class="tok-c"># when: success (Standard)</span>
   - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: report, <span class="tok-t">when</span>: failure }
   - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: cleanup, <span class="tok-t">when</span>: always }
@@ -235,8 +235,8 @@
           <h2 id="foreach">Wiederholung je Eintrag (<code>forEach</code>)</h2>
           <p>Jede Action kann für jeden Eintrag einer Liste laufen – etwa eine Pipeline je Datei. Der aktuelle Eintrag heißt <code>row</code>.</p>
           <div class="code">
-  <div class="code-head"><span>workflows/each.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-180"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-180"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
+  <div class="code-head"><span>workflows/each.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-184"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-184"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: each-file
 <span class="tok-t">actions</span>:
@@ -289,8 +289,8 @@
           <h2 id="example">Example</h2>
           <p>Waits for the previous day's customer file, loads it through a pipeline, archives it – and reports an error if the file doesn't arrive or the import fails. Checked with <code>runnel validate</code>.</p>
           <div class="code">
-  <div class="code-head"><span>workflows/nightly-import.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-181"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-181"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
+  <div class="code-head"><span>workflows/nightly-import.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-185"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-185"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: nightly-import
 <span class="tok-t">description</span>: Imports the customers of the previous day
@@ -376,8 +376,8 @@
 
           <h2 id="links-en">Links and conditions</h2>
 <div class="code">
-  <div class="code-head"><span>links</span><button class="copy-btn" type="button" data-copy-from="code-184"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-184"><code class="lang-yaml"><span class="tok-t">links</span>:
+  <div class="code-head"><span>links</span><button class="copy-btn" type="button" data-copy-from="code-188"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-188"><code class="lang-yaml"><span class="tok-t">links</span>:
   - { <span class="tok-t">from</span>: start, <span class="tok-t">to</span>: fetch }                       <span class="tok-c"># when: success (default)</span>
   - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: report, <span class="tok-t">when</span>: failure }
   - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: cleanup, <span class="tok-t">when</span>: always }
@@ -426,8 +426,8 @@
           <h2 id="foreach-en">Repetition per entry (<code>forEach</code>)</h2>
           <p>Any action can run for each entry of a list – e.g. a pipeline per file. The current entry is called <code>row</code>.</p>
           <div class="code">
-  <div class="code-head"><span>workflows/each.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-182"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-182"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
+  <div class="code-head"><span>workflows/each.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-186"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-186"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: each-file
 <span class="tok-t">actions</span>:

@@ -115,8 +115,8 @@
             <li><code>runnel triggers D:\flows</code> listet alle Trigger mit ihrem nächsten Zeitpunkt; <code>runnel validate</code> prüft Zeitplan, Ziel, Environment und Parameter.</li>
           </ul>
 <div class="code">
-  <div class="code-head"><span>runnel triggers</span><button class="copy-btn" type="button" data-copy-from="code-175"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-175"><code class="lang-bash">NAME        TYPE      SCHEDULE                      TARGET                                  NEXT
+  <div class="code-head"><span>runnel triggers</span><button class="copy-btn" type="button" data-copy-from="code-179"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-179"><code class="lang-bash">NAME        TYPE      SCHEDULE                      TARGET                                  NEXT
 import-api  http      POST /hooks/import/{DAY}      workflows/nightly-import.workflow.yaml  on request
 every15     interval  every 15m                     workflows/each.workflow.yaml            disabled
 inbox       file      new customers_*.csv in inbox  pipelines/customers.pipeline.yaml       on new files
@@ -125,8 +125,8 @@ nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.wor
 
           <h2 id="cron">Zeitplan (<code>cron</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>triggers/nightly.yaml</span><button class="copy-btn" type="button" data-copy-from="code-167"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-167"><code class="lang-yaml"><span class="tok-t">kind</span>: Trigger
+  <div class="code-head"><span>triggers/nightly.yaml</span><button class="copy-btn" type="button" data-copy-from="code-171"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-171"><code class="lang-yaml"><span class="tok-t">kind</span>: Trigger
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: nightly
 <span class="tok-t">description</span>: Imports every weekday at 02:00
@@ -145,8 +145,8 @@ nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.wor
 
           <h2 id="interval">Intervall (<code>interval</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>triggers/every15.yaml</span><button class="copy-btn" type="button" data-copy-from="code-168"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-168"><code class="lang-yaml"><span class="tok-t">kind</span>: Trigger
+  <div class="code-head"><span>triggers/every15.yaml</span><button class="copy-btn" type="button" data-copy-from="code-172"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-172"><code class="lang-yaml"><span class="tok-t">kind</span>: Trigger
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: every15
 <span class="tok-t">type</span>: interval
@@ -159,8 +159,8 @@ nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.wor
 
           <h2 id="file">Neue Dateien (<code>file</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>triggers/inbox.yaml</span><button class="copy-btn" type="button" data-copy-from="code-169"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-169"><code class="lang-yaml"><span class="tok-t">kind</span>: Trigger
+  <div class="code-head"><span>triggers/inbox.yaml</span><button class="copy-btn" type="button" data-copy-from="code-173"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-173"><code class="lang-yaml"><span class="tok-t">kind</span>: Trigger
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: inbox
 <span class="tok-t">type</span>: file
@@ -193,8 +193,8 @@ nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.wor
 
           <h2 id="http">HTTP (<code>http</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>triggers/api.yaml</span><button class="copy-btn" type="button" data-copy-from="code-170"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-170"><code class="lang-yaml"><span class="tok-t">kind</span>: Trigger
+  <div class="code-head"><span>triggers/api.yaml</span><button class="copy-btn" type="button" data-copy-from="code-174"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-174"><code class="lang-yaml"><span class="tok-t">kind</span>: Trigger
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: import-api
 <span class="tok-t">type</span>: http
@@ -218,12 +218,12 @@ nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.wor
             </tbody>
           </table></div>
 <div class="code">
-  <div class="code-head"><span>Aufruf (PowerShell)</span><button class="copy-btn" type="button" data-copy-from="code-176"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-176"><code class="lang-bash">curl.exe -X POST -H <span class="tok-s">"Authorization: Bearer $env:IMPORT_TOKEN"</span> http://127.0.0.1:7301/hooks/import/2026-11-22</code></pre>
+  <div class="code-head"><span>Aufruf (PowerShell)</span><button class="copy-btn" type="button" data-copy-from="code-180"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-180"><code class="lang-bash">curl.exe -X POST -H <span class="tok-s">"Authorization: Bearer $env:IMPORT_TOKEN"</span> http://127.0.0.1:7301/hooks/import/2026-11-22</code></pre>
 </div>
           <ul>
             <li><strong>Parameter</strong> kommen aus Pfad, Query und Body (JSON-Objekt oder Formular); bei gleichem Namen gilt Pfad vor Query vor Body. Feste <code>params</code> des Triggers gewinnen. Fehlt ein Pflichtparameter oder passt ein Typ nicht: <code>400</code>, ohne Lauf.</li>
-            <li><strong>Antwort aus dem Workflow</strong> (<code>response: run</code>): Die erste <code>http.respond</code>-Action antwortet mit Status, Headern und Body; ohne sie sind die <code>outputs</code> die Antwort (<code>200</code>), ein gescheiterter Lauf gibt <code>500</code>.</li>
+            <li><strong>Antwort aus dem Workflow</strong> (<code>response: run</code>): Die erste Action <code>http.response</code> antwortet mit Status, Headern und Body; ohne sie sind die <code>outputs</code> die Antwort (<code>200</code>), ein gescheiterter Lauf gibt <code>500</code>.</li>
             <li><strong>Antwort aus einer Pipeline:</strong> Der Transform <code>http.response</code> antwortet mit den Datensätzen als JSON. Ist das Ziel eine Pipeline, darf der Body eine JSON-Liste von Objekten sein; sie kommt über <code>core.from-result</code> als Datensätze an.</li>
             <li>In Ausdrücken steht die Anfrage als <code>request</code> bereit: <code>request.method</code>, <code>.path</code>, <code>.headers</code>, <code>.query</code>, <code>.body</code>, <code>.client</code>.</li>
             <li>HTTP-Trigger laufen auf einem eigenen Listener, Standard <code>127.0.0.1:7301</code>. Im Netz nur mit HTTPS – siehe <a href="betrieb.html#netz">Betrieb</a>.</li>
@@ -256,8 +256,8 @@ nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.wor
             <li><code>runnel triggers D:\flows</code> lists all triggers with their next time; <code>runnel validate</code> checks schedule, target, environment and parameters.</li>
           </ul>
 <div class="code">
-  <div class="code-head"><span>runnel triggers</span><button class="copy-btn" type="button" data-copy-from="code-177"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-177"><code class="lang-bash">NAME        TYPE      SCHEDULE                      TARGET                                  NEXT
+  <div class="code-head"><span>runnel triggers</span><button class="copy-btn" type="button" data-copy-from="code-181"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-181"><code class="lang-bash">NAME        TYPE      SCHEDULE                      TARGET                                  NEXT
 import-api  http      POST /hooks/import/{DAY}      workflows/nightly-import.workflow.yaml  on request
 every15     interval  every 15m                     workflows/each.workflow.yaml            disabled
 inbox       file      new customers_*.csv in inbox  pipelines/customers.pipeline.yaml       on new files
@@ -266,8 +266,8 @@ nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.wor
 
           <h2 id="cron-en">Schedule (<code>cron</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>triggers/nightly.yaml</span><button class="copy-btn" type="button" data-copy-from="code-171"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-171"><code class="lang-yaml"><span class="tok-t">kind</span>: Trigger
+  <div class="code-head"><span>triggers/nightly.yaml</span><button class="copy-btn" type="button" data-copy-from="code-175"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-175"><code class="lang-yaml"><span class="tok-t">kind</span>: Trigger
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: nightly
 <span class="tok-t">description</span>: Imports every weekday at 02:00
@@ -286,8 +286,8 @@ nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.wor
 
           <h2 id="interval-en">Interval (<code>interval</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>triggers/every15.yaml</span><button class="copy-btn" type="button" data-copy-from="code-172"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-172"><code class="lang-yaml"><span class="tok-t">kind</span>: Trigger
+  <div class="code-head"><span>triggers/every15.yaml</span><button class="copy-btn" type="button" data-copy-from="code-176"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-176"><code class="lang-yaml"><span class="tok-t">kind</span>: Trigger
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: every15
 <span class="tok-t">type</span>: interval
@@ -300,8 +300,8 @@ nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.wor
 
           <h2 id="file-en">New files (<code>file</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>triggers/inbox.yaml</span><button class="copy-btn" type="button" data-copy-from="code-173"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-173"><code class="lang-yaml"><span class="tok-t">kind</span>: Trigger
+  <div class="code-head"><span>triggers/inbox.yaml</span><button class="copy-btn" type="button" data-copy-from="code-177"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-177"><code class="lang-yaml"><span class="tok-t">kind</span>: Trigger
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: inbox
 <span class="tok-t">type</span>: file
@@ -334,8 +334,8 @@ nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.wor
 
           <h2 id="http-en">HTTP (<code>http</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>triggers/api.yaml</span><button class="copy-btn" type="button" data-copy-from="code-174"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-174"><code class="lang-yaml"><span class="tok-t">kind</span>: Trigger
+  <div class="code-head"><span>triggers/api.yaml</span><button class="copy-btn" type="button" data-copy-from="code-178"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-178"><code class="lang-yaml"><span class="tok-t">kind</span>: Trigger
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: import-api
 <span class="tok-t">type</span>: http
@@ -359,12 +359,12 @@ nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.wor
             </tbody>
           </table></div>
 <div class="code">
-  <div class="code-head"><span>Calling it (PowerShell)</span><button class="copy-btn" type="button" data-copy-from="code-178"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-178"><code class="lang-bash">curl.exe -X POST -H <span class="tok-s">"Authorization: Bearer $env:IMPORT_TOKEN"</span> http://127.0.0.1:7301/hooks/import/2026-11-22</code></pre>
+  <div class="code-head"><span>Calling it (PowerShell)</span><button class="copy-btn" type="button" data-copy-from="code-182"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-182"><code class="lang-bash">curl.exe -X POST -H <span class="tok-s">"Authorization: Bearer $env:IMPORT_TOKEN"</span> http://127.0.0.1:7301/hooks/import/2026-11-22</code></pre>
 </div>
           <ul>
             <li><strong>Parameters</strong> come from path, query and body (JSON object or form); for the same name, path beats query beats body. The trigger's fixed <code>params</code> win. If a required parameter is missing or a type doesn't fit: <code>400</code>, no run.</li>
-            <li><strong>Response from the workflow</strong> (<code>response: run</code>): the first <code>http.respond</code> action answers with status, headers and body; without it the <code>outputs</code> are the response (<code>200</code>), a failed run returns <code>500</code>.</li>
+            <li><strong>Response from the workflow</strong> (<code>response: run</code>): the first action <code>http.response</code> answers with status, headers and body; without it the <code>outputs</code> are the response (<code>200</code>), a failed run returns <code>500</code>.</li>
             <li><strong>Response from a pipeline:</strong> the <code>http.response</code> transform answers with the records as JSON. If the target is a pipeline, the body may be a JSON list of objects; it arrives as records via <code>core.from-result</code>.</li>
             <li>In expressions the request is available as <code>request</code>: <code>request.method</code>, <code>.path</code>, <code>.headers</code>, <code>.query</code>, <code>.body</code>, <code>.client</code>.</li>
             <li>HTTP triggers run on their own listener, default <code>127.0.0.1:7301</code>. On the network only with HTTPS – see <a href="betrieb.html#network">Operation</a>.</li>

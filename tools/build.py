@@ -182,10 +182,12 @@ def blocks_reference(lang):
     if not path.exists():
         return ""
     catalog = json.loads(path.read_text(encoding="utf-8"))
+    both = dual_types(catalog)
     parts = []
     jump = []
     for kind, key in (("action", "actions"), ("transform", "transforms")):
-        links = "".join(f'<li><a href="#{kind[0]}-{d["type"].replace(".", "-")}-{lang}"><code>{html.escape(d["type"])}</code></a></li>'
+        links = "".join(f'<li{" class=\"is-dual\"" if d["type"] in both else ""}><a href="#{kind[0]}-{d["type"].replace(".", "-")}-{lang}"><code>{html.escape(d["type"])}</code>'
+                        + ('<span class="dual">A+T</span>' if d["type"] in both else "") + '</a></li>'
                         for d in sorted(catalog[key], key=lambda d: d["type"]))
         jump.append(f'<p class="chips-label">{t[key]}</p><ul class="ns-list ref-jump">{links}</ul>')
     parts.append("".join(jump))
@@ -221,6 +223,12 @@ def blocks_reference(lang):
                         "    " + line + "\n" for line in d["example"].rstrip("\n").split("\n"))
                     example = code_block(yaml_ex, "yaml", t["example"])
                 badges = ""
+                if d["type"] in both:
+                    other = "transform" if kind == "action" else "action"
+                    other_anchor = f'{other[0]}-{d["type"].replace(".", "-")}-{lang}'
+                    label = ("auch als Transform" if other == "transform" else "auch als Action") if lang == "de" \
+                        else ("also a transform" if other == "transform" else "also an action")
+                    badges += f'<a class="ref-badge ref-badge--dual" href="#{other_anchor}">A+T · {label}</a>'
                 if d.get("recordErrors"):
                     badges += f'<span class="ref-badge">{"Fehler-Link" if lang == "de" else "error link"}</span>'
                 if d.get("parallel"):
@@ -360,7 +368,13 @@ CATEGORY_COLOR = {
 }
 
 
+def dual_types(catalog):
+    """Typnamen, die es als Action und als Transform gibt (ADR 0013)."""
+    return {i["type"] for i in catalog["actions"]} & {i["type"] for i in catalog["transforms"]}
+
+
 def catalog_block(catalog):
+    both = dual_types(catalog)
     cols = []
     for kind, key in (("action", "actions"), ("transform", "transforms")):
         items = catalog[key]
@@ -372,16 +386,23 @@ def catalog_block(catalog):
                 continue
             color = CATEGORY_COLOR.get(cat, "allgemein")
             chips = "".join(
-                f'<li title="{html.escape(i["label"])}: {html.escape(i["description"])}">'
+                f'<li{" class=\"is-dual\"" if i["type"] in both else ""} title="{html.escape(i["label"])}: {html.escape(i["description"])}">'
                 f'<span class="tile" style="background:var(--rn-kategorie-{color})"></span>'
-                f'<code>{html.escape(i["type"])}</code></li>' for i in members)
+                f'<code>{html.escape(i["type"])}</code>'
+                + ('<span class="dual" aria-label="Action und Transform" data-i18n-attr="aria-label:blocks.dualLabel">A+T</span>' if i["type"] in both else "")
+                + '</li>' for i in members)
             groups.append(f'<div class="blocks-group"><h4 data-i18n="cat.{cat}">{CATEGORY_DE.get(cat, cat)}</h4><ul class="blocks-list">{chips}</ul></div>')
         title = "Actions" if kind == "action" else "Transforms"
         sub = "blocks.actions" if kind == "action" else "blocks.transforms"
         sub_de = "Schritte in Workflows" if kind == "action" else "Datensätze verarbeiten in Pipelines"
         cols.append(f'<div class="blocks-col"><h3>{title} <span class="count tnum">{len(items)}</span></h3>'
                     f'<p class="blocks-sub" data-i18n="{sub}">{sub_de}</p>{"".join(groups)}</div>')
-    return '<div class="blocks">' + "".join(cols) + "</div>"
+    legend = ""
+    if both:
+        names = ", ".join(f"<code>{html.escape(t)}</code>" for t in sorted(both))
+        legend = (f'<p class="blocks-legend"><span class="dual">A+T</span> <span data-i18n="blocks.dual">'
+                  f'Gibt es als Action und als Transform – mit eigenen Feldern je Art:</span> {names}</p>')
+    return '<div class="blocks">' + "".join(cols) + "</div>" + legend
 
 
 def update_catalog(index):

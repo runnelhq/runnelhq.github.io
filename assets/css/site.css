@@ -595,3 +595,12 @@ a.docs-card:hover { border-color: var(--ring); box-shadow: var(--rn-shadow-sm); 
 .ref-jump a { display: block; padding: 3px 9px; text-decoration: none; }
 .ref-jump a code { background: none !important; border: 0 !important; padding: 0 !important; color: var(--primary); font-size: 13px; }
 .ref-jump a:hover { background: var(--accent); border-radius: var(--rn-radius-sm); }
+
+/* Bausteine, die es als Action und als Transform gibt */
+.dual { display: inline-flex; align-items: center; margin-left: 6px; padding: 1px 5px; border-radius: var(--rn-radius-sm); border: 1px solid var(--ring); color: var(--accent-foreground); background: var(--accent); font: 600 10px/1.4 var(--rn-font-sans); letter-spacing: 0.04em; vertical-align: middle; }
+.blocks-list li.is-dual { border-color: var(--ring); }
+.blocks-legend { margin-top: 16px; font-size: 14px; color: var(--muted-foreground); }
+.blocks-legend .dual { margin-left: 0; margin-right: 4px; }
+.ref-item h4 .ref-badge--dual { text-decoration: none; border: 1px solid var(--ring); background: var(--accent); color: var(--accent-foreground); }
+.ref-item h4 .ref-badge--dual:hover { text-decoration: underline; }
+.ref-jump li.is-dual { border-color: var(--ring); }
