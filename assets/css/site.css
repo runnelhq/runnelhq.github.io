@@ -339,24 +339,6 @@ table.compare { width: 100%; min-width: 680px; border-collapse: collapse; font-s
 .compare thead .us { color: var(--primary); }
 .table-note { margin-top: 16px; font-size: 14px; color: var(--muted-foreground); max-width: 68ch; }
 
-/* ---------- Roadmap ---------- */
-.roadmap { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.phase { position: relative; padding: 24px; border-radius: var(--rn-radius-lg); background: var(--card); border: 1px solid var(--border); }
-.phase-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.phase-no { font: 500 13px/1 var(--rn-font-mono); color: var(--muted-foreground); }
-.phase h3 { margin-top: 12px; }
-.phase p { margin-top: 8px; font-size: 15px; color: var(--muted-foreground); }
-.status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: var(--rn-radius-sm); }
-.status--active { color: var(--accent-foreground); background: var(--accent); }
-.status--active::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--status-running); }
-.status--planned { color: var(--muted-foreground); background: var(--secondary); }
-.phase--active { border-color: var(--ring); box-shadow: 0 0 0 1px var(--ring); }
-.progress { margin-top: 16px; height: 4px; border-radius: 4px; background: var(--secondary); overflow: hidden; }
-.progress span { display: block; height: 100%; background: var(--status-running); border-radius: 4px; }
-.progress-label { margin-top: 8px; font-size: 13px; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
-@media (max-width: 960px) { .roadmap { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 600px) { .roadmap { grid-template-columns: 1fr; } }
-
 /* ---------- CTA ---------- */
 .cta { position: relative; overflow: hidden; background: var(--rn-tiefe-950); color: #fff; padding: 80px 0; }
 .cta .flow { position: absolute; top: 0; right: 0; height: 100%; width: min(40%, 480px); pointer-events: none; }
@@ -570,13 +552,6 @@ a.docs-card:hover { border-color: var(--ring); box-shadow: var(--rn-shadow-sm); 
 .blocks-list .tile { width: 16px; height: 16px; border-radius: var(--rn-radius-sm); flex: none; }
 .blocks-list code { font-size: 12.5px; color: var(--foreground); }
 @media (max-width: 860px) { .blocks { grid-template-columns: 1fr; } .blocks-col { padding: 22px; } }
-
-/* Roadmap: vier Spalten, erledigte Phasen */
-.roadmap { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.status--done { color: var(--success); background: var(--success-soft); }
-.status--done::before { content: "✔"; font-size: 11px; }
-@media (max-width: 1080px) { .roadmap { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 600px) { .roadmap { grid-template-columns: 1fr; } }
 
 /* ---------- Hinweis: KI-/Vibe-Coding-Projekt (im dunklen Hero) ---------- */
 .ai-note {
