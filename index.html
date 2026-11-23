@@ -108,7 +108,7 @@
             <a class="btn btn--primary" href="https://github.com/runnelhq/runnel/releases"><svg aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="cta.download">Herunterladen</span></a>
             <a class="btn btn--outline" href="https://github.com/runnelhq/runnel"><svg aria-hidden="true"><use href="#i-github"/></svg><span data-i18n="cta.github">Auf GitHub ansehen</span></a>
           </div>
-          <p class="meta" data-i18n="hero.meta">Für Windows und Linux (amd64) · <span class="nw"><code>runnel.exe</code> &lt; 40 MB</span></p>
+          <p class="meta" data-i18n="hero.meta">Für Windows und Linux (amd64) · eine <code>runnel.exe</code>, keine Installation nötig</p>
         </div>
 
         <div class="terminal" role="figure" aria-label="Ausgabe von runnel run für das Beispiel hello" data-i18n-attr="aria-label:hero.termLabel">
@@ -128,13 +128,13 @@
         </div>
       </div>
 
-      <dl class="facts">
-        <div class="fact"><dt class="sr-only" data-i18n="facts.size.label">Dateigröße</dt><dd style="margin:0"><strong>&lt; 40 MB</strong><span data-i18n="facts.size">eine exe, alles drin</span></dd></div>
-        <div class="fact"><dt class="sr-only" data-i18n="facts.start.label">Startzeit</dt><dd style="margin:0"><strong>&lt; 1 s</strong><span data-i18n="facts.start">vom Doppelklick bis zum Editor</span></dd></div>
-        <div class="fact"><dt class="sr-only" data-i18n="facts.ram.label">Speicher</dt><dd style="margin:0"><strong>&lt; 60 MB</strong><span data-i18n="facts.ram">RAM im Leerlauf</span></dd></div>
-        <div class="fact"><dt class="sr-only" data-i18n="facts.deps.label">Abhängigkeiten</dt><dd style="margin:0"><strong>0</strong><span data-i18n="facts.deps">Runtimes und Datenbanken</span></dd></div>
-      </dl>
-      <p class="facts-note" data-i18n="facts.note">Zielwerte aus dem Konzept für Version 1.0.</p>
+      <aside class="ai-note" aria-labelledby="ai-note-title">
+        <span class="ai-note-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="14" height="12" rx="3"/><path d="M12 3v4M9 12h.01M15 12h.01M9.5 16h5M2 12v3M22 12v3"/></svg></span>
+        <div>
+          <p class="ai-note-title" id="ai-note-title" data-i18n="ai.title">Ein Vibe-Coding-Projekt</p>
+          <p data-i18n="ai.text">Runnel entsteht überwiegend mit KI: Code, Tests und Dokumentation schreiben KI-Agenten wie Claude Code – nach festen Regeln in <a href="https://github.com/runnelhq/runnel/blob/main/AGENTS.md">AGENTS.md</a>, mit automatischen Tests unter Linux und Windows und Freigabe durch den Maintainer. Vorabversion: bitte vor produktivem Einsatz selbst prüfen.</p>
+        </div>
+      </aside>
     </div>
   </section>
 
@@ -411,12 +411,11 @@
             <tr><th scope="row" data-i18n="c.model">Modell</th><td class="us">Workflow + Pipeline</td><td data-i18n="c.model.n8n">Item-basierter Graph</td><td data-i18n="c.model.make">Szenario</td><td>Workflow + Pipeline</td></tr>
             <tr><th scope="row" data-i18n="c.etl">Datenstrom / ETL</th><td class="us" data-i18n="c.etl.us">mittel bis stark</td><td data-i18n="c.etl.limited">eingeschränkt</td><td data-i18n="c.etl.limited">eingeschränkt</td><td data-i18n="c.etl.strong">stark</td></tr>
             <tr><th scope="row" data-i18n="c.format">Speicherformat</th><td class="us" data-i18n="c.format.us">YAML-Dateien</td><td data-i18n="c.format.n8n">Datenbank (JSON-Export)</td><td>Cloud</td><td data-i18n="c.format.hop">XML-Dateien</td></tr>
-            <tr><th scope="row" data-i18n="c.footprint">Footprint</th><td class="us tnum">~40 MB</td><td class="tnum">~300 MB+</td><td>–</td><td class="tnum">~500 MB+</td></tr>
             <tr><th scope="row" data-i18n="c.connectors">SaaS-Konnektoren</th><td class="us" data-i18n="c.connectors.us">generisch: HTTP, SQL, Dateien, Skript, Plugins</td><td data-i18n="c.connectors.many">sehr viele</td><td data-i18n="c.connectors.many">sehr viele</td><td data-i18n="c.connectors.some">einige</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="table-note" data-i18n="compare.note">Angaben zu Runnel sind Zielwerte für Version 1.0. Für viele Cloud-Dienste mit fertigen Konnektoren bleiben n8n und Make die bessere Wahl; für Big Data im Cluster Apache Hop.</p>
+      <p class="table-note" data-i18n="compare.note">Für viele Cloud-Dienste mit fertigen Konnektoren bleiben n8n und Make die bessere Wahl; für Big Data im Cluster Apache Hop.</p>
     </div>
   </section>
 
@@ -528,7 +527,7 @@
     </div>
     <div class="footer-bottom">
       <span data-i18n="footer.copy">© 2026 The Runnel authors · MIT-Lizenz</span>
-      <span data-i18n="footer.local">Diese Seite lädt keine externen Schriften oder Tracker.</span>
+      <span data-i18n="footer.local">Mit KI entwickelt (Vibe Coding) · Diese Seite lädt keine externen Schriften oder Tracker.</span>
     </div>
   </div>
 </footer>

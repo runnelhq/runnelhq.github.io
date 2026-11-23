@@ -55,6 +55,8 @@ window.RUNNEL_I18N = {
     "rm.7.progress": "19 of 24 steps done",
     "rm.8.title": "Release",
     "rm.8.text": "Stabilization, documentation and examples.",
+    "ai.title": "A vibe coding project",
+    "ai.text": "Runnel is built mostly with AI: code, tests and documentation are written by AI agents such as Claude Code – following fixed rules in <a href=\"https://github.com/runnelhq/runnel/blob/main/AGENTS.md\">AGENTS.md</a>, with automated tests on Linux and Windows and approval by the maintainer. Pre-release: please check it yourself before using it in production.",
     "meta.title": "Runnel – Lightweight. Local. Flowing.",
     "meta.description": "Workflows and data integration for Windows – one executable, no runtime, no database. Open source under the MIT license.",
     "a11y.skip": "Skip to content",
@@ -76,18 +78,9 @@ window.RUNNEL_I18N = {
 
     "hero.title": "Lightweight. Local.<br><em>Flowing.</em>",
     "hero.lead": "Workflows and data integration for Windows – one executable, no runtime, no database. Design visually in the editor, run via CLI, server or Windows service.",
-    "hero.meta": "For Windows and Linux (amd64) · <span class=\"nw\"><code>runnel.exe</code> &lt; 40 MB</span>",
+    "hero.meta": "For Windows and Linux (amd64) · one <code>runnel.exe</code>, no installation required",
     "hero.termLabel": "Output of runnel run for the hello example",
 
-    "facts.size.label": "File size",
-    "facts.size": "one executable, batteries included",
-    "facts.start.label": "Startup time",
-    "facts.start": "from double-click to editor",
-    "facts.ram.label": "Memory",
-    "facts.ram": "RAM when idle",
-    "facts.deps.label": "Dependencies",
-    "facts.deps": "runtimes and databases",
-    "facts.note": "Target values from the concept for version 1.0.",
 
     "features.label": "Why Runnel",
     "features.title": "Automation without platform baggage",
@@ -142,12 +135,11 @@ window.RUNNEL_I18N = {
     "c.format.n8n": "Database (JSON export)",
     "c.format.hop": "XML files",
     "c.format.us": "YAML files",
-    "c.footprint": "Footprint",
     "c.connectors": "SaaS connectors",
     "c.connectors.many": "very many",
     "c.connectors.some": "some",
     "c.connectors.us": "generic: HTTP, SQL, files, script, plugins",
-    "compare.note": "Runnel figures are target values for version 1.0. For many cloud services with ready-made connectors, n8n and Make remain the better choice; for big data on a cluster, Apache Hop.",
+    "compare.note": "For many cloud services with ready-made connectors, n8n and Make remain the better choice; for big data on a cluster, Apache Hop.",
 
     "roadmap.title": "Small steps towards 1.0",
     "roadmap.lead": "Every step is one pull request, and Runnel works after every step. The current status is on <a href=\"https://github.com/runnelhq/runnel/blob/main/docs/ROADMAP.md\">GitHub</a>.",
@@ -170,7 +162,7 @@ window.RUNNEL_I18N = {
     "footer.imprint": "Legal notice",
     "footer.privacy": "Privacy",
     "footer.copy": "© 2026 The Runnel authors · MIT license",
-    "footer.local": "This site loads no external fonts or trackers.",
+    "footer.local": "Built with AI (vibe coding) · This site loads no external fonts or trackers.",
     "legal.placeholderNote": "Draft with placeholders. Fill in the marked details and have the text legally reviewed before publishing."
   }
 };
