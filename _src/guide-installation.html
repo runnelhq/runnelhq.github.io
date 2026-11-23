@@ -1,0 +1,162 @@
+<!-- {
+  "out": "handbuch/installation.html",
+  "section": "guide",
+  "title": {"de": "Installation", "en": "Installation"},
+  "description": {
+    "de": "Runnel herunterladen, prüfen und einrichten – unter Windows und Linux, mit Aktualisieren und Entfernen.",
+    "en": "Download, verify and set up Runnel – on Windows and Linux, including updating and removal."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch</p>
+          <h1>Installation</h1>
+          <p class="docs-lead">Runnel ist eine einzige ausführbare Datei. Es gibt kein Setup, keine Runtime und keine Datenbank: herunterladen, entpacken, starten.</p>
+
+          <h2 id="voraussetzungen">Voraussetzungen</h2>
+          <ul>
+            <li><strong>Windows</strong> 64 Bit (amd64) – das Hauptziel von Runnel – oder <strong>Linux</strong> 64 Bit (amd64).</li>
+            <li>Für den Editor ein aktueller Browser (Edge, Chrome, Firefox) auf demselben Rechner.</li>
+            <li>Schreibrechte im Projektordner für Ausgaben und – beim Windows-Dienst – Administratorrechte für die Einrichtung.</li>
+          </ul>
+
+          <h2 id="download">Herunterladen</h2>
+          <p>Alle Versionen stehen unter <a href="https://github.com/runnelhq/runnel/releases">github.com/runnelhq/runnel/releases</a>. Bis Version 1.0 sind es Vorabversionen (z. B. <code>v0.1.0-alpha.8</code>).</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Datei</th><th>Inhalt</th></tr></thead>
+            <tbody>
+              <tr><td><code>runnel_&lt;version&gt;_windows_amd64.zip</code></td><td><code>runnel.exe</code>, <code>LICENSE</code>, <code>README.md</code>, <code>THIRD_PARTY_NOTICES.txt</code></td></tr>
+              <tr><td><code>runnel_&lt;version&gt;_linux_amd64.tar.gz</code></td><td><code>runnel</code> und dieselben Begleitdateien</td></tr>
+              <tr><td><code>runnel_&lt;version&gt;_&lt;os&gt;_amd64.cdx.json</code></td><td>Software-Stückliste (SBOM) im Format CycloneDX 1.6</td></tr>
+              <tr><td><code>SHA256SUMS</code></td><td>Prüfsummen aller Dateien</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="windows">Unter Windows einrichten</h2>
+          <ol class="steps">
+            <li>ZIP in einen festen Ordner entpacken, z. B. <code>C:\Tools\Runnel</code>. Für den Windows-Dienst ist der Ordner wichtig: Der Dienst startet die exe, mit der er eingerichtet wurde.</li>
+            <li>PowerShell im Ordner öffnen und die Version abfragen: <code>.\runnel.exe version</code></li>
+            <li>Optional den Ordner in den <code>PATH</code> aufnehmen, damit <code>runnel</code> überall aufrufbar ist.</li>
+          </ol>
+<pre><code class="lang-bash" data-caption="PowerShell">Expand-Archive runnel_0.1.0-alpha.8_windows_amd64.zip -DestinationPath C:\Tools\Runnel
+cd C:\Tools\Runnel
+.\runnel.exe version
+
+# Ordner dauerhaft in den PATH des Benutzers aufnehmen (neue Konsole öffnen)
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Tools\Runnel", "User")</code></pre>
+          <div class="callout">
+            <strong>SmartScreen-Warnung</strong>
+            <p>Die <code>runnel.exe</code> ist noch nicht signiert; das Signieren ist vor Version 1.0 geplant. Beim ersten Start kann Windows deshalb warnen. Nach dem Prüfen der Herkunft (unten) lässt sich die Datei mit <code>Unblock-File .\runnel.exe</code> freigeben.</p>
+          </div>
+
+          <h2 id="linux">Unter Linux einrichten</h2>
+<pre><code class="lang-bash" data-caption="Shell">tar -xzf runnel_0.1.0-alpha.8_linux_amd64.tar.gz
+sudo install -m 755 runnel /usr/local/bin/runnel
+runnel version</code></pre>
+          <p>Unter Linux funktionieren CLI, Editor und Trigger wie unter Windows. Den Windows-Dienst gibt es dort nicht; für den Dauerbetrieb lässt sich <code>runnel serve &lt;projektordner&gt;</code> z. B. als systemd-Dienst starten.</p>
+
+          <h2 id="pruefen">Herkunft prüfen</h2>
+          <p>Jedes Archiv hat eine Prüfsumme in <code>SHA256SUMS</code> und eine signierte Herkunftsbestätigung (SLSA Build Provenance), die belegt, dass es aus dem Repository von GitHub Actions gebaut wurde.</p>
+<pre><code class="lang-bash" data-caption="PowerShell">Get-FileHash .\runnel_0.1.0-alpha.8_windows_amd64.zip -Algorithm SHA256
+# mit der Zeile in SHA256SUMS vergleichen
+
+# Herkunft mit der GitHub CLI prüfen
+gh attestation verify runnel_0.1.0-alpha.8_windows_amd64.zip --repo runnelhq/runnel</code></pre>
+
+          <h2 id="aktualisieren">Aktualisieren</h2>
+          <ol class="steps">
+            <li>Läuft Runnel als Dienst: <code>runnel service stop</code> (Konsole als Administrator).</li>
+            <li>Die <code>runnel.exe</code> durch die neue Version ersetzen – am selben Ort.</li>
+            <li>Projekte prüfen: <code>runnel validate D:\flows</code>. Bis Version 1.0 können sich Formate ändern; die Meldungen nennen Datei und Zeile.</li>
+            <li>Dienst wieder starten: <code>runnel service start</code>.</li>
+          </ol>
+          <p>Ein Befehl zum Aktualisieren (<code>runnel update</code>) und ein MSI-Installer sind geplant.</p>
+
+          <h2 id="entfernen">Entfernen</h2>
+          <ul>
+            <li>Dienst entfernen: <code>runnel service uninstall</code> (bei mehreren Diensten mit <code>--name</code>).</li>
+            <li>Den Ordner mit der <code>runnel.exe</code> löschen. Projekte liegen getrennt davon und bleiben erhalten.</li>
+            <li>Bei Bedarf auch Logs und Zertifikate: <code>%ProgramData%\runnel\</code> (Dienst) und <code>%LOCALAPPDATA%\runnel\</code>.</li>
+          </ul>
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide</p>
+          <h1>Installation</h1>
+          <p class="docs-lead">Runnel is a single executable. There is no setup, no runtime and no database: download, unpack, start.</p>
+
+          <h2 id="requirements">Requirements</h2>
+          <ul>
+            <li><strong>Windows</strong> 64-bit (amd64) – Runnel's main target – or <strong>Linux</strong> 64-bit (amd64).</li>
+            <li>For the editor, a current browser (Edge, Chrome, Firefox) on the same machine.</li>
+            <li>Write access to the project folder for outputs and – for the Windows service – administrator rights for the setup.</li>
+          </ul>
+
+          <h2 id="download-en">Download</h2>
+          <p>All versions are at <a href="https://github.com/runnelhq/runnel/releases">github.com/runnelhq/runnel/releases</a>. Until version 1.0 these are pre-releases (e.g. <code>v0.1.0-alpha.8</code>).</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>File</th><th>Contents</th></tr></thead>
+            <tbody>
+              <tr><td><code>runnel_&lt;version&gt;_windows_amd64.zip</code></td><td><code>runnel.exe</code>, <code>LICENSE</code>, <code>README.md</code>, <code>THIRD_PARTY_NOTICES.txt</code></td></tr>
+              <tr><td><code>runnel_&lt;version&gt;_linux_amd64.tar.gz</code></td><td><code>runnel</code> and the same accompanying files</td></tr>
+              <tr><td><code>runnel_&lt;version&gt;_&lt;os&gt;_amd64.cdx.json</code></td><td>Software bill of materials (SBOM) in CycloneDX 1.6 format</td></tr>
+              <tr><td><code>SHA256SUMS</code></td><td>Checksums of all files</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="windows-en">Setting up on Windows</h2>
+          <ol class="steps">
+            <li>Unpack the ZIP into a permanent folder, e.g. <code>C:\Tools\Runnel</code>. The folder matters for the Windows service: the service starts the executable it was set up with.</li>
+            <li>Open PowerShell in the folder and check the version: <code>.\runnel.exe version</code></li>
+            <li>Optionally add the folder to <code>PATH</code> so <code>runnel</code> works everywhere.</li>
+          </ol>
+<pre><code class="lang-bash" data-caption="PowerShell">Expand-Archive runnel_0.1.0-alpha.8_windows_amd64.zip -DestinationPath C:\Tools\Runnel
+cd C:\Tools\Runnel
+.\runnel.exe version
+
+# add the folder to the user's PATH permanently (open a new console)
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Tools\Runnel", "User")</code></pre>
+          <div class="callout">
+            <strong>SmartScreen warning</strong>
+            <p><code>runnel.exe</code> is not signed yet; signing is planned before version 1.0. Windows may therefore warn on first start. After verifying its origin (below), unblock the file with <code>Unblock-File .\runnel.exe</code>.</p>
+          </div>
+
+          <h2 id="linux-en">Setting up on Linux</h2>
+<pre><code class="lang-bash" data-caption="Shell">tar -xzf runnel_0.1.0-alpha.8_linux_amd64.tar.gz
+sudo install -m 755 runnel /usr/local/bin/runnel
+runnel version</code></pre>
+          <p>On Linux the CLI, editor and triggers work as on Windows. There is no Windows service; for continuous operation, start <code>runnel serve &lt;project folder&gt;</code> e.g. as a systemd service.</p>
+
+          <h2 id="verify">Verifying the origin</h2>
+          <p>Every archive has a checksum in <code>SHA256SUMS</code> and a signed provenance attestation (SLSA build provenance) proving it was built from the repository by GitHub Actions.</p>
+<pre><code class="lang-bash" data-caption="PowerShell">Get-FileHash .\runnel_0.1.0-alpha.8_windows_amd64.zip -Algorithm SHA256
+# compare with the line in SHA256SUMS
+
+# verify the provenance with the GitHub CLI
+gh attestation verify runnel_0.1.0-alpha.8_windows_amd64.zip --repo runnelhq/runnel</code></pre>
+
+          <h2 id="updating">Updating</h2>
+          <ol class="steps">
+            <li>If Runnel runs as a service: <code>runnel service stop</code> (console as administrator).</li>
+            <li>Replace <code>runnel.exe</code> with the new version – in the same place.</li>
+            <li>Check your projects: <code>runnel validate D:\flows</code>. Formats may change before version 1.0; messages name file and line.</li>
+            <li>Start the service again: <code>runnel service start</code>.</li>
+          </ol>
+          <p>An update command (<code>runnel update</code>) and an MSI installer are planned.</p>
+
+          <h2 id="removing">Removing</h2>
+          <ul>
+            <li>Remove the service: <code>runnel service uninstall</code> (with <code>--name</code> for several services).</li>
+            <li>Delete the folder with <code>runnel.exe</code>. Projects live separately and are kept.</li>
+            <li>If needed, also logs and certificates: <code>%ProgramData%\runnel\</code> (service) and <code>%LOCALAPPDATA%\runnel\</code>.</li>
+          </ul>
+        </article>
+      </div>
+    </div>

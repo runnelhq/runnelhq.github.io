@@ -1,0 +1,49 @@
+kind: Workflow
+apiVersion: runnel/v1
+name: nightly-import
+description: Imports the customers of the previous day
+parameters:
+  - name: DAY
+    default: "{{ formatDate(addDays(today(), -1), 'yyyy-MM-dd') }}"
+outputs:
+  - name: IMPORTED
+    type: integer
+    value: "{{ results.load.output.transforms.write.written }}"
+settings:
+  timeout: 2h
+  maxConcurrentRuns: 1
+actions:
+  - id: start
+    type: core.start
+  - id: wait-file
+    type: file.wait
+    with:
+      path: ${INBOX}\customers_${DAY}.csv
+      maxWait: 30m
+  - id: load
+    type: core.run-pipeline
+    timeout: 20m
+    retry: { attempts: 3, backoff: 1m }
+    with:
+      pipeline: pipelines/customers.pipeline.yaml
+      params:
+        FILE: ${INBOX}\customers_${DAY}.csv
+  - id: archive
+    type: file.move
+    with:
+      source: ${INBOX}\customers_${DAY}.csv
+      target: ${ARCHIVE}\
+  - id: report-error
+    type: core.log
+    with:
+      level: error
+      message: "Import of {{ params.DAY }} failed"
+  - id: failed
+    type: core.abort
+links:
+  - { from: start, to: wait-file }
+  - { from: wait-file, to: load }
+  - { from: load, to: archive }
+  - { from: wait-file, to: report-error, when: failure }
+  - { from: load, to: report-error, when: failure }
+  - { from: report-error, to: failed }

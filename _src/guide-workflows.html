@@ -1,0 +1,230 @@
+<!-- {
+  "out": "handbuch/workflows.html",
+  "section": "guide",
+  "title": {"de": "Workflows", "en": "Workflows"},
+  "description": {
+    "de": "Workflows in Runnel: Aufbau der Datei, Actions, Links und Bedingungen, Fehlerbehandlung, Join, Wiederholung je Eintrag, Ergebnisse und Sub-Workflows.",
+    "en": "Workflows in Runnel: file layout, actions, links and conditions, error handling, join, repetition per entry, results and sub-workflows."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch</p>
+          <h1>Workflows</h1>
+          <p class="docs-lead">Ein Workflow steuert einen Ablauf: Actions laufen entlang von Links, nacheinander oder parallel. Jede Action endet mit Erfolg oder Fehler, und die Links entscheiden, wie es weitergeht.</p>
+
+          <h2 id="beispiel">Beispiel</h2>
+          <p>Wartet auf die Kundendatei des Vortags, lädt sie über eine Pipeline, archiviert sie – und meldet einen Fehler, wenn die Datei nicht kommt oder der Import scheitert. Geprüft mit <code>runnel validate</code>.</p>
+          {{snippet:guide-nightly.workflow.yaml|workflows/nightly-import.workflow.yaml}}
+
+          <h2 id="aufbau">Aufbau der Datei</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Feld</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>kind</code>, <code>apiVersion</code>, <code>name</code></td><td>Pflicht: <code>Workflow</code>, <code>runnel/v1</code> und ein Name</td></tr>
+              <tr><td><code>description</code></td><td>Zweck des Workflows</td></tr>
+              <tr><td><code>parameters</code></td><td>Eingaben mit Typ, Standardwert und erlaubten Werten – siehe <a href="projekt.html#parameter">Parameter</a></td></tr>
+              <tr><td><code>outputs</code></td><td>Ergebnis des Workflows: <code>name</code>, optional <code>type</code> und <code>description</code>, <code>value</code> (meist ein Ausdruck); nur bei Erfolg ausgewertet</td></tr>
+              <tr><td><code>settings.timeout</code></td><td>Höchstdauer des ganzen Workflows, z. B. <code>2h</code></td></tr>
+              <tr><td><code>settings.maxConcurrentRuns</code></td><td>höchstens so viele gleichzeitige Läufe dieses Workflows auf dem Server</td></tr>
+              <tr><td><code>actions</code>, <code>links</code></td><td>die Schritte und ihre Verbindungen</td></tr>
+              <tr><td><code>layout</code></td><td>Positionen der Actions im Editor; ohne Einfluss auf die Ausführung</td></tr>
+            </tbody>
+          </table></div>
+          <p>Unbekannte Felder sind ein Fehler – Tippfehler fallen so sofort auf, meist mit Vorschlag. Zeitangaben haben eine Einheit: <code>30s</code>, <code>5m</code>, <code>2h</code>, <code>1h30m</code>.</p>
+
+          <h2 id="actions">Actions</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Feld</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>id</code> <span class="ref-req">Pflicht</span></td><td>eindeutig im Workflow; Buchstaben, Ziffern, <code>-</code> und <code>_</code>, beginnend mit einem Buchstaben</td></tr>
+              <tr><td><code>type</code> <span class="ref-req">Pflicht</span></td><td>Baustein, z. B. <code>file.copy</code> – alle in der <a href="bausteine.html">Referenz</a></td></tr>
+              <tr><td><code>with</code></td><td>Konfiguration des Bausteins; Werte mit <code>${…}</code> und <code>{{ … }}</code></td></tr>
+              <tr><td><code>description</code></td><td>Notiz zur Action</td></tr>
+              <tr><td><code>timeout</code></td><td>Höchstdauer je Versuch</td></tr>
+              <tr><td><code>retry</code></td><td><code>attempts</code> (Versuche insgesamt), <code>backoff</code> (Wartezeit vor dem zweiten Versuch), <code>strategy</code>: <code>fixed</code> oder <code>exponential</code></td></tr>
+              <tr><td><code>continueOnError</code></td><td>ein Fehler gilt als Erfolg; der Workflow läuft auf den Erfolgs-Links weiter</td></tr>
+              <tr><td><code>join</code>, <code>joinTimeout</code></td><td>Verhalten bei mehreren eingehenden Links – siehe <a href="#join">Join</a></td></tr>
+              <tr><td><code>forEach</code>, <code>parallel</code>, <code>stopOnError</code></td><td>Action je Eintrag einer Liste ausführen – siehe <a href="#foreach">Wiederholung</a></td></tr>
+            </tbody>
+          </table></div>
+          <p>Jeder Workflow hat genau eine Action <code>core.start</code> ohne eingehende Links. <code>core.success</code> beendet ihn sofort erfolgreich, <code>core.abort</code> als fehlgeschlagen.</p>
+
+          <h2 id="links">Links und Bedingungen</h2>
+<pre><code class="lang-yaml" data-caption="links">links:
+  - { from: start, to: fetch }                       # when: success (Standard)
+  - { from: fetch, to: report, when: failure }
+  - { from: fetch, to: cleanup, when: always }
+  - { from: fetch, to: big, when: "{{ result.output.rows > 1000 }}" }
+  - { from: retry-wait, to: fetch, loop: true }      # Rücksprung, ausdrücklich erlaubt
+  - { from: fetch, to: notify, disabled: true }      # bleibt im Design, wird nicht ausgeführt</code></pre>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th><code>when</code></th><th>Symbol</th><th>Link wird verfolgt, wenn …</th></tr></thead>
+            <tbody>
+              <tr><td><code>success</code></td><td>✔</td><td>die Action erfolgreich war (Standard)</td></tr>
+              <tr><td><code>failure</code></td><td>✖</td><td>die Action fehlgeschlagen ist</td></tr>
+              <tr><td><code>always</code></td><td>∞</td><td>in jedem Fall</td></tr>
+              <tr><td><code>{{ … }}</code></td><td>ƒ</td><td>der Ausdruck wahr ist; <code>result</code> ist das Ergebnis der Action davor</td></tr>
+            </tbody>
+          </table></div>
+          <p>Hat eine Action mehrere erfüllte Links, laufen die Nachfolger <strong>parallel</strong>. Zyklen sind nur über Links mit <code>loop: true</code> erlaubt; eine Action läuft höchstens 10.000-mal je Lauf.</p>
+
+          <h2 id="fehler">Fehler und Ergebnis</h2>
+          <ul>
+            <li>Ein Fehler, den kein Fehler- oder Immer-Link behandelt, lässt den Workflow fehlschlagen – andere Zweige laufen vorher zu Ende.</li>
+            <li><code>retry</code> wiederholt eine Action, <code>timeout</code> begrenzt jeden Versuch, <code>continueOnError</code> ignoriert den Fehler.</li>
+            <li><code>core.check</code> lässt eine Bedingung prüfen und schlägt mit eigener Meldung fehl, wenn sie falsch ist.</li>
+            <li>Ein Abbruch (Strg+C, Editor, Timeout des Workflows) stoppt laufende Actions, folgt keinen Fehler-Links und endet mit Status <code>cancelled</code>.</li>
+          </ul>
+
+          <h2 id="join">Join: mehrere eingehende Links</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th><code>join</code></th><th>Verhalten</th></tr></thead>
+            <tbody>
+              <tr><td><code>all</code> (Standard)</td><td>startet einmal, wenn alle Vorgänger entschieden sind, die noch ein Signal liefern können. Zweige, die nicht durchlaufen werden, zählen als erledigt (Status <code>skipped</code>).</td></tr>
+              <tr><td><code>first</code></td><td>startet beim ersten eingehenden Link, die weiteren werden ignoriert</td></tr>
+              <tr><td><code>each</code></td><td>startet bei jedem eingehenden Link erneut</td></tr>
+            </tbody>
+          </table></div>
+          <p><code>joinTimeout</code> begrenzt bei <code>all</code> das Warten. Der Projektstandard steht in <code>project.yaml</code> unter <code>workflow.defaultJoin</code>. Als Sammelpunkt mehrerer Zweige eignet sich <code>core.dummy</code>. Beachte: <code>join: all</code> startet auch, wenn ein Zweig fehlgeschlagen ist – Fehlerpfade daher eigens modellieren.</p>
+
+          <h2 id="ergebnisse">Ergebnisse weiterverwenden</h2>
+          <p>Viele Actions liefern Ausgabedaten, z. B. <code>file.list</code> die Dateien, <code>http.request</code> Status und Antwort, <code>core.run-pipeline</code> die Zähler der Transforms. In Ausdrücken:</p>
+          <ul>
+            <li><code>result.output</code> – Ergebnis der Action, von der ein Link ausgeht (in Link-Bedingungen)</li>
+            <li><code>results.&lt;id&gt;.output</code> bzw. <code>results["id"].output</code> – Ergebnis einer beliebigen Action, die schon gelaufen ist</li>
+          </ul>
+          <p>Was <code>output</code> enthält, steht in der Beschreibung jedes Bausteins in der <a href="bausteine.html">Referenz</a>.</p>
+
+          <h2 id="foreach">Wiederholung je Eintrag (<code>forEach</code>)</h2>
+          <p>Jede Action kann für jeden Eintrag einer Liste laufen – etwa eine Pipeline je Datei. Der aktuelle Eintrag heißt <code>row</code>.</p>
+          {{snippet:guide-each.workflow.yaml|workflows/each.workflow.yaml}}
+          <ul>
+            <li><code>parallel</code>: so viele Einträge gleichzeitig (Standard 1).</li>
+            <li><code>stopOnError</code>: beim ersten Fehler aufhören (Standard) oder mit <code>false</code> alle Einträge versuchen.</li>
+            <li>Ergebnis: <code>items</code> (je Eintrag <code>row</code>, <code>success</code>, <code>error</code>, <code>output</code>), <code>succeeded</code> und <code>failed</code>.</li>
+          </ul>
+
+          <h2 id="sub-workflows">Sub-Workflows und Pipelines aufrufen</h2>
+          <ul>
+            <li><code>core.run-workflow</code> startet einen anderen Workflow mit <code>params</code>; dessen <code>outputs</code> sind das Ergebnis. Sein Log erscheint bei der aufrufenden Action.</li>
+            <li><code>core.run-pipeline</code> startet eine Pipeline; Ergebnis sind die Zähler je Transform (<code>output.transforms.&lt;id&gt;.read/written/errors</code>) und <code>output.errors</code>. Mit <code>rows</code> gehen Datensätze hinein, mit <code>core.to-result</code> kommen sie als <code>output.rows</code> zurück.</li>
+            <li>Pfade sind relativ zum Projekt und dürfen es nicht verlassen. Ist der Pfad dynamisch (<code>${…}</code>), schränkt <code>allowedTargets</code> die erlaubten Ziele ein.</li>
+            <li>Übergeben werden nur die genannten Parameter; der aufgerufene Workflow sieht seine eigenen Standardwerte und die Variablen des Projekts.</li>
+          </ul>
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide</p>
+          <h1>Workflows</h1>
+          <p class="docs-lead">A workflow controls a process: actions run along links, in sequence or in parallel. Every action ends with success or failure, and the links decide what happens next.</p>
+
+          <h2 id="example">Example</h2>
+          <p>Waits for the previous day's customer file, loads it through a pipeline, archives it – and reports an error if the file doesn't arrive or the import fails. Checked with <code>runnel validate</code>.</p>
+          {{snippet:guide-nightly.workflow.yaml|workflows/nightly-import.workflow.yaml}}
+
+          <h2 id="file">File layout</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>kind</code>, <code>apiVersion</code>, <code>name</code></td><td>Required: <code>Workflow</code>, <code>runnel/v1</code> and a name</td></tr>
+              <tr><td><code>description</code></td><td>Purpose of the workflow</td></tr>
+              <tr><td><code>parameters</code></td><td>Inputs with type, default and allowed values – see <a href="projekt.html#parameters">Parameters</a></td></tr>
+              <tr><td><code>outputs</code></td><td>Result of the workflow: <code>name</code>, optional <code>type</code> and <code>description</code>, <code>value</code> (usually an expression); evaluated only on success</td></tr>
+              <tr><td><code>settings.timeout</code></td><td>Maximum duration of the whole workflow, e.g. <code>2h</code></td></tr>
+              <tr><td><code>settings.maxConcurrentRuns</code></td><td>At most this many concurrent runs of this workflow on the server</td></tr>
+              <tr><td><code>actions</code>, <code>links</code></td><td>The steps and their connections</td></tr>
+              <tr><td><code>layout</code></td><td>Positions of the actions in the editor; no effect on execution</td></tr>
+            </tbody>
+          </table></div>
+          <p>Unknown fields are an error – typos show up immediately, usually with a suggestion. Durations have a unit: <code>30s</code>, <code>5m</code>, <code>2h</code>, <code>1h30m</code>.</p>
+
+          <h2 id="actions-en">Actions</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>id</code> <span class="ref-req">required</span></td><td>Unique in the workflow; letters, digits, <code>-</code> and <code>_</code>, starting with a letter</td></tr>
+              <tr><td><code>type</code> <span class="ref-req">required</span></td><td>Component, e.g. <code>file.copy</code> – all in the <a href="bausteine.html">reference</a></td></tr>
+              <tr><td><code>with</code></td><td>Configuration of the component; values with <code>${…}</code> and <code>{{ … }}</code></td></tr>
+              <tr><td><code>description</code></td><td>Note on the action</td></tr>
+              <tr><td><code>timeout</code></td><td>Maximum duration per attempt</td></tr>
+              <tr><td><code>retry</code></td><td><code>attempts</code> (total attempts), <code>backoff</code> (wait before the second attempt), <code>strategy</code>: <code>fixed</code> or <code>exponential</code></td></tr>
+              <tr><td><code>continueOnError</code></td><td>A failure counts as success; the workflow continues on the success links</td></tr>
+              <tr><td><code>join</code>, <code>joinTimeout</code></td><td>Behavior with several incoming links – see <a href="#join-en">Join</a></td></tr>
+              <tr><td><code>forEach</code>, <code>parallel</code>, <code>stopOnError</code></td><td>Run the action per entry of a list – see <a href="#foreach-en">Repetition</a></td></tr>
+            </tbody>
+          </table></div>
+          <p>Every workflow has exactly one <code>core.start</code> action without incoming links. <code>core.success</code> ends it immediately as succeeded, <code>core.abort</code> as failed.</p>
+
+          <h2 id="links-en">Links and conditions</h2>
+<pre><code class="lang-yaml" data-caption="links">links:
+  - { from: start, to: fetch }                       # when: success (default)
+  - { from: fetch, to: report, when: failure }
+  - { from: fetch, to: cleanup, when: always }
+  - { from: fetch, to: big, when: "{{ result.output.rows > 1000 }}" }
+  - { from: retry-wait, to: fetch, loop: true }      # loop back, explicitly allowed
+  - { from: fetch, to: notify, disabled: true }      # stays in the design, not executed</code></pre>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th><code>when</code></th><th>Symbol</th><th>The link is followed if …</th></tr></thead>
+            <tbody>
+              <tr><td><code>success</code></td><td>✔</td><td>the action succeeded (default)</td></tr>
+              <tr><td><code>failure</code></td><td>✖</td><td>the action failed</td></tr>
+              <tr><td><code>always</code></td><td>∞</td><td>in any case</td></tr>
+              <tr><td><code>{{ … }}</code></td><td>ƒ</td><td>the expression is true; <code>result</code> is the result of the action before</td></tr>
+            </tbody>
+          </table></div>
+          <p>If an action has several satisfied links, the successors run <strong>in parallel</strong>. Cycles are only allowed via links with <code>loop: true</code>; an action runs at most 10,000 times per run.</p>
+
+          <h2 id="errors">Errors and result</h2>
+          <ul>
+            <li>A failure not handled by any failure or always link makes the workflow fail – other branches finish first.</li>
+            <li><code>retry</code> repeats an action, <code>timeout</code> limits each attempt, <code>continueOnError</code> ignores the failure.</li>
+            <li><code>core.check</code> checks a condition and fails with its own message if it is false.</li>
+            <li>A cancellation (Ctrl+C, editor, workflow timeout) stops running actions, follows no failure links and ends with status <code>cancelled</code>.</li>
+          </ul>
+
+          <h2 id="join-en">Join: several incoming links</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th><code>join</code></th><th>Behavior</th></tr></thead>
+            <tbody>
+              <tr><td><code>all</code> (default)</td><td>Starts once all predecessors that can still deliver a signal have decided. Branches that are not taken count as done (status <code>skipped</code>).</td></tr>
+              <tr><td><code>first</code></td><td>Starts on the first incoming link; further ones are ignored</td></tr>
+              <tr><td><code>each</code></td><td>Starts again for every incoming link</td></tr>
+            </tbody>
+          </table></div>
+          <p><code>joinTimeout</code> limits the wait with <code>all</code>. The project default is <code>workflow.defaultJoin</code> in <code>project.yaml</code>. <code>core.dummy</code> works well as a collection point for several branches. Note: <code>join: all</code> also starts if a branch failed – model failure paths separately.</p>
+
+          <h2 id="results">Using results</h2>
+          <p>Many actions return output data, e.g. <code>file.list</code> the files, <code>http.request</code> status and response, <code>core.run-pipeline</code> the transform counts. In expressions:</p>
+          <ul>
+            <li><code>result.output</code> – result of the action a link starts from (in link conditions)</li>
+            <li><code>results.&lt;id&gt;.output</code> or <code>results["id"].output</code> – result of any action that has already run</li>
+          </ul>
+          <p>What <code>output</code> contains is stated in each component's description in the <a href="bausteine.html">reference</a>.</p>
+
+          <h2 id="foreach-en">Repetition per entry (<code>forEach</code>)</h2>
+          <p>Any action can run for each entry of a list – e.g. a pipeline per file. The current entry is called <code>row</code>.</p>
+          {{snippet:guide-each.workflow.yaml|workflows/each.workflow.yaml}}
+          <ul>
+            <li><code>parallel</code>: this many entries at once (default 1).</li>
+            <li><code>stopOnError</code>: stop at the first error (default) or try all entries with <code>false</code>.</li>
+            <li>Result: <code>items</code> (per entry <code>row</code>, <code>success</code>, <code>error</code>, <code>output</code>), <code>succeeded</code> and <code>failed</code>.</li>
+          </ul>
+
+          <h2 id="sub-workflows-en">Calling sub-workflows and pipelines</h2>
+          <ul>
+            <li><code>core.run-workflow</code> starts another workflow with <code>params</code>; its <code>outputs</code> are the result. Its log appears with the calling action.</li>
+            <li><code>core.run-pipeline</code> starts a pipeline; the result is the counts per transform (<code>output.transforms.&lt;id&gt;.read/written/errors</code>) and <code>output.errors</code>. Records go in with <code>rows</code> and come back as <code>output.rows</code> via <code>core.to-result</code>.</li>
+            <li>Paths are relative to the project and must not leave it. If the path is dynamic (<code>${…}</code>), <code>allowedTargets</code> restricts the allowed targets.</li>
+            <li>Only the named parameters are passed; the called workflow sees its own defaults and the project's variables.</li>
+          </ul>
+        </article>
+      </div>
+    </div>

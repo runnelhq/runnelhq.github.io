@@ -68,6 +68,7 @@ window.RUNNEL_I18N = {
     "nav.modes": "Operation",
     "nav.compare": "Comparison",
     "nav.roadmap": "Roadmap",
+    "nav.guide": "Guide",
     "nav.docs": "Docs",
     "lang.label": "Language",
     "cta.download": "Download",
@@ -151,6 +152,7 @@ window.RUNNEL_I18N = {
 
     "footer.claim": "Lightweight. Local. Flowing. Workflows and data integration for Windows.",
     "footer.product": "Product",
+    "footer.guide": "User guide",
     "footer.releases": "Releases",
     "footer.docs": "Documentation",
     "footer.devdocs": "Developer docs",

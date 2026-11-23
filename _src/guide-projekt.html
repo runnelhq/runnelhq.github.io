@@ -1,0 +1,332 @@
+<!-- {
+  "out": "handbuch/projekt.html",
+  "section": "guide",
+  "title": {"de": "Projekt und Konfiguration", "en": "Project and configuration"},
+  "description": {
+    "de": "project.yaml, Environments, Variablen und ihre Rangfolge, Parameter, Secrets und Connections in Runnel konfigurieren.",
+    "en": "Configuring project.yaml, environments, variables and their precedence, parameters, secrets and connections in Runnel."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch</p>
+          <h1>Projekt und Konfiguration</h1>
+          <p class="docs-lead">Was sich zwischen Test und Produktion unterscheidet – Pfade, Server, Zugangsdaten – steht nicht in den Workflows, sondern in Environments, Variablen, Secrets und Connections.</p>
+
+          <h2 id="projekt">Projekt (<code>project.yaml</code>)</h2>
+          <p>Runnel findet das Projekt über <code>project.yaml</code> im Ordner der Datei oder einem übergeordneten Ordner – wie Git den Ordner <code>.git</code>.</p>
+<pre><code class="lang-yaml" data-caption="project.yaml">kind: Project
+apiVersion: runnel/v1
+name: flows
+description: Datenflüsse der Buchhaltung
+defaultEnvironment: dev
+variables:
+  BASE: D:\data
+  INBOX: ${BASE}\inbox
+  ARCHIVE: ${BASE}\archive
+settings:
+  maxConcurrentRuns: 4
+workflow:
+  defaultJoin: all</code></pre>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Feld</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>name</code>, <code>description</code></td><td>Name und Zweck des Projekts; erscheinen im Editor</td></tr>
+              <tr><td><code>defaultEnvironment</code></td><td>Environment, wenn ein Lauf keines nennt, z. B. <code>dev</code></td></tr>
+              <tr><td><code>variables</code></td><td>Variablen für alle Environments; Werte dürfen andere Variablen enthalten</td></tr>
+              <tr><td><code>secretStore</code>, <code>secrets</code></td><td>Woher <code>${secret:…}</code> liest, falls ein Environment nichts festlegt – siehe <a href="#secrets">Secrets</a></td></tr>
+              <tr><td><code>settings.maxConcurrentRuns</code></td><td>höchstens so viele Läufe des Projekts gleichzeitig auf dem Server; <code>0</code> = keine Grenze</td></tr>
+              <tr><td><code>workflow.defaultJoin</code></td><td>Standard für Actions mit mehreren eingehenden Links: <code>all</code>, <code>first</code> oder <code>each</code> – siehe <a href="workflows.html#join">Join</a></td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="environments">Environments</h2>
+          <p>Ein Environment überschreibt Variablen für eine Umgebung. Der Name muss dem Dateinamen entsprechen. Gewählt wird es mit <code>--env</code>, im Editor beim Start oder im Trigger; sonst gilt <code>defaultEnvironment</code>.</p>
+<pre><code class="lang-yaml" data-caption="environments/prod.yaml">kind: Environment
+apiVersion: runnel/v1
+name: prod
+description: Produktivserver
+variables:
+  BASE: \\fileserver\data
+secretStore: env</code></pre>
+
+          <h2 id="variablen">Variablen</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Schreibweise</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>${NAME}</code></td><td>Variable aus Projekt, Environment oder Parametern</td></tr>
+              <tr><td><code>${env:NAME}</code></td><td>Umgebungsvariable des Betriebssystems, z. B. <code>${env:COMPUTERNAME}</code>, <code>${env:TEMP}</code></td></tr>
+              <tr><td><code>${secret:NAME}</code></td><td>Secret – nur in bestimmten Feldern, siehe unten</td></tr>
+              <tr><td><code>${PROJECT_DIR}</code></td><td>eingebaut: absoluter Pfad des Projektordners</td></tr>
+              <tr><td><code>$${</code></td><td>ein wörtliches <code>${</code></td></tr>
+            </tbody>
+          </table></div>
+          <p>Gibt es denselben Namen auf mehreren Ebenen, gewinnt die spätere:</p>
+          <ol class="steps">
+            <li>Eingebaut: <code>PROJECT_DIR</code></li>
+            <li>Standardwerte der Parameter (<code>parameters[].default</code>)</li>
+            <li>Projekt (<code>project.yaml</code>, <code>variables</code>)</li>
+            <li>Environment (<code>environments/&lt;name&gt;.yaml</code>)</li>
+            <li>Beim Start übergebene Parameter: <code>--param</code>, Editor, Trigger, HTTP-Anfrage oder aufrufende Action</li>
+          </ol>
+          <p>Werte dürfen selbst Variablen enthalten (<code>INBOX: ${BASE}\inbox</code>); Zyklen sind ein Fehler. <code>runnel validate</code> warnt je Environment vor nicht definierten Variablen – so fällt auf, wenn eine Variable nur in <code>dev</code> gesetzt ist.</p>
+          <div class="callout">
+            <strong>Relative Pfade</strong>
+            <p>Relative Pfade in Actions, Transforms und Triggern beziehen sich immer auf den Projektordner – ohne Projekt auf den Ordner der Datei –, nie auf das Arbeitsverzeichnis. So verhält sich ein Workflow aus der Aufgabenplanung, dem Dienst und dem Editor gleich.</p>
+          </div>
+
+          <h2 id="parameter">Parameter</h2>
+          <p>Parameter sind die Eingaben eines Workflows oder einer Pipeline. Sie haben einen Typ und optional erlaubte Werte; Standardwerte und übergebene Werte werden geprüft.</p>
+<pre><code class="lang-yaml" data-caption="Parameter">parameters:
+  - name: DAYS
+    description: Wie viele Tage zurück
+    type: integer
+    default: "1"
+  - name: MODE
+    enum: [full, delta]
+    default: delta
+  - name: CUSTOMER
+    required: true</code></pre>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Feld</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>name</code></td><td>Buchstaben, Ziffern und <code>_</code>, nicht mit einer Ziffer beginnend</td></tr>
+              <tr><td><code>type</code></td><td><code>string</code> (Standard), <code>integer</code>, <code>number</code>, <code>boolean</code>, <code>json</code></td></tr>
+              <tr><td><code>enum</code></td><td>erlaubte Werte</td></tr>
+              <tr><td><code>default</code></td><td>Standardwert, auch als Ausdruck, z. B. <code>"{{ formatDate(today(), 'yyyy-MM-dd') }}"</code></td></tr>
+              <tr><td><code>required</code></td><td>muss beim Start übergeben werden</td></tr>
+              <tr><td><code>description</code></td><td>Beschreibung, z. B. für den Startdialog im Editor</td></tr>
+            </tbody>
+          </table></div>
+          <p>Als Variable <code>${DAYS}</code> ist der Wert immer Text; in Ausdrücken liefert <code>params.DAYS</code> ihn mit seinem Typ.</p>
+
+          <h2 id="secrets">Secrets</h2>
+          <p>Passwörter und Tokens stehen nie direkt im Workflow, sondern als <code>${secret:NAME}</code> oder <code>${secret:QUELLE/NAME}</code>. Erlaubt ist das nur in Feldern für Secrets (z. B. <code>password</code> einer Connection) und als Token von HTTP-Triggern – nicht über eine Variable. Ein fehlendes Secret verhindert den Start; Werte werden in Log, Fehlern und Ergebnissen maskiert.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Quelle</th><th>Woher der Wert kommt</th></tr></thead>
+            <tbody>
+              <tr><td><code>env</code></td><td>aus einer Umgebungsvariablen des Rechners bzw. Dienstkontos – für den Betrieb</td></tr>
+              <tr><td><code>inline</code></td><td>im Klartext unter <code>secrets:</code> im Environment oder in <code>project.yaml</code> – nur für Entwicklung und einfache APIs; <code>validate</code> warnt</td></tr>
+              <tr><td><code>local</code></td><td>lokaler, verschlüsselter Store – <span class="soon">geplant</span></td></tr>
+            </tbody>
+          </table></div>
+          <p>Die Standardquelle legt <code>secretStore:</code> im Environment fest, sonst in <code>project.yaml</code>. So schreibt der Workflow überall <code>${secret:ERP_PASSWORD}</code>, und nur das Environment entscheidet, woher der Wert kommt:</p>
+<pre><code class="lang-yaml" data-caption="environments/dev.yaml">kind: Environment
+apiVersion: runnel/v1
+name: dev
+secretStore: inline
+secrets:
+  ERP_PASSWORD: entwicklung123</code></pre>
+<pre><code class="lang-yaml" data-caption="environments/prod.yaml">kind: Environment
+apiVersion: runnel/v1
+name: prod
+secretStore: env          # liest die Umgebungsvariable ERP_PASSWORD</code></pre>
+
+          <h2 id="connections">Connections</h2>
+          <p>Eine Connection beschreibt den Zugang zu einer Datenbank einmal für das ganze Projekt. Bausteine nennen sie mit <code>connection: &lt;name&gt;</code>; <code>validate</code> prüft, ob es sie gibt und ob der Typ passt. Unterschiede zwischen Environments kommen über Variablen.</p>
+<pre><code class="lang-yaml" data-caption="connections/erp.yaml">kind: Connection
+apiVersion: runnel/v1
+name: erp                       # = Dateiname
+description: ERP-Datenbank, nur lesen
+type: sqlserver
+with:
+  host: ${ERP_HOST}
+  database: ERP
+  user: runnel_read
+  password: ${secret:ERP_PASSWORD}</code></pre>
+          <h3>SQLite (<code>sqlite</code>)</h3>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><td><code>path</code> <span class="ref-req">Pflicht</span></td><td>Datenbankdatei, relativ zum Projektordner; wird mit Ordner angelegt, wenn sie fehlt</td></tr>
+              <tr><td><code>readOnly</code></td><td>nur lesend öffnen (Standard <code>false</code>)</td></tr>
+            </tbody>
+          </table></div>
+          <h3>SQL Server (<code>sqlserver</code>)</h3>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><td><code>host</code>, <code>database</code> <span class="ref-req">Pflicht</span></td><td>Server und Datenbank</td></tr>
+              <tr><td><code>port</code> / <code>instance</code></td><td>TCP-Port (Standard 1433) oder benannte Instanz wie <code>SQLEXPRESS</code> (braucht den SQL Server Browser)</td></tr>
+              <tr><td><code>user</code>, <code>password</code></td><td>SQL-Server-Anmeldung; ohne <code>user</code> das Windows-Konto, unter dem Runnel läuft (nur Windows)</td></tr>
+              <tr><td><code>encrypt</code></td><td><code>true</code> (Standard), <code>strict</code> (TDS 8) oder <code>false</code> (nur die Anmeldung)</td></tr>
+              <tr><td><code>trustServerCertificate</code></td><td>jedes Zertifikat akzeptieren, z. B. selbst signiert; <code>validate</code> warnt</td></tr>
+              <tr><td><code>connectTimeout</code></td><td>längste Zeit für den Verbindungsaufbau, Standard <code>30s</code></td></tr>
+            </tbody>
+          </table></div>
+          <h3>PostgreSQL (<code>postgres</code>)</h3>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><td><code>host</code>, <code>database</code>, <code>user</code> <span class="ref-req">Pflicht</span></td><td>Server, Datenbank und Benutzer</td></tr>
+              <tr><td><code>port</code></td><td>Standard 5432</td></tr>
+              <tr><td><code>password</code></td><td>als <code>${secret:NAME}</code></td></tr>
+              <tr><td><code>sslMode</code></td><td><code>verify-full</code> (Standard), <code>verify-ca</code>, <code>require</code> oder <code>disable</code></td></tr>
+              <tr><td><code>connectTimeout</code></td><td>Standard <code>30s</code></td></tr>
+            </tbody>
+          </table></div>
+          <p>SQL bekommt Werte nur als Parameter (<code>@name</code> mit dem Feld <code>params</code>), nie als Text im SQL – das schützt vor SQL-Injection. Beispiel: <a href="bausteine.html#a-db-execute-de"><code>db.execute</code></a>.</p>
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide</p>
+          <h1>Project and configuration</h1>
+          <p class="docs-lead">What differs between test and production – paths, servers, credentials – does not live in the workflows but in environments, variables, secrets and connections.</p>
+
+          <h2 id="project">Project (<code>project.yaml</code>)</h2>
+          <p>Runnel finds the project via <code>project.yaml</code> in the file's folder or a parent folder – like Git finds <code>.git</code>.</p>
+<pre><code class="lang-yaml" data-caption="project.yaml">kind: Project
+apiVersion: runnel/v1
+name: flows
+description: Accounting data flows
+defaultEnvironment: dev
+variables:
+  BASE: D:\data
+  INBOX: ${BASE}\inbox
+  ARCHIVE: ${BASE}\archive
+settings:
+  maxConcurrentRuns: 4
+workflow:
+  defaultJoin: all</code></pre>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>name</code>, <code>description</code></td><td>Name and purpose of the project; shown in the editor</td></tr>
+              <tr><td><code>defaultEnvironment</code></td><td>Environment used when a run names none, e.g. <code>dev</code></td></tr>
+              <tr><td><code>variables</code></td><td>Variables for all environments; values may contain other variables</td></tr>
+              <tr><td><code>secretStore</code>, <code>secrets</code></td><td>Where <code>${secret:…}</code> reads from unless an environment sets its own – see <a href="#secrets-en">Secrets</a></td></tr>
+              <tr><td><code>settings.maxConcurrentRuns</code></td><td>At most this many runs of the project at once on the server; <code>0</code> = no limit</td></tr>
+              <tr><td><code>workflow.defaultJoin</code></td><td>Default for actions with several incoming links: <code>all</code>, <code>first</code> or <code>each</code> – see <a href="workflows.html#join-en">Join</a></td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="environments-en">Environments</h2>
+          <p>An environment overrides variables for one environment. Its name must match the file name. It is chosen with <code>--env</code>, in the editor when starting or in the trigger; otherwise <code>defaultEnvironment</code> applies.</p>
+<pre><code class="lang-yaml" data-caption="environments/prod.yaml">kind: Environment
+apiVersion: runnel/v1
+name: prod
+description: Production server
+variables:
+  BASE: \\fileserver\data
+secretStore: env</code></pre>
+
+          <h2 id="variables">Variables</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Syntax</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>${NAME}</code></td><td>Variable from project, environment or parameters</td></tr>
+              <tr><td><code>${env:NAME}</code></td><td>Operating system environment variable, e.g. <code>${env:COMPUTERNAME}</code>, <code>${env:TEMP}</code></td></tr>
+              <tr><td><code>${secret:NAME}</code></td><td>Secret – only in certain fields, see below</td></tr>
+              <tr><td><code>${PROJECT_DIR}</code></td><td>Built in: absolute path of the project folder</td></tr>
+              <tr><td><code>$${</code></td><td>A literal <code>${</code></td></tr>
+            </tbody>
+          </table></div>
+          <p>If the same name exists on several levels, the later one wins:</p>
+          <ol class="steps">
+            <li>Built in: <code>PROJECT_DIR</code></li>
+            <li>Parameter defaults (<code>parameters[].default</code>)</li>
+            <li>Project (<code>project.yaml</code>, <code>variables</code>)</li>
+            <li>Environment (<code>environments/&lt;name&gt;.yaml</code>)</li>
+            <li>Parameters passed at start: <code>--param</code>, editor, trigger, HTTP request or calling action</li>
+          </ol>
+          <p>Values may contain variables themselves (<code>INBOX: ${BASE}\inbox</code>); cycles are an error. <code>runnel validate</code> warns about undefined variables per environment – so it shows when a variable is only set in <code>dev</code>.</p>
+          <div class="callout">
+            <strong>Relative paths</strong>
+            <p>Relative paths in actions, transforms and triggers always refer to the project folder – without a project to the file's folder – never to the working directory. A workflow behaves the same from Task Scheduler, the service and the editor.</p>
+          </div>
+
+          <h2 id="parameters">Parameters</h2>
+          <p>Parameters are the inputs of a workflow or pipeline. They have a type and optionally allowed values; defaults and passed values are checked.</p>
+<pre><code class="lang-yaml" data-caption="Parameters">parameters:
+  - name: DAYS
+    description: How many days back
+    type: integer
+    default: "1"
+  - name: MODE
+    enum: [full, delta]
+    default: delta
+  - name: CUSTOMER
+    required: true</code></pre>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>name</code></td><td>Letters, digits and <code>_</code>, not starting with a digit</td></tr>
+              <tr><td><code>type</code></td><td><code>string</code> (default), <code>integer</code>, <code>number</code>, <code>boolean</code>, <code>json</code></td></tr>
+              <tr><td><code>enum</code></td><td>Allowed values</td></tr>
+              <tr><td><code>default</code></td><td>Default value, also as an expression, e.g. <code>"{{ formatDate(today(), 'yyyy-MM-dd') }}"</code></td></tr>
+              <tr><td><code>required</code></td><td>Must be passed at start</td></tr>
+              <tr><td><code>description</code></td><td>Description, e.g. for the start dialog in the editor</td></tr>
+            </tbody>
+          </table></div>
+          <p>As a variable <code>${DAYS}</code> the value is always text; in expressions <code>params.DAYS</code> returns it with its type.</p>
+
+          <h2 id="secrets-en">Secrets</h2>
+          <p>Passwords and tokens never go directly into a workflow but appear as <code>${secret:NAME}</code> or <code>${secret:SOURCE/NAME}</code>. This is allowed only in secret fields (e.g. a connection's <code>password</code>) and as the token of HTTP triggers – not via a variable. A missing secret prevents the start; values are masked in log, errors and results.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Source</th><th>Where the value comes from</th></tr></thead>
+            <tbody>
+              <tr><td><code>env</code></td><td>An environment variable of the machine or service account – for operation</td></tr>
+              <tr><td><code>inline</code></td><td>Plain text under <code>secrets:</code> in the environment or <code>project.yaml</code> – only for development and simple APIs; <code>validate</code> warns</td></tr>
+              <tr><td><code>local</code></td><td>Local encrypted store – <span class="soon">planned</span></td></tr>
+            </tbody>
+          </table></div>
+          <p>The default source is set by <code>secretStore:</code> in the environment, otherwise in <code>project.yaml</code>. The workflow always writes <code>${secret:ERP_PASSWORD}</code>, and only the environment decides where the value comes from:</p>
+<pre><code class="lang-yaml" data-caption="environments/dev.yaml">kind: Environment
+apiVersion: runnel/v1
+name: dev
+secretStore: inline
+secrets:
+  ERP_PASSWORD: development123</code></pre>
+<pre><code class="lang-yaml" data-caption="environments/prod.yaml">kind: Environment
+apiVersion: runnel/v1
+name: prod
+secretStore: env          # reads the environment variable ERP_PASSWORD</code></pre>
+
+          <h2 id="connections-en">Connections</h2>
+          <p>A connection describes access to a database once for the whole project. Components name it with <code>connection: &lt;name&gt;</code>; <code>validate</code> checks that it exists and the type fits. Differences between environments come from variables.</p>
+<pre><code class="lang-yaml" data-caption="connections/erp.yaml">kind: Connection
+apiVersion: runnel/v1
+name: erp                       # = file name
+description: ERP database, read only
+type: sqlserver
+with:
+  host: ${ERP_HOST}
+  database: ERP
+  user: runnel_read
+  password: ${secret:ERP_PASSWORD}</code></pre>
+          <h3>SQLite (<code>sqlite</code>)</h3>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><td><code>path</code> <span class="ref-req">required</span></td><td>Database file, relative to the project folder; created with its folder if missing</td></tr>
+              <tr><td><code>readOnly</code></td><td>Open for reading only (default <code>false</code>)</td></tr>
+            </tbody>
+          </table></div>
+          <h3>SQL Server (<code>sqlserver</code>)</h3>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><td><code>host</code>, <code>database</code> <span class="ref-req">required</span></td><td>Server and database</td></tr>
+              <tr><td><code>port</code> / <code>instance</code></td><td>TCP port (default 1433) or a named instance such as <code>SQLEXPRESS</code> (needs SQL Server Browser)</td></tr>
+              <tr><td><code>user</code>, <code>password</code></td><td>SQL Server login; without <code>user</code> the Windows account Runnel runs as (Windows only)</td></tr>
+              <tr><td><code>encrypt</code></td><td><code>true</code> (default), <code>strict</code> (TDS 8) or <code>false</code> (login only)</td></tr>
+              <tr><td><code>trustServerCertificate</code></td><td>Accept any certificate, e.g. self-signed; <code>validate</code> warns</td></tr>
+              <tr><td><code>connectTimeout</code></td><td>Longest time to connect, default <code>30s</code></td></tr>
+            </tbody>
+          </table></div>
+          <h3>PostgreSQL (<code>postgres</code>)</h3>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><td><code>host</code>, <code>database</code>, <code>user</code> <span class="ref-req">required</span></td><td>Server, database and user</td></tr>
+              <tr><td><code>port</code></td><td>Default 5432</td></tr>
+              <tr><td><code>password</code></td><td>As <code>${secret:NAME}</code></td></tr>
+              <tr><td><code>sslMode</code></td><td><code>verify-full</code> (default), <code>verify-ca</code>, <code>require</code> or <code>disable</code></td></tr>
+              <tr><td><code>connectTimeout</code></td><td>Default <code>30s</code></td></tr>
+            </tbody>
+          </table></div>
+          <p>SQL receives values only as parameters (<code>@name</code> with the <code>params</code> field), never as text in the SQL – this protects against SQL injection. Example: <a href="bausteine.html#a-db-execute-en"><code>db.execute</code></a>.</p>
+        </article>
+      </div>
+    </div>

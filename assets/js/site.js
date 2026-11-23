@@ -96,7 +96,7 @@
   }
   toggle.addEventListener("click", function () { setMenu(mobile.dataset.open !== "true"); });
   mobile.querySelectorAll("a").forEach(function (a) { a.addEventListener("click", function () { setMenu(false); }); });
-  window.addEventListener("resize", function () { if (window.innerWidth > 920) setMenu(false); });
+  window.addEventListener("resize", function () { if (window.innerWidth > 1180) setMenu(false); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") setMenu(false); });
 
   // Kopieren

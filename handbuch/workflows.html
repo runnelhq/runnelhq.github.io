@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="de" data-theme="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Workflows – Runnel</title>
+  <meta name="description" content="Workflows in Runnel: Aufbau der Datei, Actions, Links und Bedingungen, Fehlerbehandlung, Join, Wiederholung je Eintrag, Ergebnisse und Sub-Workflows.">
+  <meta name="title-en" content="Workflows – Runnel">
+  <meta name="description-en" content="Workflows in Runnel: file layout, actions, links and conditions, error handling, join, repetition per entry, results and sub-workflows.">
+  <meta name="theme-color" content="#0A6DA6">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="../assets/img/runnel-icon-180.png">
+  <link rel="preload" href="../assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/runnel.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+
+<!-- Erzeugt von tools/build.py aus _src/guide-workflows.html – nicht von Hand bearbeiten. -->
+<!-- Wiederverwendbare Symbole -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></g></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7 10.5l5 5 5-5"/><path d="M5 20h14"/></g></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="logo" viewBox="0 0 204 64"><rect width="64" height="64" rx="15" fill="#0A6DA6"/><circle cx="14.5" cy="22" r="6.5" fill="#FFFFFF"/><path d="M25 22C33.5 22 30.5 42 37.5 42" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/><circle cx="48.5" cy="42" r="5.25" fill="none" stroke="#7CC5EB" stroke-width="4.75"/><path transform="translate(80 43.25) scale(0.020134)" fill="currentColor" d="M138 0V-1118H390V-931H402Q432 -1028 507 -1080.5Q582 -1133 678 -1133Q700 -1133 727 -1131Q754 -1129 773 -1126V-887Q757 -892 721 -896Q685 -900 650 -900Q578 -900 520.5 -869Q463 -838 430.5 -783.5Q398 -729 398 -658V0Z M1293 14Q1178 14 1091.5 -35Q1005 -84 957.5 -178.5Q910 -273 910 -407V-1118H1170V-447Q1170 -335 1228.5 -271Q1287 -207 1389 -207Q1458 -207 1512 -237Q1566 -267 1596.5 -325Q1627 -383 1627 -463V-1118H1888V0H1641L1638 -276H1658Q1611 -130 1519 -58Q1427 14 1293 14Z M2383.1 -655V0H2123.1V-1118H2369.1L2373.1 -842H2352.1Q2399.1 -987 2490.1 -1059.5Q2581.1 -1132 2718.1 -1132Q2833.1 -1132 2919.1 -1083Q3005.1 -1034 3052.6 -940Q3100.1 -846 3100.1 -711V0H2840.1V-671Q2840.1 -783 2782.1 -847Q2724.1 -911 2622.1 -911Q2553.1 -911 2499.1 -881Q2445.1 -851 2414.1 -793.5Q2383.1 -736 2383.1 -655Z M3595.1 -655V0H3335.1V-1118H3581.1L3585.1 -842H3564.1Q3611.1 -987 3702.1 -1059.5Q3793.1 -1132 3930.1 -1132Q4045.1 -1132 4131.1 -1083Q4217.1 -1034 4264.6 -940Q4312.1 -846 4312.1 -711V0H4052.1V-671Q4052.1 -783 3994.1 -847Q3936.1 -911 3834.1 -911Q3765.1 -911 3711.1 -881Q3657.1 -851 3626.1 -793.5Q3595.1 -736 3595.1 -655Z M5041.2 23Q4872.2 23 4750.7 -48Q4629.2 -119 4563.7 -248Q4498.2 -377 4498.2 -552Q4498.2 -725 4562.7 -855Q4627.2 -985 4745.7 -1058.5Q4864.2 -1132 5024.2 -1132Q5126.2 -1132 5218.7 -1099Q5311.2 -1066 5382.7 -997Q5454.2 -928 5494.7 -821.5Q5535.2 -715 5535.2 -568V-486H4621.2V-663H5406.2L5284.2 -611Q5284.2 -705 5255.2 -776.5Q5226.2 -848 5168.7 -888Q5111.2 -928 5025.2 -928Q4939.2 -928 4879.2 -887.5Q4819.2 -847 4787.7 -779.5Q4756.2 -712 4756.2 -629V-507Q4756.2 -401 4792.2 -328Q4828.2 -255 4893.2 -218Q4958.2 -181 5044.2 -181Q5101.2 -181 5147.7 -197.5Q5194.2 -214 5228.2 -246.5Q5262.2 -279 5279.2 -326L5518.2 -277Q5491.2 -187 5426.2 -119.5Q5361.2 -52 5263.7 -14.5Q5166.2 23 5041.2 23Z M5977.2 -1490V0H5717.2V-1490Z"/></symbol>
+  <!-- Strömungslinien (Gestaltungselement aus dem Corporate Design) -->
+  <symbol id="flow" viewBox="0 0 640 640" preserveAspectRatio="xMaxYMin meet">
+    <g fill="none" stroke-linecap="round">
+      <path d="M120 -40 C 340 -40 300 300 520 300 S 700 260 760 260" stroke="#0A6DA6" stroke-width="28" opacity=".55"/>
+      <path d="M60 120 C 280 120 240 460 460 460 S 660 420 760 420" stroke="#1688C6" stroke-width="18" opacity=".45"/>
+      <path d="M200 300 C 360 300 340 620 500 620 S 680 600 760 600" stroke="#3FA6DD" stroke-width="10" opacity=".35"/>
+    </g>
+    <circle cx="520" cy="300" r="34" fill="none" stroke="#7CC5EB" stroke-width="22"/>
+  </symbol>
+</svg>
+
+<a class="sr-only" href="#main" data-i18n="a11y.skip">Zum Inhalt springen</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html#top" aria-label="Runnel">
+      <svg viewBox="0 0 204 64" aria-hidden="true"><use href="#logo"/></svg>
+    </a>
+    <nav class="nav" aria-label="Hauptnavigation" data-i18n-attr="aria-label:nav.label">
+      <a href="../index.html#features" data-i18n="nav.features">Funktionen</a>
+      <a href="../index.html#model" data-i18n="nav.model">Modell</a>
+      <a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a>
+      <a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a>
+      <a href="../index.html#roadmap" data-i18n="nav.roadmap">Roadmap</a>
+      <a href="../handbuch/" aria-current="page" data-i18n="nav.guide">Handbuch</a>
+      <a href="../docs/" data-i18n="nav.docs">Doku</a>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Sprache" data-i18n-attr="aria-label:lang.label">
+        <button type="button" data-lang="de" aria-pressed="true" lang="de" title="Deutsch">DE</button>
+        <button type="button" data-lang="en" aria-pressed="false" lang="en" title="English">EN</button>
+      </div>
+      <a class="icon-btn gh-link" href="https://github.com/runnelhq/runnel" aria-label="GitHub"><svg aria-hidden="true"><use href="#i-github"/></svg></a>
+      <a class="btn btn--primary btn--sm" href="https://github.com/runnelhq/runnel/releases" data-i18n="cta.download">Herunterladen</a>
+      <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Menü öffnen" data-i18n-attr="aria-label:nav.open">
+        <svg aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-nav" id="mobile-nav" data-open="false">
+    <div class="wrap">
+      <ul>
+        <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+        <li><a href="../index.html#model" data-i18n="nav.model">Modell</a></li>
+        <li><a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a></li>
+        <li><a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a></li>
+        <li><a href="../index.html#roadmap" data-i18n="nav.roadmap">Roadmap</a></li>
+        <li><a href="../handbuch/" aria-current="page" data-i18n="nav.guide">Handbuch</a></li>
+        <li><a href="../docs/" data-i18n="nav.docs">Doku</a></li>
+      </ul>
+      <div class="mobile-ctas">
+        <a class="btn btn--primary" href="https://github.com/runnelhq/runnel/releases"><svg aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="cta.download">Herunterladen</span></a>
+        <a class="btn btn--outline" href="https://github.com/runnelhq/runnel"><svg aria-hidden="true"><use href="#i-github"/></svg>GitHub</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="docs-page">
+<div class="wrap docs-layout">
+      <details class="docs-side docs-side--mobile"><summary><span data-lang-block="de">Inhalt</span><span data-lang-block="en" hidden>Contents</span></summary><p class="docs-side-title"><span data-lang-block="de">Handbuch</span><span data-lang-block="en" hidden>User guide</span></p><ul class="docs-nav"><li><a href="../handbuch/"><span data-lang-block="de">Überblick</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../handbuch/installation.html"><span data-lang-block="de">Installation</span><span data-lang-block="en" hidden>Installation</span></a></li><li><a href="../handbuch/betrieb.html"><span data-lang-block="de">Betrieb</span><span data-lang-block="en" hidden>Operation</span></a></li><li><a href="../handbuch/projekt.html"><span data-lang-block="de">Projekt und Konfiguration</span><span data-lang-block="en" hidden>Project and configuration</span></a></li><li><a href="../handbuch/workflows.html" aria-current="page"><span data-lang-block="de">Workflows</span><span data-lang-block="en" hidden>Workflows</span></a></li><li><a href="../handbuch/pipelines.html"><span data-lang-block="de">Pipelines</span><span data-lang-block="en" hidden>Pipelines</span></a></li><li><a href="../handbuch/trigger.html"><span data-lang-block="de">Trigger</span><span data-lang-block="en" hidden>Triggers</span></a></li><li><a href="../handbuch/ausdruecke.html"><span data-lang-block="de">Ausdrücke</span><span data-lang-block="en" hidden>Expressions</span></a></li><li><a href="../handbuch/bausteine.html"><span data-lang-block="de">Bausteine (Referenz)</span><span data-lang-block="en" hidden>Components (reference)</span></a></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#beispiel">Beispiel</a></li><li><a href="#aufbau">Aufbau der Datei</a></li><li><a href="#actions">Actions</a></li><li><a href="#links">Links und Bedingungen</a></li><li><a href="#fehler">Fehler und Ergebnis</a></li><li><a href="#join">Join: mehrere eingehende Links</a></li><li><a href="#ergebnisse">Ergebnisse weiterverwenden</a></li><li><a href="#foreach">Wiederholung je Eintrag (forEach)</a></li><li><a href="#sub-workflows">Sub-Workflows und Pipelines aufrufen</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#example">Example</a></li><li><a href="#file">File layout</a></li><li><a href="#actions-en">Actions</a></li><li><a href="#links-en">Links and conditions</a></li><li><a href="#errors">Errors and result</a></li><li><a href="#join-en">Join: several incoming links</a></li><li><a href="#results">Using results</a></li><li><a href="#foreach-en">Repetition per entry (forEach)</a></li><li><a href="#sub-workflows-en">Calling sub-workflows and pipelines</a></li></ul></details>
+<aside class="docs-side docs-side--desktop" aria-label="Dokumentation"><p class="docs-side-title"><span data-lang-block="de">Handbuch</span><span data-lang-block="en" hidden>User guide</span></p><ul class="docs-nav"><li><a href="../handbuch/"><span data-lang-block="de">Überblick</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../handbuch/installation.html"><span data-lang-block="de">Installation</span><span data-lang-block="en" hidden>Installation</span></a></li><li><a href="../handbuch/betrieb.html"><span data-lang-block="de">Betrieb</span><span data-lang-block="en" hidden>Operation</span></a></li><li><a href="../handbuch/projekt.html"><span data-lang-block="de">Projekt und Konfiguration</span><span data-lang-block="en" hidden>Project and configuration</span></a></li><li><a href="../handbuch/workflows.html" aria-current="page"><span data-lang-block="de">Workflows</span><span data-lang-block="en" hidden>Workflows</span></a></li><li><a href="../handbuch/pipelines.html"><span data-lang-block="de">Pipelines</span><span data-lang-block="en" hidden>Pipelines</span></a></li><li><a href="../handbuch/trigger.html"><span data-lang-block="de">Trigger</span><span data-lang-block="en" hidden>Triggers</span></a></li><li><a href="../handbuch/ausdruecke.html"><span data-lang-block="de">Ausdrücke</span><span data-lang-block="en" hidden>Expressions</span></a></li><li><a href="../handbuch/bausteine.html"><span data-lang-block="de">Bausteine (Referenz)</span><span data-lang-block="en" hidden>Components (reference)</span></a></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#beispiel">Beispiel</a></li><li><a href="#aufbau">Aufbau der Datei</a></li><li><a href="#actions">Actions</a></li><li><a href="#links">Links und Bedingungen</a></li><li><a href="#fehler">Fehler und Ergebnis</a></li><li><a href="#join">Join: mehrere eingehende Links</a></li><li><a href="#ergebnisse">Ergebnisse weiterverwenden</a></li><li><a href="#foreach">Wiederholung je Eintrag (forEach)</a></li><li><a href="#sub-workflows">Sub-Workflows und Pipelines aufrufen</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#example">Example</a></li><li><a href="#file">File layout</a></li><li><a href="#actions-en">Actions</a></li><li><a href="#links-en">Links and conditions</a></li><li><a href="#errors">Errors and result</a></li><li><a href="#join-en">Join: several incoming links</a></li><li><a href="#results">Using results</a></li><li><a href="#foreach-en">Repetition per entry (forEach)</a></li><li><a href="#sub-workflows-en">Calling sub-workflows and pipelines</a></li></ul></aside>
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch</p>
+          <h1>Workflows</h1>
+          <p class="docs-lead">Ein Workflow steuert einen Ablauf: Actions laufen entlang von Links, nacheinander oder parallel. Jede Action endet mit Erfolg oder Fehler, und die Links entscheiden, wie es weitergeht.</p>
+
+          <h2 id="beispiel">Beispiel</h2>
+          <p>Wartet auf die Kundendatei des Vortags, lädt sie über eine Pipeline, archiviert sie – und meldet einen Fehler, wenn die Datei nicht kommt oder der Import scheitert. Geprüft mit <code>runnel validate</code>.</p>
+          <div class="code">
+  <div class="code-head"><span>workflows/nightly-import.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-179"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-179"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: nightly-import
+<span class="tok-t">description</span>: Imports the customers of the previous day
+<span class="tok-t">parameters</span>:
+  - <span class="tok-t">name</span>: DAY
+    <span class="tok-t">default</span>: <span class="tok-s">"{{ formatDate(addDays(today(), -1), 'yyyy-MM-dd') }}"</span>
+<span class="tok-t">outputs</span>:
+  - <span class="tok-t">name</span>: IMPORTED
+    <span class="tok-t">type</span>: integer
+    <span class="tok-t">value</span>: <span class="tok-s">"{{ results.load.output.transforms.write.written }}"</span>
+<span class="tok-t">settings</span>:
+  <span class="tok-t">timeout</span>: 2h
+  <span class="tok-t">maxConcurrentRuns</span>: 1
+<span class="tok-t">actions</span>:
+  - <span class="tok-t">id</span>: start
+    <span class="tok-t">type</span>: core.start
+  - <span class="tok-t">id</span>: wait-file
+    <span class="tok-t">type</span>: file.wait
+    <span class="tok-t">with</span>:
+      <span class="tok-t">path</span>: ${INBOX}\customers_${DAY}.csv
+      <span class="tok-t">maxWait</span>: 30m
+  - <span class="tok-t">id</span>: load
+    <span class="tok-t">type</span>: core.run-pipeline
+    <span class="tok-t">timeout</span>: 20m
+    <span class="tok-t">retry</span>: { <span class="tok-t">attempts</span>: 3, <span class="tok-t">backoff</span>: 1m }
+    <span class="tok-t">with</span>:
+      <span class="tok-t">pipeline</span>: pipelines/customers.pipeline.yaml
+      <span class="tok-t">params</span>:
+        <span class="tok-t">FILE</span>: ${INBOX}\customers_${DAY}.csv
+  - <span class="tok-t">id</span>: archive
+    <span class="tok-t">type</span>: file.move
+    <span class="tok-t">with</span>:
+      <span class="tok-t">source</span>: ${INBOX}\customers_${DAY}.csv
+      <span class="tok-t">target</span>: ${ARCHIVE}\
+  - <span class="tok-t">id</span>: report-error
+    <span class="tok-t">type</span>: core.log
+    <span class="tok-t">with</span>:
+      <span class="tok-t">level</span>: error
+      <span class="tok-t">message</span>: <span class="tok-s">"Import of {{ params.DAY }} failed"</span>
+  - <span class="tok-t">id</span>: failed
+    <span class="tok-t">type</span>: core.abort
+<span class="tok-t">links</span>:
+  - { <span class="tok-t">from</span>: start, <span class="tok-t">to</span>: wait-file }
+  - { <span class="tok-t">from</span>: wait-file, <span class="tok-t">to</span>: load }
+  - { <span class="tok-t">from</span>: load, <span class="tok-t">to</span>: archive }
+  - { <span class="tok-t">from</span>: wait-file, <span class="tok-t">to</span>: report-error, <span class="tok-t">when</span>: failure }
+  - { <span class="tok-t">from</span>: load, <span class="tok-t">to</span>: report-error, <span class="tok-t">when</span>: failure }
+  - { <span class="tok-t">from</span>: report-error, <span class="tok-t">to</span>: failed }</code></pre>
+</div>
+
+          <h2 id="aufbau">Aufbau der Datei</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Feld</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>kind</code>, <code>apiVersion</code>, <code>name</code></td><td>Pflicht: <code>Workflow</code>, <code>runnel/v1</code> und ein Name</td></tr>
+              <tr><td><code>description</code></td><td>Zweck des Workflows</td></tr>
+              <tr><td><code>parameters</code></td><td>Eingaben mit Typ, Standardwert und erlaubten Werten – siehe <a href="projekt.html#parameter">Parameter</a></td></tr>
+              <tr><td><code>outputs</code></td><td>Ergebnis des Workflows: <code>name</code>, optional <code>type</code> und <code>description</code>, <code>value</code> (meist ein Ausdruck); nur bei Erfolg ausgewertet</td></tr>
+              <tr><td><code>settings.timeout</code></td><td>Höchstdauer des ganzen Workflows, z. B. <code>2h</code></td></tr>
+              <tr><td><code>settings.maxConcurrentRuns</code></td><td>höchstens so viele gleichzeitige Läufe dieses Workflows auf dem Server</td></tr>
+              <tr><td><code>actions</code>, <code>links</code></td><td>die Schritte und ihre Verbindungen</td></tr>
+              <tr><td><code>layout</code></td><td>Positionen der Actions im Editor; ohne Einfluss auf die Ausführung</td></tr>
+            </tbody>
+          </table></div>
+          <p>Unbekannte Felder sind ein Fehler – Tippfehler fallen so sofort auf, meist mit Vorschlag. Zeitangaben haben eine Einheit: <code>30s</code>, <code>5m</code>, <code>2h</code>, <code>1h30m</code>.</p>
+
+          <h2 id="actions">Actions</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Feld</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>id</code> <span class="ref-req">Pflicht</span></td><td>eindeutig im Workflow; Buchstaben, Ziffern, <code>-</code> und <code>_</code>, beginnend mit einem Buchstaben</td></tr>
+              <tr><td><code>type</code> <span class="ref-req">Pflicht</span></td><td>Baustein, z. B. <code>file.copy</code> – alle in der <a href="bausteine.html">Referenz</a></td></tr>
+              <tr><td><code>with</code></td><td>Konfiguration des Bausteins; Werte mit <code>${…}</code> und <code>{{ … }}</code></td></tr>
+              <tr><td><code>description</code></td><td>Notiz zur Action</td></tr>
+              <tr><td><code>timeout</code></td><td>Höchstdauer je Versuch</td></tr>
+              <tr><td><code>retry</code></td><td><code>attempts</code> (Versuche insgesamt), <code>backoff</code> (Wartezeit vor dem zweiten Versuch), <code>strategy</code>: <code>fixed</code> oder <code>exponential</code></td></tr>
+              <tr><td><code>continueOnError</code></td><td>ein Fehler gilt als Erfolg; der Workflow läuft auf den Erfolgs-Links weiter</td></tr>
+              <tr><td><code>join</code>, <code>joinTimeout</code></td><td>Verhalten bei mehreren eingehenden Links – siehe <a href="#join">Join</a></td></tr>
+              <tr><td><code>forEach</code>, <code>parallel</code>, <code>stopOnError</code></td><td>Action je Eintrag einer Liste ausführen – siehe <a href="#foreach">Wiederholung</a></td></tr>
+            </tbody>
+          </table></div>
+          <p>Jeder Workflow hat genau eine Action <code>core.start</code> ohne eingehende Links. <code>core.success</code> beendet ihn sofort erfolgreich, <code>core.abort</code> als fehlgeschlagen.</p>
+
+          <h2 id="links">Links und Bedingungen</h2>
+<div class="code">
+  <div class="code-head"><span>links</span><button class="copy-btn" type="button" data-copy-from="code-183"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-183"><code class="lang-yaml"><span class="tok-t">links</span>:
+  - { <span class="tok-t">from</span>: start, <span class="tok-t">to</span>: fetch }                       <span class="tok-c"># when: success (Standard)</span>
+  - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: report, <span class="tok-t">when</span>: failure }
+  - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: cleanup, <span class="tok-t">when</span>: always }
+  - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: big, <span class="tok-t">when</span>: <span class="tok-s">"{{ result.output.rows &gt; 1000 }}"</span> }
+  - { <span class="tok-t">from</span>: retry-wait, <span class="tok-t">to</span>: fetch, <span class="tok-t">loop</span>: true }      <span class="tok-c"># Rücksprung, ausdrücklich erlaubt</span>
+  - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: notify, <span class="tok-t">disabled</span>: true }      <span class="tok-c"># bleibt im Design, wird nicht ausgeführt</span></code></pre>
+</div>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th><code>when</code></th><th>Symbol</th><th>Link wird verfolgt, wenn …</th></tr></thead>
+            <tbody>
+              <tr><td><code>success</code></td><td>✔</td><td>die Action erfolgreich war (Standard)</td></tr>
+              <tr><td><code>failure</code></td><td>✖</td><td>die Action fehlgeschlagen ist</td></tr>
+              <tr><td><code>always</code></td><td>∞</td><td>in jedem Fall</td></tr>
+              <tr><td><code>{{ … }}</code></td><td>ƒ</td><td>der Ausdruck wahr ist; <code>result</code> ist das Ergebnis der Action davor</td></tr>
+            </tbody>
+          </table></div>
+          <p>Hat eine Action mehrere erfüllte Links, laufen die Nachfolger <strong>parallel</strong>. Zyklen sind nur über Links mit <code>loop: true</code> erlaubt; eine Action läuft höchstens 10.000-mal je Lauf.</p>
+
+          <h2 id="fehler">Fehler und Ergebnis</h2>
+          <ul>
+            <li>Ein Fehler, den kein Fehler- oder Immer-Link behandelt, lässt den Workflow fehlschlagen – andere Zweige laufen vorher zu Ende.</li>
+            <li><code>retry</code> wiederholt eine Action, <code>timeout</code> begrenzt jeden Versuch, <code>continueOnError</code> ignoriert den Fehler.</li>
+            <li><code>core.check</code> lässt eine Bedingung prüfen und schlägt mit eigener Meldung fehl, wenn sie falsch ist.</li>
+            <li>Ein Abbruch (Strg+C, Editor, Timeout des Workflows) stoppt laufende Actions, folgt keinen Fehler-Links und endet mit Status <code>cancelled</code>.</li>
+          </ul>
+
+          <h2 id="join">Join: mehrere eingehende Links</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th><code>join</code></th><th>Verhalten</th></tr></thead>
+            <tbody>
+              <tr><td><code>all</code> (Standard)</td><td>startet einmal, wenn alle Vorgänger entschieden sind, die noch ein Signal liefern können. Zweige, die nicht durchlaufen werden, zählen als erledigt (Status <code>skipped</code>).</td></tr>
+              <tr><td><code>first</code></td><td>startet beim ersten eingehenden Link, die weiteren werden ignoriert</td></tr>
+              <tr><td><code>each</code></td><td>startet bei jedem eingehenden Link erneut</td></tr>
+            </tbody>
+          </table></div>
+          <p><code>joinTimeout</code> begrenzt bei <code>all</code> das Warten. Der Projektstandard steht in <code>project.yaml</code> unter <code>workflow.defaultJoin</code>. Als Sammelpunkt mehrerer Zweige eignet sich <code>core.dummy</code>. Beachte: <code>join: all</code> startet auch, wenn ein Zweig fehlgeschlagen ist – Fehlerpfade daher eigens modellieren.</p>
+
+          <h2 id="ergebnisse">Ergebnisse weiterverwenden</h2>
+          <p>Viele Actions liefern Ausgabedaten, z. B. <code>file.list</code> die Dateien, <code>http.request</code> Status und Antwort, <code>core.run-pipeline</code> die Zähler der Transforms. In Ausdrücken:</p>
+          <ul>
+            <li><code>result.output</code> – Ergebnis der Action, von der ein Link ausgeht (in Link-Bedingungen)</li>
+            <li><code>results.&lt;id&gt;.output</code> bzw. <code>results["id"].output</code> – Ergebnis einer beliebigen Action, die schon gelaufen ist</li>
+          </ul>
+          <p>Was <code>output</code> enthält, steht in der Beschreibung jedes Bausteins in der <a href="bausteine.html">Referenz</a>.</p>
+
+          <h2 id="foreach">Wiederholung je Eintrag (<code>forEach</code>)</h2>
+          <p>Jede Action kann für jeden Eintrag einer Liste laufen – etwa eine Pipeline je Datei. Der aktuelle Eintrag heißt <code>row</code>.</p>
+          <div class="code">
+  <div class="code-head"><span>workflows/each.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-180"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-180"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: each-file
+<span class="tok-t">actions</span>:
+  - <span class="tok-t">id</span>: start
+    <span class="tok-t">type</span>: core.start
+  - <span class="tok-t">id</span>: list
+    <span class="tok-t">type</span>: file.list
+    <span class="tok-t">with</span>:
+      <span class="tok-t">folder</span>: inbox
+      <span class="tok-t">pattern</span>: <span class="tok-s">"*.csv"</span>
+  - <span class="tok-t">id</span>: import
+    <span class="tok-t">type</span>: core.run-pipeline
+    <span class="tok-t">forEach</span>: <span class="tok-s">"{{ results.list.output }}"</span>
+    <span class="tok-t">parallel</span>: 2
+    <span class="tok-t">stopOnError</span>: false
+    <span class="tok-t">with</span>:
+      <span class="tok-t">pipeline</span>: pipelines/customers.pipeline.yaml
+      <span class="tok-t">params</span>:
+        <span class="tok-t">FILE</span>: <span class="tok-s">"{{ row.path }}"</span>
+  - <span class="tok-t">id</span>: summary
+    <span class="tok-t">type</span>: core.log
+    <span class="tok-t">with</span>:
+      <span class="tok-t">message</span>: <span class="tok-s">"{{ results.import.output.succeeded }} of {{ len(results.import.output.items) }} files imported"</span>
+<span class="tok-t">links</span>:
+  - { <span class="tok-t">from</span>: start, <span class="tok-t">to</span>: list }
+  - { <span class="tok-t">from</span>: list, <span class="tok-t">to</span>: import, <span class="tok-t">when</span>: <span class="tok-s">"{{ len(result.output) &gt; 0 }}"</span> }
+  - { <span class="tok-t">from</span>: import, <span class="tok-t">to</span>: summary, <span class="tok-t">when</span>: always }</code></pre>
+</div>
+          <ul>
+            <li><code>parallel</code>: so viele Einträge gleichzeitig (Standard 1).</li>
+            <li><code>stopOnError</code>: beim ersten Fehler aufhören (Standard) oder mit <code>false</code> alle Einträge versuchen.</li>
+            <li>Ergebnis: <code>items</code> (je Eintrag <code>row</code>, <code>success</code>, <code>error</code>, <code>output</code>), <code>succeeded</code> und <code>failed</code>.</li>
+          </ul>
+
+          <h2 id="sub-workflows">Sub-Workflows und Pipelines aufrufen</h2>
+          <ul>
+            <li><code>core.run-workflow</code> startet einen anderen Workflow mit <code>params</code>; dessen <code>outputs</code> sind das Ergebnis. Sein Log erscheint bei der aufrufenden Action.</li>
+            <li><code>core.run-pipeline</code> startet eine Pipeline; Ergebnis sind die Zähler je Transform (<code>output.transforms.&lt;id&gt;.read/written/errors</code>) und <code>output.errors</code>. Mit <code>rows</code> gehen Datensätze hinein, mit <code>core.to-result</code> kommen sie als <code>output.rows</code> zurück.</li>
+            <li>Pfade sind relativ zum Projekt und dürfen es nicht verlassen. Ist der Pfad dynamisch (<code>${…}</code>), schränkt <code>allowedTargets</code> die erlaubten Ziele ein.</li>
+            <li>Übergeben werden nur die genannten Parameter; der aufgerufene Workflow sieht seine eigenen Standardwerte und die Variablen des Projekts.</li>
+          </ul>
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" hidden lang="en">
+          <p class="docs-eyebrow">User guide</p>
+          <h1>Workflows</h1>
+          <p class="docs-lead">A workflow controls a process: actions run along links, in sequence or in parallel. Every action ends with success or failure, and the links decide what happens next.</p>
+
+          <h2 id="example">Example</h2>
+          <p>Waits for the previous day's customer file, loads it through a pipeline, archives it – and reports an error if the file doesn't arrive or the import fails. Checked with <code>runnel validate</code>.</p>
+          <div class="code">
+  <div class="code-head"><span>workflows/nightly-import.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-181"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-181"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: nightly-import
+<span class="tok-t">description</span>: Imports the customers of the previous day
+<span class="tok-t">parameters</span>:
+  - <span class="tok-t">name</span>: DAY
+    <span class="tok-t">default</span>: <span class="tok-s">"{{ formatDate(addDays(today(), -1), 'yyyy-MM-dd') }}"</span>
+<span class="tok-t">outputs</span>:
+  - <span class="tok-t">name</span>: IMPORTED
+    <span class="tok-t">type</span>: integer
+    <span class="tok-t">value</span>: <span class="tok-s">"{{ results.load.output.transforms.write.written }}"</span>
+<span class="tok-t">settings</span>:
+  <span class="tok-t">timeout</span>: 2h
+  <span class="tok-t">maxConcurrentRuns</span>: 1
+<span class="tok-t">actions</span>:
+  - <span class="tok-t">id</span>: start
+    <span class="tok-t">type</span>: core.start
+  - <span class="tok-t">id</span>: wait-file
+    <span class="tok-t">type</span>: file.wait
+    <span class="tok-t">with</span>:
+      <span class="tok-t">path</span>: ${INBOX}\customers_${DAY}.csv
+      <span class="tok-t">maxWait</span>: 30m
+  - <span class="tok-t">id</span>: load
+    <span class="tok-t">type</span>: core.run-pipeline
+    <span class="tok-t">timeout</span>: 20m
+    <span class="tok-t">retry</span>: { <span class="tok-t">attempts</span>: 3, <span class="tok-t">backoff</span>: 1m }
+    <span class="tok-t">with</span>:
+      <span class="tok-t">pipeline</span>: pipelines/customers.pipeline.yaml
+      <span class="tok-t">params</span>:
+        <span class="tok-t">FILE</span>: ${INBOX}\customers_${DAY}.csv
+  - <span class="tok-t">id</span>: archive
+    <span class="tok-t">type</span>: file.move
+    <span class="tok-t">with</span>:
+      <span class="tok-t">source</span>: ${INBOX}\customers_${DAY}.csv
+      <span class="tok-t">target</span>: ${ARCHIVE}\
+  - <span class="tok-t">id</span>: report-error
+    <span class="tok-t">type</span>: core.log
+    <span class="tok-t">with</span>:
+      <span class="tok-t">level</span>: error
+      <span class="tok-t">message</span>: <span class="tok-s">"Import of {{ params.DAY }} failed"</span>
+  - <span class="tok-t">id</span>: failed
+    <span class="tok-t">type</span>: core.abort
+<span class="tok-t">links</span>:
+  - { <span class="tok-t">from</span>: start, <span class="tok-t">to</span>: wait-file }
+  - { <span class="tok-t">from</span>: wait-file, <span class="tok-t">to</span>: load }
+  - { <span class="tok-t">from</span>: load, <span class="tok-t">to</span>: archive }
+  - { <span class="tok-t">from</span>: wait-file, <span class="tok-t">to</span>: report-error, <span class="tok-t">when</span>: failure }
+  - { <span class="tok-t">from</span>: load, <span class="tok-t">to</span>: report-error, <span class="tok-t">when</span>: failure }
+  - { <span class="tok-t">from</span>: report-error, <span class="tok-t">to</span>: failed }</code></pre>
+</div>
+
+          <h2 id="file">File layout</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>kind</code>, <code>apiVersion</code>, <code>name</code></td><td>Required: <code>Workflow</code>, <code>runnel/v1</code> and a name</td></tr>
+              <tr><td><code>description</code></td><td>Purpose of the workflow</td></tr>
+              <tr><td><code>parameters</code></td><td>Inputs with type, default and allowed values – see <a href="projekt.html#parameters">Parameters</a></td></tr>
+              <tr><td><code>outputs</code></td><td>Result of the workflow: <code>name</code>, optional <code>type</code> and <code>description</code>, <code>value</code> (usually an expression); evaluated only on success</td></tr>
+              <tr><td><code>settings.timeout</code></td><td>Maximum duration of the whole workflow, e.g. <code>2h</code></td></tr>
+              <tr><td><code>settings.maxConcurrentRuns</code></td><td>At most this many concurrent runs of this workflow on the server</td></tr>
+              <tr><td><code>actions</code>, <code>links</code></td><td>The steps and their connections</td></tr>
+              <tr><td><code>layout</code></td><td>Positions of the actions in the editor; no effect on execution</td></tr>
+            </tbody>
+          </table></div>
+          <p>Unknown fields are an error – typos show up immediately, usually with a suggestion. Durations have a unit: <code>30s</code>, <code>5m</code>, <code>2h</code>, <code>1h30m</code>.</p>
+
+          <h2 id="actions-en">Actions</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>id</code> <span class="ref-req">required</span></td><td>Unique in the workflow; letters, digits, <code>-</code> and <code>_</code>, starting with a letter</td></tr>
+              <tr><td><code>type</code> <span class="ref-req">required</span></td><td>Component, e.g. <code>file.copy</code> – all in the <a href="bausteine.html">reference</a></td></tr>
+              <tr><td><code>with</code></td><td>Configuration of the component; values with <code>${…}</code> and <code>{{ … }}</code></td></tr>
+              <tr><td><code>description</code></td><td>Note on the action</td></tr>
+              <tr><td><code>timeout</code></td><td>Maximum duration per attempt</td></tr>
+              <tr><td><code>retry</code></td><td><code>attempts</code> (total attempts), <code>backoff</code> (wait before the second attempt), <code>strategy</code>: <code>fixed</code> or <code>exponential</code></td></tr>
+              <tr><td><code>continueOnError</code></td><td>A failure counts as success; the workflow continues on the success links</td></tr>
+              <tr><td><code>join</code>, <code>joinTimeout</code></td><td>Behavior with several incoming links – see <a href="#join-en">Join</a></td></tr>
+              <tr><td><code>forEach</code>, <code>parallel</code>, <code>stopOnError</code></td><td>Run the action per entry of a list – see <a href="#foreach-en">Repetition</a></td></tr>
+            </tbody>
+          </table></div>
+          <p>Every workflow has exactly one <code>core.start</code> action without incoming links. <code>core.success</code> ends it immediately as succeeded, <code>core.abort</code> as failed.</p>
+
+          <h2 id="links-en">Links and conditions</h2>
+<div class="code">
+  <div class="code-head"><span>links</span><button class="copy-btn" type="button" data-copy-from="code-184"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-184"><code class="lang-yaml"><span class="tok-t">links</span>:
+  - { <span class="tok-t">from</span>: start, <span class="tok-t">to</span>: fetch }                       <span class="tok-c"># when: success (default)</span>
+  - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: report, <span class="tok-t">when</span>: failure }
+  - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: cleanup, <span class="tok-t">when</span>: always }
+  - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: big, <span class="tok-t">when</span>: <span class="tok-s">"{{ result.output.rows &gt; 1000 }}"</span> }
+  - { <span class="tok-t">from</span>: retry-wait, <span class="tok-t">to</span>: fetch, <span class="tok-t">loop</span>: true }      <span class="tok-c"># loop back, explicitly allowed</span>
+  - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: notify, <span class="tok-t">disabled</span>: true }      <span class="tok-c"># stays in the design, not executed</span></code></pre>
+</div>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th><code>when</code></th><th>Symbol</th><th>The link is followed if …</th></tr></thead>
+            <tbody>
+              <tr><td><code>success</code></td><td>✔</td><td>the action succeeded (default)</td></tr>
+              <tr><td><code>failure</code></td><td>✖</td><td>the action failed</td></tr>
+              <tr><td><code>always</code></td><td>∞</td><td>in any case</td></tr>
+              <tr><td><code>{{ … }}</code></td><td>ƒ</td><td>the expression is true; <code>result</code> is the result of the action before</td></tr>
+            </tbody>
+          </table></div>
+          <p>If an action has several satisfied links, the successors run <strong>in parallel</strong>. Cycles are only allowed via links with <code>loop: true</code>; an action runs at most 10,000 times per run.</p>
+
+          <h2 id="errors">Errors and result</h2>
+          <ul>
+            <li>A failure not handled by any failure or always link makes the workflow fail – other branches finish first.</li>
+            <li><code>retry</code> repeats an action, <code>timeout</code> limits each attempt, <code>continueOnError</code> ignores the failure.</li>
+            <li><code>core.check</code> checks a condition and fails with its own message if it is false.</li>
+            <li>A cancellation (Ctrl+C, editor, workflow timeout) stops running actions, follows no failure links and ends with status <code>cancelled</code>.</li>
+          </ul>
+
+          <h2 id="join-en">Join: several incoming links</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th><code>join</code></th><th>Behavior</th></tr></thead>
+            <tbody>
+              <tr><td><code>all</code> (default)</td><td>Starts once all predecessors that can still deliver a signal have decided. Branches that are not taken count as done (status <code>skipped</code>).</td></tr>
+              <tr><td><code>first</code></td><td>Starts on the first incoming link; further ones are ignored</td></tr>
+              <tr><td><code>each</code></td><td>Starts again for every incoming link</td></tr>
+            </tbody>
+          </table></div>
+          <p><code>joinTimeout</code> limits the wait with <code>all</code>. The project default is <code>workflow.defaultJoin</code> in <code>project.yaml</code>. <code>core.dummy</code> works well as a collection point for several branches. Note: <code>join: all</code> also starts if a branch failed – model failure paths separately.</p>
+
+          <h2 id="results">Using results</h2>
+          <p>Many actions return output data, e.g. <code>file.list</code> the files, <code>http.request</code> status and response, <code>core.run-pipeline</code> the transform counts. In expressions:</p>
+          <ul>
+            <li><code>result.output</code> – result of the action a link starts from (in link conditions)</li>
+            <li><code>results.&lt;id&gt;.output</code> or <code>results["id"].output</code> – result of any action that has already run</li>
+          </ul>
+          <p>What <code>output</code> contains is stated in each component's description in the <a href="bausteine.html">reference</a>.</p>
+
+          <h2 id="foreach-en">Repetition per entry (<code>forEach</code>)</h2>
+          <p>Any action can run for each entry of a list – e.g. a pipeline per file. The current entry is called <code>row</code>.</p>
+          <div class="code">
+  <div class="code-head"><span>workflows/each.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-182"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-182"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: each-file
+<span class="tok-t">actions</span>:
+  - <span class="tok-t">id</span>: start
+    <span class="tok-t">type</span>: core.start
+  - <span class="tok-t">id</span>: list
+    <span class="tok-t">type</span>: file.list
+    <span class="tok-t">with</span>:
+      <span class="tok-t">folder</span>: inbox
+      <span class="tok-t">pattern</span>: <span class="tok-s">"*.csv"</span>
+  - <span class="tok-t">id</span>: import
+    <span class="tok-t">type</span>: core.run-pipeline
+    <span class="tok-t">forEach</span>: <span class="tok-s">"{{ results.list.output }}"</span>
+    <span class="tok-t">parallel</span>: 2
+    <span class="tok-t">stopOnError</span>: false
+    <span class="tok-t">with</span>:
+      <span class="tok-t">pipeline</span>: pipelines/customers.pipeline.yaml
+      <span class="tok-t">params</span>:
+        <span class="tok-t">FILE</span>: <span class="tok-s">"{{ row.path }}"</span>
+  - <span class="tok-t">id</span>: summary
+    <span class="tok-t">type</span>: core.log
+    <span class="tok-t">with</span>:
+      <span class="tok-t">message</span>: <span class="tok-s">"{{ results.import.output.succeeded }} of {{ len(results.import.output.items) }} files imported"</span>
+<span class="tok-t">links</span>:
+  - { <span class="tok-t">from</span>: start, <span class="tok-t">to</span>: list }
+  - { <span class="tok-t">from</span>: list, <span class="tok-t">to</span>: import, <span class="tok-t">when</span>: <span class="tok-s">"{{ len(result.output) &gt; 0 }}"</span> }
+  - { <span class="tok-t">from</span>: import, <span class="tok-t">to</span>: summary, <span class="tok-t">when</span>: always }</code></pre>
+</div>
+          <ul>
+            <li><code>parallel</code>: this many entries at once (default 1).</li>
+            <li><code>stopOnError</code>: stop at the first error (default) or try all entries with <code>false</code>.</li>
+            <li>Result: <code>items</code> (per entry <code>row</code>, <code>success</code>, <code>error</code>, <code>output</code>), <code>succeeded</code> and <code>failed</code>.</li>
+          </ul>
+
+          <h2 id="sub-workflows-en">Calling sub-workflows and pipelines</h2>
+          <ul>
+            <li><code>core.run-workflow</code> starts another workflow with <code>params</code>; its <code>outputs</code> are the result. Its log appears with the calling action.</li>
+            <li><code>core.run-pipeline</code> starts a pipeline; the result is the counts per transform (<code>output.transforms.&lt;id&gt;.read/written/errors</code>) and <code>output.errors</code>. Records go in with <code>rows</code> and come back as <code>output.rows</code> via <code>core.to-result</code>.</li>
+            <li>Paths are relative to the project and must not leave it. If the path is dynamic (<code>${…}</code>), <code>allowedTargets</code> restricts the allowed targets.</li>
+            <li>Only the named parameters are passed; the called workflow sees its own defaults and the project's variables.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <svg viewBox="0 0 204 64" role="img" aria-label="Runnel"><use href="#logo"/></svg>
+        <p data-i18n="footer.claim">Leicht. Lokal. Im Fluss. Workflows und Datenintegration für Windows.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.product">Produkt</h4>
+        <ul>
+          <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+          <li><a href="../handbuch/" data-i18n="footer.guide">Handbuch</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/releases" data-i18n="footer.releases">Releases</a></li>
+          <li><a href="../index.html#roadmap">Roadmap</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.docs">Dokumentation</h4>
+        <ul>
+          <li><a href="../docs/" data-i18n="footer.devdocs">Entwicklerdoku</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md" data-i18n="footer.concept">Konzept</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/docs/adr" data-i18n="footer.adr">Entscheidungen (ADR)</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/design" data-i18n="footer.design">Corporate Design</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.project">Projekt</h4>
+        <ul>
+          <li><a href="https://github.com/runnelhq/runnel">GitHub</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/issues" data-i18n="footer.issues">Fehler melden</a></li>
+          <li><a href="../impressum.html" data-i18n="footer.imprint">Impressum</a></li>
+          <li><a href="../datenschutz.html" data-i18n="footer.privacy">Datenschutz</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n="footer.copy">© 2026 The Runnel authors · MIT-Lizenz</span>
+      <span data-i18n="footer.local">Mit KI entwickelt (Vibe Coding) · Diese Seite lädt keine externen Schriften oder Tracker.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/site.js"></script>
+</body>
+</html>

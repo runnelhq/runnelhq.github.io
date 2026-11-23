@@ -1,0 +1,28 @@
+kind: Workflow
+apiVersion: runnel/v1
+name: each-file
+actions:
+  - id: start
+    type: core.start
+  - id: list
+    type: file.list
+    with:
+      folder: inbox
+      pattern: "*.csv"
+  - id: import
+    type: core.run-pipeline
+    forEach: "{{ results.list.output }}"
+    parallel: 2
+    stopOnError: false
+    with:
+      pipeline: pipelines/customers.pipeline.yaml
+      params:
+        FILE: "{{ row.path }}"
+  - id: summary
+    type: core.log
+    with:
+      message: "{{ results.import.output.succeeded }} of {{ len(results.import.output.items) }} files imported"
+links:
+  - { from: start, to: list }
+  - { from: list, to: import, when: "{{ len(result.output) > 0 }}" }
+  - { from: import, to: summary, when: always }

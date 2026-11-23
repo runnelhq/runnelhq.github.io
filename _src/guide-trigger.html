@@ -1,0 +1,186 @@
+<!-- {
+  "out": "handbuch/trigger.html",
+  "section": "guide",
+  "title": {"de": "Trigger", "en": "Triggers"},
+  "description": {
+    "de": "Trigger in Runnel: Workflows und Pipelines nach Zeitplan, im Intervall, bei neuen Dateien oder per HTTP starten.",
+    "en": "Triggers in Runnel: start workflows and pipelines on a schedule, at intervals, for new files or via HTTP."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch</p>
+          <h1>Trigger</h1>
+          <p class="docs-lead">Trigger starten Workflows und Pipelines automatisch. Sie liegen als Dateien unter <code>triggers/</code> (auch in Unterordnern) und sind aktiv, solange <code>runnel serve</code> oder der Windows-Dienst läuft.</p>
+
+          <h2 id="gemeinsam">Gemeinsame Felder</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Feld</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>kind</code>, <code>apiVersion</code>, <code>name</code></td><td><code>Trigger</code>, <code>runnel/v1</code> und ein im Projekt eindeutiger Name</td></tr>
+              <tr><td><code>type</code></td><td><code>cron</code>, <code>interval</code>, <code>file</code> oder <code>http</code></td></tr>
+              <tr><td><code>target</code></td><td>Workflow oder Pipeline, relativ zum Projekt</td></tr>
+              <tr><td><code>environment</code></td><td>Environment des Laufs; leer: Standard-Environment</td></tr>
+              <tr><td><code>params</code></td><td>feste Werte für Parameter des Ziels</td></tr>
+              <tr><td><code>enabled</code></td><td><code>false</code>: bleibt im Projekt, startet aber nichts</td></tr>
+              <tr><td><code>with</code></td><td>Einstellungen des Typs (unten); unbekannte Felder sind ein Fehler</td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li>Geänderte Trigger-Dateien übernimmt der Server ohne Neustart.</li>
+            <li>Verpasste Zeitpunkte (Server lief nicht) werden nicht nachgeholt.</li>
+            <li><code>overlap: skip</code> (Standard) startet keinen Lauf, solange der vorige dieses Triggers noch läuft; <code>allow</code> erlaubt parallele Läufe.</li>
+            <li><code>runnel triggers D:\flows</code> listet alle Trigger mit ihrem nächsten Zeitpunkt; <code>runnel validate</code> prüft Zeitplan, Ziel, Environment und Parameter.</li>
+          </ul>
+<pre><code class="lang-bash" data-caption="runnel triggers">NAME        TYPE      SCHEDULE                      TARGET                                  NEXT
+import-api  http      POST /hooks/import/{DAY}      workflows/nightly-import.workflow.yaml  on request
+every15     interval  every 15m                     workflows/each.workflow.yaml            disabled
+inbox       file      new customers_*.csv in inbox  pipelines/customers.pipeline.yaml       on new files
+nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.workflow.yaml  2026-11-24 02:00 CET</code></pre>
+
+          <h2 id="cron">Zeitplan (<code>cron</code>)</h2>
+          {{snippet:guide-trigger-nightly.yaml|triggers/nightly.yaml}}
+          <ul>
+            <li><code>schedule</code>: Minute, Stunde, Tag, Monat, Wochentag – oder Kurzformen wie <code>@daily</code>, <code>@hourly</code>.</li>
+            <li><code>timezone</code>: z. B. <code>Europe/Berlin</code>; leer: Zeitzone des Rechners.</li>
+          </ul>
+
+          <h2 id="interval">Intervall (<code>interval</code>)</h2>
+          {{snippet:guide-trigger-every15.yaml|triggers/every15.yaml}}
+          <p><code>every</code> ist der Abstand (mindestens <code>1s</code>). Der erste Lauf kommt einen Abstand nach dem Start des Servers.</p>
+
+          <h2 id="file">Neue Dateien (<code>file</code>)</h2>
+          {{snippet:guide-trigger-inbox.yaml|triggers/inbox.yaml}}
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Feld</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>path</code></td><td>Ordner, relativ zum Projekt oder absolut, auch <code>\\server\freigabe\eingang</code>; Unterordner werden nicht durchsucht</td></tr>
+              <tr><td><code>pattern</code></td><td>Dateiname mit Platzhaltern, Groß-/Kleinschreibung egal; Standard <code>*</code></td></tr>
+              <tr><td><code>interval</code></td><td>Abstand der Abfragen, Standard <code>10s</code></td></tr>
+              <tr><td><code>param</code></td><td>Parameter des Ziels, der den Pfad bekommt</td></tr>
+              <tr><td><code>mode</code></td><td><code>each</code> (Standard): ein Lauf je Datei · <code>batch</code>: ein Lauf mit allen neuen Dateien als JSON-Liste (Parameter vom Typ <code>json</code>, z. B. für <code>forEach</code>)</td></tr>
+              <tr><td><code>existing</code></td><td><code>process</code> (Standard): beim Start vorhandene Dateien verarbeiten · <code>ignore</code></td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li>Der Ordner wird abgefragt (Polling) – das funktioniert auf Netzlaufwerken und UNC-Pfaden genauso wie lokal.</li>
+            <li>Eine Datei gilt als <strong>bereit</strong>, wenn sie bei zwei Abfragen nacheinander unverändert ist. So wird keine Datei verarbeitet, die noch geschrieben wird.</li>
+            <li><strong>Verarbeitet</strong> ist eine Datei, sobald ihr Lauf gestartet wurde. Verschieben oder Löschen ist Sache des Workflows, z. B. mit <code>file.move</code> ins Archiv.</li>
+            <li>Welche Dateien verarbeitet sind, weiß nur der laufende Server; nach einem Neustart gilt <code>existing</code> erneut.</li>
+          </ul>
+
+          <h2 id="http">HTTP (<code>http</code>)</h2>
+          {{snippet:guide-trigger-api.yaml|triggers/api.yaml}}
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Feld</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>method</code>, <code>path</code></td><td><code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code> oder <code>DELETE</code> und ein Pfad; Platzhalter <code>{NAME}</code> werden zu Parametern</td></tr>
+              <tr><td><code>auth</code></td><td><code>{ token: ${secret:…} }</code> oder <code>${env:…}</code> – Aufrufer senden <code>Authorization: Bearer &lt;token&gt;</code>; <code>auth: none</code> muss ausdrücklich stehen</td></tr>
+              <tr><td><code>response</code></td><td><code>accepted</code>: sofort <code>202</code> mit der Lauf-ID · <code>run</code>: der Aufrufer wartet auf die Antwort des Laufs</td></tr>
+              <tr><td><code>timeout</code></td><td>bei <code>run</code>: so lange wartet der Aufrufer höchstens (Standard <code>30s</code>), danach <code>504</code></td></tr>
+              <tr><td><code>maxConcurrent</code></td><td>laufende Läufe dieses Triggers, darüber <code>429</code></td></tr>
+              <tr><td><code>history</code></td><td><code>all</code>, <code>errors</code> oder <code>none</code> – welche Läufe behalten werden</td></tr>
+            </tbody>
+          </table></div>
+<pre><code class="lang-bash" data-caption="Aufruf (PowerShell)">curl.exe -X POST -H "Authorization: Bearer $env:IMPORT_TOKEN" http://127.0.0.1:7301/hooks/import/2026-11-22</code></pre>
+          <ul>
+            <li><strong>Parameter</strong> kommen aus Pfad, Query und Body (JSON-Objekt oder Formular); bei gleichem Namen gilt Pfad vor Query vor Body. Feste <code>params</code> des Triggers gewinnen. Fehlt ein Pflichtparameter oder passt ein Typ nicht: <code>400</code>, ohne Lauf.</li>
+            <li><strong>Antwort aus dem Workflow</strong> (<code>response: run</code>): Die erste <code>http.respond</code>-Action antwortet mit Status, Headern und Body; ohne sie sind die <code>outputs</code> die Antwort (<code>200</code>), ein gescheiterter Lauf gibt <code>500</code>.</li>
+            <li><strong>Antwort aus einer Pipeline:</strong> Der Transform <code>http.response</code> antwortet mit den Datensätzen als JSON. Ist das Ziel eine Pipeline, darf der Body eine JSON-Liste von Objekten sein; sie kommt über <code>core.from-result</code> als Datensätze an.</li>
+            <li>In Ausdrücken steht die Anfrage als <code>request</code> bereit: <code>request.method</code>, <code>.path</code>, <code>.headers</code>, <code>.query</code>, <code>.body</code>, <code>.client</code>.</li>
+            <li>HTTP-Trigger laufen auf einem eigenen Listener, Standard <code>127.0.0.1:7301</code>. Im Netz nur mit HTTPS – siehe <a href="betrieb.html#netz">Betrieb</a>.</li>
+          </ul>
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide</p>
+          <h1>Triggers</h1>
+          <p class="docs-lead">Triggers start workflows and pipelines automatically. They are files under <code>triggers/</code> (also in subfolders) and are active while <code>runnel serve</code> or the Windows service runs.</p>
+
+          <h2 id="common">Common fields</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>kind</code>, <code>apiVersion</code>, <code>name</code></td><td><code>Trigger</code>, <code>runnel/v1</code> and a name unique in the project</td></tr>
+              <tr><td><code>type</code></td><td><code>cron</code>, <code>interval</code>, <code>file</code> or <code>http</code></td></tr>
+              <tr><td><code>target</code></td><td>Workflow or pipeline, relative to the project</td></tr>
+              <tr><td><code>environment</code></td><td>Environment of the run; empty: default environment</td></tr>
+              <tr><td><code>params</code></td><td>Fixed values for the target's parameters</td></tr>
+              <tr><td><code>enabled</code></td><td><code>false</code>: stays in the project but starts nothing</td></tr>
+              <tr><td><code>with</code></td><td>Settings of the type (below); unknown fields are an error</td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li>The server picks up changed trigger files without a restart.</li>
+            <li>Missed times (server not running) are not caught up.</li>
+            <li><code>overlap: skip</code> (default) starts no run while the trigger's previous run is still going; <code>allow</code> allows parallel runs.</li>
+            <li><code>runnel triggers D:\flows</code> lists all triggers with their next time; <code>runnel validate</code> checks schedule, target, environment and parameters.</li>
+          </ul>
+<pre><code class="lang-bash" data-caption="runnel triggers">NAME        TYPE      SCHEDULE                      TARGET                                  NEXT
+import-api  http      POST /hooks/import/{DAY}      workflows/nightly-import.workflow.yaml  on request
+every15     interval  every 15m                     workflows/each.workflow.yaml            disabled
+inbox       file      new customers_*.csv in inbox  pipelines/customers.pipeline.yaml       on new files
+nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.workflow.yaml  2026-11-24 02:00 CET</code></pre>
+
+          <h2 id="cron-en">Schedule (<code>cron</code>)</h2>
+          {{snippet:guide-trigger-nightly.yaml|triggers/nightly.yaml}}
+          <ul>
+            <li><code>schedule</code>: minute, hour, day, month, weekday – or shortcuts such as <code>@daily</code>, <code>@hourly</code>.</li>
+            <li><code>timezone</code>: e.g. <code>Europe/Berlin</code>; empty: the machine's time zone.</li>
+          </ul>
+
+          <h2 id="interval-en">Interval (<code>interval</code>)</h2>
+          {{snippet:guide-trigger-every15.yaml|triggers/every15.yaml}}
+          <p><code>every</code> is the distance (at least <code>1s</code>). The first run comes one interval after the server starts.</p>
+
+          <h2 id="file-en">New files (<code>file</code>)</h2>
+          {{snippet:guide-trigger-inbox.yaml|triggers/inbox.yaml}}
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>path</code></td><td>Folder, relative to the project or absolute, also <code>\\server\share\inbox</code>; subfolders are not searched</td></tr>
+              <tr><td><code>pattern</code></td><td>File name with wildcards, case-insensitive; default <code>*</code></td></tr>
+              <tr><td><code>interval</code></td><td>Time between checks, default <code>10s</code></td></tr>
+              <tr><td><code>param</code></td><td>Parameter of the target that receives the path</td></tr>
+              <tr><td><code>mode</code></td><td><code>each</code> (default): one run per file · <code>batch</code>: one run with all new files as a JSON list (parameter of type <code>json</code>, e.g. for <code>forEach</code>)</td></tr>
+              <tr><td><code>existing</code></td><td><code>process</code> (default): process files present at start · <code>ignore</code></td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li>The folder is polled – this works on network drives and UNC paths just as locally.</li>
+            <li>A file is <strong>ready</strong> when it is unchanged across two consecutive checks. So no file is processed while it is still being written.</li>
+            <li>A file counts as <strong>processed</strong> as soon as its run has started. Moving or deleting it is up to the workflow, e.g. with <code>file.move</code> into an archive.</li>
+            <li>Only the running server knows which files were processed; after a restart, <code>existing</code> applies again.</li>
+          </ul>
+
+          <h2 id="http-en">HTTP (<code>http</code>)</h2>
+          {{snippet:guide-trigger-api.yaml|triggers/api.yaml}}
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>method</code>, <code>path</code></td><td><code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code> or <code>DELETE</code> and a path; placeholders <code>{NAME}</code> become parameters</td></tr>
+              <tr><td><code>auth</code></td><td><code>{ token: ${secret:…} }</code> or <code>${env:…}</code> – callers send <code>Authorization: Bearer &lt;token&gt;</code>; <code>auth: none</code> must be stated explicitly</td></tr>
+              <tr><td><code>response</code></td><td><code>accepted</code>: immediately <code>202</code> with the run ID · <code>run</code>: the caller waits for the run's response</td></tr>
+              <tr><td><code>timeout</code></td><td>With <code>run</code>: longest wait for the caller (default <code>30s</code>), then <code>504</code></td></tr>
+              <tr><td><code>maxConcurrent</code></td><td>Running runs of this trigger, beyond that <code>429</code></td></tr>
+              <tr><td><code>history</code></td><td><code>all</code>, <code>errors</code> or <code>none</code> – which runs are kept</td></tr>
+            </tbody>
+          </table></div>
+<pre><code class="lang-bash" data-caption="Calling it (PowerShell)">curl.exe -X POST -H "Authorization: Bearer $env:IMPORT_TOKEN" http://127.0.0.1:7301/hooks/import/2026-11-22</code></pre>
+          <ul>
+            <li><strong>Parameters</strong> come from path, query and body (JSON object or form); for the same name, path beats query beats body. The trigger's fixed <code>params</code> win. If a required parameter is missing or a type doesn't fit: <code>400</code>, no run.</li>
+            <li><strong>Response from the workflow</strong> (<code>response: run</code>): the first <code>http.respond</code> action answers with status, headers and body; without it the <code>outputs</code> are the response (<code>200</code>), a failed run returns <code>500</code>.</li>
+            <li><strong>Response from a pipeline:</strong> the <code>http.response</code> transform answers with the records as JSON. If the target is a pipeline, the body may be a JSON list of objects; it arrives as records via <code>core.from-result</code>.</li>
+            <li>In expressions the request is available as <code>request</code>: <code>request.method</code>, <code>.path</code>, <code>.headers</code>, <code>.query</code>, <code>.body</code>, <code>.client</code>.</li>
+            <li>HTTP triggers run on their own listener, default <code>127.0.0.1:7301</code>. On the network only with HTTPS – see <a href="betrieb.html#network">Operation</a>.</li>
+          </ul>
+        </article>
+      </div>
+    </div>

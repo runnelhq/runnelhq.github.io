@@ -1,0 +1,236 @@
+<!-- {
+  "out": "handbuch/betrieb.html",
+  "section": "guide",
+  "title": {"de": "Betrieb", "en": "Operation"},
+  "description": {
+    "de": "Runnel betreiben: prüfen, ausführen, Aufgabenplanung, Editor und Server, Windows-Dienst, HTTPS für Trigger, Logs und Läufe.",
+    "en": "Operating Runnel: validating, running, Task Scheduler, editor and server, Windows service, HTTPS for triggers, logs and runs."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch</p>
+          <h1>Betrieb</h1>
+          <p class="docs-lead">Dieselbe <code>runnel.exe</code> prüft Dateien, führt einmalig aus, startet Editor und Trigger oder läuft dauerhaft als Windows-Dienst.</p>
+
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Befehl</th><th>Zweck</th></tr></thead>
+            <tbody>
+              <tr><td><code>runnel validate &lt;pfad…&gt;</code></td><td>Workflows, Pipelines, Trigger und Projektdateien prüfen</td></tr>
+              <tr><td><code>runnel run &lt;datei&gt;</code></td><td>einen Workflow oder eine Pipeline einmal ausführen</td></tr>
+              <tr><td><code>runnel serve [projektordner]</code></td><td>Editor im Browser und Trigger starten</td></tr>
+              <tr><td><code>runnel triggers [projektordner]</code></td><td>Trigger mit Zeitplan und nächstem Zeitpunkt auflisten</td></tr>
+              <tr><td><code>runnel service …</code></td><td>Windows-Dienst einrichten und steuern</td></tr>
+              <tr><td><code>runnel catalog [typ]</code></td><td>Bausteine nachschlagen, mit <code>--json</code> als JSON Schema</td></tr>
+              <tr><td><code>runnel schema &lt;art&gt;</code></td><td>JSON Schema einer Dateiart: <code>project</code>, <code>environment</code>, <code>connection</code>, <code>trigger</code></td></tr>
+              <tr><td><code>runnel version</code></td><td>Version, Commit und Plattform</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="pruefen">Prüfen</h2>
+<pre><code class="lang-bash" data-caption="PowerShell">runnel validate D:\flows
+runnel validate --env prod --strict D:\flows\workflows\import.workflow.yaml</code></pre>
+          <p>Ordner werden rekursiv durchsucht. Geprüft werden Syntax und Felder, Links und Zyklen, unerreichbare Actions, Variablen gegen jedes Environment (oder nur gegen <code>--env</code>), Ausdrücke, Action- und Transform-Typen mit ihrer Konfiguration sowie Trigger und Connections. Meldungen erscheinen als <code>datei:zeile:spalte: error|warning: text</code>, oft mit Vorschlag („did you mean …?“). Bei Fehlern ist der Exit-Code 1, mit <code>--strict</code> auch bei Warnungen – passend als Schritt in einer CI.</p>
+
+          <h2 id="ausfuehren">Ausführen</h2>
+<pre><code class="lang-bash" data-caption="PowerShell">runnel run D:\flows\workflows\import.workflow.yaml
+runnel run --env prod --param DAYS=3 --param MODE=full D:\flows\workflows\import.workflow.yaml
+runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Option</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>--env &lt;name&gt;</code></td><td>Environment des Projekts; ohne Angabe das <code>defaultEnvironment</code></td></tr>
+              <tr><td><code>--param KEY=VALUE</code></td><td>Parameter setzen, mehrfach möglich</td></tr>
+              <tr><td><code>-v</code></td><td>zusätzlich Debug-Meldungen und jeden Start und jedes Ende einer Action bzw. eines Transforms</td></tr>
+            </tbody>
+          </table></div>
+          <p>Pipelines zeigen am Ende je Transform, wie viele Datensätze er gelesen, geschrieben und an Fehler-Links gegeben hat. <strong>Strg+C</strong> bricht einen Lauf sauber ab; ein zweites Strg+C beendet sofort.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Exit-Code</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>0</code></td><td>erfolgreich</td></tr>
+              <tr><td><code>1</code></td><td>fehlgeschlagen</td></tr>
+              <tr><td><code>2</code></td><td>nicht gestartet – ungültiger Workflow, fehlender Parameter oder falscher Aufruf</td></tr>
+              <tr><td><code>130</code></td><td>abgebrochen (Strg+C)</td></tr>
+            </tbody>
+          </table></div>
+
+          <h3>In der Windows-Aufgabenplanung</h3>
+          <p>Für einfache Zeitpläne ohne laufenden Server genügt die Aufgabenplanung: Programm <code>C:\Tools\Runnel\runnel.exe</code>, Argumente <code>run --env prod D:\flows\workflows\import.workflow.yaml</code>. Die Aufgabe zeigt als Ergebnis den Exit-Code (<code>0</code> bzw. <code>0x1</code> bei Fehler). Alternativ übernehmen <a href="trigger.html">Trigger</a> die Zeitpläne, solange der Server oder Dienst läuft.</p>
+
+          <h2 id="editor">Editor und Server</h2>
+<pre><code class="lang-bash" data-caption="PowerShell">runnel serve D:\flows
+# Editor: http://127.0.0.1:7300</code></pre>
+          <p>Der Editor zeigt Workflows und Pipelines als Canvas und als YAML, prüft beim Tippen, startet Läufe und zeigt sie live. Er arbeitet auf denselben Dateien wie die CLI – Änderungen aus Git oder einem Texteditor erkennt er beim Speichern (Konfliktdialog). Solange <code>serve</code> läuft, starten auch die Trigger des Projekts.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Option</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>--port &lt;n&gt;</code></td><td>Port auf <code>127.0.0.1</code>, Standard 7300; <code>0</code> wählt einen freien</td></tr>
+              <tr><td><code>--stop-timeout &lt;dauer&gt;</code></td><td>Zeit, die laufende Runs beim Beenden bekommen, z. B. <code>30s</code></td></tr>
+              <tr><td><code>--triggers &lt;adresse&gt;</code></td><td>Listener der HTTP-Trigger, Standard <code>127.0.0.1:7301</code>; <code>""</code> schaltet ihn ab</td></tr>
+            </tbody>
+          </table></div>
+          <p>Der Editor ist nur vom eigenen Rechner aus erreichbar. Eine Benutzerverwaltung gibt es bewusst nicht; mehrere Browser können gleichzeitig arbeiten.</p>
+
+          <h2 id="dienst">Windows-Dienst</h2>
+          <p>Für den Dauerbetrieb bedient ein Dienst das Projekt wie <code>runnel serve</code> und führt seine Trigger auch ohne angemeldeten Benutzer aus. Einrichten, Starten, Stoppen und Entfernen brauchen eine Konsole „als Administrator“.</p>
+<pre><code class="lang-bash" data-caption="PowerShell (als Administrator)">runnel service install D:\flows
+runnel service start
+runnel service status
+runnel service stop
+runnel service uninstall</code></pre>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Option von <code>install</code></th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>--name &lt;name&gt;</code></td><td>Name des Dienstes, Standard <code>runnel</code> – für mehrere Dienste, z. B. einen je Projekt (dann mit eigenem <code>--port</code> und <code>--triggers</code>)</td></tr>
+              <tr><td><code>--account &lt;konto&gt;</code></td><td>Standard <code>LocalService</code> (wenige Rechte, Netzfreigaben nur, wenn sie für jeden lesbar sind). Außerdem <code>NetworkService</code>, <code>LocalSystem</code>, ein Benutzerkonto <code>DOMAIN\user</code> (Passwort wird abgefragt, Recht „Als Dienst anmelden“ nötig) oder ein gMSA <code>DOMAIN\name$</code></td></tr>
+              <tr><td><code>--start &lt;art&gt;</code></td><td><code>delayed</code> (Standard: automatisch, kurz nach dem Hochfahren), <code>auto</code> oder <code>manual</code></td></tr>
+              <tr><td><code>--port</code>, <code>--triggers</code></td><td>wie bei <code>serve</code></td></tr>
+              <tr><td><code>--stop-timeout</code></td><td>Zeit für laufende Runs beim Stoppen, Standard 30 s</td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li><strong>Rechte:</strong> Das Dienstkonto muss den Projektordner lesen und die Ausgabeordner beschreiben können.</li>
+            <li><strong>Wiederherstellung:</strong> Nach einem Fehler startet Windows den Dienst nach 10 s, 1 min und 5 min neu.</li>
+            <li><strong>Stoppen:</strong> Keine neuen Läufe mehr; laufende bekommen <code>--stop-timeout</code>, danach werden sie abgebrochen.</li>
+            <li><strong>Log:</strong> vollständig in <code>%ProgramData%\runnel\logs\&lt;name&gt;.log</code> (mit Rotation), Start, Stopp, Warnungen und Fehler zusätzlich in der Ereignisanzeige.</li>
+            <li>Der Dienst startet die <code>runnel.exe</code>, mit der er eingerichtet wurde. Nach dem Verschieben der exe neu einrichten.</li>
+          </ul>
+
+          <h2 id="netz">HTTP-Trigger im Netz</h2>
+          <p>HTTP-Trigger lauschen standardmäßig nur lokal. Aus dem Netz erreichbar sind sie nur über HTTPS:</p>
+<pre><code class="lang-bash" data-caption="PowerShell">runnel serve --triggers 0.0.0.0:7301 --triggers-tls auto D:\flows
+runnel serve --triggers 0.0.0.0:7301 --triggers-cert C:\certs\runnel.crt --triggers-key C:\certs\runnel.key D:\flows</code></pre>
+          <ul>
+            <li><code>--triggers-tls auto</code> erzeugt einmal ein Zertifikat für <code>localhost</code>, den Rechnernamen und seine IP-Adressen und verwendet es wieder; das Log nennt den Fingerabdruck. Aufrufer vertrauen ihm, indem sie <code>triggers.crt</code> importieren (Dienst: <code>%ProgramData%\runnel\tls\</code>, sonst <code>%LOCALAPPDATA%\runnel\tls\</code>).</li>
+            <li><code>--triggers-cert</code> und <code>--triggers-key</code> nutzen ein eigenes Zertifikat als PEM, z. B. von der Firmen-CA; ein erneuertes wird ohne Neustart übernommen.</li>
+            <li>Reines HTTP im Netz nur mit <code>--triggers-insecure</code> – mit Warnung, denn Tokens und Daten gingen im Klartext.</li>
+          </ul>
+          <p>Details zu Pfaden, Token und Antworten: <a href="trigger.html#http">Trigger – HTTP</a>.</p>
+
+          <h2 id="logs">Logs und Läufe</h2>
+          <ul>
+            <li><strong>CLI:</strong> Das Log erscheint in der Konsole; mit <code>-v</code> ausführlich.</li>
+            <li><strong>Editor:</strong> Tab „Log“ unter dem Canvas, Status an jeder Action, Ergebnis im Panel.</li>
+            <li><strong>Server und Dienst:</strong> Die letzten 100 Läufe (dazu die letzten 100 von HTTP-Triggern) stehen im Speicher und im Editor; eine dauerhafte Historie ist geplant. Der Dienst schreibt zusätzlich die Log-Datei.</li>
+            <li><strong>Secrets</strong> werden in Log, Fehlern und Ergebnissen durch <code>***</code> ersetzt.</li>
+          </ul>
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide</p>
+          <h1>Operation</h1>
+          <p class="docs-lead">The same <code>runnel.exe</code> validates files, runs once, starts the editor and triggers, or runs continuously as a Windows service.</p>
+
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>runnel validate &lt;path…&gt;</code></td><td>Check workflows, pipelines, triggers and project files</td></tr>
+              <tr><td><code>runnel run &lt;file&gt;</code></td><td>Run a workflow or a pipeline once</td></tr>
+              <tr><td><code>runnel serve [project folder]</code></td><td>Start the browser-based editor and the triggers</td></tr>
+              <tr><td><code>runnel triggers [project folder]</code></td><td>List triggers with schedule and next time</td></tr>
+              <tr><td><code>runnel service …</code></td><td>Set up and control the Windows service</td></tr>
+              <tr><td><code>runnel catalog [type]</code></td><td>Look up components, with <code>--json</code> as JSON Schema</td></tr>
+              <tr><td><code>runnel schema &lt;kind&gt;</code></td><td>JSON Schema of a file kind: <code>project</code>, <code>environment</code>, <code>connection</code>, <code>trigger</code></td></tr>
+              <tr><td><code>runnel version</code></td><td>Version, commit and platform</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="validate">Validating</h2>
+<pre><code class="lang-bash" data-caption="PowerShell">runnel validate D:\flows
+runnel validate --env prod --strict D:\flows\workflows\import.workflow.yaml</code></pre>
+          <p>Folders are searched recursively. Checked are syntax and fields, links and cycles, unreachable actions, variables against every environment (or only <code>--env</code>), expressions, action and transform types with their configuration, as well as triggers and connections. Messages appear as <code>file:line:column: error|warning: text</code>, often with a suggestion (“did you mean …?”). On errors the exit code is 1, with <code>--strict</code> also on warnings – suitable as a CI step.</p>
+
+          <h2 id="run">Running</h2>
+<pre><code class="lang-bash" data-caption="PowerShell">runnel run D:\flows\workflows\import.workflow.yaml
+runnel run --env prod --param DAYS=3 --param MODE=full D:\flows\workflows\import.workflow.yaml
+runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Option</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>--env &lt;name&gt;</code></td><td>Environment of the project; without it the <code>defaultEnvironment</code></td></tr>
+              <tr><td><code>--param KEY=VALUE</code></td><td>Set a parameter, repeatable</td></tr>
+              <tr><td><code>-v</code></td><td>Also debug messages and every start and end of an action or transform</td></tr>
+            </tbody>
+          </table></div>
+          <p>Pipelines show at the end how many records each transform read, wrote and passed to error links. <strong>Ctrl+C</strong> cancels a run cleanly; a second Ctrl+C exits immediately.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Exit code</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>0</code></td><td>succeeded</td></tr>
+              <tr><td><code>1</code></td><td>failed</td></tr>
+              <tr><td><code>2</code></td><td>not started – invalid workflow, missing parameter or wrong call</td></tr>
+              <tr><td><code>130</code></td><td>cancelled (Ctrl+C)</td></tr>
+            </tbody>
+          </table></div>
+
+          <h3>In Windows Task Scheduler</h3>
+          <p>For simple schedules without a running server, Task Scheduler is enough: program <code>C:\Tools\Runnel\runnel.exe</code>, arguments <code>run --env prod D:\flows\workflows\import.workflow.yaml</code>. The task shows the exit code as its result (<code>0</code>, or <code>0x1</code> on failure). Alternatively, <a href="trigger.html">triggers</a> handle schedules while the server or service is running.</p>
+
+          <h2 id="editor-en">Editor and server</h2>
+<pre><code class="lang-bash" data-caption="PowerShell">runnel serve D:\flows
+# editor: http://127.0.0.1:7300</code></pre>
+          <p>The editor shows workflows and pipelines as a canvas and as YAML, checks while you type, starts runs and shows them live. It works on the same files as the CLI – changes from Git or a text editor are detected when saving (conflict dialog). While <code>serve</code> runs, the project's triggers start too.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Option</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>--port &lt;n&gt;</code></td><td>Port on <code>127.0.0.1</code>, default 7300; <code>0</code> picks a free one</td></tr>
+              <tr><td><code>--stop-timeout &lt;duration&gt;</code></td><td>Time running runs get when stopping, e.g. <code>30s</code></td></tr>
+              <tr><td><code>--triggers &lt;address&gt;</code></td><td>Listener of HTTP triggers, default <code>127.0.0.1:7301</code>; <code>""</code> turns it off</td></tr>
+            </tbody>
+          </table></div>
+          <p>The editor is reachable from the same machine only. There is deliberately no user management; several browsers can work at the same time.</p>
+
+          <h2 id="service">Windows service</h2>
+          <p>For continuous operation, a service serves the project like <code>runnel serve</code> and runs its triggers even without a logged-on user. Installing, starting, stopping and removing require a console “as administrator”.</p>
+<pre><code class="lang-bash" data-caption="PowerShell (as administrator)">runnel service install D:\flows
+runnel service start
+runnel service status
+runnel service stop
+runnel service uninstall</code></pre>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Option of <code>install</code></th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>--name &lt;name&gt;</code></td><td>Name of the service, default <code>runnel</code> – for several services, e.g. one per project (each with its own <code>--port</code> and <code>--triggers</code>)</td></tr>
+              <tr><td><code>--account &lt;account&gt;</code></td><td>Default <code>LocalService</code> (few rights, network shares only if readable by everyone). Also <code>NetworkService</code>, <code>LocalSystem</code>, a user account <code>DOMAIN\user</code> (password is prompted, needs “Log on as a service”) or a gMSA <code>DOMAIN\name$</code></td></tr>
+              <tr><td><code>--start &lt;type&gt;</code></td><td><code>delayed</code> (default: automatic, shortly after boot), <code>auto</code> or <code>manual</code></td></tr>
+              <tr><td><code>--port</code>, <code>--triggers</code></td><td>as for <code>serve</code></td></tr>
+              <tr><td><code>--stop-timeout</code></td><td>Time for running runs when stopping, default 30 s</td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li><strong>Permissions:</strong> the service account must be able to read the project folder and write to output folders.</li>
+            <li><strong>Recovery:</strong> after a failure, Windows restarts the service after 10 s, 1 min and 5 min.</li>
+            <li><strong>Stopping:</strong> no new runs; running ones get <code>--stop-timeout</code>, then they are cancelled.</li>
+            <li><strong>Log:</strong> in full in <code>%ProgramData%\runnel\logs\&lt;name&gt;.log</code> (rotated); start, stop, warnings and errors also in the Event Log.</li>
+            <li>The service starts the <code>runnel.exe</code> it was set up with. After moving the executable, set it up again.</li>
+          </ul>
+
+          <h2 id="network">HTTP triggers on the network</h2>
+          <p>HTTP triggers listen locally by default. They are reachable from the network over HTTPS only:</p>
+<pre><code class="lang-bash" data-caption="PowerShell">runnel serve --triggers 0.0.0.0:7301 --triggers-tls auto D:\flows
+runnel serve --triggers 0.0.0.0:7301 --triggers-cert C:\certs\runnel.crt --triggers-key C:\certs\runnel.key D:\flows</code></pre>
+          <ul>
+            <li><code>--triggers-tls auto</code> creates a certificate once for <code>localhost</code>, the machine name and its IP addresses and reuses it; the log shows its fingerprint. Callers trust it by importing <code>triggers.crt</code> (service: <code>%ProgramData%\runnel\tls\</code>, otherwise <code>%LOCALAPPDATA%\runnel\tls\</code>).</li>
+            <li><code>--triggers-cert</code> and <code>--triggers-key</code> use your own PEM certificate, e.g. from the company CA; a renewed one is picked up without restart.</li>
+            <li>Plain HTTP on the network only with <code>--triggers-insecure</code> – with a warning, since tokens and data would travel in plain text.</li>
+          </ul>
+          <p>Details on paths, tokens and responses: <a href="trigger.html#http-en">Triggers – HTTP</a>.</p>
+
+          <h2 id="logs-en">Logs and runs</h2>
+          <ul>
+            <li><strong>CLI:</strong> the log appears in the console; detailed with <code>-v</code>.</li>
+            <li><strong>Editor:</strong> “Log” tab below the canvas, status on every action, result in the panel.</li>
+            <li><strong>Server and service:</strong> the last 100 runs (plus the last 100 from HTTP triggers) are kept in memory and shown in the editor; a persistent history is planned. The service also writes the log file.</li>
+            <li><strong>Secrets</strong> are replaced by <code>***</code> in log, errors and results.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
