@@ -577,3 +577,18 @@ a.docs-card:hover { border-color: var(--ring); box-shadow: var(--rn-shadow-sm); 
 .status--done::before { content: "✔"; font-size: 11px; }
 @media (max-width: 1080px) { .roadmap { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .roadmap { grid-template-columns: 1fr; } }
+
+/* ---------- Hinweis: KI-/Vibe-Coding-Projekt (im dunklen Hero) ---------- */
+.ai-note {
+  position: relative; margin-top: 64px; max-width: 760px;
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 18px 20px; border-radius: var(--rn-radius-lg);
+  border: 1px solid rgb(255 255 255 / 0.12); background: rgb(255 255 255 / 0.04);
+  color: var(--rn-tiefe-300); font-size: 15px; line-height: 1.6;
+}
+.ai-note-icon { flex: none; display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: var(--rn-radius-md); background: rgb(255 255 255 / 0.06); color: var(--rn-strom-300); }
+.ai-note-icon svg { width: 22px; height: 22px; }
+.ai-note-title { color: #fff; font-weight: 600; margin-bottom: 2px; }
+.ai-note a { color: var(--rn-strom-300); }
+@media (max-width: 960px) { .ai-note { margin-top: 40px; } }
+@media (max-width: 480px) { .ai-note { padding: 16px; gap: 12px; } }
