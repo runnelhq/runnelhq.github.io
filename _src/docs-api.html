@@ -1,0 +1,237 @@
+<!-- {
+  "out": "docs/api.html",
+  "title": {"de": "Server-API", "en": "Server API"},
+  "description": {
+    "de": "Die HTTP-API von runnel serve: Grundsätze, Endpunkte, Konfliktschutz mit ETag, Läufe, Live-Ereignisse und HTTP-Trigger.",
+    "en": "The HTTP API of runnel serve: principles, endpoints, ETag conflict protection, runs, live events and HTTP triggers."
+  },
+  "nav": "docs/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Entwicklerdoku · Server</p>
+          <h1>Server-API</h1>
+          <p class="docs-lead">Die API von <code>runnel serve</code> ist die einzige Schnittstelle des Editors zum Server – und ebenso für Skripte nutzbar. Außerhalb von <code>/api/v1</code> liefert der Server den eingebetteten <a href="editor.html">Editor</a> aus.</p>
+          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/API.md"><code>docs/dev/API.md</code></a> (Stand S38c) – mit allen Feldern und den Endpunkten zum Bearbeiten, Kopieren, Felder ermitteln und zur Datenvorschau. Grundlagen: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0016-live-events-sse.md">ADR 0016</a> (Live-Ereignisse), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0018-http-trigger.md">ADR 0018</a> (HTTP-Trigger).</p>
+<pre><code class="lang-bash" data-caption="Server starten">runnel serve examples/hello     # Projekt im Ordner oder darüber, Port 7300
+runnel serve --port 0 .          # freier Port; die Ausgabe nennt die Adresse</code></pre>
+
+          <h2 id="grundsaetze">Grundsätze</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><th scope="row">Adresse</th><td>nur <code>127.0.0.1</code>; HTTP-Trigger haben einen eigenen Listener</td></tr>
+              <tr><th scope="row">Präfix</th><td>alle Endpunkte unter <code>/api/v1</code></td></tr>
+              <tr><th scope="row">Format</th><td>JSON (UTF-8, eingerückt); Dateiinhalte als Rohdaten</td></tr>
+              <tr><th scope="row">Fehler</th><td>Statuscode und <code>{"error": "…"}</code> mit englischer, verständlicher Meldung</td></tr>
+              <tr><th scope="row">Schutz</th><td>Anfragen müssen an <code>localhost</code>, <code>127.0.0.1</code> oder <code>[::1]</code> gerichtet sein (Schutz vor DNS-Rebinding); ein <code>Origin</code>-Header muss zum Server passen (Schutz vor fremden Webseiten). Sonst <code>403</code></td></tr>
+              <tr><th scope="row">Pfade</th><td>relativ zum Projektordner, Trenner <code>/</code>; versteckte Einträge, <code>..</code>, <code>\</code>, <code>:</code> und unter Windows reservierte Namen (<code>CON</code>, <code>NUL</code> …) werden mit <code>400</code> abgelehnt</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="endpunkte">Endpunkte</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Methode</th><th>Pfad</th><th>Ergebnis</th></tr></thead>
+            <tbody>
+              <tr><td>GET</td><td><code>/version</code></td><td>Version, Commit, Datum, Go-Version, OS, Architektur – wie <code>runnel version --json</code></td></tr>
+              <tr><td>GET</td><td><code>/projects/current</code></td><td>Name, Ordner, Environments und Standard-Environment</td></tr>
+              <tr><td>GET</td><td><code>/projects/current/tree</code></td><td>Dateibaum mit Art je Datei (<code>workflow</code>, <code>pipeline</code>, <code>project</code>, <code>environment</code>, <code>trigger</code>, <code>document</code>, <code>image</code>, <code>other</code>)</td></tr>
+              <tr><td>GET · PUT · DELETE</td><td><code>/files/{path}</code></td><td>Datei lesen (mit <code>ETag</code>), speichern (max. 10 MiB) oder löschen – mit Konfliktschutz</td></tr>
+              <tr><td>POST · DELETE</td><td><code>/folders</code></td><td>Ordner anlegen bzw. leeren Ordner löschen</td></tr>
+              <tr><td>POST</td><td><code>/rename</code></td><td>Datei oder Ordner umbenennen oder verschieben, Verweise auf Wunsch mit ändern</td></tr>
+              <tr><td>GET</td><td><code>/references/{path}</code></td><td>Stellen, die auf eine Datei verweisen (Trigger-Ziele, Aufrufe mit festem Pfad)</td></tr>
+              <tr><td>GET</td><td><code>/variables</code></td><td>Variablen des Projekts mit Werten je Ebene und Fundstellen</td></tr>
+              <tr><td>GET</td><td><code>/schemas/{kind}</code></td><td>JSON Schema einer Dateiart (<code>project</code>, <code>environment</code>, <code>trigger</code>) – wie <code>runnel schema</code></td></tr>
+              <tr><td>GET</td><td><code>/catalog</code></td><td>Descriptors aller Actions und Transforms – wie <code>runnel catalog --json</code></td></tr>
+              <tr><td>GET</td><td><code>/expressions</code></td><td>Referenz für den Ausdruckseditor: Kontext, Funktionen, Variablen</td></tr>
+              <tr><td>POST</td><td><code>/validate</code></td><td>Workflow, Pipeline oder Projektdatei prüfen – gespeichert oder mit ungespeichertem <code>content</code>, genau wie <code>runnel validate</code></td></tr>
+              <tr><td>POST</td><td><code>/workflows/edit</code>, <code>/pipelines/edit</code></td><td>Änderung vom Canvas zeilengenau auf den Text anwenden (nicht speichern)</td></tr>
+              <tr><td>POST</td><td><code>/copy</code></td><td>Actions oder Transforms als YAML-Text für die Zwischenablage</td></tr>
+              <tr><td>POST</td><td><code>/pipelines/fields</code></td><td>Felder eines Eingabe-Transforms ermitteln</td></tr>
+              <tr><td>POST</td><td><code>/preview</code></td><td>Datenvorschau einer Pipeline bis zu einem Transform</td></tr>
+              <tr><td>POST · GET</td><td><code>/runs</code>, <code>/runs/{id}</code></td><td>Lauf starten; Läufe auflisten bzw. mit Status je Action und Log lesen</td></tr>
+              <tr><td>POST</td><td><code>/runs/{id}/cancel</code></td><td>Lauf abbrechen (<code>202</code>; bereits beendet <code>409</code>)</td></tr>
+              <tr><td>GET</td><td><code>/events</code></td><td>Live-Ereignisse als Server-Sent Events</td></tr>
+              <tr><td>GET</td><td><code>/triggers</code></td><td>Trigger des Projekts mit Zeitplan, nächstem Zeitpunkt und letztem Ergebnis</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="etag">Konfliktschutz (ETag)</h2>
+          <p>Jede Datei hat ein <code>ETag</code> (Hash des Inhalts). Gespeichert wird nur, wenn sich die Datei seit dem Laden nicht geändert hat – egal ob durch einen anderen Browser, einen Texteditor oder <code>git pull</code>.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Anfrage</th><th>Datei existiert</th><th>Datei fehlt</th></tr></thead>
+            <tbody>
+              <tr><td><code>PUT</code> ohne <code>If-Match</code></td><td><code>428</code> – ETag erforderlich</td><td><code>201</code> – angelegt</td></tr>
+              <tr><td><code>PUT</code> mit passendem <code>If-Match</code></td><td><code>200</code> – ersetzt</td><td>–</td></tr>
+              <tr><td><code>PUT</code> mit anderem <code>If-Match</code></td><td><code>412</code> – „changed in the meantime“</td><td><code>412</code> – „deleted in the meantime“</td></tr>
+              <tr><td><code>DELETE</code> ohne / mit passendem / mit anderem <code>If-Match</code></td><td><code>428</code> / <code>204</code> / <code>412</code></td><td><code>428</code> / <code>412</code> / <code>412</code></td></tr>
+            </tbody>
+          </table></div>
+          <p><code>If-Match: *</code> überschreibt bewusst ohne Prüfung. Gespeichert wird atomar: temporäre Datei, dann Umbenennen.</p>
+
+          <h2 id="laeufe">Läufe</h2>
+          {{snippet:api-runs.sh|Lauf starten und verfolgen}}
+          <p>Gestartet wird die <strong>gespeicherte</strong> Datei – Workflow oder Pipeline –, vorher wird sie wie bei <code>runnel run</code> geprüft.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Antwort</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>201</code> + Run, Header <code>Location</code></td><td>Lauf gestartet; er läuft im Hintergrund weiter</td></tr>
+              <tr><td><code>422</code></td><td>Fehler in Workflow oder Projektdateien (Format wie <code>/validate</code>)</td></tr>
+              <tr><td><code>400</code></td><td>unbekanntes Environment, Parameter fehlen oder passen nicht zum Typ</td></tr>
+              <tr><td><code>429</code></td><td>Limit gleichzeitiger Läufe erreicht (<code>settings.maxConcurrentRuns</code>)</td></tr>
+              <tr><td><code>404</code> / <code>503</code></td><td>Datei nicht gefunden / Server wird beendet</td></tr>
+            </tbody>
+          </table></div>
+          {{snippet:api-run.json|Run}}
+          <p><code>status</code> ist <code>running</code>, <code>succeeded</code>, <code>failed</code> oder <code>cancelled</code>; <code>trigger</code> nennt, was den Lauf gestartet hat (<code>cron:&lt;name&gt;</code>, <code>interval:…</code>, <code>file:…</code>, <code>http:…</code>). <code>GET /runs/{id}</code> ergänzt den Status je Action und das Log (höchstens 5.000 Zeilen). Läufe liegen nur im Speicher – die letzten 100, dazu die letzten 100 von HTTP-Triggern; eine dauerhafte Historie folgt mit S26, ohne dass sich die API ändert.</p>
+
+          <h2 id="events">Live-Ereignisse (<code>/events</code>)</h2>
+          {{snippet:api-event.txt|Beispiel}}
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Ereignis</th><th>Zusätzliche Felder</th></tr></thead>
+            <tbody>
+              <tr><td><code>run.started</code></td><td><code>message</code> (Name)</td></tr>
+              <tr><td><code>action.started</code></td><td><code>actionId</code>, <code>actionType</code></td></tr>
+              <tr><td><code>log</code></td><td><code>actionId</code>, <code>level</code>, <code>message</code></td></tr>
+              <tr><td><code>action.finished</code></td><td><code>status</code>, <code>durationMs</code>, <code>error</code>; bei Transforms <code>counts</code> und <code>linkRows</code></td></tr>
+              <tr><td><code>action.skipped</code>, <code>action.waiting</code></td><td><code>status</code>, bei <code>waiting</code> eine <code>message</code></td></tr>
+              <tr><td><code>run.finished</code></td><td><code>status</code>, <code>durationMs</code>, <code>error</code>, <code>outputs</code></td></tr>
+              <tr><td><code>reset</code></td><td>verpasste Ereignisse sind nicht mehr vorrätig; Zustand über <code>GET /runs</code> neu laden</td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li>Ohne Angabe kommen nur <strong>neue</strong> Ereignisse. Mit <code>Last-Event-ID</code> oder <code>?since=&lt;seq&gt;</code> folgen zuerst die verpassten; vorrätig sind die letzten 2.000.</li>
+            <li><code>?run=&lt;id&gt;</code> liefert nur die Ereignisse eines Laufs. Alle 15 s hält ein Kommentar (<code>: ping</code>) die Verbindung offen.</li>
+          </ul>
+
+          <h2 id="http-trigger">HTTP-Trigger</h2>
+          <p>HTTP-Trigger antworten <strong>nicht</strong> unter <code>/api/v1</code>, sondern auf einem eigenen Listener (<code>--triggers</code>, Standard <code>127.0.0.1:7301</code>; im Netz per HTTPS) unter den Pfaden ihrer Trigger-Dateien.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Antwort</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>202</code> + <code>{"runId", "status"}</code></td><td><code>response: accepted</code>: Lauf gestartet</td></tr>
+              <tr><td>Antwort von <code>http.respond</code></td><td><code>response: run</code>: die erste Antwort des Laufs; ohne <code>http.respond</code> <code>200</code> mit den <code>outputs</code> bzw. <code>500</code></td></tr>
+              <tr><td><code>504</code></td><td><code>response: run</code>: keine Antwort innerhalb von <code>timeout</code>; der Lauf läuft weiter</td></tr>
+              <tr><td><code>400</code> / <code>401</code> / <code>403</code></td><td>Parameter fehlt oder passt nicht / Token fehlt oder falsch / Anfrage aus einer Webseite</td></tr>
+              <tr><td><code>404</code> / <code>405</code></td><td>kein Trigger für den Pfad / andere Methode</td></tr>
+              <tr><td><code>413</code> / <code>415</code> / <code>429</code></td><td>Body über 1 MiB / weder JSON noch Formular / Limit gleichzeitiger Läufe</td></tr>
+            </tbody>
+          </table></div>
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">Developer docs · Server</p>
+          <h1>Server API</h1>
+          <p class="docs-lead">The API of <code>runnel serve</code> is the editor's only interface to the server – and just as usable from scripts. Outside <code>/api/v1</code> the server delivers the embedded <a href="editor.html">editor</a>.</p>
+          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/API.md"><code>docs/dev/API.md</code></a> (as of S38c) – with every field and the endpoints for editing, copying, field detection and data preview. Background: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0016-live-events-sse.md">ADR 0016</a> (live events), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0018-http-trigger.md">ADR 0018</a> (HTTP triggers).</p>
+<pre><code class="lang-bash" data-caption="Start the server">runnel serve examples/hello     # project in the folder or above, port 7300
+runnel serve --port 0 .          # free port; the output names the address</code></pre>
+
+          <h2 id="principles">Principles</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><th scope="row">Address</th><td><code>127.0.0.1</code> only; HTTP triggers have their own listener</td></tr>
+              <tr><th scope="row">Prefix</th><td>all endpoints under <code>/api/v1</code></td></tr>
+              <tr><th scope="row">Format</th><td>JSON (UTF-8, indented); file contents as raw data</td></tr>
+              <tr><th scope="row">Errors</th><td>Status code and <code>{"error": "…"}</code> with an understandable English message</td></tr>
+              <tr><th scope="row">Protection</th><td>Requests must target <code>localhost</code>, <code>127.0.0.1</code> or <code>[::1]</code> (DNS rebinding protection); an <code>Origin</code> header must match the server (protection against other web pages). Otherwise <code>403</code></td></tr>
+              <tr><th scope="row">Paths</th><td>relative to the project folder, separator <code>/</code>; hidden entries, <code>..</code>, <code>\</code>, <code>:</code> and names reserved on Windows (<code>CON</code>, <code>NUL</code> …) are rejected with <code>400</code></td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="endpoints">Endpoints</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Method</th><th>Path</th><th>Result</th></tr></thead>
+            <tbody>
+              <tr><td>GET</td><td><code>/version</code></td><td>Version, commit, date, Go version, OS, architecture – like <code>runnel version --json</code></td></tr>
+              <tr><td>GET</td><td><code>/projects/current</code></td><td>Name, folder, environments and default environment</td></tr>
+              <tr><td>GET</td><td><code>/projects/current/tree</code></td><td>File tree with a kind per file (<code>workflow</code>, <code>pipeline</code>, <code>project</code>, <code>environment</code>, <code>trigger</code>, <code>document</code>, <code>image</code>, <code>other</code>)</td></tr>
+              <tr><td>GET · PUT · DELETE</td><td><code>/files/{path}</code></td><td>Read a file (with <code>ETag</code>), save it (max. 10 MiB) or delete it – with conflict protection</td></tr>
+              <tr><td>POST · DELETE</td><td><code>/folders</code></td><td>Create a folder or delete an empty one</td></tr>
+              <tr><td>POST</td><td><code>/rename</code></td><td>Rename or move a file or folder, optionally updating references</td></tr>
+              <tr><td>GET</td><td><code>/references/{path}</code></td><td>Places that refer to a file (trigger targets, calls with a fixed path)</td></tr>
+              <tr><td>GET</td><td><code>/variables</code></td><td>Project variables with values per level and usages</td></tr>
+              <tr><td>GET</td><td><code>/schemas/{kind}</code></td><td>JSON Schema of a file kind (<code>project</code>, <code>environment</code>, <code>trigger</code>) – like <code>runnel schema</code></td></tr>
+              <tr><td>GET</td><td><code>/catalog</code></td><td>Descriptors of all actions and transforms – like <code>runnel catalog --json</code></td></tr>
+              <tr><td>GET</td><td><code>/expressions</code></td><td>Reference for the expression editor: context, functions, variables</td></tr>
+              <tr><td>POST</td><td><code>/validate</code></td><td>Check a workflow, pipeline or project file – saved or with unsaved <code>content</code>, exactly like <code>runnel validate</code></td></tr>
+              <tr><td>POST</td><td><code>/workflows/edit</code>, <code>/pipelines/edit</code></td><td>Apply a canvas change to the text line by line (without saving)</td></tr>
+              <tr><td>POST</td><td><code>/copy</code></td><td>Actions or transforms as YAML text for the clipboard</td></tr>
+              <tr><td>POST</td><td><code>/pipelines/fields</code></td><td>Detect the fields of an input transform</td></tr>
+              <tr><td>POST</td><td><code>/preview</code></td><td>Data preview of a pipeline up to a transform</td></tr>
+              <tr><td>POST · GET</td><td><code>/runs</code>, <code>/runs/{id}</code></td><td>Start a run; list runs or read one with status per action and log</td></tr>
+              <tr><td>POST</td><td><code>/runs/{id}/cancel</code></td><td>Cancel a run (<code>202</code>; already finished <code>409</code>)</td></tr>
+              <tr><td>GET</td><td><code>/events</code></td><td>Live events as server-sent events</td></tr>
+              <tr><td>GET</td><td><code>/triggers</code></td><td>Project triggers with schedule, next time and last result</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="etag-en">Conflict protection (ETag)</h2>
+          <p>Every file has an <code>ETag</code> (hash of its content). A save only succeeds if the file hasn't changed since it was loaded – whether by another browser, a text editor or <code>git pull</code>.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Request</th><th>File exists</th><th>File missing</th></tr></thead>
+            <tbody>
+              <tr><td><code>PUT</code> without <code>If-Match</code></td><td><code>428</code> – ETag required</td><td><code>201</code> – created</td></tr>
+              <tr><td><code>PUT</code> with matching <code>If-Match</code></td><td><code>200</code> – replaced</td><td>–</td></tr>
+              <tr><td><code>PUT</code> with other <code>If-Match</code></td><td><code>412</code> – “changed in the meantime”</td><td><code>412</code> – “deleted in the meantime”</td></tr>
+              <tr><td><code>DELETE</code> without / matching / other <code>If-Match</code></td><td><code>428</code> / <code>204</code> / <code>412</code></td><td><code>428</code> / <code>412</code> / <code>412</code></td></tr>
+            </tbody>
+          </table></div>
+          <p><code>If-Match: *</code> deliberately overwrites without a check. Saving is atomic: temporary file, then rename.</p>
+
+          <h2 id="runs">Runs</h2>
+          {{snippet:api-runs-en.sh|Start and follow a run}}
+          <p>The <strong>saved</strong> file is started – workflow or pipeline – after the same checks as <code>runnel run</code>.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Response</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>201</code> + run, header <code>Location</code></td><td>Run started; it keeps running in the background</td></tr>
+              <tr><td><code>422</code></td><td>Errors in the workflow or project files (format as <code>/validate</code>)</td></tr>
+              <tr><td><code>400</code></td><td>Unknown environment, parameters missing or of the wrong type</td></tr>
+              <tr><td><code>429</code></td><td>Limit of concurrent runs reached (<code>settings.maxConcurrentRuns</code>)</td></tr>
+              <tr><td><code>404</code> / <code>503</code></td><td>File not found / server shutting down</td></tr>
+            </tbody>
+          </table></div>
+          {{snippet:api-run.json|Run}}
+          <p><code>status</code> is <code>running</code>, <code>succeeded</code>, <code>failed</code> or <code>cancelled</code>; <code>trigger</code> names what started the run (<code>cron:&lt;name&gt;</code>, <code>interval:…</code>, <code>file:…</code>, <code>http:…</code>). <code>GET /runs/{id}</code> adds the status per action and the log (at most 5,000 lines). Runs are kept in memory only – the last 100 plus the last 100 from HTTP triggers; a persistent history follows with S26 without changing the API.</p>
+
+          <h2 id="events-en">Live events (<code>/events</code>)</h2>
+          {{snippet:api-event.txt|Example}}
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Event</th><th>Additional fields</th></tr></thead>
+            <tbody>
+              <tr><td><code>run.started</code></td><td><code>message</code> (name)</td></tr>
+              <tr><td><code>action.started</code></td><td><code>actionId</code>, <code>actionType</code></td></tr>
+              <tr><td><code>log</code></td><td><code>actionId</code>, <code>level</code>, <code>message</code></td></tr>
+              <tr><td><code>action.finished</code></td><td><code>status</code>, <code>durationMs</code>, <code>error</code>; for transforms <code>counts</code> and <code>linkRows</code></td></tr>
+              <tr><td><code>action.skipped</code>, <code>action.waiting</code></td><td><code>status</code>, for <code>waiting</code> a <code>message</code></td></tr>
+              <tr><td><code>run.finished</code></td><td><code>status</code>, <code>durationMs</code>, <code>error</code>, <code>outputs</code></td></tr>
+              <tr><td><code>reset</code></td><td>Missed events are no longer available; reload the state via <code>GET /runs</code></td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li>Without parameters only <strong>new</strong> events arrive. With <code>Last-Event-ID</code> or <code>?since=&lt;seq&gt;</code> the missed ones come first; the last 2,000 are kept.</li>
+            <li><code>?run=&lt;id&gt;</code> delivers only the events of one run. A comment (<code>: ping</code>) every 15 s keeps the connection open.</li>
+          </ul>
+
+          <h2 id="http-triggers">HTTP triggers</h2>
+          <p>HTTP triggers do <strong>not</strong> answer under <code>/api/v1</code> but on their own listener (<code>--triggers</code>, default <code>127.0.0.1:7301</code>; HTTPS on the network) at the paths of their trigger files.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Response</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>202</code> + <code>{"runId", "status"}</code></td><td><code>response: accepted</code>: run started</td></tr>
+              <tr><td>Response of <code>http.respond</code></td><td><code>response: run</code>: the run's first response; without <code>http.respond</code> <code>200</code> with the <code>outputs</code> or <code>500</code></td></tr>
+              <tr><td><code>504</code></td><td><code>response: run</code>: no response within <code>timeout</code>; the run keeps going</td></tr>
+              <tr><td><code>400</code> / <code>401</code> / <code>403</code></td><td>Parameter missing or invalid / token missing or wrong / request from a web page</td></tr>
+              <tr><td><code>404</code> / <code>405</code></td><td>No trigger for the path / other method</td></tr>
+              <tr><td><code>413</code> / <code>415</code> / <code>429</code></td><td>Body over 1 MiB / neither JSON nor form / concurrent run limit</td></tr>
+            </tbody>
+          </table></div>
+        </article>
+      </div>
+    </div>

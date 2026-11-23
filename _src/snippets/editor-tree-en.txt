@@ -1,0 +1,17 @@
+web/
+  index.html            # entry point
+  src/
+    main.tsx            # React bootstrap
+    App.tsx             # shell: header, explorer and palette or reference, tabs, file, status bar
+    api.ts              # API access, connection (server-sent events)
+    files.ts            # project tree, loading files, detecting encoding
+    workflow.ts         # /validate, workflow and pipeline model (graphOf), link kinds, mapping messages, layout (dagre)
+    catalog.ts          # descriptors from /catalog (category → tile color, category names)
+    expressions.ts      # expressions: reference from /expressions, tokens, suggestions, message positions
+    yaml.ts             # highlighting for the read-only view (per line, no dependency)
+    theme.ts            # color scheme (system/light/dark, stored in the browser)
+    index.css           # Tailwind + design tokens + fonts
+    components/         # one file per component
+  e2e/                  # Playwright tests
+internal/webui/         # go:embed of the build (dist/ is not in the repository, only .gitkeep)
+design/fonts/           # Inter, JetBrains Mono (woff2, OFL) – local, no font CDN

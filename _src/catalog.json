@@ -1,0 +1,2165 @@
+{
+  "actions": [
+    {
+      "type": "archive.create",
+      "kind": "action",
+      "category": "files",
+      "label": "Create Archive",
+      "description": "Packs files and folders into a ZIP, TAR or TAR.GZ archive; output: path, files and size",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "File or folder to pack, relative to the project folder or absolute; wildcards are allowed in the name, e.g. out/*.csv",
+            "examples": [
+              "out/*.csv"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "description": "Archive to write, e.g. archive/export.zip",
+            "examples": [
+              "archive/export.zip"
+            ]
+          },
+          "format": {
+            "type": "string",
+            "description": "Format of the archive; auto: by the ending of target (.zip, .tar, .tar.gz or .tgz)",
+            "enum": [
+              "auto",
+              "zip",
+              "tar",
+              "tar.gz"
+            ],
+            "default": "auto"
+          },
+          "ifExists": {
+            "type": "string",
+            "description": "What happens if the archive exists: replace it once the new one is complete, or fail",
+            "enum": [
+              "replace",
+              "fail"
+            ],
+            "default": "replace"
+          }
+        },
+        "required": [
+          "source",
+          "target"
+        ],
+        "additionalProperties": false
+      },
+      "example": "source: out/export\ntarget: archive/export.zip\n"
+    },
+    {
+      "type": "archive.extract",
+      "kind": "action",
+      "category": "files",
+      "label": "Extract Archive",
+      "description": "Unpacks a ZIP, TAR or TAR.GZ archive into a folder; output: the unpacked files",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Archive to unpack, relative to the project folder or absolute",
+            "examples": [
+              "inbox/delivery.zip"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "description": "Folder to unpack into; it is created if missing",
+            "examples": [
+              "inbox/delivery"
+            ]
+          },
+          "format": {
+            "type": "string",
+            "description": "Format of the archive; auto: by the ending of source, else by its content",
+            "enum": [
+              "auto",
+              "zip",
+              "tar",
+              "tar.gz"
+            ],
+            "default": "auto"
+          },
+          "pattern": {
+            "type": "string",
+            "description": "Only files whose name matches, e.g. *.csv; empty: all files",
+            "examples": [
+              "*.csv"
+            ]
+          },
+          "ifExists": {
+            "type": "string",
+            "description": "What happens to files that exist in the folder: fail before anything is written, replace them, or skip them",
+            "enum": [
+              "fail",
+              "replace",
+              "skip"
+            ],
+            "default": "fail"
+          },
+          "maxSize": {
+            "type": "string",
+            "description": "Largest total size of the unpacked files, e.g. 500MB or 10GB; protects against archives that unpack to far more than they hold",
+            "default": "1GB"
+          },
+          "maxFiles": {
+            "type": "integer",
+            "description": "Largest number of entries in the archive",
+            "default": 10000
+          }
+        },
+        "required": [
+          "source",
+          "target"
+        ],
+        "additionalProperties": false
+      },
+      "example": "source: inbox/delivery.zip\ntarget: inbox/delivery\npattern: \"*.csv\"\n"
+    },
+    {
+      "type": "core.abort",
+      "kind": "action",
+      "category": "general",
+      "label": "Abort",
+      "description": "Ends the workflow as failed",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Reason for the run log; if empty, a default text names the action"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": "message: \"No orders found in ${INBOX}\"\n"
+    },
+    {
+      "type": "core.check",
+      "kind": "action",
+      "category": "general",
+      "label": "Check Condition",
+      "description": "Fails with a message when a condition is false",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "condition": {
+            "type": "string",
+            "description": "Expression that must be true, e.g. {{ results.fetch.output.status == 200 }}",
+            "examples": [
+              "{{ results.fetch.output.status == 200 }}"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Message when the condition is false; empty: \"the condition is false\"",
+            "format": "runnel-text",
+            "examples": [
+              "No order files in the inbox"
+            ]
+          }
+        },
+        "required": [
+          "condition"
+        ],
+        "additionalProperties": false
+      },
+      "example": "condition: \"{{ len(results.list.output) \u003e 0 }}\"\nmessage: No order files in the inbox\n"
+    },
+    {
+      "type": "core.dummy",
+      "kind": "action",
+      "category": "general",
+      "label": "Dummy",
+      "description": "Does nothing; collects branches into one point",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "type": "core.log",
+      "kind": "action",
+      "category": "general",
+      "label": "Log",
+      "description": "Writes a message to the run log",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Text to write; may span several lines",
+            "format": "runnel-text",
+            "examples": [
+              "Import finished"
+            ]
+          },
+          "level": {
+            "type": "string",
+            "description": "Log level of the message",
+            "enum": [
+              "debug",
+              "info",
+              "warn",
+              "error"
+            ],
+            "default": "info"
+          }
+        },
+        "required": [
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": "message: \"Imported {{ results.import.output.write.written }} records\"\nlevel: info\n"
+    },
+    {
+      "type": "core.run-pipeline",
+      "kind": "action",
+      "category": "execution",
+      "label": "Run Pipeline",
+      "description": "Runs a pipeline with parameters; output: the counts of its transforms",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "pipeline": {
+            "type": "string",
+            "description": "Pipeline file, relative to the project folder",
+            "examples": [
+              "pipelines/import.pipeline.yaml"
+            ]
+          },
+          "params": {
+            "type": "object",
+            "description": "Values for the parameters of the pipeline, by name",
+            "additionalProperties": {}
+          },
+          "allowedTargets": {
+            "type": "array",
+            "description": "Pipeline files this action may call, with wildcards and relative to the project folder, e.g. pipelines/import-*.pipeline.yaml; for a pipeline given by a variable or expression",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rows": {
+            "description": "Records for core.from-result in the pipeline: a list, e.g. {{ results.files.output }}; items that are not objects become a record with the field value"
+          }
+        },
+        "required": [
+          "pipeline"
+        ],
+        "additionalProperties": false
+      },
+      "example": "pipeline: pipelines/customers.pipeline.yaml\nparams:\n  BATCH: \"42\"\n"
+    },
+    {
+      "type": "core.run-workflow",
+      "kind": "action",
+      "category": "execution",
+      "label": "Run Workflow",
+      "description": "Runs another workflow with parameters; output: its outputs",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "workflow": {
+            "type": "string",
+            "description": "Workflow file, relative to the project folder",
+            "examples": [
+              "workflows/import.workflow.yaml"
+            ]
+          },
+          "params": {
+            "type": "object",
+            "description": "Values for the parameters of the workflow, by name",
+            "additionalProperties": {}
+          },
+          "allowedTargets": {
+            "type": "array",
+            "description": "Workflow files this action may call, with wildcards and relative to the project folder, e.g. workflows/import-*.workflow.yaml; for a workflow given by a variable or expression",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "workflow"
+        ],
+        "additionalProperties": false
+      },
+      "example": "workflow: workflows/import-region.workflow.yaml\nparams:\n  REGION: north\n"
+    },
+    {
+      "type": "core.start",
+      "kind": "action",
+      "category": "general",
+      "label": "Start",
+      "description": "Entry point of the workflow",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "type": "core.success",
+      "kind": "action",
+      "category": "general",
+      "label": "Success",
+      "description": "Ends the workflow successfully",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message for the run log"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": "message: Nothing to import today\n"
+    },
+    {
+      "type": "core.wait",
+      "kind": "action",
+      "category": "general",
+      "label": "Wait",
+      "description": "Waits for a given time",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "duration": {
+            "type": "string",
+            "description": "How long to wait, e.g. 30s, 5m or 1h30m",
+            "format": "runnel-duration",
+            "examples": [
+              "30s"
+            ]
+          }
+        },
+        "required": [
+          "duration"
+        ],
+        "additionalProperties": false
+      },
+      "example": "duration: 30s\n"
+    },
+    {
+      "type": "db.execute",
+      "kind": "action",
+      "category": "database",
+      "label": "Execute SQL",
+      "description": "Runs an SQL statement on a database, e.g. to insert, update or delete rows",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "connection": {
+            "type": "string",
+            "description": "Connection of the database (a file in connections/)",
+            "format": "runnel-connection",
+            "examples": [
+              "app-db"
+            ],
+            "x-runnel-connection": [
+              "sqlite",
+              "sqlserver",
+              "postgres"
+            ]
+          },
+          "sql": {
+            "type": "string",
+            "description": "The statement; values as @name with the value under params, never written into the statement",
+            "format": "runnel-sql",
+            "examples": [
+              "DELETE FROM orders WHERE status = 'cancelled'"
+            ]
+          },
+          "params": {
+            "type": "object",
+            "description": "Values of the parameters @name of the statement; may use ${…} and {{ … }}",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "timeout": {
+            "type": "string",
+            "description": "Longest time the statement may take",
+            "format": "runnel-duration",
+            "default": "5m"
+          }
+        },
+        "required": [
+          "connection",
+          "sql"
+        ],
+        "additionalProperties": false
+      },
+      "example": "connection: app-db\nsql: DELETE FROM orders WHERE created \u003c @before\nparams:\n  before: ${CUTOFF_DATE}\n"
+    },
+    {
+      "type": "file.copy",
+      "kind": "action",
+      "category": "files",
+      "label": "Copy Files",
+      "description": "Copies files or folders; output: the copied files",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "File or folder, relative to the project folder or absolute; wildcards are allowed in the name, e.g. *.csv",
+            "examples": [
+              "C:\\in\\*.csv"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "description": "Target folder, relative to the project folder or absolute; for a single file also a new file name",
+            "examples": [
+              "D:\\archive"
+            ]
+          },
+          "overwrite": {
+            "type": "boolean",
+            "description": "Replace existing files in the target",
+            "default": false
+          }
+        },
+        "required": [
+          "source",
+          "target"
+        ],
+        "additionalProperties": false
+      },
+      "example": "source: inbox/*.csv\ntarget: archive/\noverwrite: true\n"
+    },
+    {
+      "type": "file.delete",
+      "kind": "action",
+      "category": "files",
+      "label": "Delete Files",
+      "description": "Deletes files or folders; output: the deleted paths",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File or folder, relative to the project folder or absolute; wildcards are allowed in the name, e.g. *.tmp",
+            "examples": [
+              "C:\\work\\*.tmp"
+            ]
+          },
+          "recursive": {
+            "type": "boolean",
+            "description": "Also delete folders with everything in them",
+            "default": false
+          },
+          "mustExist": {
+            "type": "boolean",
+            "description": "Fail if nothing matches the path",
+            "default": false
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "example": "path: out/*.tmp\n"
+    },
+    {
+      "type": "file.exists",
+      "kind": "action",
+      "category": "files",
+      "label": "File Exists",
+      "description": "Checks whether files or folders exist; output: the matching paths",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File or folder, relative to the project folder or absolute; wildcards are allowed in the name, e.g. *.csv",
+            "examples": [
+              "C:\\in\\*.csv"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "description": "What has to exist",
+            "enum": [
+              "any",
+              "file",
+              "folder"
+            ],
+            "default": "any"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "example": "path: inbox/orders-*.csv\nkind: file\n"
+    },
+    {
+      "type": "file.list",
+      "kind": "action",
+      "category": "files",
+      "label": "List Files",
+      "description": "Lists the files of a folder; output: path, name, size, modified and folder of each entry",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "folder": {
+            "type": "string",
+            "description": "Folder to list, relative to the project folder or absolute",
+            "examples": [
+              "C:\\in"
+            ]
+          },
+          "pattern": {
+            "type": "string",
+            "description": "Names to include, with wildcards, e.g. *.csv",
+            "default": "*"
+          },
+          "recursive": {
+            "type": "boolean",
+            "description": "Also list the subfolders",
+            "default": false
+          },
+          "include": {
+            "type": "string",
+            "description": "What to list",
+            "enum": [
+              "files",
+              "folders",
+              "all"
+            ],
+            "default": "files"
+          }
+        },
+        "required": [
+          "folder"
+        ],
+        "additionalProperties": false
+      },
+      "example": "folder: inbox\npattern: \"*.csv\"\n"
+    },
+    {
+      "type": "file.mkdir",
+      "kind": "action",
+      "category": "files",
+      "label": "Create Folder",
+      "description": "Creates a folder with its parent folders; output: the path",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Folder to create, relative to the project folder or absolute",
+            "examples": [
+              "D:\\archive\\2026"
+            ]
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "example": "path: \"archive/{{ formatDate(today(), 'yyyy-MM-dd') }}\"\n"
+    },
+    {
+      "type": "file.move",
+      "kind": "action",
+      "category": "files",
+      "label": "Move Files",
+      "description": "Moves files or folders; output: the new paths",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "File or folder, relative to the project folder or absolute; wildcards are allowed in the name, e.g. *.csv",
+            "examples": [
+              "C:\\in\\*.csv"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "description": "Target folder, relative to the project folder or absolute; for a single file also a new file name",
+            "examples": [
+              "D:\\archive"
+            ]
+          },
+          "overwrite": {
+            "type": "boolean",
+            "description": "Replace existing files in the target",
+            "default": false
+          }
+        },
+        "required": [
+          "source",
+          "target"
+        ],
+        "additionalProperties": false
+      },
+      "example": "source: inbox/orders.csv\ntarget: done/\n"
+    },
+    {
+      "type": "file.wait",
+      "kind": "action",
+      "category": "files",
+      "label": "Wait for File",
+      "description": "Waits until files exist; output: the matching paths",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File to wait for, relative to the project folder or absolute; wildcards are allowed in the name, e.g. *.csv",
+            "examples": [
+              "C:\\in\\*.csv"
+            ]
+          },
+          "interval": {
+            "type": "string",
+            "description": "How often to look, e.g. 5s or 1m",
+            "format": "runnel-duration",
+            "default": "5s"
+          },
+          "maxWait": {
+            "type": "string",
+            "description": "Give up and fail after this time; empty: wait until the action's timeout or the end of the run",
+            "format": "runnel-duration",
+            "examples": [
+              "30m"
+            ]
+          },
+          "stableFor": {
+            "type": "string",
+            "description": "The size of the files must not change for this time, e.g. 10s; empty: do not check",
+            "format": "runnel-duration",
+            "examples": [
+              "10s"
+            ]
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "example": "path: inbox/*.csv\nmaxWait: 30m\nstableFor: 10s\n"
+    },
+    {
+      "type": "http.request",
+      "kind": "action",
+      "category": "network",
+      "label": "HTTP Request",
+      "description": "Sends an HTTP request, e.g. to a REST API; output: status, headers and body of the answer",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "method": {
+            "type": "string",
+            "description": "HTTP method",
+            "enum": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE",
+              "HEAD"
+            ],
+            "default": "GET"
+          },
+          "url": {
+            "type": "string",
+            "description": "Address with http:// or https://, e.g. https://api.example.com/orders",
+            "examples": [
+              "https://api.example.com/orders"
+            ]
+          },
+          "query": {
+            "type": "object",
+            "description": "Query parameters, added to the address with encoding, e.g. status: open",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "headers": {
+            "type": "object",
+            "description": "Headers of the request, e.g. Authorization; take tokens from variables such as ${env:API_TOKEN}, never write them into the file",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "body": {
+            "description": "Body: a text is sent as text, other values (maps, lists, numbers) as JSON"
+          },
+          "timeout": {
+            "type": "string",
+            "description": "Longest time for the request and its answer, e.g. 30s or 5m; the timeout of the action limits all attempts together",
+            "format": "runnel-duration",
+            "default": "60s"
+          },
+          "failOnError": {
+            "type": "boolean",
+            "description": "Fail the action if the answer has status 400 or above; false: the status is only in the output",
+            "default": true
+          },
+          "maxSize": {
+            "type": "string",
+            "description": "Largest answer to read, e.g. 10MB or 500KB",
+            "default": "10MB"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "additionalProperties": false
+      },
+      "example": "method: GET\nurl: https://api.example.com/orders\nquery:\n  status: open\nheaders:\n  Authorization: \"Bearer ${env:API_TOKEN}\"\n"
+    },
+    {
+      "type": "http.respond",
+      "kind": "action",
+      "category": "network",
+      "label": "HTTP Response",
+      "description": "Answers the caller of an HTTP trigger with status, headers and body; output: sent and status",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "HTTP status code, e.g. 200, 404 or 422",
+            "default": "200",
+            "examples": [
+              "200"
+            ]
+          },
+          "headers": {
+            "type": "object",
+            "description": "Headers of the answer, e.g. Content-Type",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "body": {
+            "description": "Body: a text is sent as text, other values (maps, lists, numbers) as JSON"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": "status: 404\nbody:\n  error: \"customer {{ params.KDNR }} not found\"\n"
+    }
+  ],
+  "transforms": [
+    {
+      "type": "core.calculate",
+      "kind": "transform",
+      "category": "transform",
+      "label": "Calculate",
+      "description": "Sets fields to the result of an expression for every record",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "fields": {
+            "type": "array",
+            "description": "Fields to calculate, in this order: a later field can use an earlier one",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the field; an existing field of the same name gets the new value",
+                  "examples": [
+                    "total"
+                  ]
+                },
+                "value": {
+                  "type": "string",
+                  "description": "Expression evaluated for every record, e.g. {{ record.price * record.quantity }}; text around {{ … }} makes the result a text",
+                  "format": "runnel-text",
+                  "examples": [
+                    "{{ record.price * record.quantity }}"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "fields"
+        ],
+        "additionalProperties": false
+      },
+      "example": "fields:\n  - { name: total, value: \"{{ record.price * record.quantity }}\" }\n  - { name: label, value: \"{{ upper(record.name) }}: {{ record.total }}\" }\n",
+      "recordErrors": true,
+      "parallel": true
+    },
+    {
+      "type": "core.constant",
+      "kind": "transform",
+      "category": "transform",
+      "label": "Add Constants",
+      "description": "Adds fields with the same value to every record",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "fields": {
+            "type": "array",
+            "description": "Fields to add; an existing field of the same name gets the value",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the field",
+                  "examples": [
+                    "source"
+                  ]
+                },
+                "value": {
+                  "description": "Value of the field: text, number, true/false, or an expression evaluated once per run, e.g. {{ now() }}"
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "fields"
+        ],
+        "additionalProperties": false
+      },
+      "example": "fields:\n  - { name: source, value: runnel }\n  - { name: batch, value: \"{{ params.BATCH }}\" }\n",
+      "parallel": true
+    },
+    {
+      "type": "core.convert",
+      "kind": "transform",
+      "category": "transform",
+      "label": "Convert Types",
+      "description": "Converts fields to another type, with a number or date format",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "fields": {
+            "type": "array",
+            "description": "Fields to convert",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the field",
+                  "format": "runnel-field",
+                  "examples": [
+                    "amount"
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Type to convert to",
+                  "enum": [
+                    "string",
+                    "int",
+                    "decimal",
+                    "float",
+                    "bool",
+                    "date",
+                    "datetime",
+                    "json"
+                  ]
+                },
+                "format": {
+                  "type": "string",
+                  "description": "Number pattern like #.##0,00 or date pattern like dd.MM.yyyy, to read text or to write text; empty: 1234.5 and ISO dates",
+                  "examples": [
+                    "dd.MM.yyyy"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "type"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "fields"
+        ],
+        "additionalProperties": false
+      },
+      "example": "fields:\n  - { name: kdnr, type: int }\n  - { name: umsatz, type: decimal, format: \"#.##0,00\" }\n",
+      "recordErrors": true,
+      "parallel": true
+    },
+    {
+      "type": "core.dedupe",
+      "kind": "transform",
+      "category": "combine",
+      "label": "Remove Duplicates",
+      "description": "Passes on the first record of each combination of values and drops repeated ones",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "fields": {
+            "type": "array",
+            "description": "Fields whose values together make a record a duplicate of an earlier one; empty: all fields",
+            "items": {
+              "type": "string",
+              "format": "runnel-field"
+            }
+          },
+          "ignoreCase": {
+            "type": "boolean",
+            "description": "Compare text regardless of upper and lower case",
+            "default": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": "fields: [email]\nignoreCase: true\n"
+    },
+    {
+      "type": "core.dummy",
+      "kind": "transform",
+      "category": "flow",
+      "label": "Dummy",
+      "description": "Passes all records on unchanged",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false
+      },
+      "parallel": true
+    },
+    {
+      "type": "core.filter",
+      "kind": "transform",
+      "category": "transform",
+      "label": "Filter",
+      "description": "Passes on the records for which a condition is true",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "condition": {
+            "type": "string",
+            "description": "Expression that must be true for a record to pass, e.g. {{ record.amount \u003e 0 }}; a comparison with an empty value is false",
+            "examples": [
+              "{{ record.amount \u003e 0 }}"
+            ]
+          }
+        },
+        "required": [
+          "condition"
+        ],
+        "additionalProperties": false
+      },
+      "example": "condition: \"{{ record.umsatz \u003e 0 \u0026\u0026 record.ort != '' }}\"\n",
+      "recordErrors": true,
+      "parallel": true
+    },
+    {
+      "type": "core.from-result",
+      "kind": "transform",
+      "category": "execution",
+      "label": "Records from Workflow",
+      "description": "Passes on the records the calling workflow gave to the pipeline (rows)",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "type": "core.generate-rows",
+      "kind": "transform",
+      "category": "input",
+      "label": "Generate Rows",
+      "description": "Creates records with constant fields",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "rows": {
+            "type": "string",
+            "description": "Number of records to create, e.g. 1000 or ${ROWS}",
+            "examples": [
+              "10"
+            ]
+          },
+          "fields": {
+            "type": "array",
+            "description": "Fields of every record, with a constant value",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the field",
+                  "examples": [
+                    "status"
+                  ]
+                },
+                "value": {
+                  "description": "Value of the field"
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "rowNumberField": {
+            "type": "string",
+            "description": "Name of a field for the number of the record, starting at 1; empty: none"
+          }
+        },
+        "required": [
+          "rows"
+        ],
+        "additionalProperties": false
+      },
+      "example": "rows: 10\nrowNumberField: n\nfields:\n  - { name: status, value: new }\n"
+    },
+    {
+      "type": "core.group-by",
+      "kind": "transform",
+      "category": "combine",
+      "label": "Group By",
+      "description": "Combines records with the same values into one, with count, sum and other aggregates",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "groupBy": {
+            "type": "array",
+            "description": "Fields whose values form a group; empty: one record for all",
+            "items": {
+              "type": "string",
+              "format": "runnel-field"
+            }
+          },
+          "aggregates": {
+            "type": "array",
+            "description": "Fields computed per group, after the group fields",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the new field",
+                  "examples": [
+                    "total"
+                  ]
+                },
+                "function": {
+                  "type": "string",
+                  "description": "count: records (or values of field), countDistinct: different values, sum, avg, min, max, first, last, concat: values as text",
+                  "enum": [
+                    "count",
+                    "countDistinct",
+                    "sum",
+                    "avg",
+                    "min",
+                    "max",
+                    "first",
+                    "last",
+                    "concat"
+                  ]
+                },
+                "field": {
+                  "type": "string",
+                  "description": "Field the function is applied to; empty for count: all records",
+                  "format": "runnel-field",
+                  "examples": [
+                    "amount"
+                  ]
+                },
+                "separator": {
+                  "type": "string",
+                  "description": "Text between the values of concat; empty: comma and space",
+                  "examples": [
+                    " / "
+                  ],
+                  "x-runnel-only": {
+                    "function": [
+                      "concat"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "name",
+                "function"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": "groupBy: [Datum]\naggregates:\n  - { name: orders, function: count }\n  - { name: total, function: sum, field: Betrag }\n",
+      "recordErrors": true
+    },
+    {
+      "type": "core.log",
+      "kind": "transform",
+      "category": "output",
+      "label": "Log",
+      "description": "Writes records to the run log and passes them on",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "string",
+            "description": "Log level of the messages",
+            "enum": [
+              "debug",
+              "info",
+              "warn",
+              "error"
+            ],
+            "default": "info"
+          },
+          "every": {
+            "type": "integer",
+            "description": "Writes every n-th record, e.g. 1000 for large data",
+            "default": 1
+          },
+          "fields": {
+            "type": "array",
+            "description": "Fields to write, in this order; empty: all fields",
+            "items": {
+              "type": "string",
+              "format": "runnel-field"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": "fields: [kdnr, name]\n",
+      "parallel": true
+    },
+    {
+      "type": "core.map-values",
+      "kind": "transform",
+      "category": "transform",
+      "label": "Map Values",
+      "description": "Replaces the values of a field by a table, e.g. codes by names",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "description": "Field whose values are replaced",
+            "format": "runnel-field",
+            "examples": [
+              "status"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "description": "Field for the result; empty: the field itself"
+          },
+          "values": {
+            "type": "array",
+            "description": "The table: a value and what it becomes",
+            "items": {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "type": "string",
+                  "description": "Value to replace, compared as text; empty: an empty value",
+                  "examples": [
+                    "A"
+                  ]
+                },
+                "to": {
+                  "description": "What it becomes: text, number or true/false; missing: an empty value"
+                }
+              },
+              "required": [
+                "from"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "default": {
+            "description": "Result for values that are not in the table, also for empty ones; missing: the value stays as it is"
+          },
+          "ignoreCase": {
+            "type": "boolean",
+            "description": "Compare text regardless of upper and lower case",
+            "default": false
+          }
+        },
+        "required": [
+          "field",
+          "values"
+        ],
+        "additionalProperties": false
+      },
+      "example": "field: status\ntarget: statusText\nvalues:\n  - { from: A, to: Active }\n  - { from: I, to: Inactive }\ndefault: Unknown\n",
+      "parallel": true
+    },
+    {
+      "type": "core.select-fields",
+      "kind": "transform",
+      "category": "transform",
+      "label": "Select Fields",
+      "description": "Keeps, orders and renames fields, or removes fields",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "fields": {
+            "type": "array",
+            "description": "Fields to keep, in this order, optionally renamed; all others are removed",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the field in the incoming records",
+                  "format": "runnel-field",
+                  "examples": [
+                    "kdnr"
+                  ]
+                },
+                "rename": {
+                  "type": "string",
+                  "description": "New name of the field; empty: the name stays",
+                  "examples": [
+                    "customerId"
+                  ]
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "remove": {
+            "type": "array",
+            "description": "Fields to remove; all others are kept. Use either fields or remove",
+            "items": {
+              "type": "string",
+              "format": "runnel-field"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": "fields:\n  - { name: kdnr, rename: externalId }\n  - { name: name }\n# or instead of fields:\n# remove: [telefon]\n",
+      "parallel": true
+    },
+    {
+      "type": "core.sequence",
+      "kind": "transform",
+      "category": "transform",
+      "label": "Sequence",
+      "description": "Numbers the records in the order they arrive, also per group",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the field for the number; an existing field of the same name gets the number",
+            "examples": [
+              "position"
+            ]
+          },
+          "start": {
+            "type": "string",
+            "description": "Number of the first record, e.g. 1 or ${START}",
+            "default": "1"
+          },
+          "step": {
+            "type": "string",
+            "description": "Difference between two numbers, e.g. 10 for 10, 20, 30; may be negative",
+            "default": "1"
+          },
+          "groupBy": {
+            "type": "array",
+            "description": "Fields whose values form a group that counts on its own from start; empty: one count for all records",
+            "items": {
+              "type": "string",
+              "format": "runnel-field"
+            }
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "example": "name: position\nstart: 10\nstep: 10\ngroupBy: [Nr]\n"
+    },
+    {
+      "type": "core.sort",
+      "kind": "transform",
+      "category": "combine",
+      "label": "Sort",
+      "description": "Sorts the records by fields; keeps all records in memory",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "fields": {
+            "type": "array",
+            "description": "Fields to sort by, the first one first",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the field",
+                  "format": "runnel-field",
+                  "examples": [
+                    "country"
+                  ]
+                },
+                "descending": {
+                  "type": "boolean",
+                  "description": "Largest value first",
+                  "default": false
+                },
+                "ignoreCase": {
+                  "type": "boolean",
+                  "description": "Compare text regardless of upper and lower case",
+                  "default": false
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "fields"
+        ],
+        "additionalProperties": false
+      },
+      "example": "fields:\n  - { name: total, descending: true }\n  - { name: name, ignoreCase: true }\n",
+      "recordErrors": true
+    },
+    {
+      "type": "core.split-field",
+      "kind": "transform",
+      "category": "transform",
+      "label": "Split Field",
+      "description": "Splits the text of a field into several fields or into one record per part",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "description": "Field whose text is split",
+            "format": "runnel-field",
+            "examples": [
+              "name"
+            ]
+          },
+          "separator": {
+            "type": "string",
+            "description": "Text between the parts, e.g. ; or , (with the space)",
+            "examples": [
+              ";"
+            ]
+          },
+          "into": {
+            "type": "array",
+            "description": "Fields for the parts, in order; more parts than fields stay together in the last one, missing parts are empty. Not with rows",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rows": {
+            "type": "boolean",
+            "description": "One record per part instead: the field holds the part, the other fields are copied"
+          },
+          "indexField": {
+            "type": "string",
+            "description": "With rows: field for the position of the part, starting at 1"
+          },
+          "keepEmpty": {
+            "type": "boolean",
+            "description": "With rows: also a record for empty parts (a;;b); a record whose field is empty is always passed on once",
+            "default": false
+          },
+          "trim": {
+            "type": "boolean",
+            "description": "Removes spaces around each part",
+            "default": false
+          }
+        },
+        "required": [
+          "field",
+          "separator"
+        ],
+        "additionalProperties": false
+      },
+      "example": "field: name\nseparator: \", \"\ninto: [lastName, firstName]\n",
+      "parallel": true
+    },
+    {
+      "type": "core.switch",
+      "kind": "transform",
+      "category": "flow",
+      "label": "Switch",
+      "description": "Passes each record to the link of the first case whose condition is true",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "cases": {
+            "type": "array",
+            "description": "Conditions in order; the first one that is true decides",
+            "items": {
+              "type": "object",
+              "properties": {
+                "when": {
+                  "type": "string",
+                  "description": "Condition, e.g. {{ record.country == 'DE' }}; a comparison with an empty value is false",
+                  "format": "runnel-text",
+                  "examples": [
+                    "{{ record.amount \u003e 0 }}"
+                  ]
+                },
+                "to": {
+                  "type": "string",
+                  "description": "Id of the transform the record goes to; a data link must lead there",
+                  "format": "runnel-target",
+                  "examples": [
+                    "germany"
+                  ]
+                }
+              },
+              "required": [
+                "when",
+                "to"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "default": {
+            "type": "string",
+            "description": "Transform for records that match no case; empty: they are dropped",
+            "format": "runnel-target",
+            "examples": [
+              "others"
+            ]
+          }
+        },
+        "required": [
+          "cases"
+        ],
+        "additionalProperties": false
+      },
+      "example": "cases:\n  - { when: \"{{ record.umsatz \u003e= 10000 }}\", to: key-accounts }\n  - { when: \"{{ record.umsatz \u003e 0 }}\", to: standard }\ndefault: others\n",
+      "recordErrors": true,
+      "parallel": true
+    },
+    {
+      "type": "core.to-result",
+      "kind": "transform",
+      "category": "execution",
+      "label": "Records to Workflow",
+      "description": "Returns the records to the calling workflow (output.rows) and passes them on",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "maxRows": {
+            "type": "string",
+            "description": "Most records to return; more stop the pipeline, as they are held in memory",
+            "default": "100000"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": "maxRows: 1000\n"
+    },
+    {
+      "type": "csv.input",
+      "kind": "transform",
+      "category": "input",
+      "label": "CSV Input",
+      "description": "Reads the rows of a CSV file as records",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "CSV file to read, relative to the project folder or absolute",
+            "examples": [
+              "C:\\in\\orders.csv"
+            ]
+          },
+          "delimiter": {
+            "type": "string",
+            "description": "Character between the values, e.g. ; or \\t for tab; empty: comma",
+            "examples": [
+              ";"
+            ]
+          },
+          "header": {
+            "type": "boolean",
+            "description": "Whether the first row holds the names of the columns",
+            "default": true
+          },
+          "encoding": {
+            "type": "string",
+            "description": "Encoding of the file; auto recognizes UTF-8 and UTF-16 by their byte order mark and reads UTF-8 otherwise",
+            "enum": [
+              "auto",
+              "utf-8",
+              "windows-1252",
+              "utf-16"
+            ],
+            "default": "auto"
+          },
+          "fields": {
+            "type": "array",
+            "description": "Columns to read, with type and format, matched by name in the header or else by position; empty: all columns as text",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the field (and of the column in the header)",
+                  "examples": [
+                    "amount"
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Type of the value; empty: text",
+                  "enum": [
+                    "string",
+                    "int",
+                    "decimal",
+                    "float",
+                    "bool",
+                    "date",
+                    "datetime",
+                    "json"
+                  ]
+                },
+                "format": {
+                  "type": "string",
+                  "description": "Number pattern like #.##0,00 or date pattern like dd.MM.yyyy; empty: 1234.5 and ISO dates",
+                  "examples": [
+                    "dd.MM.yyyy"
+                  ]
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "example": "path: data/orders.csv\ndelimiter: \";\"\nfields:\n  - { name: Nr, type: int }\n  - { name: Betrag, type: decimal, format: \"#.##0,00\" }\n",
+      "recordErrors": true,
+      "detectFields": true
+    },
+    {
+      "type": "csv.output",
+      "kind": "transform",
+      "category": "output",
+      "label": "CSV Output",
+      "description": "Writes records to a CSV file and passes them on",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "CSV file to write, relative to the project folder or absolute",
+            "examples": [
+              "C:\\out\\orders.csv"
+            ]
+          },
+          "delimiter": {
+            "type": "string",
+            "description": "Character between the values, e.g. ; or \\t for tab; empty: comma",
+            "examples": [
+              ";"
+            ]
+          },
+          "header": {
+            "type": "boolean",
+            "description": "Whether the first row holds the names of the columns",
+            "default": true
+          },
+          "encoding": {
+            "type": "string",
+            "description": "Encoding of the file; utf-8-bom lets Excel recognize umlauts",
+            "enum": [
+              "utf-8-bom",
+              "utf-8",
+              "windows-1252"
+            ],
+            "default": "utf-8-bom"
+          },
+          "ifExists": {
+            "type": "string",
+            "description": "What happens if the file exists: replace it once all records are written, append to it, or fail",
+            "enum": [
+              "replace",
+              "append",
+              "fail"
+            ],
+            "default": "replace"
+          },
+          "fields": {
+            "type": "array",
+            "description": "Columns to write, in this order, with a format; empty: all fields of the records",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the field to write (and of the column in the header)",
+                  "format": "runnel-field",
+                  "examples": [
+                    "amount"
+                  ]
+                },
+                "format": {
+                  "type": "string",
+                  "description": "Number pattern like #.##0,00 or date pattern like dd.MM.yyyy; empty: 1234.5 and ISO dates",
+                  "examples": [
+                    "dd.MM.yyyy"
+                  ]
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "example": "path: out/orders.csv\nfields:\n  - { name: Datum, format: dd.MM.yyyy }\n  - { name: Betrag, format: \"#.##0,00\" }\n",
+      "recordErrors": true
+    },
+    {
+      "type": "db.table-input",
+      "kind": "transform",
+      "category": "input",
+      "label": "Table Input",
+      "description": "Reads the rows of an SQL query as records, one field per column",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "connection": {
+            "type": "string",
+            "description": "Connection of the database (a file in connections/)",
+            "format": "runnel-connection",
+            "examples": [
+              "app-db"
+            ],
+            "x-runnel-connection": [
+              "sqlite",
+              "sqlserver",
+              "postgres"
+            ]
+          },
+          "sql": {
+            "type": "string",
+            "description": "The query; values as @name with the value under params, never written into the query",
+            "format": "runnel-sql",
+            "examples": [
+              "SELECT * FROM customers"
+            ]
+          },
+          "params": {
+            "type": "object",
+            "description": "Values of the parameters @name of the query; may use ${…}",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "timeout": {
+            "type": "string",
+            "description": "Longest time the query may take, reading all rows included",
+            "format": "runnel-duration",
+            "default": "5m"
+          }
+        },
+        "required": [
+          "connection",
+          "sql"
+        ],
+        "additionalProperties": false
+      },
+      "example": "connection: app-db\nsql: SELECT id, name, amount FROM orders WHERE status = @status\nparams:\n  status: open\n"
+    },
+    {
+      "type": "db.table-output",
+      "kind": "transform",
+      "category": "output",
+      "label": "Table Output",
+      "description": "Inserts each record as a new row into a database table",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "connection": {
+            "type": "string",
+            "description": "Connection of the database (a file in connections/)",
+            "format": "runnel-connection",
+            "examples": [
+              "app-db"
+            ],
+            "x-runnel-connection": [
+              "sqlite",
+              "sqlserver",
+              "postgres"
+            ]
+          },
+          "table": {
+            "type": "string",
+            "description": "Table to write to, e.g. orders or sales.orders",
+            "examples": [
+              "orders"
+            ]
+          },
+          "fields": {
+            "type": "array",
+            "description": "Fields to write, each into the column of the same name; empty: all fields (not those starting with _)",
+            "items": {
+              "type": "string",
+              "format": "runnel-field"
+            }
+          },
+          "commitSize": {
+            "type": "integer",
+            "description": "Rows per transaction",
+            "default": 1000
+          },
+          "timeout": {
+            "type": "string",
+            "description": "Longest time one transaction may take",
+            "format": "runnel-duration",
+            "default": "5m"
+          }
+        },
+        "required": [
+          "connection",
+          "table"
+        ],
+        "additionalProperties": false
+      },
+      "example": "connection: app-db\ntable: orders\nfields: [id, customer, amount]\ncommitSize: 1000\n",
+      "recordErrors": true
+    },
+    {
+      "type": "db.upsert",
+      "kind": "transform",
+      "category": "output",
+      "label": "Insert or Update",
+      "description": "Updates the row with the same keys in a database table, or inserts the record as a new row",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "connection": {
+            "type": "string",
+            "description": "Connection of the database (a file in connections/)",
+            "format": "runnel-connection",
+            "examples": [
+              "app-db"
+            ],
+            "x-runnel-connection": [
+              "sqlite",
+              "sqlserver",
+              "postgres"
+            ]
+          },
+          "table": {
+            "type": "string",
+            "description": "Table to write to, e.g. orders or sales.orders",
+            "examples": [
+              "orders"
+            ]
+          },
+          "fields": {
+            "type": "array",
+            "description": "Fields to write, each into the column of the same name; empty: all fields (not those starting with _)",
+            "items": {
+              "type": "string",
+              "format": "runnel-field"
+            }
+          },
+          "commitSize": {
+            "type": "integer",
+            "description": "Rows per transaction",
+            "default": 1000
+          },
+          "timeout": {
+            "type": "string",
+            "description": "Longest time one transaction may take",
+            "format": "runnel-duration",
+            "default": "5m"
+          },
+          "keys": {
+            "type": "array",
+            "description": "Fields that identify a row; SQLite and PostgreSQL need a unique index on them",
+            "items": {
+              "type": "string",
+              "format": "runnel-field"
+            }
+          },
+          "update": {
+            "type": "array",
+            "description": "Fields to change in an existing row; empty: all written fields except the keys",
+            "items": {
+              "type": "string",
+              "format": "runnel-field"
+            }
+          }
+        },
+        "required": [
+          "connection",
+          "table",
+          "keys"
+        ],
+        "additionalProperties": false
+      },
+      "example": "connection: app-db\ntable: customers\nkeys: [id]\nfields: [id, name, email]\n",
+      "recordErrors": true
+    },
+    {
+      "type": "file.list",
+      "kind": "transform",
+      "category": "input",
+      "label": "List Files",
+      "description": "Reads the files of a folder as records: path, name, extension, size, modified and folder",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "folder": {
+            "type": "string",
+            "description": "Folder to list, relative to the project folder or absolute",
+            "examples": [
+              "inbox"
+            ]
+          },
+          "pattern": {
+            "type": "string",
+            "description": "Names to include, with wildcards, e.g. *.csv",
+            "default": "*"
+          },
+          "recursive": {
+            "type": "boolean",
+            "description": "Also list the subfolders",
+            "default": false
+          },
+          "include": {
+            "type": "string",
+            "description": "What to list",
+            "enum": [
+              "files",
+              "folders",
+              "all"
+            ],
+            "default": "files"
+          }
+        },
+        "required": [
+          "folder"
+        ],
+        "additionalProperties": false
+      },
+      "example": "folder: inbox\npattern: \"*.csv\"\nrecursive: true\n"
+    },
+    {
+      "type": "http.response",
+      "kind": "transform",
+      "category": "output",
+      "label": "HTTP Response",
+      "description": "Answers the caller of an HTTP trigger with the records as JSON and passes them on",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "HTTP status code, e.g. 200 or 404",
+            "default": "200",
+            "examples": [
+              "200"
+            ]
+          },
+          "headers": {
+            "type": "object",
+            "description": "Headers of the answer",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "single": {
+            "type": "boolean",
+            "description": "Answer with the first record as an object instead of a list",
+            "default": false
+          },
+          "whenEmpty": {
+            "type": "boolean",
+            "description": "Fallback: answer also without records, but only if no other http.response answers (e.g. 404)",
+            "default": false
+          },
+          "maxRows": {
+            "type": "string",
+            "description": "Most records in the answer; more stop the pipeline, as they are held in memory",
+            "default": "10000"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": "status: 200\nsingle: true\n"
+    },
+    {
+      "type": "json.input",
+      "kind": "transform",
+      "category": "input",
+      "label": "JSON Input",
+      "description": "Reads the objects of a JSON or NDJSON file as records",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "JSON or NDJSON file to read, relative to the project folder or absolute",
+            "examples": [
+              "data/orders.json"
+            ]
+          },
+          "format": {
+            "type": "string",
+            "description": "json: arrays and objects, also several one after another; ndjson: one object per line, a broken line goes to the error link; auto: ndjson for .ndjson and .jsonl, else json",
+            "enum": [
+              "auto",
+              "json",
+              "ndjson"
+            ],
+            "default": "auto"
+          },
+          "records": {
+            "type": "string",
+            "description": "Path to the array of records inside the document, with dots, e.g. data.items; empty: the document itself (json only)",
+            "examples": [
+              "data.items"
+            ]
+          },
+          "encoding": {
+            "type": "string",
+            "description": "Encoding of the file; auto recognizes UTF-8 and UTF-16 by their byte order mark and reads UTF-8 otherwise",
+            "enum": [
+              "auto",
+              "utf-8",
+              "windows-1252",
+              "utf-16"
+            ],
+            "default": "auto"
+          },
+          "fields": {
+            "type": "array",
+            "description": "Fields to read, with path and type; empty: all keys of the objects as they are",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the field",
+                  "examples": [
+                    "amount"
+                  ]
+                },
+                "from": {
+                  "type": "string",
+                  "description": "Where the value is in the object, with dots for nested objects, e.g. address.city; empty: the key of the same name"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Type of the value; empty: as in the file (numbers, text, true/false, lists and objects)",
+                  "enum": [
+                    "string",
+                    "int",
+                    "decimal",
+                    "float",
+                    "bool",
+                    "date",
+                    "datetime",
+                    "json"
+                  ]
+                },
+                "format": {
+                  "type": "string",
+                  "description": "For values given as text: number pattern like #.##0,00 or date pattern like dd.MM.yyyy",
+                  "examples": [
+                    "dd.MM.yyyy"
+                  ]
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "example": "path: data/orders.json\nrecords: data.items\nfields:\n  - { name: id, type: int }\n  - { name: city, from: address.city }\n",
+      "recordErrors": true,
+      "detectFields": true
+    },
+    {
+      "type": "json.output",
+      "kind": "transform",
+      "category": "output",
+      "label": "JSON Output",
+      "description": "Writes records to a JSON or NDJSON file and passes them on",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "JSON or NDJSON file to write, relative to the project folder or absolute",
+            "examples": [
+              "out/orders.json"
+            ]
+          },
+          "format": {
+            "type": "string",
+            "description": "json: an array with one record per line; ndjson: one object per line; auto: ndjson for .ndjson and .jsonl, else json",
+            "enum": [
+              "auto",
+              "json",
+              "ndjson"
+            ],
+            "default": "auto"
+          },
+          "ifExists": {
+            "type": "string",
+            "description": "What happens if the file exists: replace it once all records are written, or fail",
+            "enum": [
+              "replace",
+              "fail"
+            ],
+            "default": "replace"
+          },
+          "fields": {
+            "type": "array",
+            "description": "Fields to write, in this order; empty: all fields of the records",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the field to write (and of the key)",
+                  "format": "runnel-field",
+                  "examples": [
+                    "amount"
+                  ]
+                },
+                "format": {
+                  "type": "string",
+                  "description": "Writes the value as text with a number pattern like #.##0,00 or a date pattern like dd.MM.yyyy; empty: numbers as numbers, dates in ISO 8601",
+                  "examples": [
+                    "dd.MM.yyyy"
+                  ]
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "example": "path: out/orders.json\nfields:\n  - { name: id }\n  - { name: day, format: dd.MM.yyyy }\n",
+      "recordErrors": true
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "01M7T2X0AHHW9G9ZAV04RRCXJC",
+  "path": "workflows/parallel.workflow.yaml",
+  "kind": "workflow",
+  "workflow": "parallel",
+  "trigger": "cron:nightly",
+  "client": "127.0.0.1",
+  "environment": "dev",
+  "status": "running",
+  "started": "2026-11-19T14:20:50.898Z",
+  "finished": "2026-11-19T14:20:52.899Z",
+  "durationMs": 2001,
+  "error": "…",
+  "outputs": { "MESSAGE": "Hello" }
+}

@@ -21,6 +21,11 @@ func TestWait(t *testing.T) {
 		t.Errorf("returned after %v, err %v", time.Since(start), err)
 	}
 
+	a = actiontest.New(t, waitDefinition, map[string]any{"duration": ""})
+	if _, _, err := actiontest.Execute(context.Background(), a); err == nil || err.Error() != "no duration given" {
+		t.Errorf("empty duration: %v", err)
+	}
+
 	a = actiontest.New(t, waitDefinition, map[string]any{"duration": "soon"})
 	if _, _, err := actiontest.Execute(context.Background(), a); err == nil || !strings.Contains(err.Error(), "invalid duration") {
 		t.Errorf("invalid duration: %v", err)

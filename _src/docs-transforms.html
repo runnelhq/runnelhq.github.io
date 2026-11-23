@@ -1,0 +1,177 @@
+<!-- {
+  "out": "docs/transforms.html",
+  "title": {"de": "Transforms entwickeln", "en": "Developing transforms"},
+  "description": {
+    "de": "Anleitung für eingebaute Runnel-Transforms: Aufbau, Verarbeiten mit Process, Records, Backpressure, Schema in Init, Tests und Checkliste.",
+    "en": "Guide to built-in Runnel transforms: layout, processing with Process, records, backpressure, schema in Init, tests and checklist."
+  },
+  "nav": "docs/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Entwicklerdoku · Bausteine</p>
+          <h1>Einen neuen Transform entwickeln</h1>
+          <p class="docs-lead">Transforms sind die Bausteine von Pipelines: Sie lesen Datensätze (Records), verändern, filtern oder schreiben sie – als Strom, mit konstantem Speicher auch bei Millionen Zeilen.</p>
+          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/TRANSFORMS.md"><code>docs/dev/TRANSFORMS.md</code></a> · Grundlagen: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0007-typsystem-pipelines.md">ADR 0007</a> (Typsystem), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a> (Namensräume).</p>
+
+          <div class="callout">
+            <strong>Ergänzt die Actions-Anleitung</strong>
+            <p>Namensräume, Konfiguration (<code>with:</code>), Schema-Tags, Texte, Windows-Besonderheiten und Dokumentation gelten wie in <a href="actions.html">Actions entwickeln</a>. Hier steht nur, was bei Transforms anders ist.</p>
+          </div>
+          <p>Beispiele im Repository: <a href="https://github.com/runnelhq/runnel/tree/main/internal/transforms/core"><code>internal/transforms/core/</code></a> – <code>generate.go</code> (Eingabe ohne eingehende Links), <code>dummy.go</code> (reicht weiter), <code>log.go</code> (Konfiguration, Log); <a href="https://github.com/runnelhq/runnel/tree/main/internal/transforms/csv"><code>internal/transforms/csv/</code></a> – Datei lesen und schreiben mit Positionen in Fehlern, temporärer Datei und Kodierungen.</p>
+
+          <h2 id="aufbau">1. Aufbau</h2>
+          {{snippet:transform-files.txt|Aufbau}}
+          <ul>
+            <li><strong>Eigene Registry</strong>, getrennt von den Actions: derselbe Typname darf als Action und als Transform existieren (z. B. <code>core.log</code>). Ein neuer Namensraum wird in <code>internal/transforms/transforms.go</code> eingetragen.</li>
+            <li><strong>Kategorie</strong> (<code>transform.Category…</code>): <code>input</code>, <code>transform</code>, <code>flow</code>, <code>execution</code>, <code>combine</code>, <code>output</code>.</li>
+            <li><strong>Konfiguration</strong> wie bei Actions mit <code>transform.DecodeConfig</code> und den Tags <code>doc</code> und <code>schema</code>. Felder, die <code>${…}</code> enthalten dürfen, als <code>string</code> anlegen – auch Zahlen wie <code>rows</code>. Der Wert wird in <code>Process</code> geprüft, nicht in <code>New</code>: <code>runnel validate</code> ruft <code>New</code> mit den Variablen, wie sie in der Datei stehen.</li>
+            <li><strong>Für den Editor:</strong> Namen vorhandener Felder der eingehenden Datensätze mit <code>schema:"format=runnel-field"</code> (auch an Listen wie <code>groupBy</code>), Ziele von Daten-Links mit <code>format=runnel-target</code>, Eigenschaften, die nur für einige Werte einer anderen gelten, mit <code>only=&lt;feld&gt;:&lt;a&gt;|&lt;b&gt;</code>. Namen neuer Felder bleiben ohne Format.</li>
+            <li>Jeder Transform mit Konfiguration bekommt ein <strong><code>Example</code></strong> (die <code>with:</code>-Werte in YAML) für die Hilfe im Panel; der Vertragstest prüft, dass <code>New</code> es annimmt.</li>
+          </ul>
+
+          <h2 id="process">2. Verarbeiten (<code>Process</code>)</h2>
+          {{snippet:transform-process.go|Beispiel: Text in Großbuchstaben}}
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Thema</th><th>Regel</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Eingabe</th><td><code>in</code> liefert Batches, bis alle eingehenden Links beendet sind; bei mehreren Links gemischt. Ein Transform ohne eingehende Links (Eingabe) bekommt einen geschlossenen Kanal und erzeugt Records selbst.</td></tr>
+              <tr><th scope="row">Ausgabe</th><td><code>out.Emit(r)</code> je Record; die Engine bündelt zu Batches und gibt jeden Record an alle ausgehenden Links (ab dem zweiten als Kopie). Einen Record nach <code>Emit</code> nicht mehr ändern. <code>out.EmitTo(id, r)</code> gibt ihn nur an den Daten-Link zu einem bestimmten Transform (Beispiel <code>switch.go</code>).</td></tr>
+              <tr><th scope="row">Backpressure</th><td><code>Emit</code> blockiert, solange die folgenden Transforms beschäftigt sind – nichts selbst puffern, sonst steigt der Speicher.</td></tr>
+              <tr><th scope="row">Abbruch</th><td><code>Emit</code> gibt bei Abbruch einen Fehler zurück: sofort zurückgeben. Bei langen Schritten ohne <code>Emit</code> (z. B. Datei öffnen) <code>ctx</code> weitergeben.</td></tr>
+              <tr><th scope="row">Fehler</th><td>Ein Fehler aus <code>Process</code> hält die ganze Pipeline an. Kann ein <strong>einzelner Record</strong> nicht verarbeitet werden, <code>out.Fail(r, feld, err)</code> aufrufen: mit Fehler-Link geht der Record dorthin (mit <code>_error</code>, <code>_errorField</code>, <code>_errorTransform</code>), sonst gibt <code>Fail</code> den Fehler zurück. Dazu <code>RecordErrors: true</code> in der Definition; <code>out.HasErrorLinks()</code> sagt, ob ein Fehler-Link da ist.</td></tr>
+              <tr><th scope="row">Frühes Ende</th><td>Ein Transform darf aufhören, bevor <code>in</code> leer ist; die Engine verwirft den Rest.</td></tr>
+              <tr><th scope="row">Records</th><td>Geordnete Felder (<code>internal/record</code>): <code>Get</code>, <code>Set</code>, <code>Delete</code>, <code>Clone</code>; Namen mit <code>_</code> sind für Metadaten reserviert. Werte als <code>string</code>, <code>int64</code>, <code>decimal.Decimal</code>, <code>float64</code>, <code>bool</code>, <code>record.Date</code>, <code>time.Time</code>, <code>[]byte</code>, <code>map[string]any</code>/<code>[]any</code>; fremde Werte mit <code>record.Normalize</code> umwandeln.</td></tr>
+              <tr><th scope="row">Log</th><td><code>out.Logf</code>: <code>Info</code> für Ergebnisse, <code>Debug</code> für Details; bei großen Datenmengen nie je Record auf <code>Info</code>.</td></tr>
+              <tr><th scope="row">Zustand</th><td>Ein Transform-Objekt läuft in genau einer Goroutine; Zustand im Objekt ist erlaubt, globaler nicht.</td></tr>
+              <tr><th scope="row">HTTP-Aufrufer</th><td><code>out.HasCaller()</code> meldet, ob ein Aufrufer eines HTTP-Triggers wartet; <code>out.Respond(resp)</code> antwortet ihm – die erste Antwort gilt. Beispiel <code>internal/transforms/http/response.go</code>.</td></tr>
+              <tr><th scope="row">Connections</th><td>Ein Feld mit <code>schema:"connection=sqlite"</code> nennt eine Connection; <code>out.Connection(ctx, name)</code> liefert sie mit aufgelösten Variablen und Secrets (nie ausgeben). SQL-Felder mit <code>format=runnel-sql</code> kommen unverändert an, Werte als <code>@name</code> mit <code>params</code>. Beispiel <code>internal/transforms/db/tableinput.go</code>.</td></tr>
+              <tr><th scope="row">Aufrufender Workflow</th><td><code>out.Rows()</code> liefert die Datensätze, die ein Workflow mitgegeben hat (<code>rows</code> an <code>core.run-pipeline</code>); <code>out.AddResult(r)</code> gibt einen zurück (<code>output.rows</code>).</td></tr>
+              <tr><th scope="row">Leistung</th><td>Was je Record läuft, zählt bei Millionen Records. Neue Records mit bekannter Feldzahl mit <code>record.Make(n)</code> anlegen; feste, eindeutige Namen sammeln und mit <code>record.FromFields</code> übernehmen; <code>r.GetAt(i, name)</code> liest zuerst an Position <code>i</code>. Nachschlagen einmal vor der Schleife, nicht je Record.</td></tr>
+              <tr><th scope="row">Kopien</th><td>Mit <code>Parallel: true</code> darf der Transform mit <code>copies: n</code> laufen: n Objekte teilen sich die Eingabe. Nur setzen, wenn jeder Record für sich verarbeitet wird – nicht bei Ein- und Ausgaben.</td></tr>
+              <tr><th scope="row">Felder ermitteln</th><td>Ein Eingabe-Transform, dessen Felder aus der Eingabe kommen, setzt <code>DetectFields</code>: je Feld Name, Typvorschlag über <code>format.Propose</code>, die ersten Werte und eine Begründung. Der Editor zeigt dann „Detect fields…“. Tests mit Beispieldateien und ein <code>Fuzz…</code>-Ziel wie bei <code>csv.input</code>.</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="init">3. Schema (<code>Init</code>)</h2>
+          {{snippet:transform-init.go|Beispiel}}
+          <ul>
+            <li><code>ic.In</code> ist das Schema der eingehenden Records – bei mehreren Links gemischt, leer und geschlossen ohne Eingang.</li>
+            <li>Jedes Feld, das der Transform liest, mit <code>ic.Use</code> melden: fehlt es im geschlossenen Schema, ist es ein Fehler, im offenen eine Warnung – jeweils mit „did you mean …?“.</li>
+            <li>Das Ergebnis beschreibt die Ausgabe: <strong>geschlossen</strong>, wenn alle Felder bekannt sind (z. B. Eingaben mit Felddefinition), <strong>offen</strong>, wenn weitere vorkommen können. Transforms, die nur weiterreichen, geben <code>ic.In</code> zurück.</li>
+            <li>Ohne <code>Init</code> gilt die Ausgabe als offen und unbekannt – für neue Transforms nur, wenn sich wirklich nichts ableiten lässt.</li>
+            <li><strong>Ausdrücke je Datensatz</strong> mit <code>transform.CompileExpression</code> in <code>New</code> übersetzen, die Felder aus <code>expr.Fields()</code> mit <code>ic.Use</code> melden und in <code>Process</code> mit <code>expr.Bool(out, r)</code> auswerten. Ein <code>Expression</code> gehört genau einem Transform-Objekt.</li>
+            <li>Konstante Werte aus der Konfiguration mit <code>record.Normalize</code> umwandeln – <code>transform.DecodeConfig</code> liefert Zahlen als <code>json.Number</code>.</li>
+          </ul>
+
+          <h2 id="tests">4. Tests</h2>
+          {{snippet:transform-test.go|Beispiel}}
+          <ul>
+            <li><strong><code>transformtest.Run</code></strong> gibt Records in einen Transform und liefert die ausgegebenen Records, Log und Fehler. Dazu <code>RunRouted</code> (Ziele), <code>RunWithErrorLink</code> (Fehler-Link) und <code>RunWithValues</code> (Werte des Laufs).</li>
+            <li><strong>Vertragstest</strong> (<code>internal/transforms/transforms_test.go</code>) läuft für jeden Transform: Kategorie, Texte, Beschreibungen aller Felder, unbekannte Felder werden abgelehnt, Beispielkonfiguration aus dem Schema wird angenommen, Abbruch.</li>
+            <li>Zusammenspiel mehrerer Transforms über die Engine: Tests in <code>internal/engine/pipeline</code>, Beispiele unter <code>examples/</code>.</li>
+            <li>Golden-Dateien des Katalogs mit <code>go test ./internal/cli -update</code> neu erzeugen und den Diff prüfen.</li>
+          </ul>
+
+          <h2 id="checkliste">5. Checkliste für den PR</h2>
+          <ul class="checklist">
+            <li>Eine Datei je Transform, Eintrag in <code>register.go</code>, Kategorie, Label, Beschreibung, <code>doc</code> für jedes Feld</li>
+            <li>Feldnamen mit <code>format=runnel-field</code>, Link-Ziele mit <code>format=runnel-target</code>; ein <code>Example</code></li>
+            <li>Werte mit Variablen werden in <code>Process</code> geprüft; <code>Emit</code>-Fehler werden zurückgegeben</li>
+            <li><code>Init</code> meldet das Ausgabeschema und alle gelesenen Felder (<code>ic.Use</code>), mit Tests</li>
+            <li>Tests mit <code>transformtest</code>, Vertragstest grün, Katalog-Goldens geprüft</li>
+            <li>Konzept Kap. 12.2 und Roadmap aktualisiert, ggf. Beispiel unter <code>examples/</code></li>
+          </ul>
+
+          <h2 id="vorlage">Vorlage: <code>core.filter</code></h2>
+          <p>Ein vollständiger Transform aus dem Repository mit Ausdruck je Datensatz, Feldmeldung in <code>Init</code>, Fehler-Link über <code>out.Fail</code>, Kopien (<code>Parallel</code>) und einer Log-Zeile am Ende.</p>
+          {{snippet:filter.go|internal/transforms/core/filter.go}}
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">Developer docs · Components</p>
+          <h1>Developing a new transform</h1>
+          <p class="docs-lead">Transforms are the building blocks of pipelines: they read records, change, filter or write them – as a stream, with constant memory even for millions of rows.</p>
+          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/TRANSFORMS.md"><code>docs/dev/TRANSFORMS.md</code></a> · Background: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0007-typsystem-pipelines.md">ADR 0007</a> (type system), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a> (namespaces).</p>
+
+          <div class="callout">
+            <strong>Extends the action guide</strong>
+            <p>Namespaces, configuration (<code>with:</code>), schema tags, texts, Windows specifics and documentation work as in <a href="actions.html">Developing actions</a>. This page only covers what is different for transforms.</p>
+          </div>
+          <p>Examples in the repository: <a href="https://github.com/runnelhq/runnel/tree/main/internal/transforms/core"><code>internal/transforms/core/</code></a> – <code>generate.go</code> (input without incoming links), <code>dummy.go</code> (passes records on), <code>log.go</code> (configuration, log); <a href="https://github.com/runnelhq/runnel/tree/main/internal/transforms/csv"><code>internal/transforms/csv/</code></a> – reading and writing files with positions in errors, a temporary file and encodings.</p>
+
+          <h2 id="layout">1. Layout</h2>
+          {{snippet:transform-files-en.txt|Layout}}
+          <ul>
+            <li><strong>Separate registry</strong> from actions: the same type name may exist as an action and as a transform (e.g. <code>core.log</code>). A new namespace is added in <code>internal/transforms/transforms.go</code>.</li>
+            <li><strong>Category</strong> (<code>transform.Category…</code>): <code>input</code>, <code>transform</code>, <code>flow</code>, <code>execution</code>, <code>combine</code>, <code>output</code>.</li>
+            <li><strong>Configuration</strong> as for actions with <code>transform.DecodeConfig</code> and the <code>doc</code> and <code>schema</code> tags. Fields that may contain <code>${…}</code> are declared as <code>string</code> – numbers such as <code>rows</code> too. The value is checked in <code>Process</code>, not in <code>New</code>: <code>runnel validate</code> calls <code>New</code> with the variables as written in the file.</li>
+            <li><strong>For the editor:</strong> names of existing fields of incoming records with <code>schema:"format=runnel-field"</code> (also on lists such as <code>groupBy</code>), targets of data links with <code>format=runnel-target</code>, properties that only apply to some values of another one with <code>only=&lt;field&gt;:&lt;a&gt;|&lt;b&gt;</code>. Names of new fields get no format.</li>
+            <li>Every transform with a configuration gets an <strong><code>Example</code></strong> (the <code>with:</code> values in YAML) for the help in the panel; the contract test checks that <code>New</code> accepts it.</li>
+          </ul>
+
+          <h2 id="process-en">2. Processing (<code>Process</code>)</h2>
+          {{snippet:transform-process-en.go|Example: upper-case text}}
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Topic</th><th>Rule</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Input</th><td><code>in</code> delivers batches until all incoming links have ended; mixed for several links. A transform without incoming links (input) gets a closed channel and creates records itself.</td></tr>
+              <tr><th scope="row">Output</th><td><code>out.Emit(r)</code> per record; the engine bundles batches and passes every record to all outgoing links (copies from the second on). Don't change a record after <code>Emit</code>. <code>out.EmitTo(id, r)</code> sends it only to the data link to a specific transform (example <code>switch.go</code>).</td></tr>
+              <tr><th scope="row">Backpressure</th><td><code>Emit</code> blocks while the following transforms are busy – don't buffer yourself, or memory grows.</td></tr>
+              <tr><th scope="row">Cancellation</th><td><code>Emit</code> returns an error on cancellation: return it immediately. For long steps without <code>Emit</code> (e.g. opening a file) pass <code>ctx</code> on.</td></tr>
+              <tr><th scope="row">Errors</th><td>An error returned by <code>Process</code> stops the whole pipeline. If a <strong>single record</strong> can't be processed, call <code>out.Fail(r, field, err)</code>: with an error link the record goes there (with <code>_error</code>, <code>_errorField</code>, <code>_errorTransform</code>), otherwise <code>Fail</code> returns the error. Set <code>RecordErrors: true</code> in the definition; <code>out.HasErrorLinks()</code> tells whether there is an error link.</td></tr>
+              <tr><th scope="row">Early end</th><td>A transform may stop before <code>in</code> is empty; the engine discards the rest.</td></tr>
+              <tr><th scope="row">Records</th><td>Ordered fields (<code>internal/record</code>): <code>Get</code>, <code>Set</code>, <code>Delete</code>, <code>Clone</code>; names starting with <code>_</code> are reserved for metadata. Values as <code>string</code>, <code>int64</code>, <code>decimal.Decimal</code>, <code>float64</code>, <code>bool</code>, <code>record.Date</code>, <code>time.Time</code>, <code>[]byte</code>, <code>map[string]any</code>/<code>[]any</code>; convert foreign values with <code>record.Normalize</code>.</td></tr>
+              <tr><th scope="row">Log</th><td><code>out.Logf</code>: <code>Info</code> for results, <code>Debug</code> for details; never <code>Info</code> per record for large data.</td></tr>
+              <tr><th scope="row">State</th><td>A transform object runs in exactly one goroutine; state in the object is fine, global state is not.</td></tr>
+              <tr><th scope="row">HTTP callers</th><td><code>out.HasCaller()</code> reports whether a caller of an HTTP trigger is waiting; <code>out.Respond(resp)</code> answers it – the first response wins. Example <code>internal/transforms/http/response.go</code>.</td></tr>
+              <tr><th scope="row">Connections</th><td>A field with <code>schema:"connection=sqlite"</code> names a connection; <code>out.Connection(ctx, name)</code> returns it with variables and secrets resolved (never print them). SQL fields with <code>format=runnel-sql</code> arrive unchanged, values as <code>@name</code> with <code>params</code>. Example <code>internal/transforms/db/tableinput.go</code>.</td></tr>
+              <tr><th scope="row">Calling workflow</th><td><code>out.Rows()</code> returns the records a workflow passed in (<code>rows</code> on <code>core.run-pipeline</code>); <code>out.AddResult(r)</code> returns one (<code>output.rows</code>).</td></tr>
+              <tr><th scope="row">Performance</th><td>Whatever runs per record counts with millions of records. Create records with a known field count with <code>record.Make(n)</code>; collect fixed, unique names and take them over with <code>record.FromFields</code>; <code>r.GetAt(i, name)</code> reads position <code>i</code> first. Look things up once before the loop, not per record.</td></tr>
+              <tr><th scope="row">Copies</th><td>With <code>Parallel: true</code> the transform may run with <code>copies: n</code>: n objects share the input. Only set it when every record is processed on its own – not for inputs and outputs.</td></tr>
+              <tr><th scope="row">Detect fields</th><td>An input transform whose fields come from its input sets <code>DetectFields</code>: per field the name, a type proposal via <code>format.Propose</code>, the first values and a reason. The editor then shows “Detect fields…”. Tests with sample files and a <code>Fuzz…</code> target as for <code>csv.input</code>.</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="init-en">3. Schema (<code>Init</code>)</h2>
+          {{snippet:transform-init-en.go|Example}}
+          <ul>
+            <li><code>ic.In</code> is the schema of the incoming records – mixed for several links, empty and closed without input.</li>
+            <li>Report every field the transform reads with <code>ic.Use</code>: if it's missing in a closed schema that is an error, in an open one a warning – each with “did you mean …?”.</li>
+            <li>The result describes the output: <strong>closed</strong> when all fields are known (e.g. inputs with a field definition), <strong>open</strong> when others may occur. Transforms that only pass records on return <code>ic.In</code>.</li>
+            <li>Without <code>Init</code> the output counts as open and unknown – for new transforms only when nothing can really be derived.</li>
+            <li>Compile <strong>per-record expressions</strong> with <code>transform.CompileExpression</code> in <code>New</code>, report the fields from <code>expr.Fields()</code> with <code>ic.Use</code> and evaluate them in <code>Process</code> with <code>expr.Bool(out, r)</code>. An <code>Expression</code> belongs to exactly one transform object.</li>
+            <li>Convert constant values from the configuration with <code>record.Normalize</code> – <code>transform.DecodeConfig</code> returns numbers as <code>json.Number</code>.</li>
+          </ul>
+
+          <h2 id="tests-en">4. Tests</h2>
+          {{snippet:transform-test.go|Example}}
+          <ul>
+            <li><strong><code>transformtest.Run</code></strong> feeds records into a transform and returns the emitted records, log and error. Also <code>RunRouted</code> (targets), <code>RunWithErrorLink</code> (error link) and <code>RunWithValues</code> (run values).</li>
+            <li>The <strong>contract test</strong> (<code>internal/transforms/transforms_test.go</code>) runs for every transform: category, texts, descriptions of all fields, rejection of unknown fields, acceptance of a sample configuration from the schema, cancellation.</li>
+            <li>Interplay of several transforms through the engine: tests in <code>internal/engine/pipeline</code>, examples under <code>examples/</code>.</li>
+            <li>Regenerate the catalog golden files with <code>go test ./internal/cli -update</code> and review the diff.</li>
+          </ul>
+
+          <h2 id="checklist">5. Pull request checklist</h2>
+          <ul class="checklist">
+            <li>One file per transform, entry in <code>register.go</code>, category, label, description, <code>doc</code> for every field</li>
+            <li>Field names with <code>format=runnel-field</code>, link targets with <code>format=runnel-target</code>; an <code>Example</code></li>
+            <li>Values with variables are checked in <code>Process</code>; <code>Emit</code> errors are returned</li>
+            <li><code>Init</code> reports the output schema and every field read (<code>ic.Use</code>), with tests</li>
+            <li>Tests with <code>transformtest</code>, contract test green, catalog goldens reviewed</li>
+            <li>Concept ch. 12.2 and roadmap updated, example under <code>examples/</code> if useful</li>
+          </ul>
+
+          <h2 id="template">Template: <code>core.filter</code></h2>
+          <p>A complete transform from the repository with a per-record expression, field reporting in <code>Init</code>, an error link via <code>out.Fail</code>, copies (<code>Parallel</code>) and a log line at the end.</p>
+          {{snippet:filter.go|internal/transforms/core/filter.go}}
+        </article>
+      </div>
+    </div>
