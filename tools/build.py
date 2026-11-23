@@ -26,7 +26,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "_src"
 
-# Doku-Navigation: (Ausgabepfad, Titel DE, Titel EN, Status) – Status None = vorhanden
+# Navigation je Bereich: (Ausgabepfad, Titel DE, Titel EN, Status) – Status None = vorhanden
 DOCS_NAV = [
     ("docs/index.html", "Übersicht", "Overview", None),
     ("docs/actions.html", "Actions entwickeln", "Developing actions", None),
@@ -35,6 +35,21 @@ DOCS_NAV = [
     ("docs/api.html", "Server-API", "Server API", None),
     (None, "Plugins entwickeln", "Developing plugins", ("folgt mit S49–S51", "coming with S49–S51")),
 ]
+GUIDE_NAV = [
+    ("handbuch/index.html", "Überblick", "Overview", None),
+    ("handbuch/installation.html", "Installation", "Installation", None),
+    ("handbuch/betrieb.html", "Betrieb", "Operation", None),
+    ("handbuch/projekt.html", "Projekt und Konfiguration", "Project and configuration", None),
+    ("handbuch/workflows.html", "Workflows", "Workflows", None),
+    ("handbuch/pipelines.html", "Pipelines", "Pipelines", None),
+    ("handbuch/trigger.html", "Trigger", "Triggers", None),
+    ("handbuch/ausdruecke.html", "Ausdrücke", "Expressions", None),
+    ("handbuch/bausteine.html", "Bausteine (Referenz)", "Components (reference)", None),
+]
+SECTIONS = {
+    "docs": (DOCS_NAV, "Entwicklerdoku", "Developer docs"),
+    "guide": (GUIDE_NAV, "Handbuch", "User guide"),
+}
 
 
 def section(text, name):
@@ -124,10 +139,127 @@ def expand_code(content):
     return re.sub(r'<pre><code class="lang-(\w+)"(?: data-caption="([^"]*)")?>(.*?)</code></pre>', pre, content, flags=re.S)
 
 
-def sidebar(out_path, content, root):
-    """Doku-Navigation plus „Auf dieser Seite“ aus den h2 mit id je Sprachblock."""
+# ---------- Referenzen aus den Daten des Programms ----------
+L10N = {
+    "de": {"field": "Feld", "type": "Typ", "desc": "Beschreibung", "required": "Pflicht", "default": "Standard",
+           "example": "Beispiel", "values": "Werte", "none": "Keine Konfiguration.", "fn": "Funktion",
+           "ctx": "Name", "actions": "Actions", "transforms": "Transforms"},
+    "en": {"field": "Field", "type": "Type", "desc": "Description", "required": "required", "default": "default",
+           "example": "Example", "values": "values", "none": "No configuration.", "fn": "Function",
+           "ctx": "Name", "actions": "Actions", "transforms": "Transforms"},
+}
+GROUP_DE = {"Date": "Datum", "Empty values": "Leere Werte", "Numbers and lists": "Zahlen und Listen", "Text": "Text"}
+
+
+def _fields(schema, prefix=""):
+    """Felder eines JSON Schemas als flache Liste (Name, Eigenschaften, Pflicht)."""
+    out = []
+    req = set(schema.get("required", []))
+    for name, prop in (schema.get("properties") or {}).items():
+        full = prefix + name
+        out.append((full, prop, name in req))
+        items = prop.get("items") if prop.get("type") == "array" else None
+        if items and items.get("properties"):
+            out += _fields(items, full + "[].")
+        elif prop.get("type") == "object" and prop.get("properties"):
+            out += _fields(prop, full + ".")
+    return out
+
+
+def _type_label(prop, t):
+    typ = prop.get("type", "any")
+    if typ == "array":
+        it = prop.get("items", {})
+        typ = ("object" if it.get("properties") else it.get("type", "any")) + "[]"
+    fmt = prop.get("format")
+    extra = f' <span class="ref-fmt">{html.escape(fmt)}</span>' if fmt else ""
+    return f"<code>{html.escape(typ)}</code>{extra}"
+
+
+def blocks_reference(lang):
+    t = L10N[lang]
+    path = SRC / "catalog.json"
+    if not path.exists():
+        return ""
+    catalog = json.loads(path.read_text(encoding="utf-8"))
+    parts = []
+    jump = []
+    for kind, key in (("action", "actions"), ("transform", "transforms")):
+        links = "".join(f'<li><a href="#{kind[0]}-{d["type"].replace(".", "-")}-{lang}"><code>{html.escape(d["type"])}</code></a></li>'
+                        for d in sorted(catalog[key], key=lambda d: d["type"]))
+        jump.append(f'<p class="chips-label">{t[key]}</p><ul class="ns-list ref-jump">{links}</ul>')
+    parts.append("".join(jump))
+    for kind, key in (("action", "actions"), ("transform", "transforms")):
+        parts.append(f'<h2 id="{key}-{lang}">{t[key]}</h2>')
+        items = catalog[key]
+        for cat in CATEGORIES[kind] + sorted({i["category"] for i in items} - set(CATEGORIES[kind])):
+            members = sorted((i for i in items if i["category"] == cat), key=lambda i: i["type"])
+            if not members:
+                continue
+            cat_name = CATEGORY_DE.get(cat, cat) if lang == "de" else cat.capitalize()
+            color = CATEGORY_COLOR.get(cat, "allgemein")
+            parts.append(f'<h3 class="ref-cat"><span class="tile" style="background:var(--rn-kategorie-{color})"></span>{html.escape(cat_name)}</h3>')
+            for d in members:
+                anchor = f'{kind[0]}-{d["type"].replace(".", "-")}-{lang}'
+                rows = []
+                for name, prop, req in _fields(d.get("schema") or {}):
+                    bits = []
+                    if req:
+                        bits.append(f'<span class="ref-req">{t["required"]}</span>')
+                    if "default" in prop:
+                        bits.append(f'{t["default"]}: <code>{html.escape(json.dumps(prop["default"], ensure_ascii=False))}</code>')
+                    if prop.get("enum"):
+                        bits.append(f'{t["values"]}: ' + ", ".join(f"<code>{html.escape(str(v))}</code>" for v in prop["enum"]))
+                    desc = html.escape(prop.get("description", ""))
+                    meta_html = f'<div class="ref-meta">{" · ".join(bits)}</div>' if bits else ""
+                    rows.append(f'<tr><td><code>{html.escape(name)}</code></td><td>{_type_label(prop, t)}</td><td>{desc}{meta_html}</td></tr>')
+                table = (f'<div class="table-scroll"><table class="doc-table ref-table"><thead><tr><th>{t["field"]}</th><th>{t["type"]}</th>'
+                         f'<th>{t["desc"]}</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div>') if rows else f'<p class="legal-hint">{t["none"]}</p>'
+                example = ""
+                if d.get("example"):
+                    yaml_ex = f'- id: {d["type"].split(".")[-1]}\n  type: {d["type"]}\n  with:\n' + "".join(
+                        "    " + line + "\n" for line in d["example"].rstrip("\n").split("\n"))
+                    example = code_block(yaml_ex, "yaml", t["example"])
+                badges = ""
+                if d.get("recordErrors"):
+                    badges += f'<span class="ref-badge">{"Fehler-Link" if lang == "de" else "error link"}</span>'
+                if d.get("parallel"):
+                    badges += '<span class="ref-badge">copies</span>'
+                parts.append(f'<section class="ref-item" id="{anchor}"><h4><code>{html.escape(d["type"])}</code> '
+                             f'<span>{html.escape(d["label"])}</span>{badges}</h4><p>{html.escape(d["description"])}</p>{table}{example}</section>')
+    return "\n".join(parts)
+
+
+def expressions_reference(lang):
+    t = L10N[lang]
+    path = SRC / "expressions.json"
+    if not path.exists():
+        return ""
+    ref = json.loads(path.read_text(encoding="utf-8"))
+    def row(d, sig):
+        ex = f'<div class="ref-meta"><code>{html.escape(d["example"])}</code></div>' if d.get("example") else ""
+        return (f'<tr><td><code>{html.escape(sig)}</code></td><td><code>{html.escape(d.get("type", ""))}</code></td>'
+                f'<td>{html.escape(d.get("description", ""))}{ex}</td></tr>')
+    def table(rows, first):
+        return (f'<div class="table-scroll"><table class="doc-table ref-table"><thead><tr><th>{first}</th><th>{t["type"]}</th>'
+                f'<th>{t["desc"]}</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div>')
+    parts = [table([row(r, r["name"]) for r in ref["roots"]], t["ctx"])]
+    groups = []
+    for f in ref["functions"]:
+        if f.get("group") not in groups:
+            groups.append(f.get("group"))
+    for g in groups:
+        name = GROUP_DE.get(g, g) if lang == "de" else g
+        parts.append(f'<h3>{html.escape(name)}</h3>')
+        parts.append(table([row(f, f.get("signature", f["name"])) for f in ref["functions"] if f.get("group") == g], t["fn"]))
+    return "\n".join(parts)
+
+
+def sidebar(out_path, content, root, section="docs"):
+    """Navigation des Bereichs plus „Auf dieser Seite“ aus den h2 mit id je Sprachblock."""
+    nav, title_de, title_en = SECTIONS[section]
     items = []
-    for path, de, en, status in DOCS_NAV:
+    for path, de, en, status in nav:
         label = f'<span data-lang-block="de">{de}</span><span data-lang-block="en" hidden>{en}</span>'
         if path is None:
             sde, sen = status
@@ -148,8 +280,8 @@ def sidebar(out_path, content, root):
         toc.append(f'<ul class="docs-toc" data-lang-block="{lang}"{hidden}>{links}</ul>')
     toc_title = ('<p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span>'
                  '<span data-lang-block="en" hidden>On this page</span></p>')
-    nav_title = ('<p class="docs-side-title"><span data-lang-block="de">Entwicklerdoku</span>'
-                 '<span data-lang-block="en" hidden>Developer docs</span></p>')
+    nav_title = (f'<p class="docs-side-title"><span data-lang-block="de">{title_de}</span>'
+                 f'<span data-lang-block="en" hidden>{title_en}</span></p>')
     inner = f'{nav_title}<ul class="docs-nav">{"".join(items)}</ul>{toc_title}{"".join(toc)}'
     return (
         f'<details class="docs-side docs-side--mobile"><summary><span data-lang-block="de">Inhalt</span>'
@@ -187,9 +319,14 @@ def build_page(src, layout):
     sprite = rebase(layout["sprite"], root)
 
     content = content.replace("{{root}}", root)
+    for lang in ("de", "en"):
+        if "{{blocks:" + lang + "}}" in content:
+            content = content.replace("{{blocks:" + lang + "}}", blocks_reference(lang))
+        if "{{expressions:" + lang + "}}" in content:
+            content = content.replace("{{expressions:" + lang + "}}", expressions_reference(lang))
     content = expand_code(content)
     if "{{sidebar}}" in content:
-        content = content.replace("{{sidebar}}", sidebar(out, content, root))
+        content = content.replace("{{sidebar}}", sidebar(out, content, root, meta.get("section", "docs")))
     # Englische Blöcke bis zum Umschalten verbergen (kein Aufblitzen)
     content = re.sub(r'(data-lang-block="en")(?![^>]*\shidden)', r"\1 hidden", content)
 

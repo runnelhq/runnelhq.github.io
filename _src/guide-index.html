@@ -1,0 +1,152 @@
+<!-- {
+  "out": "handbuch/index.html",
+  "section": "guide",
+  "title": {"de": "Handbuch", "en": "User guide"},
+  "description": {
+    "de": "Anwenderdokumentation für Runnel: Begriffe, Aufbau eines Projekts und die ersten Schritte von der Installation bis zum ersten Lauf.",
+    "en": "User documentation for Runnel: concepts, project layout and first steps from installation to the first run."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch</p>
+          <h1>Runnel benutzen</h1>
+          <p class="docs-lead">Dieses Handbuch richtet sich an alle, die Runnel installieren, Workflows und Pipelines bauen und betreiben. Es beschreibt den Stand der Vorabversion – einige Funktionen kommen erst noch, sie sind entsprechend markiert.</p>
+          <p class="docs-source">Stand: <code>main</code> vom 23.11.2026 (nach Schritt S21). Grundlage sind <a href="https://github.com/runnelhq/runnel#verwendung">README</a>, <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md">Konzept</a> und die Beispiele unter <a href="https://github.com/runnelhq/runnel/tree/main/examples"><code>examples/</code></a>. Die Referenzen zu Bausteinen und Ausdrücken sind direkt aus dem Programm erzeugt.</p>
+
+          <div class="callout">
+            <strong>Vorabversion</strong>
+            <p>Runnel ist ein Vibe-Coding-Projekt in Entwicklung. Formate und Befehle können sich bis Version 1.0 noch ändern. Vor produktivem Einsatz bitte selbst prüfen.</p>
+          </div>
+
+          <h2 id="begriffe">Begriffe</h2>
+          <dl class="terms">
+            <dt>Projekt</dt><dd>Ein Ordner mit <code>project.yaml</code> und allen Dateien, die zusammengehören. Er lässt sich mit Git versionieren und als Ganzes kopieren.</dd>
+            <dt>Workflow</dt><dd>Steuert einen Ablauf: <strong>Actions</strong> nacheinander oder parallel, verbunden durch <strong>Links</strong> mit Bedingung (Erfolg, Fehler, immer, Ausdruck). Datei <code>*.workflow.yaml</code>.</dd>
+            <dt>Pipeline</dt><dd>Bewegt Daten: <strong>Transforms</strong> lesen, ändern und schreiben Datensätze als Strom. Datei <code>*.pipeline.yaml</code>.</dd>
+            <dt>Action, Transform</dt><dd>Die Bausteine – z. B. <code>file.copy</code>, <code>http.request</code>, <code>csv.input</code>. Die vollständige Liste steht in der <a href="bausteine.html">Referenz</a>.</dd>
+            <dt>Environment</dt><dd>Eine Umgebung wie <code>dev</code> oder <code>prod</code> mit eigenen Variablen, z. B. Pfaden und Servernamen. Datei <code>environments/&lt;name&gt;.yaml</code>.</dd>
+            <dt>Variable, Parameter</dt><dd><code>${NAME}</code> setzt Werte aus Projekt, Environment oder Startparametern ein. Parameter sind die Eingaben eines Workflows oder einer Pipeline.</dd>
+            <dt>Ausdruck</dt><dd><code>{{ … }}</code> berechnet Werte zur Laufzeit, z. B. ein Datum oder eine Bedingung. Siehe <a href="ausdruecke.html">Ausdrücke</a>.</dd>
+            <dt>Connection</dt><dd>Zugangsdaten zu einer Datenbank, abgelegt unter <code>connections/</code>. Passwörter stehen dort als <code>${secret:…}</code>.</dd>
+            <dt>Trigger</dt><dd>Startet Workflows oder Pipelines automatisch: nach Zeitplan, im Intervall, bei neuen Dateien oder per HTTP. Datei unter <code>triggers/</code>.</dd>
+          </dl>
+
+          <h2 id="aufbau">Aufbau eines Projekts</h2>
+<pre><code class="lang-bash" data-caption="D:\flows">D:\flows\
+  project.yaml                 # Name, Standard-Environment, gemeinsame Variablen
+  environments\
+    dev.yaml                   # Variablen je Umgebung
+    prod.yaml
+  connections\
+    erp.yaml                   # Datenbank-Zugang
+  triggers\
+    nightly.yaml               # Zeitplan, Intervall, Ordner oder HTTP
+  workflows\
+    import.workflow.yaml
+  pipelines\
+    customers.pipeline.yaml</code></pre>
+          <p>Die Ordnernamen <code>workflows</code> und <code>pipelines</code> sind eine Empfehlung; Runnel erkennt Dateien an ihrer Endung. Fest sind <code>environments/</code>, <code>connections/</code> und <code>triggers/</code>. Relative Pfade in allen Dateien beziehen sich auf den Projektordner – nie auf das Verzeichnis, aus dem Runnel gestartet wurde.</p>
+
+          <h2 id="erste-schritte">Erste Schritte</h2>
+          <ol class="steps">
+            <li><strong>Herunterladen</strong> und entpacken – siehe <a href="installation.html">Installation</a>.</li>
+            <li><strong>Beispiele holen:</strong> das Repository als ZIP laden (<em>Code → Download ZIP</em>) und den Ordner <code>examples</code> neben die <code>runnel.exe</code> legen.</li>
+            <li><strong>Prüfen:</strong> <code>.\runnel.exe validate examples\hello</code> – meldet Fehler mit Datei, Zeile und Spalte.</li>
+            <li><strong>Ausführen:</strong> <code>.\runnel.exe run examples\hello\workflows\hello.workflow.yaml</code></li>
+            <li><strong>Im Editor öffnen:</strong> <code>.\runnel.exe serve examples\hello</code>, dann <code>http://127.0.0.1:7300</code> im Browser.</li>
+          </ol>
+<pre><code class="lang-bash" data-caption="PowerShell">.\runnel.exe run --env prod examples\hello\workflows\hello.workflow.yaml
+11:16:43.537 INFO  workflow "hello" started (environment prod), run 01M841YQWHHS7NSWGNB9VHSAS7
+11:16:43.537 INFO  [greet] Hello, Production! (production on SRV01, files in \\fileserver\exchange\runnel-hello)
+11:16:44.538 INFO  output MESSAGE = "Hello, Production!"
+11:16:44.538 INFO  workflow "hello" succeeded in 1s</code></pre>
+
+          <h2 id="kapitel">Kapitel</h2>
+          <div class="docs-cards">
+            <a class="docs-card" href="installation.html"><strong>Installation</strong><span>Download, Prüfsummen, Windows und Linux, Aktualisieren.</span></a>
+            <a class="docs-card" href="betrieb.html"><strong>Betrieb</strong><span>Ausführen, Editor, Windows-Dienst, Logs, HTTPS.</span></a>
+            <a class="docs-card" href="projekt.html"><strong>Projekt und Konfiguration</strong><span>Environments, Variablen, Parameter, Secrets, Connections.</span></a>
+            <a class="docs-card" href="workflows.html"><strong>Workflows</strong><span>Actions, Links, Fehlerbehandlung, Wiederholung, Sub-Workflows.</span></a>
+            <a class="docs-card" href="pipelines.html"><strong>Pipelines</strong><span>Transforms, Datensätze, Typen, Fehler-Links, Parallelität.</span></a>
+            <a class="docs-card" href="trigger.html"><strong>Trigger</strong><span>Zeitplan, Intervall, Ordner-Überwachung, HTTP.</span></a>
+            <a class="docs-card" href="ausdruecke.html"><strong>Ausdrücke</strong><span>Kontext und alle Funktionen von <code>{{ … }}</code>.</span></a>
+            <a class="docs-card" href="bausteine.html"><strong>Bausteine</strong><span>Alle Actions und Transforms mit Feldern und Beispielen.</span></a>
+          </div>
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide</p>
+          <h1>Using Runnel</h1>
+          <p class="docs-lead">This guide is for everyone who installs Runnel, builds workflows and pipelines and runs them. It describes the pre-release – some features are still to come and are marked as such.</p>
+          <p class="docs-source">As of <code>main</code> on 2026-11-23 (after step S21). Based on the <a href="https://github.com/runnelhq/runnel#verwendung">README</a>, the <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md">concept</a> (German) and the examples under <a href="https://github.com/runnelhq/runnel/tree/main/examples"><code>examples/</code></a>. The component and expression references are generated directly from the program.</p>
+
+          <div class="callout">
+            <strong>Pre-release</strong>
+            <p>Runnel is a vibe coding project under development. Formats and commands may still change before version 1.0. Please check it yourself before using it in production.</p>
+          </div>
+
+          <h2 id="concepts">Concepts</h2>
+          <dl class="terms">
+            <dt>Project</dt><dd>A folder with <code>project.yaml</code> and all files that belong together. It can be versioned with Git and copied as a whole.</dd>
+            <dt>Workflow</dt><dd>Controls a process: <strong>actions</strong> in sequence or in parallel, connected by <strong>links</strong> with a condition (success, failure, always, expression). File <code>*.workflow.yaml</code>.</dd>
+            <dt>Pipeline</dt><dd>Moves data: <strong>transforms</strong> read, change and write records as a stream. File <code>*.pipeline.yaml</code>.</dd>
+            <dt>Action, transform</dt><dd>The components – e.g. <code>file.copy</code>, <code>http.request</code>, <code>csv.input</code>. The full list is in the <a href="bausteine.html">reference</a>.</dd>
+            <dt>Environment</dt><dd>An environment such as <code>dev</code> or <code>prod</code> with its own variables, e.g. paths and server names. File <code>environments/&lt;name&gt;.yaml</code>.</dd>
+            <dt>Variable, parameter</dt><dd><code>${NAME}</code> inserts values from the project, the environment or start parameters. Parameters are the inputs of a workflow or pipeline.</dd>
+            <dt>Expression</dt><dd><code>{{ … }}</code> computes values at run time, e.g. a date or a condition. See <a href="ausdruecke.html">Expressions</a>.</dd>
+            <dt>Connection</dt><dd>Access to a database, stored under <code>connections/</code>. Passwords appear there as <code>${secret:…}</code>.</dd>
+            <dt>Trigger</dt><dd>Starts workflows or pipelines automatically: on a schedule, at intervals, for new files or via HTTP. File under <code>triggers/</code>.</dd>
+          </dl>
+
+          <h2 id="layout">Project layout</h2>
+<pre><code class="lang-bash" data-caption="D:\flows">D:\flows\
+  project.yaml                 # name, default environment, shared variables
+  environments\
+    dev.yaml                   # variables per environment
+    prod.yaml
+  connections\
+    erp.yaml                   # database access
+  triggers\
+    nightly.yaml               # schedule, interval, folder or HTTP
+  workflows\
+    import.workflow.yaml
+  pipelines\
+    customers.pipeline.yaml</code></pre>
+          <p>The folder names <code>workflows</code> and <code>pipelines</code> are a recommendation; Runnel recognizes files by their extension. <code>environments/</code>, <code>connections/</code> and <code>triggers/</code> are fixed. Relative paths in all files refer to the project folder – never to the directory Runnel was started from.</p>
+
+          <h2 id="first-steps">First steps</h2>
+          <ol class="steps">
+            <li><strong>Download</strong> and unpack – see <a href="installation.html">Installation</a>.</li>
+            <li><strong>Get the examples:</strong> download the repository as a ZIP (<em>Code → Download ZIP</em>) and put the <code>examples</code> folder next to <code>runnel.exe</code>.</li>
+            <li><strong>Validate:</strong> <code>.\runnel.exe validate examples\hello</code> – reports errors with file, line and column.</li>
+            <li><strong>Run:</strong> <code>.\runnel.exe run examples\hello\workflows\hello.workflow.yaml</code></li>
+            <li><strong>Open in the editor:</strong> <code>.\runnel.exe serve examples\hello</code>, then <code>http://127.0.0.1:7300</code> in the browser.</li>
+          </ol>
+<pre><code class="lang-bash" data-caption="PowerShell">.\runnel.exe run --env prod examples\hello\workflows\hello.workflow.yaml
+11:16:43.537 INFO  workflow "hello" started (environment prod), run 01M841YQWHHS7NSWGNB9VHSAS7
+11:16:43.537 INFO  [greet] Hello, Production! (production on SRV01, files in \\fileserver\exchange\runnel-hello)
+11:16:44.538 INFO  output MESSAGE = "Hello, Production!"
+11:16:44.538 INFO  workflow "hello" succeeded in 1s</code></pre>
+
+          <h2 id="chapters">Chapters</h2>
+          <div class="docs-cards">
+            <a class="docs-card" href="installation.html"><strong>Installation</strong><span>Download, checksums, Windows and Linux, updating.</span></a>
+            <a class="docs-card" href="betrieb.html"><strong>Operation</strong><span>Running, editor, Windows service, logs, HTTPS.</span></a>
+            <a class="docs-card" href="projekt.html"><strong>Project and configuration</strong><span>Environments, variables, parameters, secrets, connections.</span></a>
+            <a class="docs-card" href="workflows.html"><strong>Workflows</strong><span>Actions, links, error handling, repetition, sub-workflows.</span></a>
+            <a class="docs-card" href="pipelines.html"><strong>Pipelines</strong><span>Transforms, records, types, error links, parallelism.</span></a>
+            <a class="docs-card" href="trigger.html"><strong>Triggers</strong><span>Schedule, interval, folder watching, HTTP.</span></a>
+            <a class="docs-card" href="ausdruecke.html"><strong>Expressions</strong><span>Context and every function of <code>{{ … }}</code>.</span></a>
+            <a class="docs-card" href="bausteine.html"><strong>Components</strong><span>All actions and transforms with fields and examples.</span></a>
+          </div>
+        </article>
+      </div>
+    </div>

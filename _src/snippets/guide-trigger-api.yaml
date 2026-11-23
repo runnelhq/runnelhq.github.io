@@ -1,0 +1,11 @@
+kind: Trigger
+apiVersion: runnel/v1
+name: import-api
+type: http
+target: workflows/nightly-import.workflow.yaml
+with:
+  method: POST
+  path: /hooks/import/{DAY}
+  auth: { token: "${secret:env/IMPORT_TOKEN}" }
+  response: accepted
+  maxConcurrent: 2

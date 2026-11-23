@@ -1,0 +1,146 @@
+<!-- {
+  "out": "handbuch/pipelines.html",
+  "section": "guide",
+  "title": {"de": "Pipelines", "en": "Pipelines"},
+  "description": {
+    "de": "Pipelines in Runnel: Transforms, Datensätze und Typen, Fehler-Links, Parallelität, Einstellungen und Aufruf aus Workflows.",
+    "en": "Pipelines in Runnel: transforms, records and types, error links, parallelism, settings and calling from workflows."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch</p>
+          <h1>Pipelines</h1>
+          <p class="docs-lead">Eine Pipeline bewegt Daten: Alle Transforms laufen gleichzeitig und reichen Datensätze über Links weiter. Der Speicher bleibt dabei konstant, auch bei Millionen Zeilen.</p>
+
+          <h2 id="beispiel">Beispiel</h2>
+          <p>Liest eine CSV-Datei im deutschen Format, wandelt Kundennummer und Umsatz in Zahlen um, behält aktive Kunden, benennt die Felder für ein CRM um und schreibt das Ergebnis. Zeilen mit ungültigen Werten gehen über den Fehler-Link in eine eigene Datei, statt die Pipeline anzuhalten.</p>
+          {{snippet:guide-customers.pipeline.yaml|pipelines/customers.pipeline.yaml}}
+<pre><code class="lang-bash" data-caption="Ausgabe von runnel run">INFO  [types] read 4, written 3, errors 1 in 0s
+INFO  [active] kept 2 of 3 records, dropped 1
+INFO  [rejected] wrote 1 row to out/customers-rejected.csv
+INFO  [write] wrote 2 rows to out/customers-crm.csv
+INFO  pipeline "customers" succeeded in 1ms</code></pre>
+
+          <h2 id="aufbau">Aufbau der Datei</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Feld</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>kind</code>, <code>apiVersion</code>, <code>name</code></td><td>Pflicht: <code>Pipeline</code>, <code>runnel/v1</code> und ein Name</td></tr>
+              <tr><td><code>description</code>, <code>parameters</code></td><td>wie bei Workflows; Pipelines haben keine <code>outputs</code></td></tr>
+              <tr><td><code>transforms</code></td><td>je Transform <code>id</code>, <code>type</code>, <code>with</code>; dazu <code>copies</code> und <code>distribution</code></td></tr>
+              <tr><td><code>links</code></td><td><code>from</code>, <code>to</code> und <code>type</code>: <code>data</code> (Standard) oder <code>error</code></td></tr>
+              <tr><td><code>settings.batchSize</code></td><td>Datensätze, die auf einmal über einen Link gehen (Standard 500)</td></tr>
+              <tr><td><code>settings.bufferSize</code></td><td>Datensätze, die ein Link puffert, bevor der Transform davor wartet (Standard 10.000)</td></tr>
+              <tr><td><code>settings.strict</code></td><td>jeder Link muss ein vollständig bekanntes Schema haben; Warnungen zu unbekannten Feldern werden Fehler</td></tr>
+              <tr><td><code>layout</code></td><td>Positionen im Editor</td></tr>
+            </tbody>
+          </table></div>
+          <p>Pipelines sind azyklisch: Datensätze fließen nur vorwärts. Hat ein Transform mehrere ausgehende Daten-Links, bekommt bei <code>distribution: copy</code> (Standard) jeder Link jeden Datensatz, bei <code>distribute</code> werden sie reihum verteilt.</p>
+
+          <h2 id="datensaetze">Datensätze und Typen</h2>
+          <p>Ein Datensatz ist eine geordnete Liste von Feldern (Name → Wert). Pipelines sind schemalos mit optionalen Typen: Ohne Felddefinition liest z. B. <code>csv.input</code> alles als Text; <code>core.convert</code> oder die <code>fields</code> eines Eingabe-Transforms legen Typen fest.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Typ</th><th>Inhalt</th></tr></thead>
+            <tbody>
+              <tr><td><code>string</code></td><td>Text</td></tr>
+              <tr><td><code>int</code>, <code>decimal</code>, <code>float</code></td><td>Ganzzahl, exakte Dezimalzahl (für Beträge), Gleitkommazahl</td></tr>
+              <tr><td><code>bool</code></td><td>Wahrheitswert</td></tr>
+              <tr><td><code>date</code>, <code>datetime</code></td><td>Datum, Zeitpunkt</td></tr>
+              <tr><td><code>json</code></td><td>verschachtelte Werte (Objekte, Listen)</td></tr>
+            </tbody>
+          </table></div>
+          <p>Formate beschreiben Text: Zahlen wie <code>#.##0,00</code> (deutsch) oder <code>#,##0.00</code>, Daten wie <code>dd.MM.yyyy</code>. Ohne Format gelten <code>1234.5</code> und ISO-Daten. Eingabedateien dürfen UTF-8 (mit oder ohne BOM), UTF-16 oder Windows-1252 sein (<code>encoding</code>). Im Editor schlägt „Detect fields…“ Felder und Typen aus einer Beispieldatei vor.</p>
+          <p><code>runnel validate</code> prüft, ob die Felder, die ein Transform liest, am Link davor bekannt sind – mit Vorschlag bei Tippfehlern.</p>
+
+          <h2 id="fehler">Fehler-Links</h2>
+          <p>Kann ein Transform einen einzelnen Datensatz nicht verarbeiten (z. B. „k. A.“ als Zahl), geht er über einen Link mit <code>type: error</code> weiter – unverändert, ergänzt um <code>_error</code> (Meldung), <code>_errorField</code> (Feld) und <code>_errorTransform</code> (ID). Ohne Fehler-Link bricht die Pipeline ab. Welche Transforms Fehler-Links nutzen, zeigt die <a href="bausteine.html#transforms-de">Referenz</a> (Kennzeichen „Fehler-Link“); an anderen warnt <code>validate</code>, dass der Link nie genutzt wird.</p>
+
+          <h2 id="parallel">Parallelität</h2>
+          <p>Alle Transforms laufen ohnehin gleichzeitig. Mit <code>copies: n</code> (1–64) läuft ein Transform zusätzlich in n Instanzen, die sich die eingehenden Datensätze teilen – sinnvoll für teure Schritte je Datensatz. Nicht für Ein- und Ausgaben, und die Reihenfolge der Datensätze ist danach nicht mehr garantiert.</p>
+
+          <h2 id="ausfuehren">Ausführen und testen</h2>
+          <ul>
+            <li><strong>Direkt:</strong> <code>runnel run pipelines/customers.pipeline.yaml</code> – am Ende stehen die Zähler je Transform.</li>
+            <li><strong>Aus einem Workflow:</strong> <code>core.run-pipeline</code> mit <code>params</code>; die Zähler stehen im Ergebnis (<code>output.transforms.&lt;id&gt;.written</code>, <code>output.errors</code>). Datensätze gehen mit <code>rows</code> hinein und über <code>core.to-result</code> zurück.</li>
+            <li><strong>Per Trigger:</strong> Trigger starten Pipelines wie Workflows, z. B. eine je neuer Datei.</li>
+            <li><strong>Im Editor:</strong> „Preview data“ zeigt die Datensätze bis zu einem Transform als Tabelle oder JSON, ohne zu schreiben.</li>
+          </ul>
+          <div class="callout">
+            <strong>Ausgabeordner</strong>
+            <p><code>csv.output</code> und <code>json.output</code> legen fehlende Ordner nicht an. Der Ordner der Ausgabedatei muss existieren – sonst scheitert der Transform mit „no such file or directory“. Bei Bedarf vorher mit <code>file.mkdir</code> anlegen.</p>
+          </div>
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide</p>
+          <h1>Pipelines</h1>
+          <p class="docs-lead">A pipeline moves data: all transforms run at the same time and pass records along links. Memory stays constant, even with millions of rows.</p>
+
+          <h2 id="example">Example</h2>
+          <p>Reads a CSV file in German format, converts customer number and revenue into numbers, keeps active customers, renames the fields for a CRM and writes the result. Rows with invalid values go over the error link into a separate file instead of stopping the pipeline.</p>
+          {{snippet:guide-customers.pipeline.yaml|pipelines/customers.pipeline.yaml}}
+<pre><code class="lang-bash" data-caption="Output of runnel run">INFO  [types] read 4, written 3, errors 1 in 0s
+INFO  [active] kept 2 of 3 records, dropped 1
+INFO  [rejected] wrote 1 row to out/customers-rejected.csv
+INFO  [write] wrote 2 rows to out/customers-crm.csv
+INFO  pipeline "customers" succeeded in 1ms</code></pre>
+
+          <h2 id="file">File layout</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>kind</code>, <code>apiVersion</code>, <code>name</code></td><td>Required: <code>Pipeline</code>, <code>runnel/v1</code> and a name</td></tr>
+              <tr><td><code>description</code>, <code>parameters</code></td><td>As for workflows; pipelines have no <code>outputs</code></td></tr>
+              <tr><td><code>transforms</code></td><td>Per transform <code>id</code>, <code>type</code>, <code>with</code>; plus <code>copies</code> and <code>distribution</code></td></tr>
+              <tr><td><code>links</code></td><td><code>from</code>, <code>to</code> and <code>type</code>: <code>data</code> (default) or <code>error</code></td></tr>
+              <tr><td><code>settings.batchSize</code></td><td>Records passed over a link at once (default 500)</td></tr>
+              <tr><td><code>settings.bufferSize</code></td><td>Records a link buffers before the transform before it waits (default 10,000)</td></tr>
+              <tr><td><code>settings.strict</code></td><td>Every link must have a fully known schema; warnings about unknown fields become errors</td></tr>
+              <tr><td><code>layout</code></td><td>Positions in the editor</td></tr>
+            </tbody>
+          </table></div>
+          <p>Pipelines are acyclic: records only flow forward. If a transform has several outgoing data links, with <code>distribution: copy</code> (default) every link gets every record; with <code>distribute</code> they are handed out in turn.</p>
+
+          <h2 id="records">Records and types</h2>
+          <p>A record is an ordered list of fields (name → value). Pipelines are schemaless with optional types: without a field definition, <code>csv.input</code> for example reads everything as text; <code>core.convert</code> or the <code>fields</code> of an input transform set types.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Type</th><th>Content</th></tr></thead>
+            <tbody>
+              <tr><td><code>string</code></td><td>Text</td></tr>
+              <tr><td><code>int</code>, <code>decimal</code>, <code>float</code></td><td>Integer, exact decimal (for amounts), floating point</td></tr>
+              <tr><td><code>bool</code></td><td>Boolean</td></tr>
+              <tr><td><code>date</code>, <code>datetime</code></td><td>Date, point in time</td></tr>
+              <tr><td><code>json</code></td><td>Nested values (objects, lists)</td></tr>
+            </tbody>
+          </table></div>
+          <p>Formats describe text: numbers like <code>#.##0,00</code> (German) or <code>#,##0.00</code>, dates like <code>dd.MM.yyyy</code>. Without a format, <code>1234.5</code> and ISO dates apply. Input files may be UTF-8 (with or without BOM), UTF-16 or Windows-1252 (<code>encoding</code>). In the editor, “Detect fields…” proposes fields and types from a sample file.</p>
+          <p><code>runnel validate</code> checks that the fields a transform reads are known on the link before it – with a suggestion for typos.</p>
+
+          <h2 id="errors">Error links</h2>
+          <p>If a transform can't process a single record (e.g. “n/a” as a number), it passes it on over a link with <code>type: error</code> – unchanged, extended by <code>_error</code> (message), <code>_errorField</code> (field) and <code>_errorTransform</code> (ID). Without an error link the pipeline stops. Which transforms use error links is shown in the <a href="bausteine.html#transforms-en">reference</a> (marked “error link”); on others <code>validate</code> warns that the link is never used.</p>
+
+          <h2 id="parallelism">Parallelism</h2>
+          <p>All transforms run concurrently anyway. With <code>copies: n</code> (1–64) a transform that allows it (marked “copies” in the reference) additionally runs as n instances sharing the incoming records – useful for expensive per-record steps. Not for inputs and outputs, and record order is no longer guaranteed afterwards.</p>
+
+          <h2 id="running">Running and testing</h2>
+          <ul>
+            <li><strong>Directly:</strong> <code>runnel run pipelines/customers.pipeline.yaml</code> – the counts per transform are shown at the end.</li>
+            <li><strong>From a workflow:</strong> <code>core.run-pipeline</code> with <code>params</code>; the counts are in the result (<code>output.transforms.&lt;id&gt;.written</code>, <code>output.errors</code>). Records go in with <code>rows</code> and come back via <code>core.to-result</code>.</li>
+            <li><strong>Via a trigger:</strong> triggers start pipelines like workflows, e.g. one per new file.</li>
+            <li><strong>In the editor:</strong> “Preview data” shows the records up to a transform as a table or JSON, without writing.</li>
+          </ul>
+          <div class="callout">
+            <strong>Output folders</strong>
+            <p><code>csv.output</code> and <code>json.output</code> don't create missing folders. The output file's folder must exist – otherwise the transform fails with “no such file or directory”. Create it beforehand with <code>file.mkdir</code> if needed.</p>
+          </div>
+        </article>
+      </div>
+    </div>

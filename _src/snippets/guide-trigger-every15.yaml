@@ -1,0 +1,8 @@
+kind: Trigger
+apiVersion: runnel/v1
+name: every15
+type: interval
+target: workflows/each.workflow.yaml
+enabled: false
+with:
+  every: 15m

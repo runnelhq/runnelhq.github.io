@@ -1,0 +1,48 @@
+kind: Pipeline
+apiVersion: runnel/v1
+name: customers
+parameters:
+  - name: FILE
+    default: data\customers.csv
+settings:
+  batchSize: 500
+  bufferSize: 10000
+transforms:
+  - id: read
+    type: csv.input
+    with:
+      path: ${FILE}
+      delimiter: ";"
+      encoding: windows-1252
+  - id: types
+    type: core.convert
+    with:
+      fields:
+        - { name: kdnr, type: int }
+        - { name: umsatz, type: decimal, format: "#.##0,00" }
+  - id: active
+    type: core.filter
+    copies: 2
+    with:
+      condition: "{{ record.umsatz > 0 }}"
+  - id: map
+    type: core.select-fields
+    with:
+      fields:
+        - { name: kdnr, rename: externalId }
+        - { name: name, rename: companyName }
+        - { name: umsatz, rename: revenue }
+  - id: write
+    type: csv.output
+    with:
+      path: out\customers-crm.csv
+  - id: rejected
+    type: csv.output
+    with:
+      path: out\customers-rejected.csv
+links:
+  - { from: read, to: types }
+  - { from: types, to: active }
+  - { from: types, to: rejected, type: error }
+  - { from: active, to: map }
+  - { from: map, to: write }

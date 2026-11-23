@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="de" data-theme="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Projekt und Konfiguration – Runnel</title>
+  <meta name="description" content="project.yaml, Environments, Variablen und ihre Rangfolge, Parameter, Secrets und Connections in Runnel konfigurieren.">
+  <meta name="title-en" content="Project and configuration – Runnel">
+  <meta name="description-en" content="Configuring project.yaml, environments, variables and their precedence, parameters, secrets and connections in Runnel.">
+  <meta name="theme-color" content="#0A6DA6">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="../assets/img/runnel-icon-180.png">
+  <link rel="preload" href="../assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/runnel.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+
+<!-- Erzeugt von tools/build.py aus _src/guide-projekt.html – nicht von Hand bearbeiten. -->
+<!-- Wiederverwendbare Symbole -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></g></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7 10.5l5 5 5-5"/><path d="M5 20h14"/></g></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="logo" viewBox="0 0 204 64"><rect width="64" height="64" rx="15" fill="#0A6DA6"/><circle cx="14.5" cy="22" r="6.5" fill="#FFFFFF"/><path d="M25 22C33.5 22 30.5 42 37.5 42" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/><circle cx="48.5" cy="42" r="5.25" fill="none" stroke="#7CC5EB" stroke-width="4.75"/><path transform="translate(80 43.25) scale(0.020134)" fill="currentColor" d="M138 0V-1118H390V-931H402Q432 -1028 507 -1080.5Q582 -1133 678 -1133Q700 -1133 727 -1131Q754 -1129 773 -1126V-887Q757 -892 721 -896Q685 -900 650 -900Q578 -900 520.5 -869Q463 -838 430.5 -783.5Q398 -729 398 -658V0Z M1293 14Q1178 14 1091.5 -35Q1005 -84 957.5 -178.5Q910 -273 910 -407V-1118H1170V-447Q1170 -335 1228.5 -271Q1287 -207 1389 -207Q1458 -207 1512 -237Q1566 -267 1596.5 -325Q1627 -383 1627 -463V-1118H1888V0H1641L1638 -276H1658Q1611 -130 1519 -58Q1427 14 1293 14Z M2383.1 -655V0H2123.1V-1118H2369.1L2373.1 -842H2352.1Q2399.1 -987 2490.1 -1059.5Q2581.1 -1132 2718.1 -1132Q2833.1 -1132 2919.1 -1083Q3005.1 -1034 3052.6 -940Q3100.1 -846 3100.1 -711V0H2840.1V-671Q2840.1 -783 2782.1 -847Q2724.1 -911 2622.1 -911Q2553.1 -911 2499.1 -881Q2445.1 -851 2414.1 -793.5Q2383.1 -736 2383.1 -655Z M3595.1 -655V0H3335.1V-1118H3581.1L3585.1 -842H3564.1Q3611.1 -987 3702.1 -1059.5Q3793.1 -1132 3930.1 -1132Q4045.1 -1132 4131.1 -1083Q4217.1 -1034 4264.6 -940Q4312.1 -846 4312.1 -711V0H4052.1V-671Q4052.1 -783 3994.1 -847Q3936.1 -911 3834.1 -911Q3765.1 -911 3711.1 -881Q3657.1 -851 3626.1 -793.5Q3595.1 -736 3595.1 -655Z M5041.2 23Q4872.2 23 4750.7 -48Q4629.2 -119 4563.7 -248Q4498.2 -377 4498.2 -552Q4498.2 -725 4562.7 -855Q4627.2 -985 4745.7 -1058.5Q4864.2 -1132 5024.2 -1132Q5126.2 -1132 5218.7 -1099Q5311.2 -1066 5382.7 -997Q5454.2 -928 5494.7 -821.5Q5535.2 -715 5535.2 -568V-486H4621.2V-663H5406.2L5284.2 -611Q5284.2 -705 5255.2 -776.5Q5226.2 -848 5168.7 -888Q5111.2 -928 5025.2 -928Q4939.2 -928 4879.2 -887.5Q4819.2 -847 4787.7 -779.5Q4756.2 -712 4756.2 -629V-507Q4756.2 -401 4792.2 -328Q4828.2 -255 4893.2 -218Q4958.2 -181 5044.2 -181Q5101.2 -181 5147.7 -197.5Q5194.2 -214 5228.2 -246.5Q5262.2 -279 5279.2 -326L5518.2 -277Q5491.2 -187 5426.2 -119.5Q5361.2 -52 5263.7 -14.5Q5166.2 23 5041.2 23Z M5977.2 -1490V0H5717.2V-1490Z"/></symbol>
+  <!-- Strömungslinien (Gestaltungselement aus dem Corporate Design) -->
+  <symbol id="flow" viewBox="0 0 640 640" preserveAspectRatio="xMaxYMin meet">
+    <g fill="none" stroke-linecap="round">
+      <path d="M120 -40 C 340 -40 300 300 520 300 S 700 260 760 260" stroke="#0A6DA6" stroke-width="28" opacity=".55"/>
+      <path d="M60 120 C 280 120 240 460 460 460 S 660 420 760 420" stroke="#1688C6" stroke-width="18" opacity=".45"/>
+      <path d="M200 300 C 360 300 340 620 500 620 S 680 600 760 600" stroke="#3FA6DD" stroke-width="10" opacity=".35"/>
+    </g>
+    <circle cx="520" cy="300" r="34" fill="none" stroke="#7CC5EB" stroke-width="22"/>
+  </symbol>
+</svg>
+
+<a class="sr-only" href="#main" data-i18n="a11y.skip">Zum Inhalt springen</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html#top" aria-label="Runnel">
+      <svg viewBox="0 0 204 64" aria-hidden="true"><use href="#logo"/></svg>
+    </a>
+    <nav class="nav" aria-label="Hauptnavigation" data-i18n-attr="aria-label:nav.label">
+      <a href="../index.html#features" data-i18n="nav.features">Funktionen</a>
+      <a href="../index.html#model" data-i18n="nav.model">Modell</a>
+      <a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a>
+      <a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a>
+      <a href="../index.html#roadmap" data-i18n="nav.roadmap">Roadmap</a>
+      <a href="../handbuch/" aria-current="page" data-i18n="nav.guide">Handbuch</a>
+      <a href="../docs/" data-i18n="nav.docs">Doku</a>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Sprache" data-i18n-attr="aria-label:lang.label">
+        <button type="button" data-lang="de" aria-pressed="true" lang="de" title="Deutsch">DE</button>
+        <button type="button" data-lang="en" aria-pressed="false" lang="en" title="English">EN</button>
+      </div>
+      <a class="icon-btn gh-link" href="https://github.com/runnelhq/runnel" aria-label="GitHub"><svg aria-hidden="true"><use href="#i-github"/></svg></a>
+      <a class="btn btn--primary btn--sm" href="https://github.com/runnelhq/runnel/releases" data-i18n="cta.download">Herunterladen</a>
+      <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Menü öffnen" data-i18n-attr="aria-label:nav.open">
+        <svg aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-nav" id="mobile-nav" data-open="false">
+    <div class="wrap">
+      <ul>
+        <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+        <li><a href="../index.html#model" data-i18n="nav.model">Modell</a></li>
+        <li><a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a></li>
+        <li><a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a></li>
+        <li><a href="../index.html#roadmap" data-i18n="nav.roadmap">Roadmap</a></li>
+        <li><a href="../handbuch/" aria-current="page" data-i18n="nav.guide">Handbuch</a></li>
+        <li><a href="../docs/" data-i18n="nav.docs">Doku</a></li>
+      </ul>
+      <div class="mobile-ctas">
+        <a class="btn btn--primary" href="https://github.com/runnelhq/runnel/releases"><svg aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="cta.download">Herunterladen</span></a>
+        <a class="btn btn--outline" href="https://github.com/runnelhq/runnel"><svg aria-hidden="true"><use href="#i-github"/></svg>GitHub</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="docs-page">
+<div class="wrap docs-layout">
+      <details class="docs-side docs-side--mobile"><summary><span data-lang-block="de">Inhalt</span><span data-lang-block="en" hidden>Contents</span></summary><p class="docs-side-title"><span data-lang-block="de">Handbuch</span><span data-lang-block="en" hidden>User guide</span></p><ul class="docs-nav"><li><a href="../handbuch/"><span data-lang-block="de">Überblick</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../handbuch/installation.html"><span data-lang-block="de">Installation</span><span data-lang-block="en" hidden>Installation</span></a></li><li><a href="../handbuch/betrieb.html"><span data-lang-block="de">Betrieb</span><span data-lang-block="en" hidden>Operation</span></a></li><li><a href="../handbuch/projekt.html" aria-current="page"><span data-lang-block="de">Projekt und Konfiguration</span><span data-lang-block="en" hidden>Project and configuration</span></a></li><li><a href="../handbuch/workflows.html"><span data-lang-block="de">Workflows</span><span data-lang-block="en" hidden>Workflows</span></a></li><li><a href="../handbuch/pipelines.html"><span data-lang-block="de">Pipelines</span><span data-lang-block="en" hidden>Pipelines</span></a></li><li><a href="../handbuch/trigger.html"><span data-lang-block="de">Trigger</span><span data-lang-block="en" hidden>Triggers</span></a></li><li><a href="../handbuch/ausdruecke.html"><span data-lang-block="de">Ausdrücke</span><span data-lang-block="en" hidden>Expressions</span></a></li><li><a href="../handbuch/bausteine.html"><span data-lang-block="de">Bausteine (Referenz)</span><span data-lang-block="en" hidden>Components (reference)</span></a></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#projekt">Projekt (project.yaml)</a></li><li><a href="#environments">Environments</a></li><li><a href="#variablen">Variablen</a></li><li><a href="#parameter">Parameter</a></li><li><a href="#secrets">Secrets</a></li><li><a href="#connections">Connections</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#project">Project (project.yaml)</a></li><li><a href="#environments-en">Environments</a></li><li><a href="#variables">Variables</a></li><li><a href="#parameters">Parameters</a></li><li><a href="#secrets-en">Secrets</a></li><li><a href="#connections-en">Connections</a></li></ul></details>
+<aside class="docs-side docs-side--desktop" aria-label="Dokumentation"><p class="docs-side-title"><span data-lang-block="de">Handbuch</span><span data-lang-block="en" hidden>User guide</span></p><ul class="docs-nav"><li><a href="../handbuch/"><span data-lang-block="de">Überblick</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../handbuch/installation.html"><span data-lang-block="de">Installation</span><span data-lang-block="en" hidden>Installation</span></a></li><li><a href="../handbuch/betrieb.html"><span data-lang-block="de">Betrieb</span><span data-lang-block="en" hidden>Operation</span></a></li><li><a href="../handbuch/projekt.html" aria-current="page"><span data-lang-block="de">Projekt und Konfiguration</span><span data-lang-block="en" hidden>Project and configuration</span></a></li><li><a href="../handbuch/workflows.html"><span data-lang-block="de">Workflows</span><span data-lang-block="en" hidden>Workflows</span></a></li><li><a href="../handbuch/pipelines.html"><span data-lang-block="de">Pipelines</span><span data-lang-block="en" hidden>Pipelines</span></a></li><li><a href="../handbuch/trigger.html"><span data-lang-block="de">Trigger</span><span data-lang-block="en" hidden>Triggers</span></a></li><li><a href="../handbuch/ausdruecke.html"><span data-lang-block="de">Ausdrücke</span><span data-lang-block="en" hidden>Expressions</span></a></li><li><a href="../handbuch/bausteine.html"><span data-lang-block="de">Bausteine (Referenz)</span><span data-lang-block="en" hidden>Components (reference)</span></a></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#projekt">Projekt (project.yaml)</a></li><li><a href="#environments">Environments</a></li><li><a href="#variablen">Variablen</a></li><li><a href="#parameter">Parameter</a></li><li><a href="#secrets">Secrets</a></li><li><a href="#connections">Connections</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#project">Project (project.yaml)</a></li><li><a href="#environments-en">Environments</a></li><li><a href="#variables">Variables</a></li><li><a href="#parameters">Parameters</a></li><li><a href="#secrets-en">Secrets</a></li><li><a href="#connections-en">Connections</a></li></ul></aside>
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch</p>
+          <h1>Projekt und Konfiguration</h1>
+          <p class="docs-lead">Was sich zwischen Test und Produktion unterscheidet – Pfade, Server, Zugangsdaten – steht nicht in den Workflows, sondern in Environments, Variablen, Secrets und Connections.</p>
+
+          <h2 id="projekt">Projekt (<code>project.yaml</code>)</h2>
+          <p>Runnel findet das Projekt über <code>project.yaml</code> im Ordner der Datei oder einem übergeordneten Ordner – wie Git den Ordner <code>.git</code>.</p>
+<div class="code">
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-155"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-155"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: flows
+<span class="tok-t">description</span>: Datenflüsse der Buchhaltung
+<span class="tok-t">defaultEnvironment</span>: dev
+<span class="tok-t">variables</span>:
+  <span class="tok-t">BASE</span>: D:\data
+  <span class="tok-t">INBOX</span>: ${BASE}\inbox
+  <span class="tok-t">ARCHIVE</span>: ${BASE}\archive
+<span class="tok-t">settings</span>:
+  <span class="tok-t">maxConcurrentRuns</span>: 4
+<span class="tok-t">workflow</span>:
+  <span class="tok-t">defaultJoin</span>: all</code></pre>
+</div>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Feld</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>name</code>, <code>description</code></td><td>Name und Zweck des Projekts; erscheinen im Editor</td></tr>
+              <tr><td><code>defaultEnvironment</code></td><td>Environment, wenn ein Lauf keines nennt, z. B. <code>dev</code></td></tr>
+              <tr><td><code>variables</code></td><td>Variablen für alle Environments; Werte dürfen andere Variablen enthalten</td></tr>
+              <tr><td><code>secretStore</code>, <code>secrets</code></td><td>Woher <code>${secret:…}</code> liest, falls ein Environment nichts festlegt – siehe <a href="#secrets">Secrets</a></td></tr>
+              <tr><td><code>settings.maxConcurrentRuns</code></td><td>höchstens so viele Läufe des Projekts gleichzeitig auf dem Server; <code>0</code> = keine Grenze</td></tr>
+              <tr><td><code>workflow.defaultJoin</code></td><td>Standard für Actions mit mehreren eingehenden Links: <code>all</code>, <code>first</code> oder <code>each</code> – siehe <a href="workflows.html#join">Join</a></td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="environments">Environments</h2>
+          <p>Ein Environment überschreibt Variablen für eine Umgebung. Der Name muss dem Dateinamen entsprechen. Gewählt wird es mit <code>--env</code>, im Editor beim Start oder im Trigger; sonst gilt <code>defaultEnvironment</code>.</p>
+<div class="code">
+  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-156"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-156"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: prod
+<span class="tok-t">description</span>: Produktivserver
+<span class="tok-t">variables</span>:
+  <span class="tok-t">BASE</span>: \\fileserver\data
+<span class="tok-t">secretStore</span>: env</code></pre>
+</div>
+
+          <h2 id="variablen">Variablen</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Schreibweise</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>${NAME}</code></td><td>Variable aus Projekt, Environment oder Parametern</td></tr>
+              <tr><td><code>${env:NAME}</code></td><td>Umgebungsvariable des Betriebssystems, z. B. <code>${env:COMPUTERNAME}</code>, <code>${env:TEMP}</code></td></tr>
+              <tr><td><code>${secret:NAME}</code></td><td>Secret – nur in bestimmten Feldern, siehe unten</td></tr>
+              <tr><td><code>${PROJECT_DIR}</code></td><td>eingebaut: absoluter Pfad des Projektordners</td></tr>
+              <tr><td><code>$${</code></td><td>ein wörtliches <code>${</code></td></tr>
+            </tbody>
+          </table></div>
+          <p>Gibt es denselben Namen auf mehreren Ebenen, gewinnt die spätere:</p>
+          <ol class="steps">
+            <li>Eingebaut: <code>PROJECT_DIR</code></li>
+            <li>Standardwerte der Parameter (<code>parameters[].default</code>)</li>
+            <li>Projekt (<code>project.yaml</code>, <code>variables</code>)</li>
+            <li>Environment (<code>environments/&lt;name&gt;.yaml</code>)</li>
+            <li>Beim Start übergebene Parameter: <code>--param</code>, Editor, Trigger, HTTP-Anfrage oder aufrufende Action</li>
+          </ol>
+          <p>Werte dürfen selbst Variablen enthalten (<code>INBOX: ${BASE}\inbox</code>); Zyklen sind ein Fehler. <code>runnel validate</code> warnt je Environment vor nicht definierten Variablen – so fällt auf, wenn eine Variable nur in <code>dev</code> gesetzt ist.</p>
+          <div class="callout">
+            <strong>Relative Pfade</strong>
+            <p>Relative Pfade in Actions, Transforms und Triggern beziehen sich immer auf den Projektordner – ohne Projekt auf den Ordner der Datei –, nie auf das Arbeitsverzeichnis. So verhält sich ein Workflow aus der Aufgabenplanung, dem Dienst und dem Editor gleich.</p>
+          </div>
+
+          <h2 id="parameter">Parameter</h2>
+          <p>Parameter sind die Eingaben eines Workflows oder einer Pipeline. Sie haben einen Typ und optional erlaubte Werte; Standardwerte und übergebene Werte werden geprüft.</p>
+<div class="code">
+  <div class="code-head"><span>Parameter</span><button class="copy-btn" type="button" data-copy-from="code-157"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-157"><code class="lang-yaml"><span class="tok-t">parameters</span>:
+  - <span class="tok-t">name</span>: DAYS
+    <span class="tok-t">description</span>: Wie viele Tage zurück
+    <span class="tok-t">type</span>: integer
+    <span class="tok-t">default</span>: <span class="tok-s">"1"</span>
+  - <span class="tok-t">name</span>: MODE
+    <span class="tok-t">enum</span>: [full, delta]
+    <span class="tok-t">default</span>: delta
+  - <span class="tok-t">name</span>: CUSTOMER
+    <span class="tok-t">required</span>: true</code></pre>
+</div>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Feld</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>name</code></td><td>Buchstaben, Ziffern und <code>_</code>, nicht mit einer Ziffer beginnend</td></tr>
+              <tr><td><code>type</code></td><td><code>string</code> (Standard), <code>integer</code>, <code>number</code>, <code>boolean</code>, <code>json</code></td></tr>
+              <tr><td><code>enum</code></td><td>erlaubte Werte</td></tr>
+              <tr><td><code>default</code></td><td>Standardwert, auch als Ausdruck, z. B. <code>"{{ formatDate(today(), 'yyyy-MM-dd') }}"</code></td></tr>
+              <tr><td><code>required</code></td><td>muss beim Start übergeben werden</td></tr>
+              <tr><td><code>description</code></td><td>Beschreibung, z. B. für den Startdialog im Editor</td></tr>
+            </tbody>
+          </table></div>
+          <p>Als Variable <code>${DAYS}</code> ist der Wert immer Text; in Ausdrücken liefert <code>params.DAYS</code> ihn mit seinem Typ.</p>
+
+          <h2 id="secrets">Secrets</h2>
+          <p>Passwörter und Tokens stehen nie direkt im Workflow, sondern als <code>${secret:NAME}</code> oder <code>${secret:QUELLE/NAME}</code>. Erlaubt ist das nur in Feldern für Secrets (z. B. <code>password</code> einer Connection) und als Token von HTTP-Triggern – nicht über eine Variable. Ein fehlendes Secret verhindert den Start; Werte werden in Log, Fehlern und Ergebnissen maskiert.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Quelle</th><th>Woher der Wert kommt</th></tr></thead>
+            <tbody>
+              <tr><td><code>env</code></td><td>aus einer Umgebungsvariablen des Rechners bzw. Dienstkontos – für den Betrieb</td></tr>
+              <tr><td><code>inline</code></td><td>im Klartext unter <code>secrets:</code> im Environment oder in <code>project.yaml</code> – nur für Entwicklung und einfache APIs; <code>validate</code> warnt</td></tr>
+              <tr><td><code>local</code></td><td>lokaler, verschlüsselter Store – <span class="soon">geplant</span></td></tr>
+            </tbody>
+          </table></div>
+          <p>Die Standardquelle legt <code>secretStore:</code> im Environment fest, sonst in <code>project.yaml</code>. So schreibt der Workflow überall <code>${secret:ERP_PASSWORD}</code>, und nur das Environment entscheidet, woher der Wert kommt:</p>
+<div class="code">
+  <div class="code-head"><span>environments/dev.yaml</span><button class="copy-btn" type="button" data-copy-from="code-158"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-158"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: dev
+<span class="tok-t">secretStore</span>: inline
+<span class="tok-t">secrets</span>:
+  <span class="tok-t">ERP_PASSWORD</span>: entwicklung123</code></pre>
+</div>
+<div class="code">
+  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-159"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-159"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: prod
+<span class="tok-t">secretStore</span>: env          <span class="tok-c"># liest die Umgebungsvariable ERP_PASSWORD</span></code></pre>
+</div>
+
+          <h2 id="connections">Connections</h2>
+          <p>Eine Connection beschreibt den Zugang zu einer Datenbank einmal für das ganze Projekt. Bausteine nennen sie mit <code>connection: &lt;name&gt;</code>; <code>validate</code> prüft, ob es sie gibt und ob der Typ passt. Unterschiede zwischen Environments kommen über Variablen.</p>
+<div class="code">
+  <div class="code-head"><span>connections/erp.yaml</span><button class="copy-btn" type="button" data-copy-from="code-160"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-160"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: erp                       <span class="tok-c"># = Dateiname</span>
+<span class="tok-t">description</span>: ERP-Datenbank, nur lesen
+<span class="tok-t">type</span>: sqlserver
+<span class="tok-t">with</span>:
+  <span class="tok-t">host</span>: ${ERP_HOST}
+  <span class="tok-t">database</span>: ERP
+  <span class="tok-t">user</span>: runnel_read
+  <span class="tok-t">password</span>: ${secret:ERP_PASSWORD}</code></pre>
+</div>
+          <h3>SQLite (<code>sqlite</code>)</h3>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><td><code>path</code> <span class="ref-req">Pflicht</span></td><td>Datenbankdatei, relativ zum Projektordner; wird mit Ordner angelegt, wenn sie fehlt</td></tr>
+              <tr><td><code>readOnly</code></td><td>nur lesend öffnen (Standard <code>false</code>)</td></tr>
+            </tbody>
+          </table></div>
+          <h3>SQL Server (<code>sqlserver</code>)</h3>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><td><code>host</code>, <code>database</code> <span class="ref-req">Pflicht</span></td><td>Server und Datenbank</td></tr>
+              <tr><td><code>port</code> / <code>instance</code></td><td>TCP-Port (Standard 1433) oder benannte Instanz wie <code>SQLEXPRESS</code> (braucht den SQL Server Browser)</td></tr>
+              <tr><td><code>user</code>, <code>password</code></td><td>SQL-Server-Anmeldung; ohne <code>user</code> das Windows-Konto, unter dem Runnel läuft (nur Windows)</td></tr>
+              <tr><td><code>encrypt</code></td><td><code>true</code> (Standard), <code>strict</code> (TDS 8) oder <code>false</code> (nur die Anmeldung)</td></tr>
+              <tr><td><code>trustServerCertificate</code></td><td>jedes Zertifikat akzeptieren, z. B. selbst signiert; <code>validate</code> warnt</td></tr>
+              <tr><td><code>connectTimeout</code></td><td>längste Zeit für den Verbindungsaufbau, Standard <code>30s</code></td></tr>
+            </tbody>
+          </table></div>
+          <h3>PostgreSQL (<code>postgres</code>)</h3>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><td><code>host</code>, <code>database</code>, <code>user</code> <span class="ref-req">Pflicht</span></td><td>Server, Datenbank und Benutzer</td></tr>
+              <tr><td><code>port</code></td><td>Standard 5432</td></tr>
+              <tr><td><code>password</code></td><td>als <code>${secret:NAME}</code></td></tr>
+              <tr><td><code>sslMode</code></td><td><code>verify-full</code> (Standard), <code>verify-ca</code>, <code>require</code> oder <code>disable</code></td></tr>
+              <tr><td><code>connectTimeout</code></td><td>Standard <code>30s</code></td></tr>
+            </tbody>
+          </table></div>
+          <p>SQL bekommt Werte nur als Parameter (<code>@name</code> mit dem Feld <code>params</code>), nie als Text im SQL – das schützt vor SQL-Injection. Beispiel: <a href="bausteine.html#a-db-execute-de"><code>db.execute</code></a>.</p>
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" hidden lang="en">
+          <p class="docs-eyebrow">User guide</p>
+          <h1>Project and configuration</h1>
+          <p class="docs-lead">What differs between test and production – paths, servers, credentials – does not live in the workflows but in environments, variables, secrets and connections.</p>
+
+          <h2 id="project">Project (<code>project.yaml</code>)</h2>
+          <p>Runnel finds the project via <code>project.yaml</code> in the file's folder or a parent folder – like Git finds <code>.git</code>.</p>
+<div class="code">
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-161"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-161"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: flows
+<span class="tok-t">description</span>: Accounting data flows
+<span class="tok-t">defaultEnvironment</span>: dev
+<span class="tok-t">variables</span>:
+  <span class="tok-t">BASE</span>: D:\data
+  <span class="tok-t">INBOX</span>: ${BASE}\inbox
+  <span class="tok-t">ARCHIVE</span>: ${BASE}\archive
+<span class="tok-t">settings</span>:
+  <span class="tok-t">maxConcurrentRuns</span>: 4
+<span class="tok-t">workflow</span>:
+  <span class="tok-t">defaultJoin</span>: all</code></pre>
+</div>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>name</code>, <code>description</code></td><td>Name and purpose of the project; shown in the editor</td></tr>
+              <tr><td><code>defaultEnvironment</code></td><td>Environment used when a run names none, e.g. <code>dev</code></td></tr>
+              <tr><td><code>variables</code></td><td>Variables for all environments; values may contain other variables</td></tr>
+              <tr><td><code>secretStore</code>, <code>secrets</code></td><td>Where <code>${secret:…}</code> reads from unless an environment sets its own – see <a href="#secrets-en">Secrets</a></td></tr>
+              <tr><td><code>settings.maxConcurrentRuns</code></td><td>At most this many runs of the project at once on the server; <code>0</code> = no limit</td></tr>
+              <tr><td><code>workflow.defaultJoin</code></td><td>Default for actions with several incoming links: <code>all</code>, <code>first</code> or <code>each</code> – see <a href="workflows.html#join-en">Join</a></td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="environments-en">Environments</h2>
+          <p>An environment overrides variables for one environment. Its name must match the file name. It is chosen with <code>--env</code>, in the editor when starting or in the trigger; otherwise <code>defaultEnvironment</code> applies.</p>
+<div class="code">
+  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-162"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-162"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: prod
+<span class="tok-t">description</span>: Production server
+<span class="tok-t">variables</span>:
+  <span class="tok-t">BASE</span>: \\fileserver\data
+<span class="tok-t">secretStore</span>: env</code></pre>
+</div>
+
+          <h2 id="variables">Variables</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Syntax</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>${NAME}</code></td><td>Variable from project, environment or parameters</td></tr>
+              <tr><td><code>${env:NAME}</code></td><td>Operating system environment variable, e.g. <code>${env:COMPUTERNAME}</code>, <code>${env:TEMP}</code></td></tr>
+              <tr><td><code>${secret:NAME}</code></td><td>Secret – only in certain fields, see below</td></tr>
+              <tr><td><code>${PROJECT_DIR}</code></td><td>Built in: absolute path of the project folder</td></tr>
+              <tr><td><code>$${</code></td><td>A literal <code>${</code></td></tr>
+            </tbody>
+          </table></div>
+          <p>If the same name exists on several levels, the later one wins:</p>
+          <ol class="steps">
+            <li>Built in: <code>PROJECT_DIR</code></li>
+            <li>Parameter defaults (<code>parameters[].default</code>)</li>
+            <li>Project (<code>project.yaml</code>, <code>variables</code>)</li>
+            <li>Environment (<code>environments/&lt;name&gt;.yaml</code>)</li>
+            <li>Parameters passed at start: <code>--param</code>, editor, trigger, HTTP request or calling action</li>
+          </ol>
+          <p>Values may contain variables themselves (<code>INBOX: ${BASE}\inbox</code>); cycles are an error. <code>runnel validate</code> warns about undefined variables per environment – so it shows when a variable is only set in <code>dev</code>.</p>
+          <div class="callout">
+            <strong>Relative paths</strong>
+            <p>Relative paths in actions, transforms and triggers always refer to the project folder – without a project to the file's folder – never to the working directory. A workflow behaves the same from Task Scheduler, the service and the editor.</p>
+          </div>
+
+          <h2 id="parameters">Parameters</h2>
+          <p>Parameters are the inputs of a workflow or pipeline. They have a type and optionally allowed values; defaults and passed values are checked.</p>
+<div class="code">
+  <div class="code-head"><span>Parameters</span><button class="copy-btn" type="button" data-copy-from="code-163"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-163"><code class="lang-yaml"><span class="tok-t">parameters</span>:
+  - <span class="tok-t">name</span>: DAYS
+    <span class="tok-t">description</span>: How many days back
+    <span class="tok-t">type</span>: integer
+    <span class="tok-t">default</span>: <span class="tok-s">"1"</span>
+  - <span class="tok-t">name</span>: MODE
+    <span class="tok-t">enum</span>: [full, delta]
+    <span class="tok-t">default</span>: delta
+  - <span class="tok-t">name</span>: CUSTOMER
+    <span class="tok-t">required</span>: true</code></pre>
+</div>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>name</code></td><td>Letters, digits and <code>_</code>, not starting with a digit</td></tr>
+              <tr><td><code>type</code></td><td><code>string</code> (default), <code>integer</code>, <code>number</code>, <code>boolean</code>, <code>json</code></td></tr>
+              <tr><td><code>enum</code></td><td>Allowed values</td></tr>
+              <tr><td><code>default</code></td><td>Default value, also as an expression, e.g. <code>"{{ formatDate(today(), 'yyyy-MM-dd') }}"</code></td></tr>
+              <tr><td><code>required</code></td><td>Must be passed at start</td></tr>
+              <tr><td><code>description</code></td><td>Description, e.g. for the start dialog in the editor</td></tr>
+            </tbody>
+          </table></div>
+          <p>As a variable <code>${DAYS}</code> the value is always text; in expressions <code>params.DAYS</code> returns it with its type.</p>
+
+          <h2 id="secrets-en">Secrets</h2>
+          <p>Passwords and tokens never go directly into a workflow but appear as <code>${secret:NAME}</code> or <code>${secret:SOURCE/NAME}</code>. This is allowed only in secret fields (e.g. a connection's <code>password</code>) and as the token of HTTP triggers – not via a variable. A missing secret prevents the start; values are masked in log, errors and results.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Source</th><th>Where the value comes from</th></tr></thead>
+            <tbody>
+              <tr><td><code>env</code></td><td>An environment variable of the machine or service account – for operation</td></tr>
+              <tr><td><code>inline</code></td><td>Plain text under <code>secrets:</code> in the environment or <code>project.yaml</code> – only for development and simple APIs; <code>validate</code> warns</td></tr>
+              <tr><td><code>local</code></td><td>Local encrypted store – <span class="soon">planned</span></td></tr>
+            </tbody>
+          </table></div>
+          <p>The default source is set by <code>secretStore:</code> in the environment, otherwise in <code>project.yaml</code>. The workflow always writes <code>${secret:ERP_PASSWORD}</code>, and only the environment decides where the value comes from:</p>
+<div class="code">
+  <div class="code-head"><span>environments/dev.yaml</span><button class="copy-btn" type="button" data-copy-from="code-164"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-164"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: dev
+<span class="tok-t">secretStore</span>: inline
+<span class="tok-t">secrets</span>:
+  <span class="tok-t">ERP_PASSWORD</span>: development123</code></pre>
+</div>
+<div class="code">
+  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-165"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-165"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: prod
+<span class="tok-t">secretStore</span>: env          <span class="tok-c"># reads the environment variable ERP_PASSWORD</span></code></pre>
+</div>
+
+          <h2 id="connections-en">Connections</h2>
+          <p>A connection describes access to a database once for the whole project. Components name it with <code>connection: &lt;name&gt;</code>; <code>validate</code> checks that it exists and the type fits. Differences between environments come from variables.</p>
+<div class="code">
+  <div class="code-head"><span>connections/erp.yaml</span><button class="copy-btn" type="button" data-copy-from="code-166"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-166"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: erp                       <span class="tok-c"># = file name</span>
+<span class="tok-t">description</span>: ERP database, read only
+<span class="tok-t">type</span>: sqlserver
+<span class="tok-t">with</span>:
+  <span class="tok-t">host</span>: ${ERP_HOST}
+  <span class="tok-t">database</span>: ERP
+  <span class="tok-t">user</span>: runnel_read
+  <span class="tok-t">password</span>: ${secret:ERP_PASSWORD}</code></pre>
+</div>
+          <h3>SQLite (<code>sqlite</code>)</h3>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><td><code>path</code> <span class="ref-req">required</span></td><td>Database file, relative to the project folder; created with its folder if missing</td></tr>
+              <tr><td><code>readOnly</code></td><td>Open for reading only (default <code>false</code>)</td></tr>
+            </tbody>
+          </table></div>
+          <h3>SQL Server (<code>sqlserver</code>)</h3>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><td><code>host</code>, <code>database</code> <span class="ref-req">required</span></td><td>Server and database</td></tr>
+              <tr><td><code>port</code> / <code>instance</code></td><td>TCP port (default 1433) or a named instance such as <code>SQLEXPRESS</code> (needs SQL Server Browser)</td></tr>
+              <tr><td><code>user</code>, <code>password</code></td><td>SQL Server login; without <code>user</code> the Windows account Runnel runs as (Windows only)</td></tr>
+              <tr><td><code>encrypt</code></td><td><code>true</code> (default), <code>strict</code> (TDS 8) or <code>false</code> (login only)</td></tr>
+              <tr><td><code>trustServerCertificate</code></td><td>Accept any certificate, e.g. self-signed; <code>validate</code> warns</td></tr>
+              <tr><td><code>connectTimeout</code></td><td>Longest time to connect, default <code>30s</code></td></tr>
+            </tbody>
+          </table></div>
+          <h3>PostgreSQL (<code>postgres</code>)</h3>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><td><code>host</code>, <code>database</code>, <code>user</code> <span class="ref-req">required</span></td><td>Server, database and user</td></tr>
+              <tr><td><code>port</code></td><td>Default 5432</td></tr>
+              <tr><td><code>password</code></td><td>As <code>${secret:NAME}</code></td></tr>
+              <tr><td><code>sslMode</code></td><td><code>verify-full</code> (default), <code>verify-ca</code>, <code>require</code> or <code>disable</code></td></tr>
+              <tr><td><code>connectTimeout</code></td><td>Default <code>30s</code></td></tr>
+            </tbody>
+          </table></div>
+          <p>SQL receives values only as parameters (<code>@name</code> with the <code>params</code> field), never as text in the SQL – this protects against SQL injection. Example: <a href="bausteine.html#a-db-execute-en"><code>db.execute</code></a>.</p>
+        </article>
+      </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <svg viewBox="0 0 204 64" role="img" aria-label="Runnel"><use href="#logo"/></svg>
+        <p data-i18n="footer.claim">Leicht. Lokal. Im Fluss. Workflows und Datenintegration für Windows.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.product">Produkt</h4>
+        <ul>
+          <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+          <li><a href="../handbuch/" data-i18n="footer.guide">Handbuch</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/releases" data-i18n="footer.releases">Releases</a></li>
+          <li><a href="../index.html#roadmap">Roadmap</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.docs">Dokumentation</h4>
+        <ul>
+          <li><a href="../docs/" data-i18n="footer.devdocs">Entwicklerdoku</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md" data-i18n="footer.concept">Konzept</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/docs/adr" data-i18n="footer.adr">Entscheidungen (ADR)</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/design" data-i18n="footer.design">Corporate Design</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.project">Projekt</h4>
+        <ul>
+          <li><a href="https://github.com/runnelhq/runnel">GitHub</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/issues" data-i18n="footer.issues">Fehler melden</a></li>
+          <li><a href="../impressum.html" data-i18n="footer.imprint">Impressum</a></li>
+          <li><a href="../datenschutz.html" data-i18n="footer.privacy">Datenschutz</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n="footer.copy">© 2026 The Runnel authors · MIT-Lizenz</span>
+      <span data-i18n="footer.local">Mit KI entwickelt (Vibe Coding) · Diese Seite lädt keine externen Schriften oder Tracker.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/site.js"></script>
+</body>
+</html>

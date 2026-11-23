@@ -1711,6 +1711,134 @@
       "recordErrors": true
     },
     {
+      "type": "db.lookup",
+      "kind": "transform",
+      "category": "combine",
+      "label": "Database Lookup",
+      "description": "Adds the columns of the matching row of a database table to each record",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "connection": {
+            "type": "string",
+            "description": "Connection of the database (a file in connections/)",
+            "format": "runnel-connection",
+            "examples": [
+              "app-db"
+            ],
+            "x-runnel-connection": [
+              "sqlite",
+              "sqlserver",
+              "postgres"
+            ]
+          },
+          "table": {
+            "type": "string",
+            "description": "Table to look in: table or schema.table",
+            "examples": [
+              "customers"
+            ]
+          },
+          "keys": {
+            "type": "array",
+            "description": "Fields of the record and the columns they must be equal to",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "description": "Field of the record",
+                  "format": "runnel-field",
+                  "examples": [
+                    "customerId"
+                  ]
+                },
+                "column": {
+                  "type": "string",
+                  "description": "Column of the table; empty: the name of the field",
+                  "examples": [
+                    "id"
+                  ]
+                }
+              },
+              "required": [
+                "field"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "return": {
+            "type": "array",
+            "description": "Columns of the matching row added to the record",
+            "items": {
+              "type": "object",
+              "properties": {
+                "column": {
+                  "type": "string",
+                  "description": "Column of the table",
+                  "examples": [
+                    "name"
+                  ]
+                },
+                "as": {
+                  "type": "string",
+                  "description": "Field for the value; empty: the name of the column"
+                },
+                "default": {
+                  "description": "Value when no row matches; missing: an empty value"
+                }
+              },
+              "required": [
+                "column"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "notFound": {
+            "type": "string",
+            "description": "Records without a matching row: keep them with the defaults, drop them, or treat them as errors (error link)",
+            "enum": [
+              "keep",
+              "drop",
+              "error"
+            ],
+            "default": "keep"
+          },
+          "multiple": {
+            "type": "string",
+            "description": "Several matching rows: take the first the database returns, or treat the record as an error",
+            "enum": [
+              "first",
+              "error"
+            ],
+            "default": "first"
+          },
+          "cache": {
+            "type": "integer",
+            "description": "Results kept in memory, by key; 0: ask the database for every record",
+            "default": 1000
+          },
+          "timeout": {
+            "type": "string",
+            "description": "Longest time one query may take",
+            "format": "runnel-duration",
+            "default": "30s"
+          }
+        },
+        "required": [
+          "connection",
+          "table",
+          "keys",
+          "return"
+        ],
+        "additionalProperties": false
+      },
+      "example": "connection: app-db\ntable: customers\nkeys:\n  - { field: customerId, column: id }\nreturn:\n  - { column: name, as: customerName }\n",
+      "recordErrors": true,
+      "parallel": true
+    },
+    {
       "type": "db.table-input",
       "kind": "transform",
       "category": "input",

@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="de" data-theme="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Betrieb – Runnel</title>
+  <meta name="description" content="Runnel betreiben: prüfen, ausführen, Aufgabenplanung, Editor und Server, Windows-Dienst, HTTPS für Trigger, Logs und Läufe.">
+  <meta name="title-en" content="Operation – Runnel">
+  <meta name="description-en" content="Operating Runnel: validating, running, Task Scheduler, editor and server, Windows service, HTTPS for triggers, logs and runs.">
+  <meta name="theme-color" content="#0A6DA6">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="../assets/img/runnel-icon-180.png">
+  <link rel="preload" href="../assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/runnel.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+
+<!-- Erzeugt von tools/build.py aus _src/guide-betrieb.html – nicht von Hand bearbeiten. -->
+<!-- Wiederverwendbare Symbole -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></g></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7 10.5l5 5 5-5"/><path d="M5 20h14"/></g></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="logo" viewBox="0 0 204 64"><rect width="64" height="64" rx="15" fill="#0A6DA6"/><circle cx="14.5" cy="22" r="6.5" fill="#FFFFFF"/><path d="M25 22C33.5 22 30.5 42 37.5 42" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/><circle cx="48.5" cy="42" r="5.25" fill="none" stroke="#7CC5EB" stroke-width="4.75"/><path transform="translate(80 43.25) scale(0.020134)" fill="currentColor" d="M138 0V-1118H390V-931H402Q432 -1028 507 -1080.5Q582 -1133 678 -1133Q700 -1133 727 -1131Q754 -1129 773 -1126V-887Q757 -892 721 -896Q685 -900 650 -900Q578 -900 520.5 -869Q463 -838 430.5 -783.5Q398 -729 398 -658V0Z M1293 14Q1178 14 1091.5 -35Q1005 -84 957.5 -178.5Q910 -273 910 -407V-1118H1170V-447Q1170 -335 1228.5 -271Q1287 -207 1389 -207Q1458 -207 1512 -237Q1566 -267 1596.5 -325Q1627 -383 1627 -463V-1118H1888V0H1641L1638 -276H1658Q1611 -130 1519 -58Q1427 14 1293 14Z M2383.1 -655V0H2123.1V-1118H2369.1L2373.1 -842H2352.1Q2399.1 -987 2490.1 -1059.5Q2581.1 -1132 2718.1 -1132Q2833.1 -1132 2919.1 -1083Q3005.1 -1034 3052.6 -940Q3100.1 -846 3100.1 -711V0H2840.1V-671Q2840.1 -783 2782.1 -847Q2724.1 -911 2622.1 -911Q2553.1 -911 2499.1 -881Q2445.1 -851 2414.1 -793.5Q2383.1 -736 2383.1 -655Z M3595.1 -655V0H3335.1V-1118H3581.1L3585.1 -842H3564.1Q3611.1 -987 3702.1 -1059.5Q3793.1 -1132 3930.1 -1132Q4045.1 -1132 4131.1 -1083Q4217.1 -1034 4264.6 -940Q4312.1 -846 4312.1 -711V0H4052.1V-671Q4052.1 -783 3994.1 -847Q3936.1 -911 3834.1 -911Q3765.1 -911 3711.1 -881Q3657.1 -851 3626.1 -793.5Q3595.1 -736 3595.1 -655Z M5041.2 23Q4872.2 23 4750.7 -48Q4629.2 -119 4563.7 -248Q4498.2 -377 4498.2 -552Q4498.2 -725 4562.7 -855Q4627.2 -985 4745.7 -1058.5Q4864.2 -1132 5024.2 -1132Q5126.2 -1132 5218.7 -1099Q5311.2 -1066 5382.7 -997Q5454.2 -928 5494.7 -821.5Q5535.2 -715 5535.2 -568V-486H4621.2V-663H5406.2L5284.2 -611Q5284.2 -705 5255.2 -776.5Q5226.2 -848 5168.7 -888Q5111.2 -928 5025.2 -928Q4939.2 -928 4879.2 -887.5Q4819.2 -847 4787.7 -779.5Q4756.2 -712 4756.2 -629V-507Q4756.2 -401 4792.2 -328Q4828.2 -255 4893.2 -218Q4958.2 -181 5044.2 -181Q5101.2 -181 5147.7 -197.5Q5194.2 -214 5228.2 -246.5Q5262.2 -279 5279.2 -326L5518.2 -277Q5491.2 -187 5426.2 -119.5Q5361.2 -52 5263.7 -14.5Q5166.2 23 5041.2 23Z M5977.2 -1490V0H5717.2V-1490Z"/></symbol>
+  <!-- Strömungslinien (Gestaltungselement aus dem Corporate Design) -->
+  <symbol id="flow" viewBox="0 0 640 640" preserveAspectRatio="xMaxYMin meet">
+    <g fill="none" stroke-linecap="round">
+      <path d="M120 -40 C 340 -40 300 300 520 300 S 700 260 760 260" stroke="#0A6DA6" stroke-width="28" opacity=".55"/>
+      <path d="M60 120 C 280 120 240 460 460 460 S 660 420 760 420" stroke="#1688C6" stroke-width="18" opacity=".45"/>
+      <path d="M200 300 C 360 300 340 620 500 620 S 680 600 760 600" stroke="#3FA6DD" stroke-width="10" opacity=".35"/>
+    </g>
+    <circle cx="520" cy="300" r="34" fill="none" stroke="#7CC5EB" stroke-width="22"/>
+  </symbol>
+</svg>
+
+<a class="sr-only" href="#main" data-i18n="a11y.skip">Zum Inhalt springen</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html#top" aria-label="Runnel">
+      <svg viewBox="0 0 204 64" aria-hidden="true"><use href="#logo"/></svg>
+    </a>
+    <nav class="nav" aria-label="Hauptnavigation" data-i18n-attr="aria-label:nav.label">
+      <a href="../index.html#features" data-i18n="nav.features">Funktionen</a>
+      <a href="../index.html#model" data-i18n="nav.model">Modell</a>
+      <a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a>
+      <a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a>
+      <a href="../index.html#roadmap" data-i18n="nav.roadmap">Roadmap</a>
+      <a href="../handbuch/" aria-current="page" data-i18n="nav.guide">Handbuch</a>
+      <a href="../docs/" data-i18n="nav.docs">Doku</a>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Sprache" data-i18n-attr="aria-label:lang.label">
+        <button type="button" data-lang="de" aria-pressed="true" lang="de" title="Deutsch">DE</button>
+        <button type="button" data-lang="en" aria-pressed="false" lang="en" title="English">EN</button>
+      </div>
+      <a class="icon-btn gh-link" href="https://github.com/runnelhq/runnel" aria-label="GitHub"><svg aria-hidden="true"><use href="#i-github"/></svg></a>
+      <a class="btn btn--primary btn--sm" href="https://github.com/runnelhq/runnel/releases" data-i18n="cta.download">Herunterladen</a>
+      <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Menü öffnen" data-i18n-attr="aria-label:nav.open">
+        <svg aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-nav" id="mobile-nav" data-open="false">
+    <div class="wrap">
+      <ul>
+        <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+        <li><a href="../index.html#model" data-i18n="nav.model">Modell</a></li>
+        <li><a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a></li>
+        <li><a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a></li>
+        <li><a href="../index.html#roadmap" data-i18n="nav.roadmap">Roadmap</a></li>
+        <li><a href="../handbuch/" aria-current="page" data-i18n="nav.guide">Handbuch</a></li>
+        <li><a href="../docs/" data-i18n="nav.docs">Doku</a></li>
+      </ul>
+      <div class="mobile-ctas">
+        <a class="btn btn--primary" href="https://github.com/runnelhq/runnel/releases"><svg aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="cta.download">Herunterladen</span></a>
+        <a class="btn btn--outline" href="https://github.com/runnelhq/runnel"><svg aria-hidden="true"><use href="#i-github"/></svg>GitHub</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="docs-page">
+<div class="wrap docs-layout">
+      <details class="docs-side docs-side--mobile"><summary><span data-lang-block="de">Inhalt</span><span data-lang-block="en" hidden>Contents</span></summary><p class="docs-side-title"><span data-lang-block="de">Handbuch</span><span data-lang-block="en" hidden>User guide</span></p><ul class="docs-nav"><li><a href="../handbuch/"><span data-lang-block="de">Überblick</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../handbuch/installation.html"><span data-lang-block="de">Installation</span><span data-lang-block="en" hidden>Installation</span></a></li><li><a href="../handbuch/betrieb.html" aria-current="page"><span data-lang-block="de">Betrieb</span><span data-lang-block="en" hidden>Operation</span></a></li><li><a href="../handbuch/projekt.html"><span data-lang-block="de">Projekt und Konfiguration</span><span data-lang-block="en" hidden>Project and configuration</span></a></li><li><a href="../handbuch/workflows.html"><span data-lang-block="de">Workflows</span><span data-lang-block="en" hidden>Workflows</span></a></li><li><a href="../handbuch/pipelines.html"><span data-lang-block="de">Pipelines</span><span data-lang-block="en" hidden>Pipelines</span></a></li><li><a href="../handbuch/trigger.html"><span data-lang-block="de">Trigger</span><span data-lang-block="en" hidden>Triggers</span></a></li><li><a href="../handbuch/ausdruecke.html"><span data-lang-block="de">Ausdrücke</span><span data-lang-block="en" hidden>Expressions</span></a></li><li><a href="../handbuch/bausteine.html"><span data-lang-block="de">Bausteine (Referenz)</span><span data-lang-block="en" hidden>Components (reference)</span></a></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#pruefen">Prüfen</a></li><li><a href="#ausfuehren">Ausführen</a></li><li><a href="#editor">Editor und Server</a></li><li><a href="#dienst">Windows-Dienst</a></li><li><a href="#netz">HTTP-Trigger im Netz</a></li><li><a href="#logs">Logs und Läufe</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#validate">Validating</a></li><li><a href="#run">Running</a></li><li><a href="#editor-en">Editor and server</a></li><li><a href="#service">Windows service</a></li><li><a href="#network">HTTP triggers on the network</a></li><li><a href="#logs-en">Logs and runs</a></li></ul></details>
+<aside class="docs-side docs-side--desktop" aria-label="Dokumentation"><p class="docs-side-title"><span data-lang-block="de">Handbuch</span><span data-lang-block="en" hidden>User guide</span></p><ul class="docs-nav"><li><a href="../handbuch/"><span data-lang-block="de">Überblick</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../handbuch/installation.html"><span data-lang-block="de">Installation</span><span data-lang-block="en" hidden>Installation</span></a></li><li><a href="../handbuch/betrieb.html" aria-current="page"><span data-lang-block="de">Betrieb</span><span data-lang-block="en" hidden>Operation</span></a></li><li><a href="../handbuch/projekt.html"><span data-lang-block="de">Projekt und Konfiguration</span><span data-lang-block="en" hidden>Project and configuration</span></a></li><li><a href="../handbuch/workflows.html"><span data-lang-block="de">Workflows</span><span data-lang-block="en" hidden>Workflows</span></a></li><li><a href="../handbuch/pipelines.html"><span data-lang-block="de">Pipelines</span><span data-lang-block="en" hidden>Pipelines</span></a></li><li><a href="../handbuch/trigger.html"><span data-lang-block="de">Trigger</span><span data-lang-block="en" hidden>Triggers</span></a></li><li><a href="../handbuch/ausdruecke.html"><span data-lang-block="de">Ausdrücke</span><span data-lang-block="en" hidden>Expressions</span></a></li><li><a href="../handbuch/bausteine.html"><span data-lang-block="de">Bausteine (Referenz)</span><span data-lang-block="en" hidden>Components (reference)</span></a></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#pruefen">Prüfen</a></li><li><a href="#ausfuehren">Ausführen</a></li><li><a href="#editor">Editor und Server</a></li><li><a href="#dienst">Windows-Dienst</a></li><li><a href="#netz">HTTP-Trigger im Netz</a></li><li><a href="#logs">Logs und Läufe</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#validate">Validating</a></li><li><a href="#run">Running</a></li><li><a href="#editor-en">Editor and server</a></li><li><a href="#service">Windows service</a></li><li><a href="#network">HTTP triggers on the network</a></li><li><a href="#logs-en">Logs and runs</a></li></ul></aside>
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch</p>
+          <h1>Betrieb</h1>
+          <p class="docs-lead">Dieselbe <code>runnel.exe</code> prüft Dateien, führt einmalig aus, startet Editor und Trigger oder läuft dauerhaft als Windows-Dienst.</p>
+
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Befehl</th><th>Zweck</th></tr></thead>
+            <tbody>
+              <tr><td><code>runnel validate &lt;pfad…&gt;</code></td><td>Workflows, Pipelines, Trigger und Projektdateien prüfen</td></tr>
+              <tr><td><code>runnel run &lt;datei&gt;</code></td><td>einen Workflow oder eine Pipeline einmal ausführen</td></tr>
+              <tr><td><code>runnel serve [projektordner]</code></td><td>Editor im Browser und Trigger starten</td></tr>
+              <tr><td><code>runnel triggers [projektordner]</code></td><td>Trigger mit Zeitplan und nächstem Zeitpunkt auflisten</td></tr>
+              <tr><td><code>runnel service …</code></td><td>Windows-Dienst einrichten und steuern</td></tr>
+              <tr><td><code>runnel catalog [typ]</code></td><td>Bausteine nachschlagen, mit <code>--json</code> als JSON Schema</td></tr>
+              <tr><td><code>runnel schema &lt;art&gt;</code></td><td>JSON Schema einer Dateiart: <code>project</code>, <code>environment</code>, <code>connection</code>, <code>trigger</code></td></tr>
+              <tr><td><code>runnel version</code></td><td>Version, Commit und Plattform</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="pruefen">Prüfen</h2>
+<div class="code">
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-131"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-131"><code class="lang-bash">runnel validate D:\flows
+runnel validate --env prod --strict D:\flows\workflows\import.workflow.yaml</code></pre>
+</div>
+          <p>Ordner werden rekursiv durchsucht. Geprüft werden Syntax und Felder, Links und Zyklen, unerreichbare Actions, Variablen gegen jedes Environment (oder nur gegen <code>--env</code>), Ausdrücke, Action- und Transform-Typen mit ihrer Konfiguration sowie Trigger und Connections. Meldungen erscheinen als <code>datei:zeile:spalte: error|warning: text</code>, oft mit Vorschlag („did you mean …?“). Bei Fehlern ist der Exit-Code 1, mit <code>--strict</code> auch bei Warnungen – passend als Schritt in einer CI.</p>
+
+          <h2 id="ausfuehren">Ausführen</h2>
+<div class="code">
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-132"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-132"><code class="lang-bash">runnel run D:\flows\workflows\import.workflow.yaml
+runnel run --env prod --param DAYS=3 --param MODE=full D:\flows\workflows\import.workflow.yaml
+runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
+</div>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Option</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>--env &lt;name&gt;</code></td><td>Environment des Projekts; ohne Angabe das <code>defaultEnvironment</code></td></tr>
+              <tr><td><code>--param KEY=VALUE</code></td><td>Parameter setzen, mehrfach möglich</td></tr>
+              <tr><td><code>-v</code></td><td>zusätzlich Debug-Meldungen und jeden Start und jedes Ende einer Action bzw. eines Transforms</td></tr>
+            </tbody>
+          </table></div>
+          <p>Pipelines zeigen am Ende je Transform, wie viele Datensätze er gelesen, geschrieben und an Fehler-Links gegeben hat. <strong>Strg+C</strong> bricht einen Lauf sauber ab; ein zweites Strg+C beendet sofort.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Exit-Code</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>0</code></td><td>erfolgreich</td></tr>
+              <tr><td><code>1</code></td><td>fehlgeschlagen</td></tr>
+              <tr><td><code>2</code></td><td>nicht gestartet – ungültiger Workflow, fehlender Parameter oder falscher Aufruf</td></tr>
+              <tr><td><code>130</code></td><td>abgebrochen (Strg+C)</td></tr>
+            </tbody>
+          </table></div>
+
+          <h3>In der Windows-Aufgabenplanung</h3>
+          <p>Für einfache Zeitpläne ohne laufenden Server genügt die Aufgabenplanung: Programm <code>C:\Tools\Runnel\runnel.exe</code>, Argumente <code>run --env prod D:\flows\workflows\import.workflow.yaml</code>. Die Aufgabe zeigt als Ergebnis den Exit-Code (<code>0</code> bzw. <code>0x1</code> bei Fehler). Alternativ übernehmen <a href="trigger.html">Trigger</a> die Zeitpläne, solange der Server oder Dienst läuft.</p>
+
+          <h2 id="editor">Editor und Server</h2>
+<div class="code">
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-133"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-133"><code class="lang-bash">runnel serve D:\flows
+<span class="tok-c"># Editor: http://127.0.0.1:7300</span></code></pre>
+</div>
+          <p>Der Editor zeigt Workflows und Pipelines als Canvas und als YAML, prüft beim Tippen, startet Läufe und zeigt sie live. Er arbeitet auf denselben Dateien wie die CLI – Änderungen aus Git oder einem Texteditor erkennt er beim Speichern (Konfliktdialog). Solange <code>serve</code> läuft, starten auch die Trigger des Projekts.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Option</th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>--port &lt;n&gt;</code></td><td>Port auf <code>127.0.0.1</code>, Standard 7300; <code>0</code> wählt einen freien</td></tr>
+              <tr><td><code>--stop-timeout &lt;dauer&gt;</code></td><td>Zeit, die laufende Runs beim Beenden bekommen, z. B. <code>30s</code></td></tr>
+              <tr><td><code>--triggers &lt;adresse&gt;</code></td><td>Listener der HTTP-Trigger, Standard <code>127.0.0.1:7301</code>; <code>""</code> schaltet ihn ab</td></tr>
+            </tbody>
+          </table></div>
+          <p>Der Editor ist nur vom eigenen Rechner aus erreichbar. Eine Benutzerverwaltung gibt es bewusst nicht; mehrere Browser können gleichzeitig arbeiten.</p>
+
+          <h2 id="dienst">Windows-Dienst</h2>
+          <p>Für den Dauerbetrieb bedient ein Dienst das Projekt wie <code>runnel serve</code> und führt seine Trigger auch ohne angemeldeten Benutzer aus. Einrichten, Starten, Stoppen und Entfernen brauchen eine Konsole „als Administrator“.</p>
+<div class="code">
+  <div class="code-head"><span>PowerShell (als Administrator)</span><button class="copy-btn" type="button" data-copy-from="code-134"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-134"><code class="lang-bash">runnel service install D:\flows
+runnel service start
+runnel service status
+runnel service stop
+runnel service uninstall</code></pre>
+</div>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Option von <code>install</code></th><th>Bedeutung</th></tr></thead>
+            <tbody>
+              <tr><td><code>--name &lt;name&gt;</code></td><td>Name des Dienstes, Standard <code>runnel</code> – für mehrere Dienste, z. B. einen je Projekt (dann mit eigenem <code>--port</code> und <code>--triggers</code>)</td></tr>
+              <tr><td><code>--account &lt;konto&gt;</code></td><td>Standard <code>LocalService</code> (wenige Rechte, Netzfreigaben nur, wenn sie für jeden lesbar sind). Außerdem <code>NetworkService</code>, <code>LocalSystem</code>, ein Benutzerkonto <code>DOMAIN\user</code> (Passwort wird abgefragt, Recht „Als Dienst anmelden“ nötig) oder ein gMSA <code>DOMAIN\name$</code></td></tr>
+              <tr><td><code>--start &lt;art&gt;</code></td><td><code>delayed</code> (Standard: automatisch, kurz nach dem Hochfahren), <code>auto</code> oder <code>manual</code></td></tr>
+              <tr><td><code>--port</code>, <code>--triggers</code></td><td>wie bei <code>serve</code></td></tr>
+              <tr><td><code>--stop-timeout</code></td><td>Zeit für laufende Runs beim Stoppen, Standard 30 s</td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li><strong>Rechte:</strong> Das Dienstkonto muss den Projektordner lesen und die Ausgabeordner beschreiben können.</li>
+            <li><strong>Wiederherstellung:</strong> Nach einem Fehler startet Windows den Dienst nach 10 s, 1 min und 5 min neu.</li>
+            <li><strong>Stoppen:</strong> Keine neuen Läufe mehr; laufende bekommen <code>--stop-timeout</code>, danach werden sie abgebrochen.</li>
+            <li><strong>Log:</strong> vollständig in <code>%ProgramData%\runnel\logs\&lt;name&gt;.log</code> (mit Rotation), Start, Stopp, Warnungen und Fehler zusätzlich in der Ereignisanzeige.</li>
+            <li>Der Dienst startet die <code>runnel.exe</code>, mit der er eingerichtet wurde. Nach dem Verschieben der exe neu einrichten.</li>
+          </ul>
+
+          <h2 id="netz">HTTP-Trigger im Netz</h2>
+          <p>HTTP-Trigger lauschen standardmäßig nur lokal. Aus dem Netz erreichbar sind sie nur über HTTPS:</p>
+<div class="code">
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-135"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-135"><code class="lang-bash">runnel serve --triggers 0.0.0.0:7301 --triggers-tls auto D:\flows
+runnel serve --triggers 0.0.0.0:7301 --triggers-cert C:\certs\runnel.crt --triggers-key C:\certs\runnel.key D:\flows</code></pre>
+</div>
+          <ul>
+            <li><code>--triggers-tls auto</code> erzeugt einmal ein Zertifikat für <code>localhost</code>, den Rechnernamen und seine IP-Adressen und verwendet es wieder; das Log nennt den Fingerabdruck. Aufrufer vertrauen ihm, indem sie <code>triggers.crt</code> importieren (Dienst: <code>%ProgramData%\runnel\tls\</code>, sonst <code>%LOCALAPPDATA%\runnel\tls\</code>).</li>
+            <li><code>--triggers-cert</code> und <code>--triggers-key</code> nutzen ein eigenes Zertifikat als PEM, z. B. von der Firmen-CA; ein erneuertes wird ohne Neustart übernommen.</li>
+            <li>Reines HTTP im Netz nur mit <code>--triggers-insecure</code> – mit Warnung, denn Tokens und Daten gingen im Klartext.</li>
+          </ul>
+          <p>Details zu Pfaden, Token und Antworten: <a href="trigger.html#http">Trigger – HTTP</a>.</p>
+
+          <h2 id="logs">Logs und Läufe</h2>
+          <ul>
+            <li><strong>CLI:</strong> Das Log erscheint in der Konsole; mit <code>-v</code> ausführlich.</li>
+            <li><strong>Editor:</strong> Tab „Log“ unter dem Canvas, Status an jeder Action, Ergebnis im Panel.</li>
+            <li><strong>Server und Dienst:</strong> Die letzten 100 Läufe (dazu die letzten 100 von HTTP-Triggern) stehen im Speicher und im Editor; eine dauerhafte Historie ist geplant. Der Dienst schreibt zusätzlich die Log-Datei.</li>
+            <li><strong>Secrets</strong> werden in Log, Fehlern und Ergebnissen durch <code>***</code> ersetzt.</li>
+          </ul>
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" hidden lang="en">
+          <p class="docs-eyebrow">User guide</p>
+          <h1>Operation</h1>
+          <p class="docs-lead">The same <code>runnel.exe</code> validates files, runs once, starts the editor and triggers, or runs continuously as a Windows service.</p>
+
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>runnel validate &lt;path…&gt;</code></td><td>Check workflows, pipelines, triggers and project files</td></tr>
+              <tr><td><code>runnel run &lt;file&gt;</code></td><td>Run a workflow or a pipeline once</td></tr>
+              <tr><td><code>runnel serve [project folder]</code></td><td>Start the browser-based editor and the triggers</td></tr>
+              <tr><td><code>runnel triggers [project folder]</code></td><td>List triggers with schedule and next time</td></tr>
+              <tr><td><code>runnel service …</code></td><td>Set up and control the Windows service</td></tr>
+              <tr><td><code>runnel catalog [type]</code></td><td>Look up components, with <code>--json</code> as JSON Schema</td></tr>
+              <tr><td><code>runnel schema &lt;kind&gt;</code></td><td>JSON Schema of a file kind: <code>project</code>, <code>environment</code>, <code>connection</code>, <code>trigger</code></td></tr>
+              <tr><td><code>runnel version</code></td><td>Version, commit and platform</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="validate">Validating</h2>
+<div class="code">
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-136"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-136"><code class="lang-bash">runnel validate D:\flows
+runnel validate --env prod --strict D:\flows\workflows\import.workflow.yaml</code></pre>
+</div>
+          <p>Folders are searched recursively. Checked are syntax and fields, links and cycles, unreachable actions, variables against every environment (or only <code>--env</code>), expressions, action and transform types with their configuration, as well as triggers and connections. Messages appear as <code>file:line:column: error|warning: text</code>, often with a suggestion (“did you mean …?”). On errors the exit code is 1, with <code>--strict</code> also on warnings – suitable as a CI step.</p>
+
+          <h2 id="run">Running</h2>
+<div class="code">
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-137"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-137"><code class="lang-bash">runnel run D:\flows\workflows\import.workflow.yaml
+runnel run --env prod --param DAYS=3 --param MODE=full D:\flows\workflows\import.workflow.yaml
+runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
+</div>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Option</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>--env &lt;name&gt;</code></td><td>Environment of the project; without it the <code>defaultEnvironment</code></td></tr>
+              <tr><td><code>--param KEY=VALUE</code></td><td>Set a parameter, repeatable</td></tr>
+              <tr><td><code>-v</code></td><td>Also debug messages and every start and end of an action or transform</td></tr>
+            </tbody>
+          </table></div>
+          <p>Pipelines show at the end how many records each transform read, wrote and passed to error links. <strong>Ctrl+C</strong> cancels a run cleanly; a second Ctrl+C exits immediately.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Exit code</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>0</code></td><td>succeeded</td></tr>
+              <tr><td><code>1</code></td><td>failed</td></tr>
+              <tr><td><code>2</code></td><td>not started – invalid workflow, missing parameter or wrong call</td></tr>
+              <tr><td><code>130</code></td><td>cancelled (Ctrl+C)</td></tr>
+            </tbody>
+          </table></div>
+
+          <h3>In Windows Task Scheduler</h3>
+          <p>For simple schedules without a running server, Task Scheduler is enough: program <code>C:\Tools\Runnel\runnel.exe</code>, arguments <code>run --env prod D:\flows\workflows\import.workflow.yaml</code>. The task shows the exit code as its result (<code>0</code>, or <code>0x1</code> on failure). Alternatively, <a href="trigger.html">triggers</a> handle schedules while the server or service is running.</p>
+
+          <h2 id="editor-en">Editor and server</h2>
+<div class="code">
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-138"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-138"><code class="lang-bash">runnel serve D:\flows
+<span class="tok-c"># editor: http://127.0.0.1:7300</span></code></pre>
+</div>
+          <p>The editor shows workflows and pipelines as a canvas and as YAML, checks while you type, starts runs and shows them live. It works on the same files as the CLI – changes from Git or a text editor are detected when saving (conflict dialog). While <code>serve</code> runs, the project's triggers start too.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Option</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>--port &lt;n&gt;</code></td><td>Port on <code>127.0.0.1</code>, default 7300; <code>0</code> picks a free one</td></tr>
+              <tr><td><code>--stop-timeout &lt;duration&gt;</code></td><td>Time running runs get when stopping, e.g. <code>30s</code></td></tr>
+              <tr><td><code>--triggers &lt;address&gt;</code></td><td>Listener of HTTP triggers, default <code>127.0.0.1:7301</code>; <code>""</code> turns it off</td></tr>
+            </tbody>
+          </table></div>
+          <p>The editor is reachable from the same machine only. There is deliberately no user management; several browsers can work at the same time.</p>
+
+          <h2 id="service">Windows service</h2>
+          <p>For continuous operation, a service serves the project like <code>runnel serve</code> and runs its triggers even without a logged-on user. Installing, starting, stopping and removing require a console “as administrator”.</p>
+<div class="code">
+  <div class="code-head"><span>PowerShell (as administrator)</span><button class="copy-btn" type="button" data-copy-from="code-139"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-139"><code class="lang-bash">runnel service install D:\flows
+runnel service start
+runnel service status
+runnel service stop
+runnel service uninstall</code></pre>
+</div>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Option of <code>install</code></th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>--name &lt;name&gt;</code></td><td>Name of the service, default <code>runnel</code> – for several services, e.g. one per project (each with its own <code>--port</code> and <code>--triggers</code>)</td></tr>
+              <tr><td><code>--account &lt;account&gt;</code></td><td>Default <code>LocalService</code> (few rights, network shares only if readable by everyone). Also <code>NetworkService</code>, <code>LocalSystem</code>, a user account <code>DOMAIN\user</code> (password is prompted, needs “Log on as a service”) or a gMSA <code>DOMAIN\name$</code></td></tr>
+              <tr><td><code>--start &lt;type&gt;</code></td><td><code>delayed</code> (default: automatic, shortly after boot), <code>auto</code> or <code>manual</code></td></tr>
+              <tr><td><code>--port</code>, <code>--triggers</code></td><td>as for <code>serve</code></td></tr>
+              <tr><td><code>--stop-timeout</code></td><td>Time for running runs when stopping, default 30 s</td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li><strong>Permissions:</strong> the service account must be able to read the project folder and write to output folders.</li>
+            <li><strong>Recovery:</strong> after a failure, Windows restarts the service after 10 s, 1 min and 5 min.</li>
+            <li><strong>Stopping:</strong> no new runs; running ones get <code>--stop-timeout</code>, then they are cancelled.</li>
+            <li><strong>Log:</strong> in full in <code>%ProgramData%\runnel\logs\&lt;name&gt;.log</code> (rotated); start, stop, warnings and errors also in the Event Log.</li>
+            <li>The service starts the <code>runnel.exe</code> it was set up with. After moving the executable, set it up again.</li>
+          </ul>
+
+          <h2 id="network">HTTP triggers on the network</h2>
+          <p>HTTP triggers listen locally by default. They are reachable from the network over HTTPS only:</p>
+<div class="code">
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-140"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-140"><code class="lang-bash">runnel serve --triggers 0.0.0.0:7301 --triggers-tls auto D:\flows
+runnel serve --triggers 0.0.0.0:7301 --triggers-cert C:\certs\runnel.crt --triggers-key C:\certs\runnel.key D:\flows</code></pre>
+</div>
+          <ul>
+            <li><code>--triggers-tls auto</code> creates a certificate once for <code>localhost</code>, the machine name and its IP addresses and reuses it; the log shows its fingerprint. Callers trust it by importing <code>triggers.crt</code> (service: <code>%ProgramData%\runnel\tls\</code>, otherwise <code>%LOCALAPPDATA%\runnel\tls\</code>).</li>
+            <li><code>--triggers-cert</code> and <code>--triggers-key</code> use your own PEM certificate, e.g. from the company CA; a renewed one is picked up without restart.</li>
+            <li>Plain HTTP on the network only with <code>--triggers-insecure</code> – with a warning, since tokens and data would travel in plain text.</li>
+          </ul>
+          <p>Details on paths, tokens and responses: <a href="trigger.html#http-en">Triggers – HTTP</a>.</p>
+
+          <h2 id="logs-en">Logs and runs</h2>
+          <ul>
+            <li><strong>CLI:</strong> the log appears in the console; detailed with <code>-v</code>.</li>
+            <li><strong>Editor:</strong> “Log” tab below the canvas, status on every action, result in the panel.</li>
+            <li><strong>Server and service:</strong> the last 100 runs (plus the last 100 from HTTP triggers) are kept in memory and shown in the editor; a persistent history is planned. The service also writes the log file.</li>
+            <li><strong>Secrets</strong> are replaced by <code>***</code> in log, errors and results.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <svg viewBox="0 0 204 64" role="img" aria-label="Runnel"><use href="#logo"/></svg>
+        <p data-i18n="footer.claim">Leicht. Lokal. Im Fluss. Workflows und Datenintegration für Windows.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.product">Produkt</h4>
+        <ul>
+          <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+          <li><a href="../handbuch/" data-i18n="footer.guide">Handbuch</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/releases" data-i18n="footer.releases">Releases</a></li>
+          <li><a href="../index.html#roadmap">Roadmap</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.docs">Dokumentation</h4>
+        <ul>
+          <li><a href="../docs/" data-i18n="footer.devdocs">Entwicklerdoku</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md" data-i18n="footer.concept">Konzept</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/docs/adr" data-i18n="footer.adr">Entscheidungen (ADR)</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/design" data-i18n="footer.design">Corporate Design</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.project">Projekt</h4>
+        <ul>
+          <li><a href="https://github.com/runnelhq/runnel">GitHub</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/issues" data-i18n="footer.issues">Fehler melden</a></li>
+          <li><a href="../impressum.html" data-i18n="footer.imprint">Impressum</a></li>
+          <li><a href="../datenschutz.html" data-i18n="footer.privacy">Datenschutz</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n="footer.copy">© 2026 The Runnel authors · MIT-Lizenz</span>
+      <span data-i18n="footer.local">Mit KI entwickelt (Vibe Coding) · Diese Seite lädt keine externen Schriften oder Tracker.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/site.js"></script>
+</body>
+</html>

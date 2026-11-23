@@ -1,0 +1,12 @@
+kind: Trigger
+apiVersion: runnel/v1
+name: inbox
+type: file
+target: pipelines/customers.pipeline.yaml
+with:
+  path: inbox
+  pattern: "customers_*.csv"
+  interval: 30s
+  param: FILE
+  mode: each
+  existing: ignore

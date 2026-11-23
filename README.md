@@ -13,9 +13,12 @@ docs/actions.html       # Entwicklerdoku: Actions entwickeln (erzeugt)
 docs/transforms.html    # Entwicklerdoku: Transforms entwickeln (erzeugt)
 docs/editor.html        # Entwicklerdoku: Editor entwickeln (erzeugt)
 docs/api.html           # Entwicklerdoku: Server-API (erzeugt)
+handbuch/*.html         # Anwenderdoku: Installation, Betrieb, Konfiguration, Workflows, Pipelines, Trigger,
+                        # Ausdrücke, Bausteine (erzeugt)
 _src/                   # Quellen der Unterseiten (von GitHub Pages nicht veröffentlicht)
 ├─ *.html               # Inhalt von <main> mit JSON-Kopf (Ausgabepfad, Titel, Beschreibung)
-├─ catalog.json         # Ausgabe von `runnel catalog --json` für den Abschnitt „Bausteine“ der Startseite
+├─ catalog.json         # `runnel catalog --json`: Bausteine der Startseite und Referenz im Handbuch
+├─ expressions.json     # `GET /api/v1/expressions` von `runnel serve`: Ausdrucks-Referenz im Handbuch
 └─ snippets/            # Codebeispiele, z. B. Kopien aus runnel/internal/actions
 tools/build.py          # erzeugt die Unterseiten (Python 3.9+, keine Abhängigkeiten)
 favicon.svg, favicon.ico
@@ -46,8 +49,14 @@ Runnel-Repository:
 
 ```bash
 runnel catalog --json > _src/catalog.json
+runnel serve --port 7391 . &            # in einem beliebigen Projekt
+curl -s http://127.0.0.1:7391/api/v1/expressions > _src/expressions.json
 python3 tools/build.py
 ```
+
+Die Seiten im Handbuch nutzen dafür die Platzhalter `{{blocks:de}}`/`{{blocks:en}}` und
+`{{expressions:de}}`/`{{expressions:en}}`. Die Beispiel-Dateien unter `_src/snippets/guide-*` sind mit
+`runnel validate` geprüft; bei Formatänderungen in Runnel dort zuerst nachziehen.
 
 ## Lokal ansehen
 
@@ -69,6 +78,12 @@ Dann <http://localhost:8000> öffnen. Sprache per Umschalter oben rechts oder `?
 
 Farben, Schriften, Logos und Ton stammen aus [`runnel/design`](https://github.com/runnelhq/runnel/tree/main/design).
 Ändern sich dort die Tokens, `runnel.css` hierher kopieren.
+
+## Handbuch (Anwenderdoku)
+
+Die Seiten unter `handbuch/` beschreiben Installation, Betrieb und Konfiguration für Anwender. Grundlage sind README,
+`docs/KONZEPT.md` (Kap. 2, 5, 13), die Schemas (`runnel schema …`) und die Beispiele des Runnel-Repositorys;
+Bausteine und Ausdrücke sind aus dem Programm erzeugt. Neue Seiten in `GUIDE_NAV` in `tools/build.py` eintragen.
 
 ## Entwicklerdoku
 

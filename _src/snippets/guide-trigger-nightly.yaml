@@ -1,0 +1,11 @@
+kind: Trigger
+apiVersion: runnel/v1
+name: nightly
+description: Imports every weekday at 02:00
+type: cron
+target: workflows/nightly-import.workflow.yaml
+environment: dev
+with:
+  schedule: "0 2 * * 1-5"
+  timezone: Europe/Berlin
+  overlap: skip

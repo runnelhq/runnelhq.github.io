@@ -1,0 +1,68 @@
+<!-- {
+  "out": "handbuch/ausdruecke.html",
+  "section": "guide",
+  "title": {"de": "Ausdrücke", "en": "Expressions"},
+  "description": {
+    "de": "Ausdrücke {{ … }} in Runnel: Schreibweise, Kontext wie params, results und record und alle Funktionen für Datum, Text, Zahlen und Listen.",
+    "en": "Expressions {{ … }} in Runnel: syntax, context such as params, results and record, and every function for dates, text, numbers and lists."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch</p>
+          <h1>Ausdrücke</h1>
+          <p class="docs-lead">Mit <code>{{ … }}</code> berechnet Runnel Werte zur Laufzeit: Daten, Texte, Bedingungen an Links oder Felder je Datensatz. Die Sprache ist <a href="https://expr-lang.org/">expr</a>, ergänzt um eine eigene Funktionsbibliothek.</p>
+
+          <h2 id="schreibweise">Schreibweise</h2>
+<pre><code class="lang-yaml" data-caption="Beispiele">message: "Import vom {{ formatDate(addDays(today(), -1), 'dd.MM.yyyy') }}"
+when: "{{ results.load.output.errors > 0 }}"
+condition: "{{ record.umsatz > 0 && record.ort != '' }}"
+value: "{{ upper(trim(record.name)) }}"
+name: "{{ request?.body?.name ?? 'unknown' }}"</code></pre>
+          <ul>
+            <li>Steht im Feld nur der Ausdruck, behält das Ergebnis seinen Typ (Zahl, Datum, Liste). Steht Text drumherum, wird alles zu Text.</li>
+            <li>Texte in einfachen Anführungszeichen: <code>'abc'</code>. Vergleiche <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>; logisch <code>&amp;&amp;</code>, <code>||</code>, <code>!</code>.</li>
+            <li><code>?.</code> greift sicher auf Felder zu, die fehlen könnten; <code>??</code> liefert einen Ersatzwert für leere Werte.</li>
+            <li>Ein Vergleich mit einem leeren Wert ist falsch – <code>isEmpty()</code> und <code>coalesce()</code> helfen.</li>
+            <li><code>${…}</code> wird vorher eingesetzt und ist im Ausdruck Text. Für typisierte Parameter <code>params.NAME</code> verwenden.</li>
+            <li>Syntax und Namen prüft <code>runnel validate</code> schon vor dem Lauf; der Editor schlägt Namen und Funktionen beim Tippen vor.</li>
+          </ul>
+          <p>In <strong>Pipelines</strong> steht der aktuelle Datensatz als <code>record</code> bereit, z. B. <code>record.umsatz</code> in <code>core.filter</code> oder <code>core.calculate</code>; dazu <code>params</code> und <code>run</code>.</p>
+
+          <h2 id="kontext">Kontext</h2>
+          {{expressions:de}}
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide</p>
+          <h1>Expressions</h1>
+          <p class="docs-lead">With <code>{{ … }}</code> Runnel computes values at run time: dates, texts, link conditions or fields per record. The language is <a href="https://expr-lang.org/">expr</a>, extended by Runnel's own function library.</p>
+
+          <h2 id="syntax">Syntax</h2>
+<pre><code class="lang-yaml" data-caption="Examples">message: "Import of {{ formatDate(addDays(today(), -1), 'yyyy-MM-dd') }}"
+when: "{{ results.load.output.errors > 0 }}"
+condition: "{{ record.amount > 0 && record.city != '' }}"
+value: "{{ upper(trim(record.name)) }}"
+name: "{{ request?.body?.name ?? 'unknown' }}"</code></pre>
+          <ul>
+            <li>If the field holds only the expression, the result keeps its type (number, date, list). With text around it, everything becomes text.</li>
+            <li>Text in single quotes: <code>'abc'</code>. Comparisons <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>; logical <code>&amp;&amp;</code>, <code>||</code>, <code>!</code>.</li>
+            <li><code>?.</code> safely accesses fields that may be missing; <code>??</code> supplies a fallback for empty values.</li>
+            <li>A comparison with an empty value is false – <code>isEmpty()</code> and <code>coalesce()</code> help.</li>
+            <li><code>${…}</code> is substituted first and is text inside the expression. Use <code>params.NAME</code> for typed parameters.</li>
+            <li><code>runnel validate</code> checks syntax and names before the run; the editor suggests names and functions while you type.</li>
+          </ul>
+          <p>In <strong>pipelines</strong> the current record is available as <code>record</code>, e.g. <code>record.amount</code> in <code>core.filter</code> or <code>core.calculate</code>; plus <code>params</code> and <code>run</code>.</p>
+
+          <h2 id="context">Context</h2>
+          {{expressions:en}}
+        </article>
+      </div>
+    </div>

@@ -111,7 +111,7 @@ p { margin: 0; }
 
 .mobile-nav { display: none; }
 
-@media (max-width: 920px) {
+@media (max-width: 1180px) {
   .nav, .header-actions .btn, .header-actions .gh-link { display: none; }
   .header-inner { justify-content: space-between; gap: 12px; }
   .menu-toggle { display: inline-flex; }
@@ -592,3 +592,31 @@ a.docs-card:hover { border-color: var(--ring); box-shadow: var(--rn-shadow-sm); 
 .ai-note a { color: var(--rn-strom-300); }
 @media (max-width: 960px) { .ai-note { margin-top: 40px; } }
 @media (max-width: 480px) { .ai-note { padding: 16px; gap: 12px; } }
+
+/* ---------- Handbuch: Referenzen ---------- */
+.ref-cat { display: flex; align-items: center; gap: 10px; margin-top: 36px !important; font-size: 18px; }
+.ref-cat .tile { width: 18px; height: 18px; border-radius: var(--rn-radius-sm); flex: none; }
+.ref-item { margin-top: 20px !important; padding: 20px; border: 1px solid var(--border); border-radius: var(--rn-radius-lg); background: var(--card); scroll-margin-top: 88px; }
+.ref-item > * + * { margin-top: 12px; }
+.ref-item h4 { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; font-size: 16px; font-weight: 600; }
+.ref-item h4 code { font-size: 15px; color: var(--primary); background: none; border: 0; padding: 0; }
+.ref-item h4 span { color: var(--muted-foreground); font-weight: 500; }
+.ref-item > p { color: var(--muted-foreground); font-size: 15px; }
+.ref-table td:first-child { white-space: nowrap; }
+.ref-table td:first-child code { white-space: nowrap; }
+.ref-meta { margin-top: 4px; font-size: 13px; color: var(--muted-foreground); }
+.ref-req { font-weight: 600; color: var(--foreground); }
+.ref-fmt { display: inline-block; margin-top: 2px; font: 500 11px/1.4 var(--rn-font-mono); color: var(--muted-foreground); }
+.doc-table.ref-table { min-width: 560px; font-size: 14px; }
+.prose h3 { margin-top: 32px; font-size: 19px; }
+.prose dl.terms { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 20px; }
+.prose dl.terms dt { font-weight: 600; }
+.prose dl.terms dd { margin: 0; color: var(--muted-foreground); }
+@media (max-width: 600px) { .prose dl.terms { grid-template-columns: 1fr; gap: 2px; } .prose dl.terms dd + dt { margin-top: 10px; } }
+.ref-item h4 .ref-badge { font: 500 11px/1 var(--rn-font-sans); padding: 3px 7px; border-radius: var(--rn-radius-sm); background: var(--secondary); color: var(--secondary-foreground); align-self: center; }
+/* Lange Inline-Codes dürfen auf schmalen Bildschirmen umbrechen */
+.prose p code, .prose li code, .prose dd code { white-space: normal; overflow-wrap: break-word; }
+.ref-jump li { padding: 0 !important; }
+.ref-jump a { display: block; padding: 3px 9px; text-decoration: none; }
+.ref-jump a code { background: none !important; border: 0 !important; padding: 0 !important; color: var(--primary); font-size: 13px; }
+.ref-jump a:hover { background: var(--accent); border-radius: var(--rn-radius-sm); }

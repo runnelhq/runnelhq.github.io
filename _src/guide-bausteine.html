@@ -1,0 +1,34 @@
+<!-- {
+  "out": "handbuch/bausteine.html",
+  "section": "guide",
+  "title": {"de": "Bausteine (Referenz)", "en": "Components (reference)"},
+  "description": {
+    "de": "Referenz aller Actions und Transforms von Runnel mit Feldern, Standardwerten, erlaubten Werten und Beispielen – erzeugt aus runnel catalog.",
+    "en": "Reference of all Runnel actions and transforms with fields, defaults, allowed values and examples – generated from runnel catalog."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch · Referenz</p>
+          <h1>Bausteine</h1>
+          <p class="docs-lead">Alle Actions (für Workflows) und Transforms (für Pipelines) mit ihren Feldern unter <code>with:</code>. Die Seite ist aus <code>runnel catalog --json</code> erzeugt; Beschreibungen und Beispiele stammen aus dem Programm und sind daher englisch.</p>
+          <p class="docs-source">Dieselben Angaben zeigt <code>runnel catalog &lt;typ&gt;</code> in der Konsole und der Editor im Eigenschaftsdialog. Derselbe Name kann als Action und als Transform vorkommen (z. B. <code>core.log</code>) – dann mit unterschiedlichen Feldern.</p>
+          {{blocks:de}}
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide · Reference</p>
+          <h1>Components</h1>
+          <p class="docs-lead">All actions (for workflows) and transforms (for pipelines) with their fields under <code>with:</code>. This page is generated from <code>runnel catalog --json</code>; descriptions and examples come from the program.</p>
+          <p class="docs-source"><code>runnel catalog &lt;type&gt;</code> shows the same information in the console, and the editor in its properties panel. The same name can exist as an action and as a transform (e.g. <code>core.log</code>) – then with different fields.</p>
+          {{blocks:en}}
+        </article>
+      </div>
+    </div>
