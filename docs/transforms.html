@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="de" data-theme="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transforms entwickeln – Runnel</title>
+  <meta name="description" content="Anleitung für eingebaute Runnel-Transforms: Aufbau, Verarbeiten mit Process, Records, Backpressure, Schema in Init, Tests und Checkliste.">
+  <meta name="title-en" content="Developing transforms – Runnel">
+  <meta name="description-en" content="Guide to built-in Runnel transforms: layout, processing with Process, records, backpressure, schema in Init, tests and checklist.">
+  <meta name="theme-color" content="#0A6DA6">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="../assets/img/runnel-icon-180.png">
+  <link rel="preload" href="../assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/runnel.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+
+<!-- Erzeugt von tools/build.py aus _src/docs-transforms.html – nicht von Hand bearbeiten. -->
+<!-- Wiederverwendbare Symbole -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></g></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7 10.5l5 5 5-5"/><path d="M5 20h14"/></g></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="logo" viewBox="0 0 204 64"><rect width="64" height="64" rx="15" fill="#0A6DA6"/><circle cx="14.5" cy="22" r="6.5" fill="#FFFFFF"/><path d="M25 22C33.5 22 30.5 42 37.5 42" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/><circle cx="48.5" cy="42" r="5.25" fill="none" stroke="#7CC5EB" stroke-width="4.75"/><path transform="translate(80 43.25) scale(0.020134)" fill="currentColor" d="M138 0V-1118H390V-931H402Q432 -1028 507 -1080.5Q582 -1133 678 -1133Q700 -1133 727 -1131Q754 -1129 773 -1126V-887Q757 -892 721 -896Q685 -900 650 -900Q578 -900 520.5 -869Q463 -838 430.5 -783.5Q398 -729 398 -658V0Z M1293 14Q1178 14 1091.5 -35Q1005 -84 957.5 -178.5Q910 -273 910 -407V-1118H1170V-447Q1170 -335 1228.5 -271Q1287 -207 1389 -207Q1458 -207 1512 -237Q1566 -267 1596.5 -325Q1627 -383 1627 -463V-1118H1888V0H1641L1638 -276H1658Q1611 -130 1519 -58Q1427 14 1293 14Z M2383.1 -655V0H2123.1V-1118H2369.1L2373.1 -842H2352.1Q2399.1 -987 2490.1 -1059.5Q2581.1 -1132 2718.1 -1132Q2833.1 -1132 2919.1 -1083Q3005.1 -1034 3052.6 -940Q3100.1 -846 3100.1 -711V0H2840.1V-671Q2840.1 -783 2782.1 -847Q2724.1 -911 2622.1 -911Q2553.1 -911 2499.1 -881Q2445.1 -851 2414.1 -793.5Q2383.1 -736 2383.1 -655Z M3595.1 -655V0H3335.1V-1118H3581.1L3585.1 -842H3564.1Q3611.1 -987 3702.1 -1059.5Q3793.1 -1132 3930.1 -1132Q4045.1 -1132 4131.1 -1083Q4217.1 -1034 4264.6 -940Q4312.1 -846 4312.1 -711V0H4052.1V-671Q4052.1 -783 3994.1 -847Q3936.1 -911 3834.1 -911Q3765.1 -911 3711.1 -881Q3657.1 -851 3626.1 -793.5Q3595.1 -736 3595.1 -655Z M5041.2 23Q4872.2 23 4750.7 -48Q4629.2 -119 4563.7 -248Q4498.2 -377 4498.2 -552Q4498.2 -725 4562.7 -855Q4627.2 -985 4745.7 -1058.5Q4864.2 -1132 5024.2 -1132Q5126.2 -1132 5218.7 -1099Q5311.2 -1066 5382.7 -997Q5454.2 -928 5494.7 -821.5Q5535.2 -715 5535.2 -568V-486H4621.2V-663H5406.2L5284.2 -611Q5284.2 -705 5255.2 -776.5Q5226.2 -848 5168.7 -888Q5111.2 -928 5025.2 -928Q4939.2 -928 4879.2 -887.5Q4819.2 -847 4787.7 -779.5Q4756.2 -712 4756.2 -629V-507Q4756.2 -401 4792.2 -328Q4828.2 -255 4893.2 -218Q4958.2 -181 5044.2 -181Q5101.2 -181 5147.7 -197.5Q5194.2 -214 5228.2 -246.5Q5262.2 -279 5279.2 -326L5518.2 -277Q5491.2 -187 5426.2 -119.5Q5361.2 -52 5263.7 -14.5Q5166.2 23 5041.2 23Z M5977.2 -1490V0H5717.2V-1490Z"/></symbol>
+  <!-- Strömungslinien (Gestaltungselement aus dem Corporate Design) -->
+  <symbol id="flow" viewBox="0 0 640 640" preserveAspectRatio="xMaxYMin meet">
+    <g fill="none" stroke-linecap="round">
+      <path d="M120 -40 C 340 -40 300 300 520 300 S 700 260 760 260" stroke="#0A6DA6" stroke-width="28" opacity=".55"/>
+      <path d="M60 120 C 280 120 240 460 460 460 S 660 420 760 420" stroke="#1688C6" stroke-width="18" opacity=".45"/>
+      <path d="M200 300 C 360 300 340 620 500 620 S 680 600 760 600" stroke="#3FA6DD" stroke-width="10" opacity=".35"/>
+    </g>
+    <circle cx="520" cy="300" r="34" fill="none" stroke="#7CC5EB" stroke-width="22"/>
+  </symbol>
+</svg>
+
+<a class="sr-only" href="#main" data-i18n="a11y.skip">Zum Inhalt springen</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html#top" aria-label="Runnel">
+      <svg viewBox="0 0 204 64" aria-hidden="true"><use href="#logo"/></svg>
+    </a>
+    <nav class="nav" aria-label="Hauptnavigation" data-i18n-attr="aria-label:nav.label">
+      <a href="../index.html#features" data-i18n="nav.features">Funktionen</a>
+      <a href="../index.html#model" data-i18n="nav.model">Modell</a>
+      <a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a>
+      <a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a>
+      <a href="../index.html#roadmap" data-i18n="nav.roadmap">Roadmap</a>
+      <a href="../docs/" aria-current="page" data-i18n="nav.docs">Doku</a>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Sprache" data-i18n-attr="aria-label:lang.label">
+        <button type="button" data-lang="de" aria-pressed="true" lang="de" title="Deutsch">DE</button>
+        <button type="button" data-lang="en" aria-pressed="false" lang="en" title="English">EN</button>
+      </div>
+      <a class="icon-btn gh-link" href="https://github.com/runnelhq/runnel" aria-label="GitHub"><svg aria-hidden="true"><use href="#i-github"/></svg></a>
+      <a class="btn btn--primary btn--sm" href="https://github.com/runnelhq/runnel/releases" data-i18n="cta.download">Herunterladen</a>
+      <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Menü öffnen" data-i18n-attr="aria-label:nav.open">
+        <svg aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-nav" id="mobile-nav" data-open="false">
+    <div class="wrap">
+      <ul>
+        <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+        <li><a href="../index.html#model" data-i18n="nav.model">Modell</a></li>
+        <li><a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a></li>
+        <li><a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a></li>
+        <li><a href="../index.html#roadmap" data-i18n="nav.roadmap">Roadmap</a></li>
+        <li><a href="../docs/" aria-current="page" data-i18n="nav.docs">Doku</a></li>
+      </ul>
+      <div class="mobile-ctas">
+        <a class="btn btn--primary" href="https://github.com/runnelhq/runnel/releases"><svg aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="cta.download">Herunterladen</span></a>
+        <a class="btn btn--outline" href="https://github.com/runnelhq/runnel"><svg aria-hidden="true"><use href="#i-github"/></svg>GitHub</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="docs-page">
+<div class="wrap docs-layout">
+      <details class="docs-side docs-side--mobile"><summary><span data-lang-block="de">Inhalt</span><span data-lang-block="en" hidden>Contents</span></summary><p class="docs-side-title"><span data-lang-block="de">Entwicklerdoku</span><span data-lang-block="en" hidden>Developer docs</span></p><ul class="docs-nav"><li><a href="../docs/"><span data-lang-block="de">Übersicht</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../docs/actions.html"><span data-lang-block="de">Actions entwickeln</span><span data-lang-block="en" hidden>Developing actions</span></a></li><li><a href="../docs/transforms.html" aria-current="page"><span data-lang-block="de">Transforms entwickeln</span><span data-lang-block="en" hidden>Developing transforms</span></a></li><li><a href="../docs/editor.html"><span data-lang-block="de">Editor entwickeln</span><span data-lang-block="en" hidden>Developing the editor</span></a></li><li><a href="../docs/api.html"><span data-lang-block="de">Server-API</span><span data-lang-block="en" hidden>Server API</span></a></li><li><span class="docs-nav-soon"><span data-lang-block="de">Plugins entwickeln</span><span data-lang-block="en" hidden>Developing plugins</span><small><span data-lang-block="de">folgt mit S49–S51</span><span data-lang-block="en" hidden>coming with S49–S51</span></small></span></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#aufbau">1. Aufbau</a></li><li><a href="#process">2. Verarbeiten (Process)</a></li><li><a href="#init">3. Schema (Init)</a></li><li><a href="#tests">4. Tests</a></li><li><a href="#checkliste">5. Checkliste für den PR</a></li><li><a href="#vorlage">Vorlage: core.filter</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#layout">1. Layout</a></li><li><a href="#process-en">2. Processing (Process)</a></li><li><a href="#init-en">3. Schema (Init)</a></li><li><a href="#tests-en">4. Tests</a></li><li><a href="#checklist">5. Pull request checklist</a></li><li><a href="#template">Template: core.filter</a></li></ul></details>
+<aside class="docs-side docs-side--desktop" aria-label="Dokumentation"><p class="docs-side-title"><span data-lang-block="de">Entwicklerdoku</span><span data-lang-block="en" hidden>Developer docs</span></p><ul class="docs-nav"><li><a href="../docs/"><span data-lang-block="de">Übersicht</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../docs/actions.html"><span data-lang-block="de">Actions entwickeln</span><span data-lang-block="en" hidden>Developing actions</span></a></li><li><a href="../docs/transforms.html" aria-current="page"><span data-lang-block="de">Transforms entwickeln</span><span data-lang-block="en" hidden>Developing transforms</span></a></li><li><a href="../docs/editor.html"><span data-lang-block="de">Editor entwickeln</span><span data-lang-block="en" hidden>Developing the editor</span></a></li><li><a href="../docs/api.html"><span data-lang-block="de">Server-API</span><span data-lang-block="en" hidden>Server API</span></a></li><li><span class="docs-nav-soon"><span data-lang-block="de">Plugins entwickeln</span><span data-lang-block="en" hidden>Developing plugins</span><small><span data-lang-block="de">folgt mit S49–S51</span><span data-lang-block="en" hidden>coming with S49–S51</span></small></span></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#aufbau">1. Aufbau</a></li><li><a href="#process">2. Verarbeiten (Process)</a></li><li><a href="#init">3. Schema (Init)</a></li><li><a href="#tests">4. Tests</a></li><li><a href="#checkliste">5. Checkliste für den PR</a></li><li><a href="#vorlage">Vorlage: core.filter</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#layout">1. Layout</a></li><li><a href="#process-en">2. Processing (Process)</a></li><li><a href="#init-en">3. Schema (Init)</a></li><li><a href="#tests-en">4. Tests</a></li><li><a href="#checklist">5. Pull request checklist</a></li><li><a href="#template">Template: core.filter</a></li></ul></aside>
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Entwicklerdoku · Bausteine</p>
+          <h1>Einen neuen Transform entwickeln</h1>
+          <p class="docs-lead">Transforms sind die Bausteine von Pipelines: Sie lesen Datensätze (Records), verändern, filtern oder schreiben sie – als Strom, mit konstantem Speicher auch bei Millionen Zeilen.</p>
+          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/TRANSFORMS.md"><code>docs/dev/TRANSFORMS.md</code></a> · Grundlagen: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0007-typsystem-pipelines.md">ADR 0007</a> (Typsystem), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a> (Namensräume).</p>
+
+          <div class="callout">
+            <strong>Ergänzt die Actions-Anleitung</strong>
+            <p>Namensräume, Konfiguration (<code>with:</code>), Schema-Tags, Texte, Windows-Besonderheiten und Dokumentation gelten wie in <a href="actions.html">Actions entwickeln</a>. Hier steht nur, was bei Transforms anders ist.</p>
+          </div>
+          <p>Beispiele im Repository: <a href="https://github.com/runnelhq/runnel/tree/main/internal/transforms/core"><code>internal/transforms/core/</code></a> – <code>generate.go</code> (Eingabe ohne eingehende Links), <code>dummy.go</code> (reicht weiter), <code>log.go</code> (Konfiguration, Log); <a href="https://github.com/runnelhq/runnel/tree/main/internal/transforms/csv"><code>internal/transforms/csv/</code></a> – Datei lesen und schreiben mit Positionen in Fehlern, temporärer Datei und Kodierungen.</p>
+
+          <h2 id="aufbau">1. Aufbau</h2>
+          <div class="code">
+  <div class="code-head"><span>Aufbau</span><button class="copy-btn" type="button" data-copy-from="code-31"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-31"><code class="lang-bash">internal/transforms/&lt;namensraum&gt;/
+  register.go          <span class="tok-c"># eine Zeile je Transform</span>
+  &lt;name&gt;.go            <span class="tok-c"># der Transform</span>
+  &lt;name&gt;_test.go       <span class="tok-c"># seine Tests</span></code></pre>
+</div>
+          <ul>
+            <li><strong>Eigene Registry</strong>, getrennt von den Actions: derselbe Typname darf als Action und als Transform existieren (z. B. <code>core.log</code>). Ein neuer Namensraum wird in <code>internal/transforms/transforms.go</code> eingetragen.</li>
+            <li><strong>Kategorie</strong> (<code>transform.Category…</code>): <code>input</code>, <code>transform</code>, <code>flow</code>, <code>execution</code>, <code>combine</code>, <code>output</code>.</li>
+            <li><strong>Konfiguration</strong> wie bei Actions mit <code>transform.DecodeConfig</code> und den Tags <code>doc</code> und <code>schema</code>. Felder, die <code>${…}</code> enthalten dürfen, als <code>string</code> anlegen – auch Zahlen wie <code>rows</code>. Der Wert wird in <code>Process</code> geprüft, nicht in <code>New</code>: <code>runnel validate</code> ruft <code>New</code> mit den Variablen, wie sie in der Datei stehen.</li>
+            <li><strong>Für den Editor:</strong> Namen vorhandener Felder der eingehenden Datensätze mit <code>schema:"format=runnel-field"</code> (auch an Listen wie <code>groupBy</code>), Ziele von Daten-Links mit <code>format=runnel-target</code>, Eigenschaften, die nur für einige Werte einer anderen gelten, mit <code>only=&lt;feld&gt;:&lt;a&gt;|&lt;b&gt;</code>. Namen neuer Felder bleiben ohne Format.</li>
+            <li>Jeder Transform mit Konfiguration bekommt ein <strong><code>Example</code></strong> (die <code>with:</code>-Werte in YAML) für die Hilfe im Panel; der Vertragstest prüft, dass <code>New</code> es annimmt.</li>
+          </ul>
+
+          <h2 id="process">2. Verarbeiten (<code>Process</code>)</h2>
+          <div class="code">
+  <div class="code-head"><span>Beispiel: Text in Großbuchstaben</span><button class="copy-btn" type="button" data-copy-from="code-32"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-32"><code class="lang-go"><span class="tok-k">func</span> (t *upper) Process(ctx context.Context, in &lt;-<span class="tok-k">chan</span> transform.Batch, out *transform.Output) error {
+	<span class="tok-k">for</span> b := <span class="tok-k">range</span> in {                 <span class="tok-c">// bis alle eingehenden Links beendet sind</span>
+		<span class="tok-k">for</span> _, r := <span class="tok-k">range</span> b {
+			v, _ := r.Get(t.Field)
+			r.Set(t.Field, strings.ToUpper(fmt.Sprint(v)))
+			<span class="tok-k">if</span> err := out.Emit(r); err != <span class="tok-k">nil</span> {
+				<span class="tok-k">return</span> err              <span class="tok-c">// Pipeline abgebrochen</span>
+			}
+		}
+	}
+	<span class="tok-k">return</span> <span class="tok-k">nil</span>
+}</code></pre>
+</div>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Thema</th><th>Regel</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Eingabe</th><td><code>in</code> liefert Batches, bis alle eingehenden Links beendet sind; bei mehreren Links gemischt. Ein Transform ohne eingehende Links (Eingabe) bekommt einen geschlossenen Kanal und erzeugt Records selbst.</td></tr>
+              <tr><th scope="row">Ausgabe</th><td><code>out.Emit(r)</code> je Record; die Engine bündelt zu Batches und gibt jeden Record an alle ausgehenden Links (ab dem zweiten als Kopie). Einen Record nach <code>Emit</code> nicht mehr ändern. <code>out.EmitTo(id, r)</code> gibt ihn nur an den Daten-Link zu einem bestimmten Transform (Beispiel <code>switch.go</code>).</td></tr>
+              <tr><th scope="row">Backpressure</th><td><code>Emit</code> blockiert, solange die folgenden Transforms beschäftigt sind – nichts selbst puffern, sonst steigt der Speicher.</td></tr>
+              <tr><th scope="row">Abbruch</th><td><code>Emit</code> gibt bei Abbruch einen Fehler zurück: sofort zurückgeben. Bei langen Schritten ohne <code>Emit</code> (z. B. Datei öffnen) <code>ctx</code> weitergeben.</td></tr>
+              <tr><th scope="row">Fehler</th><td>Ein Fehler aus <code>Process</code> hält die ganze Pipeline an. Kann ein <strong>einzelner Record</strong> nicht verarbeitet werden, <code>out.Fail(r, feld, err)</code> aufrufen: mit Fehler-Link geht der Record dorthin (mit <code>_error</code>, <code>_errorField</code>, <code>_errorTransform</code>), sonst gibt <code>Fail</code> den Fehler zurück. Dazu <code>RecordErrors: true</code> in der Definition; <code>out.HasErrorLinks()</code> sagt, ob ein Fehler-Link da ist.</td></tr>
+              <tr><th scope="row">Frühes Ende</th><td>Ein Transform darf aufhören, bevor <code>in</code> leer ist; die Engine verwirft den Rest.</td></tr>
+              <tr><th scope="row">Records</th><td>Geordnete Felder (<code>internal/record</code>): <code>Get</code>, <code>Set</code>, <code>Delete</code>, <code>Clone</code>; Namen mit <code>_</code> sind für Metadaten reserviert. Werte als <code>string</code>, <code>int64</code>, <code>decimal.Decimal</code>, <code>float64</code>, <code>bool</code>, <code>record.Date</code>, <code>time.Time</code>, <code>[]byte</code>, <code>map[string]any</code>/<code>[]any</code>; fremde Werte mit <code>record.Normalize</code> umwandeln.</td></tr>
+              <tr><th scope="row">Log</th><td><code>out.Logf</code>: <code>Info</code> für Ergebnisse, <code>Debug</code> für Details; bei großen Datenmengen nie je Record auf <code>Info</code>.</td></tr>
+              <tr><th scope="row">Zustand</th><td>Ein Transform-Objekt läuft in genau einer Goroutine; Zustand im Objekt ist erlaubt, globaler nicht.</td></tr>
+              <tr><th scope="row">HTTP-Aufrufer</th><td><code>out.HasCaller()</code> meldet, ob ein Aufrufer eines HTTP-Triggers wartet; <code>out.Respond(resp)</code> antwortet ihm – die erste Antwort gilt. Beispiel <code>internal/transforms/http/response.go</code>.</td></tr>
+              <tr><th scope="row">Connections</th><td>Ein Feld mit <code>schema:"connection=sqlite"</code> nennt eine Connection; <code>out.Connection(ctx, name)</code> liefert sie mit aufgelösten Variablen und Secrets (nie ausgeben). SQL-Felder mit <code>format=runnel-sql</code> kommen unverändert an, Werte als <code>@name</code> mit <code>params</code>. Beispiel <code>internal/transforms/db/tableinput.go</code>.</td></tr>
+              <tr><th scope="row">Aufrufender Workflow</th><td><code>out.Rows()</code> liefert die Datensätze, die ein Workflow mitgegeben hat (<code>rows</code> an <code>core.run-pipeline</code>); <code>out.AddResult(r)</code> gibt einen zurück (<code>output.rows</code>).</td></tr>
+              <tr><th scope="row">Leistung</th><td>Was je Record läuft, zählt bei Millionen Records. Neue Records mit bekannter Feldzahl mit <code>record.Make(n)</code> anlegen; feste, eindeutige Namen sammeln und mit <code>record.FromFields</code> übernehmen; <code>r.GetAt(i, name)</code> liest zuerst an Position <code>i</code>. Nachschlagen einmal vor der Schleife, nicht je Record.</td></tr>
+              <tr><th scope="row">Kopien</th><td>Mit <code>Parallel: true</code> darf der Transform mit <code>copies: n</code> laufen: n Objekte teilen sich die Eingabe. Nur setzen, wenn jeder Record für sich verarbeitet wird – nicht bei Ein- und Ausgaben.</td></tr>
+              <tr><th scope="row">Felder ermitteln</th><td>Ein Eingabe-Transform, dessen Felder aus der Eingabe kommen, setzt <code>DetectFields</code>: je Feld Name, Typvorschlag über <code>format.Propose</code>, die ersten Werte und eine Begründung. Der Editor zeigt dann „Detect fields…“. Tests mit Beispieldateien und ein <code>Fuzz…</code>-Ziel wie bei <code>csv.input</code>.</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="init">3. Schema (<code>Init</code>)</h2>
+          <div class="code">
+  <div class="code-head"><span>Beispiel</span><button class="copy-btn" type="button" data-copy-from="code-33"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-33"><code class="lang-go"><span class="tok-c">// Init meldet das Schema der ausgegebenen Records und die gelesenen Felder (ADR 0007).</span>
+<span class="tok-k">func</span> (t *upper) Init(ic *transform.InitContext) (record.Schema, error) {
+	ic.Use(t.Field, <span class="tok-s">"field"</span>)            <span class="tok-c">// Pfad innerhalb von with: – für Datei, Zeile, Spalte</span>
+	<span class="tok-k">return</span> ic.In.With(t.Field, record.String), <span class="tok-k">nil</span>
+}</code></pre>
+</div>
+          <ul>
+            <li><code>ic.In</code> ist das Schema der eingehenden Records – bei mehreren Links gemischt, leer und geschlossen ohne Eingang.</li>
+            <li>Jedes Feld, das der Transform liest, mit <code>ic.Use</code> melden: fehlt es im geschlossenen Schema, ist es ein Fehler, im offenen eine Warnung – jeweils mit „did you mean …?“.</li>
+            <li>Das Ergebnis beschreibt die Ausgabe: <strong>geschlossen</strong>, wenn alle Felder bekannt sind (z. B. Eingaben mit Felddefinition), <strong>offen</strong>, wenn weitere vorkommen können. Transforms, die nur weiterreichen, geben <code>ic.In</code> zurück.</li>
+            <li>Ohne <code>Init</code> gilt die Ausgabe als offen und unbekannt – für neue Transforms nur, wenn sich wirklich nichts ableiten lässt.</li>
+            <li><strong>Ausdrücke je Datensatz</strong> mit <code>transform.CompileExpression</code> in <code>New</code> übersetzen, die Felder aus <code>expr.Fields()</code> mit <code>ic.Use</code> melden und in <code>Process</code> mit <code>expr.Bool(out, r)</code> auswerten. Ein <code>Expression</code> gehört genau einem Transform-Objekt.</li>
+            <li>Konstante Werte aus der Konfiguration mit <code>record.Normalize</code> umwandeln – <code>transform.DecodeConfig</code> liefert Zahlen als <code>json.Number</code>.</li>
+          </ul>
+
+          <h2 id="tests">4. Tests</h2>
+          <div class="code">
+  <div class="code-head"><span>Beispiel</span><button class="copy-btn" type="button" data-copy-from="code-34"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-34"><code class="lang-go"><span class="tok-k">func</span> TestUpper(t *testing.T) {
+	tr := transformtest.New(t, upperDefinition, <span class="tok-k">map</span>[string]any{<span class="tok-s">"field"</span>: <span class="tok-s">"name"</span>})
+	out, logs, err := transformtest.Run(context.Background(), tr, record.New(record.Field{Name: <span class="tok-s">"name"</span>, Value: <span class="tok-s">"ada"</span>}))
+	…
+}</code></pre>
+</div>
+          <ul>
+            <li><strong><code>transformtest.Run</code></strong> gibt Records in einen Transform und liefert die ausgegebenen Records, Log und Fehler. Dazu <code>RunRouted</code> (Ziele), <code>RunWithErrorLink</code> (Fehler-Link) und <code>RunWithValues</code> (Werte des Laufs).</li>
+            <li><strong>Vertragstest</strong> (<code>internal/transforms/transforms_test.go</code>) läuft für jeden Transform: Kategorie, Texte, Beschreibungen aller Felder, unbekannte Felder werden abgelehnt, Beispielkonfiguration aus dem Schema wird angenommen, Abbruch.</li>
+            <li>Zusammenspiel mehrerer Transforms über die Engine: Tests in <code>internal/engine/pipeline</code>, Beispiele unter <code>examples/</code>.</li>
+            <li>Golden-Dateien des Katalogs mit <code>go test ./internal/cli -update</code> neu erzeugen und den Diff prüfen.</li>
+          </ul>
+
+          <h2 id="checkliste">5. Checkliste für den PR</h2>
+          <ul class="checklist">
+            <li>Eine Datei je Transform, Eintrag in <code>register.go</code>, Kategorie, Label, Beschreibung, <code>doc</code> für jedes Feld</li>
+            <li>Feldnamen mit <code>format=runnel-field</code>, Link-Ziele mit <code>format=runnel-target</code>; ein <code>Example</code></li>
+            <li>Werte mit Variablen werden in <code>Process</code> geprüft; <code>Emit</code>-Fehler werden zurückgegeben</li>
+            <li><code>Init</code> meldet das Ausgabeschema und alle gelesenen Felder (<code>ic.Use</code>), mit Tests</li>
+            <li>Tests mit <code>transformtest</code>, Vertragstest grün, Katalog-Goldens geprüft</li>
+            <li>Konzept Kap. 12.2 und Roadmap aktualisiert, ggf. Beispiel unter <code>examples/</code></li>
+          </ul>
+
+          <h2 id="vorlage">Vorlage: <code>core.filter</code></h2>
+          <p>Ein vollständiger Transform aus dem Repository mit Ausdruck je Datensatz, Feldmeldung in <code>Init</code>, Fehler-Link über <code>out.Fail</code>, Kopien (<code>Parallel</code>) und einer Log-Zeile am Ende.</p>
+          <div class="code">
+  <div class="code-head"><span>internal/transforms/core/filter.go</span><button class="copy-btn" type="button" data-copy-from="code-35"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-35"><code class="lang-go"><span class="tok-k">package</span> core
+
+<span class="tok-k">import</span> (
+	<span class="tok-s">"context"</span>
+	<span class="tok-s">"fmt"</span>
+	<span class="tok-s">"log/slog"</span>
+
+	<span class="tok-s">"github.com/runnelhq/runnel/internal/record"</span>
+	<span class="tok-s">"github.com/runnelhq/runnel/internal/transform"</span>
+)
+
+<span class="tok-c">// core.filter passes on the records for which a condition is true.</span>
+<span class="tok-k">var</span> filterDefinition = transform.Definition{
+	Parallel:     <span class="tok-k">true</span>,
+	Type:         <span class="tok-s">"core.filter"</span>,
+	RecordErrors: <span class="tok-k">true</span>,
+	Category:     transform.CategoryTransform,
+	Label:        <span class="tok-s">"Filter"</span>,
+	Description:  <span class="tok-s">"Passes on the records for which a condition is true"</span>,
+	Example:      <span class="tok-s">"condition: \"{{ record.umsatz &gt; 0 &amp;&amp; record.ort != '' }}\"\n"</span>,
+	Config:       filter{},
+	New:          newFilter,
+}
+
+<span class="tok-k">type</span> filter <span class="tok-k">struct</span> {
+	Condition string <span class="tok-s">`json:"condition" doc:"Expression that must be true for a record to pass, e.g. {{ record.amount &gt; 0 }}; a comparison with an empty value is false" schema:"required,example={{ record.amount &gt; 0 }}"`</span>
+
+	cond *transform.Expression
+}
+
+<span class="tok-k">func</span> newFilter(with <span class="tok-k">map</span>[string]any) (transform.Transform, error) {
+	t := &amp;filter{}
+	<span class="tok-k">if</span> err := transform.DecodeConfig(with, t); err != <span class="tok-k">nil</span> {
+		<span class="tok-k">return</span> <span class="tok-k">nil</span>, err
+	}
+	cond, err := transform.CompileExpression(t.Condition)
+	<span class="tok-k">if</span> err != <span class="tok-k">nil</span> {
+		<span class="tok-k">return</span> <span class="tok-k">nil</span>, fmt.Errorf(<span class="tok-s">"condition: %w"</span>, err)
+	}
+	t.cond = cond
+	<span class="tok-k">return</span> t, <span class="tok-k">nil</span>
+}
+
+<span class="tok-c">// Init checks the fields of the condition and passes the schema on: the records stay as</span>
+<span class="tok-c">// they are.</span>
+<span class="tok-k">func</span> (t *filter) Init(ic *transform.InitContext) (record.Schema, error) {
+	<span class="tok-k">for</span> _, f := <span class="tok-k">range</span> t.cond.Fields() {
+		ic.Use(f, <span class="tok-s">"condition"</span>)
+	}
+	<span class="tok-k">return</span> ic.In, <span class="tok-k">nil</span>
+}
+
+<span class="tok-k">func</span> (t *filter) Process(ctx context.Context, in &lt;-<span class="tok-k">chan</span> transform.Batch, out *transform.Output) error {
+	<span class="tok-k">var</span> read, kept, failed int64
+	<span class="tok-k">for</span> b := <span class="tok-k">range</span> in {
+		<span class="tok-k">for</span> _, r := <span class="tok-k">range</span> b {
+			read++
+			ok, err := t.cond.Bool(out, r)
+			<span class="tok-k">if</span> err != <span class="tok-k">nil</span> {
+				<span class="tok-c">// To an error link, or the pipeline stops.</span>
+				failed++
+				<span class="tok-k">if</span> err := out.Fail(r, <span class="tok-s">""</span>, fmt.Errorf(<span class="tok-s">"record %d: %w"</span>, read, err)); err != <span class="tok-k">nil</span> {
+					<span class="tok-k">return</span> err
+				}
+				<span class="tok-k">continue</span>
+			}
+			<span class="tok-k">if</span> !ok {
+				<span class="tok-k">continue</span>
+			}
+			kept++
+			<span class="tok-k">if</span> err := out.Emit(r); err != <span class="tok-k">nil</span> {
+				<span class="tok-k">return</span> err
+			}
+		}
+	}
+	<span class="tok-k">if</span> err := ctx.Err(); err != <span class="tok-k">nil</span> {
+		<span class="tok-k">return</span> err
+	}
+	<span class="tok-k">if</span> failed &gt; <span class="tok-n">0</span> {
+		out.Logf(slog.LevelInfo, <span class="tok-s">"kept %d of %d records, dropped %d, %d with errors"</span>, kept, read, read-kept-failed, failed)
+	} <span class="tok-k">else</span> {
+		out.Logf(slog.LevelInfo, <span class="tok-s">"kept %d of %d records, dropped %d"</span>, kept, read, read-kept)
+	}
+	<span class="tok-k">return</span> <span class="tok-k">nil</span>
+}</code></pre>
+</div>
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" hidden lang="en">
+          <p class="docs-eyebrow">Developer docs · Components</p>
+          <h1>Developing a new transform</h1>
+          <p class="docs-lead">Transforms are the building blocks of pipelines: they read records, change, filter or write them – as a stream, with constant memory even for millions of rows.</p>
+          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/TRANSFORMS.md"><code>docs/dev/TRANSFORMS.md</code></a> · Background: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0007-typsystem-pipelines.md">ADR 0007</a> (type system), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a> (namespaces).</p>
+
+          <div class="callout">
+            <strong>Extends the action guide</strong>
+            <p>Namespaces, configuration (<code>with:</code>), schema tags, texts, Windows specifics and documentation work as in <a href="actions.html">Developing actions</a>. This page only covers what is different for transforms.</p>
+          </div>
+          <p>Examples in the repository: <a href="https://github.com/runnelhq/runnel/tree/main/internal/transforms/core"><code>internal/transforms/core/</code></a> – <code>generate.go</code> (input without incoming links), <code>dummy.go</code> (passes records on), <code>log.go</code> (configuration, log); <a href="https://github.com/runnelhq/runnel/tree/main/internal/transforms/csv"><code>internal/transforms/csv/</code></a> – reading and writing files with positions in errors, a temporary file and encodings.</p>
+
+          <h2 id="layout">1. Layout</h2>
+          <div class="code">
+  <div class="code-head"><span>Layout</span><button class="copy-btn" type="button" data-copy-from="code-36"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-36"><code class="lang-bash">internal/transforms/&lt;namespace&gt;/
+  register.go          <span class="tok-c"># one line per transform</span>
+  &lt;name&gt;.go            <span class="tok-c"># the transform</span>
+  &lt;name&gt;_test.go       <span class="tok-c"># its tests</span></code></pre>
+</div>
+          <ul>
+            <li><strong>Separate registry</strong> from actions: the same type name may exist as an action and as a transform (e.g. <code>core.log</code>). A new namespace is added in <code>internal/transforms/transforms.go</code>.</li>
+            <li><strong>Category</strong> (<code>transform.Category…</code>): <code>input</code>, <code>transform</code>, <code>flow</code>, <code>execution</code>, <code>combine</code>, <code>output</code>.</li>
+            <li><strong>Configuration</strong> as for actions with <code>transform.DecodeConfig</code> and the <code>doc</code> and <code>schema</code> tags. Fields that may contain <code>${…}</code> are declared as <code>string</code> – numbers such as <code>rows</code> too. The value is checked in <code>Process</code>, not in <code>New</code>: <code>runnel validate</code> calls <code>New</code> with the variables as written in the file.</li>
+            <li><strong>For the editor:</strong> names of existing fields of incoming records with <code>schema:"format=runnel-field"</code> (also on lists such as <code>groupBy</code>), targets of data links with <code>format=runnel-target</code>, properties that only apply to some values of another one with <code>only=&lt;field&gt;:&lt;a&gt;|&lt;b&gt;</code>. Names of new fields get no format.</li>
+            <li>Every transform with a configuration gets an <strong><code>Example</code></strong> (the <code>with:</code> values in YAML) for the help in the panel; the contract test checks that <code>New</code> accepts it.</li>
+          </ul>
+
+          <h2 id="process-en">2. Processing (<code>Process</code>)</h2>
+          <div class="code">
+  <div class="code-head"><span>Example: upper-case text</span><button class="copy-btn" type="button" data-copy-from="code-37"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-37"><code class="lang-go"><span class="tok-k">func</span> (t *upper) Process(ctx context.Context, in &lt;-<span class="tok-k">chan</span> transform.Batch, out *transform.Output) error {
+	<span class="tok-k">for</span> b := <span class="tok-k">range</span> in {                 <span class="tok-c">// until all incoming links have ended</span>
+		<span class="tok-k">for</span> _, r := <span class="tok-k">range</span> b {
+			v, _ := r.Get(t.Field)
+			r.Set(t.Field, strings.ToUpper(fmt.Sprint(v)))
+			<span class="tok-k">if</span> err := out.Emit(r); err != <span class="tok-k">nil</span> {
+				<span class="tok-k">return</span> err              <span class="tok-c">// pipeline cancelled</span>
+			}
+		}
+	}
+	<span class="tok-k">return</span> <span class="tok-k">nil</span>
+}</code></pre>
+</div>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Topic</th><th>Rule</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Input</th><td><code>in</code> delivers batches until all incoming links have ended; mixed for several links. A transform without incoming links (input) gets a closed channel and creates records itself.</td></tr>
+              <tr><th scope="row">Output</th><td><code>out.Emit(r)</code> per record; the engine bundles batches and passes every record to all outgoing links (copies from the second on). Don't change a record after <code>Emit</code>. <code>out.EmitTo(id, r)</code> sends it only to the data link to a specific transform (example <code>switch.go</code>).</td></tr>
+              <tr><th scope="row">Backpressure</th><td><code>Emit</code> blocks while the following transforms are busy – don't buffer yourself, or memory grows.</td></tr>
+              <tr><th scope="row">Cancellation</th><td><code>Emit</code> returns an error on cancellation: return it immediately. For long steps without <code>Emit</code> (e.g. opening a file) pass <code>ctx</code> on.</td></tr>
+              <tr><th scope="row">Errors</th><td>An error returned by <code>Process</code> stops the whole pipeline. If a <strong>single record</strong> can't be processed, call <code>out.Fail(r, field, err)</code>: with an error link the record goes there (with <code>_error</code>, <code>_errorField</code>, <code>_errorTransform</code>), otherwise <code>Fail</code> returns the error. Set <code>RecordErrors: true</code> in the definition; <code>out.HasErrorLinks()</code> tells whether there is an error link.</td></tr>
+              <tr><th scope="row">Early end</th><td>A transform may stop before <code>in</code> is empty; the engine discards the rest.</td></tr>
+              <tr><th scope="row">Records</th><td>Ordered fields (<code>internal/record</code>): <code>Get</code>, <code>Set</code>, <code>Delete</code>, <code>Clone</code>; names starting with <code>_</code> are reserved for metadata. Values as <code>string</code>, <code>int64</code>, <code>decimal.Decimal</code>, <code>float64</code>, <code>bool</code>, <code>record.Date</code>, <code>time.Time</code>, <code>[]byte</code>, <code>map[string]any</code>/<code>[]any</code>; convert foreign values with <code>record.Normalize</code>.</td></tr>
+              <tr><th scope="row">Log</th><td><code>out.Logf</code>: <code>Info</code> for results, <code>Debug</code> for details; never <code>Info</code> per record for large data.</td></tr>
+              <tr><th scope="row">State</th><td>A transform object runs in exactly one goroutine; state in the object is fine, global state is not.</td></tr>
+              <tr><th scope="row">HTTP callers</th><td><code>out.HasCaller()</code> reports whether a caller of an HTTP trigger is waiting; <code>out.Respond(resp)</code> answers it – the first response wins. Example <code>internal/transforms/http/response.go</code>.</td></tr>
+              <tr><th scope="row">Connections</th><td>A field with <code>schema:"connection=sqlite"</code> names a connection; <code>out.Connection(ctx, name)</code> returns it with variables and secrets resolved (never print them). SQL fields with <code>format=runnel-sql</code> arrive unchanged, values as <code>@name</code> with <code>params</code>. Example <code>internal/transforms/db/tableinput.go</code>.</td></tr>
+              <tr><th scope="row">Calling workflow</th><td><code>out.Rows()</code> returns the records a workflow passed in (<code>rows</code> on <code>core.run-pipeline</code>); <code>out.AddResult(r)</code> returns one (<code>output.rows</code>).</td></tr>
+              <tr><th scope="row">Performance</th><td>Whatever runs per record counts with millions of records. Create records with a known field count with <code>record.Make(n)</code>; collect fixed, unique names and take them over with <code>record.FromFields</code>; <code>r.GetAt(i, name)</code> reads position <code>i</code> first. Look things up once before the loop, not per record.</td></tr>
+              <tr><th scope="row">Copies</th><td>With <code>Parallel: true</code> the transform may run with <code>copies: n</code>: n objects share the input. Only set it when every record is processed on its own – not for inputs and outputs.</td></tr>
+              <tr><th scope="row">Detect fields</th><td>An input transform whose fields come from its input sets <code>DetectFields</code>: per field the name, a type proposal via <code>format.Propose</code>, the first values and a reason. The editor then shows “Detect fields…”. Tests with sample files and a <code>Fuzz…</code> target as for <code>csv.input</code>.</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="init-en">3. Schema (<code>Init</code>)</h2>
+          <div class="code">
+  <div class="code-head"><span>Example</span><button class="copy-btn" type="button" data-copy-from="code-38"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-38"><code class="lang-go"><span class="tok-c">// Init reports the schema of the emitted records and the fields it reads (ADR 0007).</span>
+<span class="tok-k">func</span> (t *upper) Init(ic *transform.InitContext) (record.Schema, error) {
+	ic.Use(t.Field, <span class="tok-s">"field"</span>)            <span class="tok-c">// path within with: – for file, line, column</span>
+	<span class="tok-k">return</span> ic.In.With(t.Field, record.String), <span class="tok-k">nil</span>
+}</code></pre>
+</div>
+          <ul>
+            <li><code>ic.In</code> is the schema of the incoming records – mixed for several links, empty and closed without input.</li>
+            <li>Report every field the transform reads with <code>ic.Use</code>: if it's missing in a closed schema that is an error, in an open one a warning – each with “did you mean …?”.</li>
+            <li>The result describes the output: <strong>closed</strong> when all fields are known (e.g. inputs with a field definition), <strong>open</strong> when others may occur. Transforms that only pass records on return <code>ic.In</code>.</li>
+            <li>Without <code>Init</code> the output counts as open and unknown – for new transforms only when nothing can really be derived.</li>
+            <li>Compile <strong>per-record expressions</strong> with <code>transform.CompileExpression</code> in <code>New</code>, report the fields from <code>expr.Fields()</code> with <code>ic.Use</code> and evaluate them in <code>Process</code> with <code>expr.Bool(out, r)</code>. An <code>Expression</code> belongs to exactly one transform object.</li>
+            <li>Convert constant values from the configuration with <code>record.Normalize</code> – <code>transform.DecodeConfig</code> returns numbers as <code>json.Number</code>.</li>
+          </ul>
+
+          <h2 id="tests-en">4. Tests</h2>
+          <div class="code">
+  <div class="code-head"><span>Example</span><button class="copy-btn" type="button" data-copy-from="code-39"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-39"><code class="lang-go"><span class="tok-k">func</span> TestUpper(t *testing.T) {
+	tr := transformtest.New(t, upperDefinition, <span class="tok-k">map</span>[string]any{<span class="tok-s">"field"</span>: <span class="tok-s">"name"</span>})
+	out, logs, err := transformtest.Run(context.Background(), tr, record.New(record.Field{Name: <span class="tok-s">"name"</span>, Value: <span class="tok-s">"ada"</span>}))
+	…
+}</code></pre>
+</div>
+          <ul>
+            <li><strong><code>transformtest.Run</code></strong> feeds records into a transform and returns the emitted records, log and error. Also <code>RunRouted</code> (targets), <code>RunWithErrorLink</code> (error link) and <code>RunWithValues</code> (run values).</li>
+            <li>The <strong>contract test</strong> (<code>internal/transforms/transforms_test.go</code>) runs for every transform: category, texts, descriptions of all fields, rejection of unknown fields, acceptance of a sample configuration from the schema, cancellation.</li>
+            <li>Interplay of several transforms through the engine: tests in <code>internal/engine/pipeline</code>, examples under <code>examples/</code>.</li>
+            <li>Regenerate the catalog golden files with <code>go test ./internal/cli -update</code> and review the diff.</li>
+          </ul>
+
+          <h2 id="checklist">5. Pull request checklist</h2>
+          <ul class="checklist">
+            <li>One file per transform, entry in <code>register.go</code>, category, label, description, <code>doc</code> for every field</li>
+            <li>Field names with <code>format=runnel-field</code>, link targets with <code>format=runnel-target</code>; an <code>Example</code></li>
+            <li>Values with variables are checked in <code>Process</code>; <code>Emit</code> errors are returned</li>
+            <li><code>Init</code> reports the output schema and every field read (<code>ic.Use</code>), with tests</li>
+            <li>Tests with <code>transformtest</code>, contract test green, catalog goldens reviewed</li>
+            <li>Concept ch. 12.2 and roadmap updated, example under <code>examples/</code> if useful</li>
+          </ul>
+
+          <h2 id="template">Template: <code>core.filter</code></h2>
+          <p>A complete transform from the repository with a per-record expression, field reporting in <code>Init</code>, an error link via <code>out.Fail</code>, copies (<code>Parallel</code>) and a log line at the end.</p>
+          <div class="code">
+  <div class="code-head"><span>internal/transforms/core/filter.go</span><button class="copy-btn" type="button" data-copy-from="code-40"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-40"><code class="lang-go"><span class="tok-k">package</span> core
+
+<span class="tok-k">import</span> (
+	<span class="tok-s">"context"</span>
+	<span class="tok-s">"fmt"</span>
+	<span class="tok-s">"log/slog"</span>
+
+	<span class="tok-s">"github.com/runnelhq/runnel/internal/record"</span>
+	<span class="tok-s">"github.com/runnelhq/runnel/internal/transform"</span>
+)
+
+<span class="tok-c">// core.filter passes on the records for which a condition is true.</span>
+<span class="tok-k">var</span> filterDefinition = transform.Definition{
+	Parallel:     <span class="tok-k">true</span>,
+	Type:         <span class="tok-s">"core.filter"</span>,
+	RecordErrors: <span class="tok-k">true</span>,
+	Category:     transform.CategoryTransform,
+	Label:        <span class="tok-s">"Filter"</span>,
+	Description:  <span class="tok-s">"Passes on the records for which a condition is true"</span>,
+	Example:      <span class="tok-s">"condition: \"{{ record.umsatz &gt; 0 &amp;&amp; record.ort != '' }}\"\n"</span>,
+	Config:       filter{},
+	New:          newFilter,
+}
+
+<span class="tok-k">type</span> filter <span class="tok-k">struct</span> {
+	Condition string <span class="tok-s">`json:"condition" doc:"Expression that must be true for a record to pass, e.g. {{ record.amount &gt; 0 }}; a comparison with an empty value is false" schema:"required,example={{ record.amount &gt; 0 }}"`</span>
+
+	cond *transform.Expression
+}
+
+<span class="tok-k">func</span> newFilter(with <span class="tok-k">map</span>[string]any) (transform.Transform, error) {
+	t := &amp;filter{}
+	<span class="tok-k">if</span> err := transform.DecodeConfig(with, t); err != <span class="tok-k">nil</span> {
+		<span class="tok-k">return</span> <span class="tok-k">nil</span>, err
+	}
+	cond, err := transform.CompileExpression(t.Condition)
+	<span class="tok-k">if</span> err != <span class="tok-k">nil</span> {
+		<span class="tok-k">return</span> <span class="tok-k">nil</span>, fmt.Errorf(<span class="tok-s">"condition: %w"</span>, err)
+	}
+	t.cond = cond
+	<span class="tok-k">return</span> t, <span class="tok-k">nil</span>
+}
+
+<span class="tok-c">// Init checks the fields of the condition and passes the schema on: the records stay as</span>
+<span class="tok-c">// they are.</span>
+<span class="tok-k">func</span> (t *filter) Init(ic *transform.InitContext) (record.Schema, error) {
+	<span class="tok-k">for</span> _, f := <span class="tok-k">range</span> t.cond.Fields() {
+		ic.Use(f, <span class="tok-s">"condition"</span>)
+	}
+	<span class="tok-k">return</span> ic.In, <span class="tok-k">nil</span>
+}
+
+<span class="tok-k">func</span> (t *filter) Process(ctx context.Context, in &lt;-<span class="tok-k">chan</span> transform.Batch, out *transform.Output) error {
+	<span class="tok-k">var</span> read, kept, failed int64
+	<span class="tok-k">for</span> b := <span class="tok-k">range</span> in {
+		<span class="tok-k">for</span> _, r := <span class="tok-k">range</span> b {
+			read++
+			ok, err := t.cond.Bool(out, r)
+			<span class="tok-k">if</span> err != <span class="tok-k">nil</span> {
+				<span class="tok-c">// To an error link, or the pipeline stops.</span>
+				failed++
+				<span class="tok-k">if</span> err := out.Fail(r, <span class="tok-s">""</span>, fmt.Errorf(<span class="tok-s">"record %d: %w"</span>, read, err)); err != <span class="tok-k">nil</span> {
+					<span class="tok-k">return</span> err
+				}
+				<span class="tok-k">continue</span>
+			}
+			<span class="tok-k">if</span> !ok {
+				<span class="tok-k">continue</span>
+			}
+			kept++
+			<span class="tok-k">if</span> err := out.Emit(r); err != <span class="tok-k">nil</span> {
+				<span class="tok-k">return</span> err
+			}
+		}
+	}
+	<span class="tok-k">if</span> err := ctx.Err(); err != <span class="tok-k">nil</span> {
+		<span class="tok-k">return</span> err
+	}
+	<span class="tok-k">if</span> failed &gt; <span class="tok-n">0</span> {
+		out.Logf(slog.LevelInfo, <span class="tok-s">"kept %d of %d records, dropped %d, %d with errors"</span>, kept, read, read-kept-failed, failed)
+	} <span class="tok-k">else</span> {
+		out.Logf(slog.LevelInfo, <span class="tok-s">"kept %d of %d records, dropped %d"</span>, kept, read, read-kept)
+	}
+	<span class="tok-k">return</span> <span class="tok-k">nil</span>
+}</code></pre>
+</div>
+        </article>
+      </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <svg viewBox="0 0 204 64" role="img" aria-label="Runnel"><use href="#logo"/></svg>
+        <p data-i18n="footer.claim">Leicht. Lokal. Im Fluss. Workflows und Datenintegration für Windows.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.product">Produkt</h4>
+        <ul>
+          <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/releases" data-i18n="footer.releases">Releases</a></li>
+          <li><a href="../index.html#roadmap">Roadmap</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.docs">Dokumentation</h4>
+        <ul>
+          <li><a href="../docs/" data-i18n="footer.devdocs">Entwicklerdoku</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md" data-i18n="footer.concept">Konzept</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/docs/adr" data-i18n="footer.adr">Entscheidungen (ADR)</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/design" data-i18n="footer.design">Corporate Design</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.project">Projekt</h4>
+        <ul>
+          <li><a href="https://github.com/runnelhq/runnel">GitHub</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/issues" data-i18n="footer.issues">Fehler melden</a></li>
+          <li><a href="../impressum.html" data-i18n="footer.imprint">Impressum</a></li>
+          <li><a href="../datenschutz.html" data-i18n="footer.privacy">Datenschutz</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n="footer.copy">© 2026 The Runnel authors · MIT-Lizenz</span>
+      <span data-i18n="footer.local">Diese Seite lädt keine externen Schriften oder Tracker.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/site.js"></script>
+</body>
+</html>

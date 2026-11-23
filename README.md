@@ -10,8 +10,12 @@ impressum.html          # erzeugt aus _src/ (nicht von Hand bearbeiten)
 datenschutz.html        # erzeugt
 docs/index.html         # Entwicklerdoku: Übersicht (erzeugt)
 docs/actions.html       # Entwicklerdoku: Actions entwickeln (erzeugt)
+docs/transforms.html    # Entwicklerdoku: Transforms entwickeln (erzeugt)
+docs/editor.html        # Entwicklerdoku: Editor entwickeln (erzeugt)
+docs/api.html           # Entwicklerdoku: Server-API (erzeugt)
 _src/                   # Quellen der Unterseiten (von GitHub Pages nicht veröffentlicht)
 ├─ *.html               # Inhalt von <main> mit JSON-Kopf (Ausgabepfad, Titel, Beschreibung)
+├─ catalog.json         # Ausgabe von `runnel catalog --json` für den Abschnitt „Bausteine“ der Startseite
 └─ snippets/            # Codebeispiele, z. B. Kopien aus runnel/internal/actions
 tools/build.py          # erzeugt die Unterseiten (Python 3.9+, keine Abhängigkeiten)
 favicon.svg, favicon.ico
@@ -37,6 +41,14 @@ Das Skript passt relative Links an die Ordnertiefe an, setzt Codeblöcke (`{{sni
 `<pre><code class="lang-go">`) mit Hervorhebung und Kopieren-Button und erzeugt die Seitenleiste der Doku aus den
 `<h2 id="…">` jeder Sprache. Neue Doku-Seiten in `DOCS_NAV` in `tools/build.py` eintragen.
 
+Der Abschnitt „Bausteine“ der Startseite entsteht aus `_src/catalog.json`. Nach neuen Actions oder Transforms im
+Runnel-Repository:
+
+```bash
+runnel catalog --json > _src/catalog.json
+python3 tools/build.py
+```
+
 ## Lokal ansehen
 
 ```bash
@@ -60,8 +72,8 @@ Farben, Schriften, Logos und Ton stammen aus [`runnel/design`](https://github.co
 
 ## Entwicklerdoku
 
-Die Seiten unter `docs/` fassen die Anleitungen aus dem Runnel-Repository zusammen (`CONTRIBUTING.md`, `AGENTS.md`,
-`docs/dev/ACTIONS.md`, ADR 0013); maßgeblich bleibt das Repository. Ändert sich dort eine Anleitung, die betroffene
+Die Seiten unter `docs/` fassen die Anleitungen aus dem Runnel-Repository zusammen (`AGENTS.md`, `CONTRIBUTING.md`,
+`docs/dev/ACTIONS.md`, `TRANSFORMS.md`, `EDITOR.md`, `API.md`); maßgeblich bleibt das Repository. Ändert sich dort eine Anleitung, die betroffene
 Datei in `_src/` und ggf. die Codebeispiele in `_src/snippets/` nachziehen und `tools/build.py` ausführen.
 
 ## Offen (Mockup)

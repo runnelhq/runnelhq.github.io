@@ -1,7 +1,11 @@
 // namespaces lists the Register functions of all built-in namespaces.
 // A new namespace is added here and nowhere else.
 var namespaces = []func(*action.Registry){
+	archive.Register,
 	core.Register,
+	db.Register,
+	file.Register,
+	http.Register,
 }
 
 // Builtin returns a new registry with all built-in actions.

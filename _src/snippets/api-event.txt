@@ -1,0 +1,3 @@
+id: 7
+event: log
+data: {"seq":7,"kind":"log","time":"…","runId":"01M7…","actionId":"fetch-a","actionType":"core.wait","level":"debug","message":"waiting 2s"}

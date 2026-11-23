@@ -1,0 +1,4 @@
+internal/transforms/<namespace>/
+  register.go          # one line per transform
+  <name>.go            # the transform
+  <name>_test.go       # its tests

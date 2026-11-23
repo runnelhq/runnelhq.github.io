@@ -1,0 +1,155 @@
+<!-- {
+  "out": "docs/editor.html",
+  "title": {"de": "Editor entwickeln", "en": "Developing the editor"},
+  "description": {
+    "de": "Anleitung für den Runnel-Editor in web/: Voraussetzungen, Befehle, Aufbau, Regeln, wichtige Abläufe und Auslieferung.",
+    "en": "Guide to the Runnel editor in web/: prerequisites, commands, layout, rules, key behavior and delivery."
+  },
+  "nav": "docs/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Entwicklerdoku · Oberfläche</p>
+          <h1>Den Editor entwickeln</h1>
+          <p class="docs-lead">Der Editor ist eine React-Anwendung in <code>web/</code>. Sie wird gebaut, in die <code>runnel.exe</code> eingebettet und von <code>runnel serve</code> unter <code>http://127.0.0.1:7300/</code> ausgeliefert. Mit dem Server spricht sie nur über die <a href="api.html">Server-API</a>.</p>
+          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/EDITOR.md"><code>docs/dev/EDITOR.md</code></a> – dort steht auch die vollständige Tabelle zum Verhalten jeder Funktion. Gestaltung: <a href="https://github.com/runnelhq/runnel/blob/main/design/README.md">Corporate Design</a>, freigegebene <a href="https://github.com/runnelhq/runnel/tree/main/design/mockups">Mockups</a>.</p>
+
+          <h2 id="voraussetzungen">Voraussetzungen</h2>
+          <ul>
+            <li>Go in der Version aus <code>go.mod</code></li>
+            <li><a href="https://nodejs.org/">Node.js</a> 22 LTS (<code>web/.node-version</code>) mit npm</li>
+          </ul>
+          <p>Ohne Node baut <code>make build-go</code> eine exe ohne Editor; <code>runnel serve</code> zeigt dann unter <code>/</code> einen Hinweis. Die Go-Tests brauchen keinen Editor-Build.</p>
+
+          <h2 id="befehle">Befehle</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Zweck</th><th>Befehl</th></tr></thead>
+            <tbody>
+              <tr><td>npm-Pakete installieren (exakt nach <code>package-lock.json</code>)</td><td><code>make web-deps</code></td></tr>
+              <tr><td>Editor bauen (nach <code>internal/webui/dist/</code>)</td><td><code>make web</code></td></tr>
+              <tr><td>Editor und exe bauen</td><td><code>make build</code></td></tr>
+              <tr><td>Nur die exe bauen (bettet den letzten Editor-Build ein)</td><td><code>make build-go</code></td></tr>
+              <tr><td>Entwickeln mit Live-Reload</td><td><code>bin/runnel serve examples/hello</code>, dann in <code>web/</code>: <code>npm run dev</code> → <code>http://localhost:5173</code> (leitet <code>/api</code> an Port 7300 weiter)</td></tr>
+              <tr><td>Typen prüfen</td><td>in <code>web/</code>: <code>npm run typecheck</code></td></tr>
+              <tr><td>End-to-End-Tests (Playwright)</td><td><code>make e2e</code> – baut alles und startet <code>runnel serve examples/hello</code> auf Port 7399; Tests, die speichern, laufen gegen eine temporäre Kopie auf Port 7398</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="aufbau">Aufbau</h2>
+          {{snippet:editor-tree.txt|web/ und eingebetteter Build}}
+
+          <h2 id="regeln">Regeln</h2>
+          <ul>
+            <li><strong>Oberfläche nur nach freigegebenem Mockup</strong> (<a href="https://github.com/runnelhq/runnel/blob/main/design/README.md#9-mockups">Design-Handbuch, Kap. 9</a>).</li>
+            <li><strong>Nur Tokens:</strong> Farben über die semantischen Tailwind-Klassen (<code>bg-background</code>, <code>text-muted-foreground</code>, <code>border-border</code>, <code>bg-warning-soft</code> …), keine Hex-Werte, keine <code>dark:</code>-Varianten – das Farbschema wechselt über <code>&lt;html data-theme&gt;</code> und die Tokens. Schriftgrößen <code>text-2xs</code> … <code>text-xl</code>, Basis 13 px.</li>
+            <li><strong>Texte englisch</strong> (ADR 0015), Ton nach Handbuch Kap. 7; Zustände nie nur über Farbe, immer mit Symbol oder Text.</li>
+            <li><strong>Keine externen Ressourcen:</strong> Der Server setzt eine Content-Security-Policy, die nur eigene Dateien und die eigene API erlaubt. Schriften, Icons und Bilder werden mitgebaut.</li>
+            <li><strong>Abhängigkeiten</strong> nur mit Begründung im PR, Versionen exakt (<code>--save-exact</code>), Lizenz MIT-kompatibel. Was in den Build eingeht, landet automatisch in <code>THIRD_PARTY_NOTICES.txt</code> und in der SBOM; Werkzeuge gehören in <code>devDependencies</code>.</li>
+            <li><strong>Tests:</strong> Jede sichtbare Funktion bekommt einen Playwright-Test gegen den echten Server (<code>web/e2e/</code>).</li>
+          </ul>
+
+          <h2 id="ablaeufe">Wichtige Abläufe</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Thema</th><th>Umsetzung</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Canvas</th><td>React Flow (<code>@xyflow/react</code>); Knoten <code>ActionNode.tsx</code>, Links <code>LinkEdge.tsx</code>. Das Modell kommt aus <code>/validate</code> (gesendet wird der angezeigte Text), nicht aus einem YAML-Parser im Browser. Pipelines öffnen ebenfalls als Canvas.</td></tr>
+              <tr><th scope="row">Bearbeiten</th><td>Jede Änderung auf dem Canvas geht an <code>POST /workflows/edit</code> bzw. <code>/pipelines/edit</code>; der Server ändert den Text zeilengenau. Rückgängig und Wiederholen speichern Textstände (bis 100).</td></tr>
+              <tr><th scope="row">YAML-Ansicht</th><td>CodeMirror 6 mit eigener Hervorhebung (<code>yaml.ts</code>), Suchen und Ersetzen; getippter Text geht nach 0,5 s Pause als ein Schritt in denselben Verlauf wie der Canvas. Vervollständigung und Hover aus den Schemas (<code>yamlAssist.ts</code>).</td></tr>
+              <tr><th scope="row">Eigenschaften</th><td><code>PropertiesPanel.tsx</code>: Formular aus dem Schema des Descriptors – Auswahl für <code>enum</code>, Kontrollkästchen, Dauer, mehrzeiliger Text, Listen als Chips, Tabelle oder Karten; Feldauswahl bei <code>runnel-field</code>, Abschnitt „Help“ aus dem <code>example</code>.</td></tr>
+              <tr><th scope="row">Ausdrücke</th><td><code>ExpressionInput.tsx</code> (CodeMirror 6) für alle Textfelder unter <code>with:</code> und Link-Bedingungen: Hervorhebung, Vorschläge, Signaturhilfe, Fehler an der Stelle; größerer Editor mit Referenz über Strg+Umschalt+E.</td></tr>
+              <tr><th scope="row">Speichern</th><td><code>PUT /files/{path}</code> mit dem ETag des geladenen Stands; <code>412</code> öffnet den Konfliktdialog (Cancel, Reload, Overwrite). Gespeichert wird als UTF-8.</td></tr>
+              <tr><th scope="row">Ausführen</th><td>„Run“ (F5) startet die <strong>gespeicherte</strong> Datei über <code>POST /runs</code>; <code>run.ts</code> folgt dem Lauf über <code>/events</code>. Knoten zeigen Statusleiste und Symbol, der aktive Link „strömt“ (aus bei <code>prefers-reduced-motion</code>). Tab „Log“ unter dem Canvas.</td></tr>
+              <tr><th scope="row">Datenvorschau</th><td>„Preview data“ im Panel eines Transforms: <code>POST /preview</code>, Tab „Preview“ mit Tabelle oder JSON je Ausgabe oder Link.</td></tr>
+              <tr><th scope="row">Dateien</th><td><code>Explorer.tsx</code>: anlegen aus Vorlagen, umbenennen, verschieben per Ziehen und Ablegen, löschen mit Rückfrage; vorher prüft <code>/references</code>, welche Dateien darauf verweisen.</td></tr>
+              <tr><th scope="row">Fehlergrenzen</th><td><code>ErrorBoundary.tsx</code>: Ein Fehler beim Zeichnen bleibt in seinem Bereich – je Tab, in der Seitenleiste und als letzte Stufe um die ganze Oberfläche.</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="auslieferung">Auslieferung</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Thema</th><th>Umsetzung</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Einbettung</th><td><code>internal/webui</code> bettet <code>dist/</code> per <code>go:embed</code> ein</td></tr>
+              <tr><th scope="row">Caching</th><td><code>assets/*</code> (Dateiname mit Hash) ein Jahr unveränderlich, alles andere <code>no-cache</code></td></tr>
+              <tr><th scope="row">Sicherheit</th><td>Content-Security-Policy (<code>default-src 'self'</code>, kein Einbetten in fremde Seiten), <code>nosniff</code>, kein Referrer; Host- und Origin-Prüfung wie bei der API</td></tr>
+              <tr><th scope="row">Lizenzen und SBOM</th><td><code>scripts/third-party-notices.sh</code> ergänzt npm-Pakete und Schriften; <code>scripts/merge-sbom.mjs</code> fügt die SBOM des Editors in die SBOM der exe ein</td></tr>
+            </tbody>
+          </table></div>
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">Developer docs · User interface</p>
+          <h1>Developing the editor</h1>
+          <p class="docs-lead">The editor is a React application in <code>web/</code>. It is built, embedded into <code>runnel.exe</code> and served by <code>runnel serve</code> at <code>http://127.0.0.1:7300/</code>. It talks to the server only through the <a href="api.html">server API</a>.</p>
+          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/EDITOR.md"><code>docs/dev/EDITOR.md</code></a> – including the full table describing the behavior of every feature. Design: <a href="https://github.com/runnelhq/runnel/blob/main/design/README.md">corporate design</a>, approved <a href="https://github.com/runnelhq/runnel/tree/main/design/mockups">mockups</a>.</p>
+
+          <h2 id="prerequisites">Prerequisites</h2>
+          <ul>
+            <li>Go as specified in <code>go.mod</code></li>
+            <li><a href="https://nodejs.org/">Node.js</a> 22 LTS (<code>web/.node-version</code>) with npm</li>
+          </ul>
+          <p>Without Node, <code>make build-go</code> builds an executable without the editor; <code>runnel serve</code> then shows a notice at <code>/</code>. The Go tests don't need an editor build.</p>
+
+          <h2 id="commands">Commands</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Purpose</th><th>Command</th></tr></thead>
+            <tbody>
+              <tr><td>Install npm packages (exactly per <code>package-lock.json</code>)</td><td><code>make web-deps</code></td></tr>
+              <tr><td>Build the editor (to <code>internal/webui/dist/</code>)</td><td><code>make web</code></td></tr>
+              <tr><td>Build editor and executable</td><td><code>make build</code></td></tr>
+              <tr><td>Build only the executable (embeds the last editor build)</td><td><code>make build-go</code></td></tr>
+              <tr><td>Develop with live reload</td><td><code>bin/runnel serve examples/hello</code>, then in <code>web/</code>: <code>npm run dev</code> → <code>http://localhost:5173</code> (proxies <code>/api</code> to port 7300)</td></tr>
+              <tr><td>Type check</td><td>in <code>web/</code>: <code>npm run typecheck</code></td></tr>
+              <tr><td>End-to-end tests (Playwright)</td><td><code>make e2e</code> – builds everything and starts <code>runnel serve examples/hello</code> on port 7399; tests that save run against a temporary copy on port 7398</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="layout">Layout</h2>
+          {{snippet:editor-tree-en.txt|web/ and the embedded build}}
+
+          <h2 id="rules">Rules</h2>
+          <ul>
+            <li><strong>UI only after an approved mockup</strong> (<a href="https://github.com/runnelhq/runnel/blob/main/design/README.md#9-mockups">design handbook, ch. 9</a>).</li>
+            <li><strong>Tokens only:</strong> colors via the semantic Tailwind classes (<code>bg-background</code>, <code>text-muted-foreground</code>, <code>border-border</code>, <code>bg-warning-soft</code> …), no hex values, no <code>dark:</code> variants – the color scheme switches via <code>&lt;html data-theme&gt;</code> and the tokens. Font sizes <code>text-2xs</code> … <code>text-xl</code>, base 13 px.</li>
+            <li><strong>English texts</strong> (ADR 0015), tone per handbook ch. 7; never show state by color alone, always with a symbol or text.</li>
+            <li><strong>No external resources:</strong> the server sets a content security policy that only allows its own files and its own API. Fonts, icons and images are bundled.</li>
+            <li><strong>Dependencies</strong> only with a reason in the PR, exact versions (<code>--save-exact</code>), MIT-compatible license. Whatever goes into the build ends up in <code>THIRD_PARTY_NOTICES.txt</code> and the SBOM automatically; tools belong in <code>devDependencies</code>.</li>
+            <li><strong>Tests:</strong> every visible feature gets a Playwright test against the real server (<code>web/e2e/</code>).</li>
+          </ul>
+
+          <h2 id="behavior">Key behavior</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Topic</th><th>Implementation</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Canvas</th><td>React Flow (<code>@xyflow/react</code>); nodes <code>ActionNode.tsx</code>, links <code>LinkEdge.tsx</code>. The model comes from <code>/validate</code> (the displayed text is sent), not from a YAML parser in the browser. Pipelines open as a canvas too.</td></tr>
+              <tr><th scope="row">Editing</th><td>Every change on the canvas goes to <code>POST /workflows/edit</code> or <code>/pipelines/edit</code>; the server changes the text line by line. Undo and redo store text states (up to 100).</td></tr>
+              <tr><th scope="row">YAML view</th><td>CodeMirror 6 with its own highlighting (<code>yaml.ts</code>), find and replace; typed text joins the same history as the canvas as one step after a 0.5 s pause. Completion and hover from the schemas (<code>yamlAssist.ts</code>).</td></tr>
+              <tr><th scope="row">Properties</th><td><code>PropertiesPanel.tsx</code>: a form from the descriptor's schema – selection for <code>enum</code>, checkboxes, durations, multi-line text, lists as chips, table or cards; field selection for <code>runnel-field</code>, a “Help” section from the <code>example</code>.</td></tr>
+              <tr><th scope="row">Expressions</th><td><code>ExpressionInput.tsx</code> (CodeMirror 6) for every text field under <code>with:</code> and for link conditions: highlighting, suggestions, signature help, errors in place; a larger editor with reference via Ctrl+Shift+E.</td></tr>
+              <tr><th scope="row">Saving</th><td><code>PUT /files/{path}</code> with the ETag of the loaded state; <code>412</code> opens the conflict dialog (Cancel, Reload, Overwrite). Files are saved as UTF-8.</td></tr>
+              <tr><th scope="row">Running</th><td>“Run” (F5) starts the <strong>saved</strong> file via <code>POST /runs</code>; <code>run.ts</code> follows the run via <code>/events</code>. Nodes show a status bar and symbol, the active link “flows” (off with <code>prefers-reduced-motion</code>). “Log” tab below the canvas.</td></tr>
+              <tr><th scope="row">Data preview</th><td>“Preview data” in a transform's panel: <code>POST /preview</code>, a “Preview” tab with table or JSON per output or link.</td></tr>
+              <tr><th scope="row">Files</th><td><code>Explorer.tsx</code>: create from templates, rename, move by drag and drop, delete with confirmation; <code>/references</code> first checks which files point to it.</td></tr>
+              <tr><th scope="row">Error boundaries</th><td><code>ErrorBoundary.tsx</code>: a rendering error stays in its area – per tab, in the sidebar and, as the last level, around the whole UI.</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2 id="delivery">Delivery</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Topic</th><th>Implementation</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Embedding</th><td><code>internal/webui</code> embeds <code>dist/</code> via <code>go:embed</code></td></tr>
+              <tr><th scope="row">Caching</th><td><code>assets/*</code> (hashed file names) immutable for one year, everything else <code>no-cache</code></td></tr>
+              <tr><th scope="row">Security</th><td>Content security policy (<code>default-src 'self'</code>, no framing by other sites), <code>nosniff</code>, no referrer; host and origin checks as for the API</td></tr>
+              <tr><th scope="row">Licenses and SBOM</th><td><code>scripts/third-party-notices.sh</code> adds npm packages and fonts; <code>scripts/merge-sbom.mjs</code> merges the editor's SBOM into the executable's SBOM</td></tr>
+            </tbody>
+          </table></div>
+        </article>
+      </div>
+    </div>

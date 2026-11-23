@@ -12,6 +12,9 @@ Platzhalter im Inhalt:
   {{sidebar}}                     Doku-Navigation (nur bei "docs": true)
   <pre><code class="lang-go|yaml|bash|text">…</code></pre>   wird hervorgehoben und erhält einen Kopf
 
+Bausteine der Startseite: Liegt _src/catalog.json vor (runnel catalog --json > _src/catalog.json),
+wird der Abschnitt zwischen <!-- catalog --> und <!-- /catalog --> in index.html daraus neu erzeugt.
+
 Aufruf (ohne Abhängigkeiten, Python 3.9+):  python3 tools/build.py
 """
 import html
@@ -27,7 +30,9 @@ SRC = ROOT / "_src"
 DOCS_NAV = [
     ("docs/index.html", "Übersicht", "Overview", None),
     ("docs/actions.html", "Actions entwickeln", "Developing actions", None),
-    (None, "Transforms entwickeln", "Developing transforms", ("folgt mit S12/S13", "coming with S12/S13")),
+    ("docs/transforms.html", "Transforms entwickeln", "Developing transforms", None),
+    ("docs/editor.html", "Editor entwickeln", "Developing the editor", None),
+    ("docs/api.html", "Server-API", "Server API", None),
     (None, "Plugins entwickeln", "Developing plugins", ("folgt mit S49–S51", "coming with S49–S51")),
 ]
 
@@ -109,7 +114,7 @@ def expand_code(content):
     def snippet(m):
         name, caption = m.group(1), m.group(2)
         path = SRC / "snippets" / name
-        lang = {".go": "go", ".yaml": "yaml", ".sh": "bash", ".txt": "bash"}.get(path.suffix, "text")
+        lang = {".go": "go", ".yaml": "yaml", ".sh": "bash", ".txt": "bash", ".json": "bash"}.get(path.suffix, "text")
         return code_block(path.read_text(encoding="utf-8"), lang, caption)
     content = re.sub(r"\{\{snippet:([^|}]+)(?:\|([^}]*))?\}\}", snippet, content)
 
@@ -201,15 +206,69 @@ def build_page(src, layout):
     print(f"  {out}")
 
 
+# Kategorien aus runnel catalog: (Schlüssel für i18n, CSS-Farbe der Kategorie-Kachel aus den Tokens)
+CATEGORIES = {
+    "action": ["general", "execution", "files", "network", "database"],
+    "transform": ["input", "transform", "flow", "execution", "combine", "output"],
+}
+CATEGORY_DE = {
+    "general": "Allgemein", "execution": "Ausführung", "files": "Dateien", "network": "Netzwerk",
+    "database": "Datenbank", "input": "Eingabe", "transform": "Umformen", "flow": "Fluss",
+    "combine": "Zusammenfassen", "output": "Ausgabe",
+}
+CATEGORY_COLOR = {
+    "general": "allgemein", "execution": "ausfuehrung", "files": "dateien", "network": "netzwerk",
+    "database": "datenbank", "input": "eingabe", "transform": "transformation", "flow": "fluss",
+    "combine": "transformation", "output": "ausgabe",
+}
+
+
+def catalog_block(catalog):
+    cols = []
+    for kind, key in (("action", "actions"), ("transform", "transforms")):
+        items = catalog[key]
+        groups = []
+        known = CATEGORIES[kind] + sorted({i["category"] for i in items} - set(CATEGORIES[kind]))
+        for cat in known:
+            members = sorted((i for i in items if i["category"] == cat), key=lambda i: i["type"])
+            if not members:
+                continue
+            color = CATEGORY_COLOR.get(cat, "allgemein")
+            chips = "".join(
+                f'<li title="{html.escape(i["label"])}: {html.escape(i["description"])}">'
+                f'<span class="tile" style="background:var(--rn-kategorie-{color})"></span>'
+                f'<code>{html.escape(i["type"])}</code></li>' for i in members)
+            groups.append(f'<div class="blocks-group"><h4 data-i18n="cat.{cat}">{CATEGORY_DE.get(cat, cat)}</h4><ul class="blocks-list">{chips}</ul></div>')
+        title = "Actions" if kind == "action" else "Transforms"
+        sub = "blocks.actions" if kind == "action" else "blocks.transforms"
+        sub_de = "Schritte in Workflows" if kind == "action" else "Datensätze verarbeiten in Pipelines"
+        cols.append(f'<div class="blocks-col"><h3>{title} <span class="count tnum">{len(items)}</span></h3>'
+                    f'<p class="blocks-sub" data-i18n="{sub}">{sub_de}</p>{"".join(groups)}</div>')
+    return '<div class="blocks">' + "".join(cols) + "</div>"
+
+
+def update_catalog(index):
+    path = SRC / "catalog.json"
+    if not path.exists() or "<!-- catalog -->" not in index:
+        return index
+    block = catalog_block(json.loads(path.read_text(encoding="utf-8")))
+    new = re.sub(r"<!-- catalog -->.*?<!-- /catalog -->", lambda m: f"<!-- catalog -->\n{block}\n<!-- /catalog -->", index, flags=re.S)
+    if new != index:
+        (ROOT / "index.html").write_text(new, encoding="utf-8")
+        print("  index.html (Bausteine)")
+    return new
+
+
 def main():
     index = (ROOT / "index.html").read_text(encoding="utf-8")
+    print("tools/build.py:")
+    index = update_catalog(index)
     layout = {
         "head": re.search(r"<head>(.*?)</head>", index, re.S).group(1),
         "sprite": section(index, "sprite"),
         "header": section(index, "header"),
         "footer": section(index, "footer"),
     }
-    print("tools/build.py:")
     for src in sorted(SRC.glob("*.html")):
         build_page(src, layout)
 

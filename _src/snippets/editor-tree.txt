@@ -1,0 +1,17 @@
+web/
+  index.html            # Einstieg
+  src/
+    main.tsx            # React-Start
+    App.tsx             # Gerüst: Kopfzeile, Explorer und Palette bzw. Reference, Tabs, Datei, Statusleiste
+    api.ts              # API-Zugriff, Verbindung (Server-Sent Events)
+    files.ts            # Projektbaum, Dateien laden, Kodierung erkennen
+    workflow.ts         # /validate, Workflow- und Pipeline-Modell (graphOf), Link-Arten, Zuordnung der Meldungen, Anordnung (dagre)
+    catalog.ts          # Descriptors aus /catalog (Kategorie → Kachelfarbe, Namen der Kategorien)
+    expressions.ts      # Ausdrücke: Referenz aus /expressions, Tokens, Vorschläge, Lage von Meldungen
+    yaml.ts             # Hervorhebung für die Nur-lesen-Ansicht (zeilenweise, ohne Abhängigkeit)
+    theme.ts            # Farbschema (System/Light/Dark, gespeichert im Browser)
+    index.css           # Tailwind + Design-Tokens + Schriften
+    components/         # eine Datei je Komponente
+  e2e/                  # Playwright-Tests
+internal/webui/         # go:embed des Builds (dist/ ist nicht im Repository, nur .gitkeep)
+design/fonts/           # Inter, JetBrains Mono (woff2, OFL) – lokal, kein Schrift-CDN

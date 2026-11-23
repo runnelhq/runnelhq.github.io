@@ -469,7 +469,7 @@ table.compare { width: 100%; min-width: 680px; border-collapse: collapse; font-s
   font-size: 0.875em; padding: 1px 5px; border-radius: var(--rn-radius-sm);
   background: var(--muted); border: 1px solid var(--border); white-space: nowrap;
 }
-.prose td code { white-space: normal; overflow-wrap: anywhere; }
+.prose td code { white-space: normal; overflow-wrap: break-word; }
 .prose ul, .prose ol { padding-left: 22px; }
 .prose li + li { margin-top: 6px; }
 .prose a code { color: inherit; }
@@ -556,3 +556,24 @@ a.docs-card:hover { border-color: var(--ring); box-shadow: var(--rn-shadow-sm); 
 
 /* Terminal: lange Log-Zeilen umbrechen wie in einer echten Konsole */
 .terminal pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* ---------- Bausteine ---------- */
+.blocks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.blocks-col { min-width: 0; padding: 28px; border-radius: var(--rn-radius-lg); background: var(--card); border: 1px solid var(--border); }
+.blocks-col h3 { display: flex; align-items: baseline; gap: 10px; font-size: 22px; }
+.blocks-col h3 .count { font: 500 14px/1 var(--rn-font-mono); padding: 4px 8px; border-radius: var(--rn-radius-sm); background: var(--secondary); color: var(--secondary-foreground); }
+.blocks-sub { margin-top: 4px; color: var(--muted-foreground); font-size: 15px; }
+.blocks-group { margin-top: 20px; }
+.blocks-group h4 { margin: 0 0 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-foreground); }
+.blocks-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.blocks-list li { display: inline-flex; align-items: center; gap: 7px; padding: 3px 9px 3px 3px; border: 1px solid var(--border); border-radius: var(--rn-radius-md); background: var(--background); cursor: default; }
+.blocks-list .tile { width: 16px; height: 16px; border-radius: var(--rn-radius-sm); flex: none; }
+.blocks-list code { font-size: 12.5px; color: var(--foreground); }
+@media (max-width: 860px) { .blocks { grid-template-columns: 1fr; } .blocks-col { padding: 22px; } }
+
+/* Roadmap: vier Spalten, erledigte Phasen */
+.roadmap { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.status--done { color: var(--success); background: var(--success-soft); }
+.status--done::before { content: "✔"; font-size: 11px; }
+@media (max-width: 1080px) { .roadmap { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .roadmap { grid-template-columns: 1fr; } }

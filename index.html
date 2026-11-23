@@ -101,7 +101,7 @@
     <div class="wrap">
       <div class="hero-grid">
         <div>
-          <span class="pill"><span class="dot" aria-hidden="true"></span><span data-i18n="hero.pill">v0.1 in Entwicklung · Open Source (MIT)</span></span>
+          <span class="pill"><span class="dot" aria-hidden="true"></span><span data-i18n="hero.pill">Vorabversion v0.1.0-alpha.8 · Open Source (MIT)</span></span>
           <h1 data-i18n="hero.title">Leicht. Lokal.<br><em>Im Fluss.</em></h1>
           <p class="lead" data-i18n="hero.lead">Workflows und Datenintegration für Windows – eine einzige exe, keine Runtime, keine Datenbank. Visuell gestalten im Editor, ausführen per CLI, Server oder Windows-Dienst.</p>
           <div class="ctas">
@@ -170,12 +170,12 @@
         <article class="feature">
           <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 9l3 2.5L7 14M12 14h5M8 21h8"/></svg></span>
           <h3 data-i18n="f5.title">Editor und Runner</h3>
-          <p data-i18n="f5.text">Visuell gestalten im Browser oder WebView2-Fenster, headless ausführen in CI und Aufgabenplanung – mit denselben Dateien.</p>
+          <p data-i18n="f5.text">Visuell gestalten im Editor im Browser, headless ausführen in CI und Aufgabenplanung – mit denselben YAML-Dateien.</p>
         </article>
         <article class="feature">
-          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4h4v3a2 2 0 1 0 4 0V4h2v6h-3a2 2 0 1 0 0 4h3v6h-6v-3a2 2 0 1 0-4 0v3H4v-6h3a2 2 0 1 0 0-4H4V4z"/></svg></span>
-          <h3 data-i18n="f6.title">Erweiterbar</h3>
-          <p data-i18n="f6.text">Eigene Bausteine als JavaScript-Skript oder als Plugin in beliebiger Sprache – über ein einfaches Prozess-Protokoll.</p>
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg></span>
+          <h3 data-i18n="f6.title">Zeitplan und HTTP</h3>
+          <p data-i18n="f6.text">Trigger starten Workflows nach Zeitplan, im Intervall, bei neuen Dateien im Ordner oder per HTTP – im Netz über HTTPS, mit Antwort aus dem Workflow.</p>
         </article>
       </div>
     </div>
@@ -208,7 +208,7 @@
             <li><span class="tile" style="background:var(--rn-kategorie-eingabe)"></span>CSV · JSON</li>
             <li><span class="tile" style="background:var(--rn-kategorie-datenbank)"></span>SQL Server · PostgreSQL · SQLite</li>
             <li><span class="tile" style="background:var(--rn-kategorie-netzwerk)"></span>HTTP</li>
-            <li><span class="tile" style="background:var(--rn-kategorie-transformation)"></span><span data-i18n="chip.transform">Filtern · Gruppieren · Joins</span></li>
+            <li><span class="tile" style="background:var(--rn-kategorie-transformation)"></span><span data-i18n="chip.transform">Filtern · Berechnen · Gruppieren</span></li>
           </ul>
         </div>
       </div>
@@ -329,57 +329,71 @@
     </div>
   </section>
 
+  <!-- ============ Bausteine ============ -->
+  <section class="section" id="blocks">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label" data-i18n="blocks.label">Bausteine</span>
+        <h2 data-i18n="blocks.title">Alles an Bord, was Daten bewegt</h2>
+        <p data-i18n="blocks.lead">Dateien, HTTP, Datenbanken, CSV und JSON – alle Bausteine stecken in der exe. Die Liste mit allen Feldern zeigt <code>runnel catalog</code>.</p>
+      </div>
+<!-- catalog -->
+<div class="blocks"><div class="blocks-col"><h3>Actions <span class="count tnum">21</span></h3><p class="blocks-sub" data-i18n="blocks.actions">Schritte in Workflows</p><div class="blocks-group"><h4 data-i18n="cat.general">Allgemein</h4><ul class="blocks-list"><li title="Abort: Ends the workflow as failed"><span class="tile" style="background:var(--rn-kategorie-allgemein)"></span><code>core.abort</code></li><li title="Check Condition: Fails with a message when a condition is false"><span class="tile" style="background:var(--rn-kategorie-allgemein)"></span><code>core.check</code></li><li title="Dummy: Does nothing; collects branches into one point"><span class="tile" style="background:var(--rn-kategorie-allgemein)"></span><code>core.dummy</code></li><li title="Log: Writes a message to the run log"><span class="tile" style="background:var(--rn-kategorie-allgemein)"></span><code>core.log</code></li><li title="Start: Entry point of the workflow"><span class="tile" style="background:var(--rn-kategorie-allgemein)"></span><code>core.start</code></li><li title="Success: Ends the workflow successfully"><span class="tile" style="background:var(--rn-kategorie-allgemein)"></span><code>core.success</code></li><li title="Wait: Waits for a given time"><span class="tile" style="background:var(--rn-kategorie-allgemein)"></span><code>core.wait</code></li></ul></div><div class="blocks-group"><h4 data-i18n="cat.execution">Ausführung</h4><ul class="blocks-list"><li title="Run Pipeline: Runs a pipeline with parameters; output: the counts of its transforms"><span class="tile" style="background:var(--rn-kategorie-ausfuehrung)"></span><code>core.run-pipeline</code></li><li title="Run Workflow: Runs another workflow with parameters; output: its outputs"><span class="tile" style="background:var(--rn-kategorie-ausfuehrung)"></span><code>core.run-workflow</code></li></ul></div><div class="blocks-group"><h4 data-i18n="cat.files">Dateien</h4><ul class="blocks-list"><li title="Create Archive: Packs files and folders into a ZIP, TAR or TAR.GZ archive; output: path, files and size"><span class="tile" style="background:var(--rn-kategorie-dateien)"></span><code>archive.create</code></li><li title="Extract Archive: Unpacks a ZIP, TAR or TAR.GZ archive into a folder; output: the unpacked files"><span class="tile" style="background:var(--rn-kategorie-dateien)"></span><code>archive.extract</code></li><li title="Copy Files: Copies files or folders; output: the copied files"><span class="tile" style="background:var(--rn-kategorie-dateien)"></span><code>file.copy</code></li><li title="Delete Files: Deletes files or folders; output: the deleted paths"><span class="tile" style="background:var(--rn-kategorie-dateien)"></span><code>file.delete</code></li><li title="File Exists: Checks whether files or folders exist; output: the matching paths"><span class="tile" style="background:var(--rn-kategorie-dateien)"></span><code>file.exists</code></li><li title="List Files: Lists the files of a folder; output: path, name, size, modified and folder of each entry"><span class="tile" style="background:var(--rn-kategorie-dateien)"></span><code>file.list</code></li><li title="Create Folder: Creates a folder with its parent folders; output: the path"><span class="tile" style="background:var(--rn-kategorie-dateien)"></span><code>file.mkdir</code></li><li title="Move Files: Moves files or folders; output: the new paths"><span class="tile" style="background:var(--rn-kategorie-dateien)"></span><code>file.move</code></li><li title="Wait for File: Waits until files exist; output: the matching paths"><span class="tile" style="background:var(--rn-kategorie-dateien)"></span><code>file.wait</code></li></ul></div><div class="blocks-group"><h4 data-i18n="cat.network">Netzwerk</h4><ul class="blocks-list"><li title="HTTP Request: Sends an HTTP request, e.g. to a REST API; output: status, headers and body of the answer"><span class="tile" style="background:var(--rn-kategorie-netzwerk)"></span><code>http.request</code></li><li title="HTTP Response: Answers the caller of an HTTP trigger with status, headers and body; output: sent and status"><span class="tile" style="background:var(--rn-kategorie-netzwerk)"></span><code>http.respond</code></li></ul></div><div class="blocks-group"><h4 data-i18n="cat.database">Datenbank</h4><ul class="blocks-list"><li title="Execute SQL: Runs an SQL statement on a database, e.g. to insert, update or delete rows"><span class="tile" style="background:var(--rn-kategorie-datenbank)"></span><code>db.execute</code></li></ul></div></div><div class="blocks-col"><h3>Transforms <span class="count tnum">26</span></h3><p class="blocks-sub" data-i18n="blocks.transforms">Datensätze verarbeiten in Pipelines</p><div class="blocks-group"><h4 data-i18n="cat.input">Eingabe</h4><ul class="blocks-list"><li title="Generate Rows: Creates records with constant fields"><span class="tile" style="background:var(--rn-kategorie-eingabe)"></span><code>core.generate-rows</code></li><li title="CSV Input: Reads the rows of a CSV file as records"><span class="tile" style="background:var(--rn-kategorie-eingabe)"></span><code>csv.input</code></li><li title="Table Input: Reads the rows of an SQL query as records, one field per column"><span class="tile" style="background:var(--rn-kategorie-eingabe)"></span><code>db.table-input</code></li><li title="List Files: Reads the files of a folder as records: path, name, extension, size, modified and folder"><span class="tile" style="background:var(--rn-kategorie-eingabe)"></span><code>file.list</code></li><li title="JSON Input: Reads the objects of a JSON or NDJSON file as records"><span class="tile" style="background:var(--rn-kategorie-eingabe)"></span><code>json.input</code></li></ul></div><div class="blocks-group"><h4 data-i18n="cat.transform">Umformen</h4><ul class="blocks-list"><li title="Calculate: Sets fields to the result of an expression for every record"><span class="tile" style="background:var(--rn-kategorie-transformation)"></span><code>core.calculate</code></li><li title="Add Constants: Adds fields with the same value to every record"><span class="tile" style="background:var(--rn-kategorie-transformation)"></span><code>core.constant</code></li><li title="Convert Types: Converts fields to another type, with a number or date format"><span class="tile" style="background:var(--rn-kategorie-transformation)"></span><code>core.convert</code></li><li title="Filter: Passes on the records for which a condition is true"><span class="tile" style="background:var(--rn-kategorie-transformation)"></span><code>core.filter</code></li><li title="Map Values: Replaces the values of a field by a table, e.g. codes by names"><span class="tile" style="background:var(--rn-kategorie-transformation)"></span><code>core.map-values</code></li><li title="Select Fields: Keeps, orders and renames fields, or removes fields"><span class="tile" style="background:var(--rn-kategorie-transformation)"></span><code>core.select-fields</code></li><li title="Sequence: Numbers the records in the order they arrive, also per group"><span class="tile" style="background:var(--rn-kategorie-transformation)"></span><code>core.sequence</code></li><li title="Split Field: Splits the text of a field into several fields or into one record per part"><span class="tile" style="background:var(--rn-kategorie-transformation)"></span><code>core.split-field</code></li></ul></div><div class="blocks-group"><h4 data-i18n="cat.flow">Fluss</h4><ul class="blocks-list"><li title="Dummy: Passes all records on unchanged"><span class="tile" style="background:var(--rn-kategorie-fluss)"></span><code>core.dummy</code></li><li title="Switch: Passes each record to the link of the first case whose condition is true"><span class="tile" style="background:var(--rn-kategorie-fluss)"></span><code>core.switch</code></li></ul></div><div class="blocks-group"><h4 data-i18n="cat.execution">Ausführung</h4><ul class="blocks-list"><li title="Records from Workflow: Passes on the records the calling workflow gave to the pipeline (rows)"><span class="tile" style="background:var(--rn-kategorie-ausfuehrung)"></span><code>core.from-result</code></li><li title="Records to Workflow: Returns the records to the calling workflow (output.rows) and passes them on"><span class="tile" style="background:var(--rn-kategorie-ausfuehrung)"></span><code>core.to-result</code></li></ul></div><div class="blocks-group"><h4 data-i18n="cat.combine">Zusammenfassen</h4><ul class="blocks-list"><li title="Remove Duplicates: Passes on the first record of each combination of values and drops repeated ones"><span class="tile" style="background:var(--rn-kategorie-transformation)"></span><code>core.dedupe</code></li><li title="Group By: Combines records with the same values into one, with count, sum and other aggregates"><span class="tile" style="background:var(--rn-kategorie-transformation)"></span><code>core.group-by</code></li><li title="Sort: Sorts the records by fields; keeps all records in memory"><span class="tile" style="background:var(--rn-kategorie-transformation)"></span><code>core.sort</code></li></ul></div><div class="blocks-group"><h4 data-i18n="cat.output">Ausgabe</h4><ul class="blocks-list"><li title="Log: Writes records to the run log and passes them on"><span class="tile" style="background:var(--rn-kategorie-ausgabe)"></span><code>core.log</code></li><li title="CSV Output: Writes records to a CSV file and passes them on"><span class="tile" style="background:var(--rn-kategorie-ausgabe)"></span><code>csv.output</code></li><li title="Table Output: Inserts each record as a new row into a database table"><span class="tile" style="background:var(--rn-kategorie-ausgabe)"></span><code>db.table-output</code></li><li title="Insert or Update: Updates the row with the same keys in a database table, or inserts the record as a new row"><span class="tile" style="background:var(--rn-kategorie-ausgabe)"></span><code>db.upsert</code></li><li title="HTTP Response: Answers the caller of an HTTP trigger with the records as JSON and passes them on"><span class="tile" style="background:var(--rn-kategorie-ausgabe)"></span><code>http.response</code></li><li title="JSON Output: Writes records to a JSON or NDJSON file and passes them on"><span class="tile" style="background:var(--rn-kategorie-ausgabe)"></span><code>json.output</code></li></ul></div></div></div>
+<!-- /catalog -->
+    </div>
+  </section>
+
   <!-- ============ Betriebsarten ============ -->
-  <section class="section" id="modes">
+  <section class="section section--muted" id="modes">
     <div class="wrap">
       <div class="section-head">
         <span class="label" data-i18n="modes.label">Betrieb</span>
-        <h2 data-i18n="modes.title">Ein Programm, sechs Betriebsarten</h2>
+        <h2 data-i18n="modes.title">Eine exe für Entwicklung und Betrieb</h2>
         <p data-i18n="modes.lead">Vom einmaligen Lauf in der Aufgabenplanung bis zum Dauerbetrieb als Windows-Dienst – immer dieselbe <code>runnel.exe</code>.</p>
       </div>
       <div class="modes">
         <article class="mode">
           <span class="soon soon--now" data-i18n="modes.now">Verfügbar</span>
-          <h3 data-i18n="m.validate.title">Validieren</h3>
-          <p data-i18n="m.validate.text">Workflows prüfen – Syntax, Links, Zyklen, unerreichbare Actions. Ideal als Schritt in der CI.</p>
-          <div class="cmd"><code><b>&gt;</b> runnel validate examples/hello</code><button class="copy-icon" type="button" data-copy="runnel validate examples/hello" aria-label="Befehl kopieren" data-i18n-attr="aria-label:ui.copyCmd"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <h3 data-i18n="m.validate.title">Prüfen</h3>
+          <p data-i18n="m.validate.text">Workflows, Pipelines und Trigger prüfen – Felder, Links, Variablen, Ausdrücke. Meldungen mit Datei, Zeile und Spalte, ideal für die CI.</p>
+          <div class="cmd"><code><b>&gt;</b> runnel validate D:\flows</code><button class="copy-icon" type="button" data-copy="runnel validate D:\flows" aria-label="Befehl kopieren" data-i18n-attr="aria-label:ui.copyCmd"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
         </article>
         <article class="mode">
           <span class="soon soon--now" data-i18n="modes.now">Verfügbar</span>
           <h3 data-i18n="m.run.title">Einmal ausführen</h3>
-          <p data-i18n="m.run.text">Für Aufgabenplanung, CI und Skripte. Der Exit-Code ist das Ergebnis.</p>
-          <div class="cmd"><code><b>&gt;</b> runnel run nightly.workflow.yaml --env prod</code><button class="copy-icon" type="button" data-copy="runnel run nightly.workflow.yaml --env prod" aria-label="Befehl kopieren" data-i18n-attr="aria-label:ui.copyCmd"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <p data-i18n="m.run.text">Für Aufgabenplanung, CI und Skripte. Der Exit-Code ist das Ergebnis, Strg+C bricht sauber ab.</p>
+          <div class="cmd"><code><b>&gt;</b> runnel run --env prod workflows\nightly.workflow.yaml</code><button class="copy-icon" type="button" data-copy="runnel run --env prod workflows\nightly.workflow.yaml" aria-label="Befehl kopieren" data-i18n-attr="aria-label:ui.copyCmd"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
         </article>
         <article class="mode">
-          <span class="soon" data-i18n="modes.v03">ab v0.3</span>
-          <h3 data-i18n="m.serve.title">Server</h3>
-          <p data-i18n="m.serve.text">Editor, Scheduler und Webhooks in einem Prozess – standardmäßig nur auf 127.0.0.1.</p>
-          <div class="cmd"><code><b>&gt;</b> runnel serve --project D:\flows</code><button class="copy-icon" type="button" data-copy="runnel serve --project D:\flows" aria-label="Befehl kopieren" data-i18n-attr="aria-label:ui.copyCmd"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <span class="soon soon--now" data-i18n="modes.now">Verfügbar</span>
+          <h3 data-i18n="m.serve.title">Editor und Server</h3>
+          <p data-i18n="m.serve.text">Editor im Browser unter 127.0.0.1:7300 – bauen, prüfen, starten und live beobachten. Trigger laufen mit.</p>
+          <div class="cmd"><code><b>&gt;</b> runnel serve D:\flows</code><button class="copy-icon" type="button" data-copy="runnel serve D:\flows" aria-label="Befehl kopieren" data-i18n-attr="aria-label:ui.copyCmd"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
         </article>
         <article class="mode">
-          <span class="soon" data-i18n="modes.v04">ab v0.4</span>
+          <span class="soon soon--now" data-i18n="modes.now">Verfügbar</span>
+          <h3 data-i18n="m.triggers.title">Trigger</h3>
+          <p data-i18n="m.triggers.text">Zeitplan, Intervall, neue Dateien im Ordner oder HTTP-Aufrufe starten Workflows und Pipelines.</p>
+          <div class="cmd"><code><b>&gt;</b> runnel triggers D:\flows</code><button class="copy-icon" type="button" data-copy="runnel triggers D:\flows" aria-label="Befehl kopieren" data-i18n-attr="aria-label:ui.copyCmd"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+        </article>
+        <article class="mode">
+          <span class="soon soon--now" data-i18n="modes.now">Verfügbar</span>
           <h3 data-i18n="m.service.title">Windows-Dienst</h3>
-          <p data-i18n="m.service.text">Dauerbetrieb auf dem Server, mit Ereignisanzeige und Wiederherstellungsoptionen.</p>
-          <div class="cmd"><code><b>&gt;</b> runnel service install</code><button class="copy-icon" type="button" data-copy="runnel service install" aria-label="Befehl kopieren" data-i18n-attr="aria-label:ui.copyCmd"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <p data-i18n="m.service.text">Dauerbetrieb ohne angemeldeten Benutzer – mit Neustart nach Fehlern, Log-Datei und Ereignisanzeige.</p>
+          <div class="cmd"><code><b>&gt;</b> runnel service install D:\flows</code><button class="copy-icon" type="button" data-copy="runnel service install D:\flows" aria-label="Befehl kopieren" data-i18n-attr="aria-label:ui.copyCmd"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
         </article>
         <article class="mode">
-          <span class="soon" data-i18n="modes.v05">ab v0.5</span>
-          <h3 data-i18n="m.desktop.title">Desktop</h3>
-          <p data-i18n="m.desktop.text">Server und Editor im eigenen WebView2-Fenster – für den Einzelplatz.</p>
-          <div class="cmd"><code><b>&gt;</b> runnel desktop</code><button class="copy-icon" type="button" data-copy="runnel desktop" aria-label="Befehl kopieren" data-i18n-attr="aria-label:ui.copyCmd"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
-        </article>
-        <article class="mode">
-          <span class="soon" data-i18n="modes.v05">ab v0.5</span>
-          <h3 data-i18n="m.portable.title">Portabel</h3>
-          <p data-i18n="m.portable.text">Alle Daten liegen neben der exe – z. B. auf USB-Stick oder Netzlaufwerk.</p>
-          <div class="cmd"><code><b>&gt;</b> New-Item runnel.portable</code><button class="copy-icon" type="button" data-copy="New-Item runnel.portable" aria-label="Befehl kopieren" data-i18n-attr="aria-label:ui.copyCmd"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <span class="soon soon--now" data-i18n="modes.now">Verfügbar</span>
+          <h3 data-i18n="m.catalog.title">Bausteine nachschlagen</h3>
+          <p data-i18n="m.catalog.text">Alle Actions und Transforms mit ihren Feldern, Standardwerten und Beispielen – auch als JSON.</p>
+          <div class="cmd"><code><b>&gt;</b> runnel catalog file.copy</code><button class="copy-icon" type="button" data-copy="runnel catalog file.copy" aria-label="Befehl kopieren" data-i18n-attr="aria-label:ui.copyCmd"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
         </article>
       </div>
     </div>
   </section>
 
   <!-- ============ Vergleich ============ -->
-  <section class="section section--muted" id="compare">
+  <section class="section" id="compare">
     <div class="wrap">
       <div class="section-head">
         <span class="label" data-i18n="compare.label">Einordnung</span>
@@ -407,7 +421,7 @@
   </section>
 
   <!-- ============ Roadmap ============ -->
-  <section class="section" id="roadmap">
+  <section class="section section--muted" id="roadmap">
     <div class="wrap">
       <div class="section-head">
         <span class="label">Roadmap</span>
@@ -415,37 +429,47 @@
         <p data-i18n="roadmap.lead">Jeder Schritt ist ein Pull Request, nach jedem Schritt läuft Runnel. Den aktuellen Stand gibt es auf <a href="https://github.com/runnelhq/runnel/blob/main/docs/ROADMAP.md">GitHub</a>.</p>
       </div>
       <ol class="roadmap">
+        <li class="phase">
+          <div class="phase-head"><span class="phase-no">v0.1</span><span class="status status--done" data-i18n="rm.done">erledigt</span></div>
+          <h3 data-i18n="rm.1.title">Runner-Basis</h3>
+          <p data-i18n="rm.1.text">Workflows per CLI und Aufgabenplanung – parallel, mit Retry, Timeouts und Abbruch.</p>
+        </li>
+        <li class="phase">
+          <div class="phase-head"><span class="phase-no">v0.2</span><span class="status status--done" data-i18n="rm.done">erledigt</span></div>
+          <h3 data-i18n="rm.2.title">Editor-Grundlage</h3>
+          <p data-i18n="rm.2.text">Workflows im Browser bauen, prüfen, starten und live beobachten – auf denselben YAML-Dateien.</p>
+        </li>
+        <li class="phase">
+          <div class="phase-head"><span class="phase-no">v0.3</span><span class="status status--done" data-i18n="rm.done">erledigt</span></div>
+          <h3 data-i18n="rm.3.title">Workflow-Ausbau</h3>
+          <p data-i18n="rm.3.text">Ausdrücke, Datei-Actions, Sub-Workflows und ein Ausdruckseditor mit Vorschlägen.</p>
+        </li>
+        <li class="phase">
+          <div class="phase-head"><span class="phase-no">v0.4</span><span class="status status--done" data-i18n="rm.done">erledigt</span></div>
+          <h3 data-i18n="rm.4.title">Pipelines</h3>
+          <p data-i18n="rm.4.text">ETL mit Typsystem, CSV und Transforms – von Workflows gesteuert, auch je Datei oder Datensatz.</p>
+        </li>
+        <li class="phase">
+          <div class="phase-head"><span class="phase-no">v0.5</span><span class="status status--done" data-i18n="rm.done">erledigt</span></div>
+          <h3 data-i18n="rm.5.title">Betrieb</h3>
+          <p data-i18n="rm.5.text">Windows-Dienst und Trigger nach Zeitplan, Intervall, Ordner und HTTP, im Netz über HTTPS.</p>
+        </li>
+        <li class="phase">
+          <div class="phase-head"><span class="phase-no">v0.6</span><span class="status status--done" data-i18n="rm.done">erledigt</span></div>
+          <h3 data-i18n="rm.6.title">Komfort</h3>
+          <p data-i18n="rm.6.text">Datenvorschau, Felder ermitteln, YAML bearbeiten, Dateien im Editor anlegen und verschieben.</p>
+        </li>
         <li class="phase phase--active">
-          <div class="phase-head"><span class="phase-no">v0.1</span><span class="status status--active" data-i18n="rm.active">in Arbeit</span></div>
-          <h3 data-i18n="rm.1.title">Runner-Kern</h3>
-          <p data-i18n="rm.1.text">Workflows mit Datei- und HTTP-Schritten laufen per CLI und Windows-Aufgabenplanung.</p>
-          <div class="progress" aria-hidden="true"><span style="width:74%"></span></div>
-          <p class="progress-label" data-i18n="rm.1.progress">14 von 19 Schritten erledigt</p>
+          <div class="phase-head"><span class="phase-no">v0.7</span><span class="status status--active" data-i18n="rm.active">in Arbeit</span></div>
+          <h3 data-i18n="rm.7.title">Erweiterbarkeit</h3>
+          <p data-i18n="rm.7.text">Plugin-Protokoll, Go-SDK und MCP-Server. Schon erledigt: JSON, HTTP-Action, Archive und Hilfen im Editor.</p>
+          <div class="progress" aria-hidden="true"><span style="width:79%"></span></div>
+          <p class="progress-label" data-i18n="rm.7.progress">19 von 24 Schritten erledigt</p>
         </li>
         <li class="phase">
-          <div class="phase-head"><span class="phase-no">v0.2</span><span class="status status--planned" data-i18n="rm.planned">geplant</span></div>
-          <h3 data-i18n="rm.2.title">Pipelines</h3>
-          <p data-i18n="rm.2.text">ETL mit CSV, JSON und Datenbanken (SQL Server, PostgreSQL, SQLite) per CLI.</p>
-        </li>
-        <li class="phase">
-          <div class="phase-head"><span class="phase-no">v0.3</span><span class="status status--planned" data-i18n="rm.planned">geplant</span></div>
-          <h3 data-i18n="rm.3.title">Server und Editor</h3>
-          <p data-i18n="rm.3.text">Workflows und Pipelines visuell bauen, starten und live beobachten.</p>
-        </li>
-        <li class="phase">
-          <div class="phase-head"><span class="phase-no">v0.4</span><span class="status status--planned" data-i18n="rm.planned">geplant</span></div>
-          <h3 data-i18n="rm.4.title">Betrieb</h3>
-          <p data-i18n="rm.4.text">Trigger, Secret-Store, Windows-Dienst – Dauerbetrieb auf einem Windows-Server.</p>
-        </li>
-        <li class="phase">
-          <div class="phase-head"><span class="phase-no">v0.5</span><span class="status status--planned" data-i18n="rm.planned">geplant</span></div>
-          <h3 data-i18n="rm.5.title">Komfort</h3>
-          <p data-i18n="rm.5.text">Datenvorschau, Samples je Link, Desktop-Modus und MSI-Installer.</p>
-        </li>
-        <li class="phase">
-          <div class="phase-head"><span class="phase-no">v0.6</span><span class="status status--planned" data-i18n="rm.planned">geplant</span></div>
-          <h3 data-i18n="rm.6.title">Erweiterbarkeit</h3>
-          <p data-i18n="rm.6.text">Plugin-Protokoll, Plugin-Transforms und ein Go-SDK für eigene Bausteine.</p>
+          <div class="phase-head"><span class="phase-no">v1.0</span><span class="status status--planned" data-i18n="rm.planned">geplant</span></div>
+          <h3 data-i18n="rm.8.title">Release</h3>
+          <p data-i18n="rm.8.text">Stabilisierung, Dokumentation und Beispiele.</p>
         </li>
       </ol>
     </div>

@@ -13,6 +13,8 @@ import (
 // branches change, the following steps keep their links (as known from Apache Hop).
 var dummyDefinition = action.Definition{
 	Type:        "core.dummy",
+	Category:    action.CategoryGeneral,
+	Label:       "Dummy",
 	Description: "Does nothing; collects branches into one point",
 	New:         newDummy,
 }

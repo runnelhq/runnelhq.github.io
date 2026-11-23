@@ -1,0 +1,4 @@
+internal/transforms/<namensraum>/
+  register.go          # eine Zeile je Transform
+  <name>.go            # der Transform
+  <name>_test.go       # seine Tests
