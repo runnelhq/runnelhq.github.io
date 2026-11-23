@@ -98,8 +98,8 @@
           <h2 id="projekt">Projekt (<code>project.yaml</code>)</h2>
           <p>Runnel findet das Projekt über <code>project.yaml</code> im Ordner der Datei oder einem übergeordneten Ordner – wie Git den Ordner <code>.git</code>.</p>
 <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-155"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-155"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-159"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-159"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: flows
 <span class="tok-t">description</span>: Datenflüsse der Buchhaltung
@@ -128,8 +128,8 @@
           <h2 id="environments">Environments</h2>
           <p>Ein Environment überschreibt Variablen für eine Umgebung. Der Name muss dem Dateinamen entsprechen. Gewählt wird es mit <code>--env</code>, im Editor beim Start oder im Trigger; sonst gilt <code>defaultEnvironment</code>.</p>
 <div class="code">
-  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-156"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-156"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-160"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-160"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: prod
 <span class="tok-t">description</span>: Produktivserver
@@ -166,8 +166,8 @@
           <h2 id="parameter">Parameter</h2>
           <p>Parameter sind die Eingaben eines Workflows oder einer Pipeline. Sie haben einen Typ und optional erlaubte Werte; Standardwerte und übergebene Werte werden geprüft.</p>
 <div class="code">
-  <div class="code-head"><span>Parameter</span><button class="copy-btn" type="button" data-copy-from="code-157"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-157"><code class="lang-yaml"><span class="tok-t">parameters</span>:
+  <div class="code-head"><span>Parameter</span><button class="copy-btn" type="button" data-copy-from="code-161"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-161"><code class="lang-yaml"><span class="tok-t">parameters</span>:
   - <span class="tok-t">name</span>: DAYS
     <span class="tok-t">description</span>: Wie viele Tage zurück
     <span class="tok-t">type</span>: integer
@@ -203,8 +203,8 @@
           </table></div>
           <p>Die Standardquelle legt <code>secretStore:</code> im Environment fest, sonst in <code>project.yaml</code>. So schreibt der Workflow überall <code>${secret:ERP_PASSWORD}</code>, und nur das Environment entscheidet, woher der Wert kommt:</p>
 <div class="code">
-  <div class="code-head"><span>environments/dev.yaml</span><button class="copy-btn" type="button" data-copy-from="code-158"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-158"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+  <div class="code-head"><span>environments/dev.yaml</span><button class="copy-btn" type="button" data-copy-from="code-162"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-162"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: dev
 <span class="tok-t">secretStore</span>: inline
@@ -212,8 +212,8 @@
   <span class="tok-t">ERP_PASSWORD</span>: entwicklung123</code></pre>
 </div>
 <div class="code">
-  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-159"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-159"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-163"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-163"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: prod
 <span class="tok-t">secretStore</span>: env          <span class="tok-c"># liest die Umgebungsvariable ERP_PASSWORD</span></code></pre>
@@ -222,8 +222,8 @@
           <h2 id="connections">Connections</h2>
           <p>Eine Connection beschreibt den Zugang zu einer Datenbank einmal für das ganze Projekt. Bausteine nennen sie mit <code>connection: &lt;name&gt;</code>; <code>validate</code> prüft, ob es sie gibt und ob der Typ passt. Unterschiede zwischen Environments kommen über Variablen.</p>
 <div class="code">
-  <div class="code-head"><span>connections/erp.yaml</span><button class="copy-btn" type="button" data-copy-from="code-160"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-160"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+  <div class="code-head"><span>connections/erp.yaml</span><button class="copy-btn" type="button" data-copy-from="code-164"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-164"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: erp                       <span class="tok-c"># = Dateiname</span>
 <span class="tok-t">description</span>: ERP-Datenbank, nur lesen
@@ -274,8 +274,8 @@
           <h2 id="project">Project (<code>project.yaml</code>)</h2>
           <p>Runnel finds the project via <code>project.yaml</code> in the file's folder or a parent folder – like Git finds <code>.git</code>.</p>
 <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-161"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-161"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-165"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-165"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: flows
 <span class="tok-t">description</span>: Accounting data flows
@@ -304,8 +304,8 @@
           <h2 id="environments-en">Environments</h2>
           <p>An environment overrides variables for one environment. Its name must match the file name. It is chosen with <code>--env</code>, in the editor when starting or in the trigger; otherwise <code>defaultEnvironment</code> applies.</p>
 <div class="code">
-  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-162"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-162"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-166"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-166"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: prod
 <span class="tok-t">description</span>: Production server
@@ -342,8 +342,8 @@
           <h2 id="parameters">Parameters</h2>
           <p>Parameters are the inputs of a workflow or pipeline. They have a type and optionally allowed values; defaults and passed values are checked.</p>
 <div class="code">
-  <div class="code-head"><span>Parameters</span><button class="copy-btn" type="button" data-copy-from="code-163"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-163"><code class="lang-yaml"><span class="tok-t">parameters</span>:
+  <div class="code-head"><span>Parameters</span><button class="copy-btn" type="button" data-copy-from="code-167"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-167"><code class="lang-yaml"><span class="tok-t">parameters</span>:
   - <span class="tok-t">name</span>: DAYS
     <span class="tok-t">description</span>: How many days back
     <span class="tok-t">type</span>: integer
@@ -379,8 +379,8 @@
           </table></div>
           <p>The default source is set by <code>secretStore:</code> in the environment, otherwise in <code>project.yaml</code>. The workflow always writes <code>${secret:ERP_PASSWORD}</code>, and only the environment decides where the value comes from:</p>
 <div class="code">
-  <div class="code-head"><span>environments/dev.yaml</span><button class="copy-btn" type="button" data-copy-from="code-164"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-164"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+  <div class="code-head"><span>environments/dev.yaml</span><button class="copy-btn" type="button" data-copy-from="code-168"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-168"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: dev
 <span class="tok-t">secretStore</span>: inline
@@ -388,8 +388,8 @@
   <span class="tok-t">ERP_PASSWORD</span>: development123</code></pre>
 </div>
 <div class="code">
-  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-165"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-165"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-169"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-169"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: prod
 <span class="tok-t">secretStore</span>: env          <span class="tok-c"># reads the environment variable ERP_PASSWORD</span></code></pre>
@@ -398,8 +398,8 @@
           <h2 id="connections-en">Connections</h2>
           <p>A connection describes access to a database once for the whole project. Components name it with <code>connection: &lt;name&gt;</code>; <code>validate</code> checks that it exists and the type fits. Differences between environments come from variables.</p>
 <div class="code">
-  <div class="code-head"><span>connections/erp.yaml</span><button class="copy-btn" type="button" data-copy-from="code-166"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-166"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+  <div class="code-head"><span>connections/erp.yaml</span><button class="copy-btn" type="button" data-copy-from="code-170"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-170"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: erp                       <span class="tok-c"># = file name</span>
 <span class="tok-t">description</span>: ERP database, read only

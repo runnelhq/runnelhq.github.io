@@ -225,7 +225,7 @@ data: {<span class="tok-s">"seq"</span>:7,<span class="tok-s">"kind"</span>:<spa
             <thead><tr><th>Antwort</th><th>Bedeutung</th></tr></thead>
             <tbody>
               <tr><td><code>202</code> + <code>{"runId", "status"}</code></td><td><code>response: accepted</code>: Lauf gestartet</td></tr>
-              <tr><td>Antwort von <code>http.respond</code></td><td><code>response: run</code>: die erste Antwort des Laufs; ohne <code>http.respond</code> <code>200</code> mit den <code>outputs</code> bzw. <code>500</code></td></tr>
+              <tr><td>Antwort von <code>http.response</code></td><td><code>response: run</code>: die erste Antwort des Laufs; ohne <code>http.response</code> <code>200</code> mit den <code>outputs</code> bzw. <code>500</code></td></tr>
               <tr><td><code>504</code></td><td><code>response: run</code>: keine Antwort innerhalb von <code>timeout</code>; der Lauf läuft weiter</td></tr>
               <tr><td><code>400</code> / <code>401</code> / <code>403</code></td><td>Parameter fehlt oder passt nicht / Token fehlt oder falsch / Anfrage aus einer Webseite</td></tr>
               <tr><td><code>404</code> / <code>405</code></td><td>kein Trigger für den Pfad / andere Methode</td></tr>
@@ -370,7 +370,7 @@ data: {<span class="tok-s">"seq"</span>:7,<span class="tok-s">"kind"</span>:<spa
             <thead><tr><th>Response</th><th>Meaning</th></tr></thead>
             <tbody>
               <tr><td><code>202</code> + <code>{"runId", "status"}</code></td><td><code>response: accepted</code>: run started</td></tr>
-              <tr><td>Response of <code>http.respond</code></td><td><code>response: run</code>: the run's first response; without <code>http.respond</code> <code>200</code> with the <code>outputs</code> or <code>500</code></td></tr>
+              <tr><td>Response of <code>http.response</code></td><td><code>response: run</code>: the run's first response; without <code>http.response</code> <code>200</code> with the <code>outputs</code> or <code>500</code></td></tr>
               <tr><td><code>504</code></td><td><code>response: run</code>: no response within <code>timeout</code>; the run keeps going</td></tr>
               <tr><td><code>400</code> / <code>401</code> / <code>403</code></td><td>Parameter missing or invalid / token missing or wrong / request from a web page</td></tr>
               <tr><td><code>404</code> / <code>405</code></td><td>No trigger for the path / other method</td></tr>

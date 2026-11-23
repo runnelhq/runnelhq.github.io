@@ -121,8 +121,8 @@
             <li>Optional den Ordner in den <code>PATH</code> aufnehmen, damit <code>runnel</code> überall aufrufbar ist.</li>
           </ol>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-145"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-145"><code class="lang-bash">Expand-Archive runnel_0.1.0-alpha.8_windows_amd64.zip -DestinationPath C:\Tools\Runnel
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-149"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-149"><code class="lang-bash">Expand-Archive runnel_0.1.0-alpha.8_windows_amd64.zip -DestinationPath C:\Tools\Runnel
 cd C:\Tools\Runnel
 .\runnel.exe version
 
@@ -136,8 +136,8 @@ cd C:\Tools\Runnel
 
           <h2 id="linux">Unter Linux einrichten</h2>
 <div class="code">
-  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-146"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-146"><code class="lang-bash">tar -xzf runnel_0.1.0-alpha.8_linux_amd64.tar.gz
+  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-150"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-150"><code class="lang-bash">tar -xzf runnel_0.1.0-alpha.8_linux_amd64.tar.gz
 sudo install -m 755 runnel /usr/local/bin/runnel
 runnel version</code></pre>
 </div>
@@ -146,8 +146,8 @@ runnel version</code></pre>
           <h2 id="pruefen">Herkunft prüfen</h2>
           <p>Jedes Archiv hat eine Prüfsumme in <code>SHA256SUMS</code> und eine signierte Herkunftsbestätigung (SLSA Build Provenance), die belegt, dass es aus dem Repository von GitHub Actions gebaut wurde.</p>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-147"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-147"><code class="lang-bash">Get-FileHash .\runnel_0.1.0-alpha.8_windows_amd64.zip -Algorithm SHA256
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-151"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-151"><code class="lang-bash">Get-FileHash .\runnel_0.1.0-alpha.8_windows_amd64.zip -Algorithm SHA256
 <span class="tok-c"># mit der Zeile in SHA256SUMS vergleichen</span>
 
 <span class="tok-c"># Herkunft mit der GitHub CLI prüfen</span>
@@ -203,8 +203,8 @@ gh attestation verify runnel_0.1.0-alpha.8_windows_amd64.zip --repo runnelhq/run
             <li>Optionally add the folder to <code>PATH</code> so <code>runnel</code> works everywhere.</li>
           </ol>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-148"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-148"><code class="lang-bash">Expand-Archive runnel_0.1.0-alpha.8_windows_amd64.zip -DestinationPath C:\Tools\Runnel
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-152"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-152"><code class="lang-bash">Expand-Archive runnel_0.1.0-alpha.8_windows_amd64.zip -DestinationPath C:\Tools\Runnel
 cd C:\Tools\Runnel
 .\runnel.exe version
 
@@ -218,8 +218,8 @@ cd C:\Tools\Runnel
 
           <h2 id="linux-en">Setting up on Linux</h2>
 <div class="code">
-  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-149"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-149"><code class="lang-bash">tar -xzf runnel_0.1.0-alpha.8_linux_amd64.tar.gz
+  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-153"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-153"><code class="lang-bash">tar -xzf runnel_0.1.0-alpha.8_linux_amd64.tar.gz
 sudo install -m 755 runnel /usr/local/bin/runnel
 runnel version</code></pre>
 </div>
@@ -228,8 +228,8 @@ runnel version</code></pre>
           <h2 id="verify">Verifying the origin</h2>
           <p>Every archive has a checksum in <code>SHA256SUMS</code> and a signed provenance attestation (SLSA build provenance) proving it was built from the repository by GitHub Actions.</p>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-150"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-150"><code class="lang-bash">Get-FileHash .\runnel_0.1.0-alpha.8_windows_amd64.zip -Algorithm SHA256
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-154"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-154"><code class="lang-bash">Get-FileHash .\runnel_0.1.0-alpha.8_windows_amd64.zip -Algorithm SHA256
 <span class="tok-c"># compare with the line in SHA256SUMS</span>
 
 <span class="tok-c"># verify the provenance with the GitHub CLI</span>
