@@ -45,6 +45,13 @@ GUIDE_NAV = [
     ("handbuch/trigger.html", "Trigger", "Triggers", None),
     ("handbuch/ausdruecke.html", "Ausdrücke", "Expressions", None),
     ("handbuch/bausteine.html", "Bausteine (Referenz)", "Components (reference)", None),
+    (None, "Kochbuch", "Cookbook", "group"),
+    ("handbuch/kochbuch.html", "Grundlagen", "Basics", None),
+    ("handbuch/kochbuch-open-meteo.html", "Wetter (Open-Meteo)", "Weather (Open-Meteo)", None),
+    ("handbuch/kochbuch-teams.html", "Microsoft Teams", "Microsoft Teams", None),
+    ("handbuch/kochbuch-github.html", "GitHub", "GitHub", None),
+    ("handbuch/kochbuch-hubspot.html", "HubSpot", "HubSpot", None),
+    ("handbuch/kochbuch-lexware.html", "Lexware Office", "Lexware Office", None),
 ]
 SECTIONS = {
     "docs": (DOCS_NAV, "Entwicklerdoku", "Developer docs"),
@@ -269,6 +276,9 @@ def sidebar(out_path, content, root, section="docs"):
     items = []
     for path, de, en, status in nav:
         label = f'<span data-lang-block="de">{de}</span><span data-lang-block="en" hidden>{en}</span>'
+        if status == "group":
+            items.append(f'<li class="docs-nav-group">{label}</li>')
+            continue
         if path is None:
             sde, sen = status
             items.append(f'<li><span class="docs-nav-soon">{label}'

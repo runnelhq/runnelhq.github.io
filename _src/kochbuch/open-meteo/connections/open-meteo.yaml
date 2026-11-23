@@ -1,0 +1,7 @@
+kind: Connection
+apiVersion: runnel/v1
+name: open-meteo
+description: Open-Meteo weather API, free without sign-in for non-commercial use
+type: http
+with:
+  baseUrl: ${OPEN_METEO_URL}

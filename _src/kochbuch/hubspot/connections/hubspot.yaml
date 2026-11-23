@@ -1,0 +1,9 @@
+kind: Connection
+apiVersion: runnel/v1
+name: hubspot
+description: HubSpot CRM API with a private app token
+type: http
+with:
+  baseUrl: ${HUBSPOT_URL}
+  auth: bearer
+  token: ${secret:HUBSPOT_TOKEN}

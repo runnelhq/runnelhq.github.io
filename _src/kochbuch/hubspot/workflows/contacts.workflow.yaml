@@ -1,0 +1,34 @@
+# Reads all contacts with the cursor of HubSpot (paging.next.after) and logs their e-mail.
+#   runnel run workflows/contacts.workflow.yaml
+kind: Workflow
+apiVersion: runnel/v1
+name: contacts
+outputs:
+  - name: COUNT
+    type: integer
+    value: "{{ results.fetch.output.count }}"
+actions:
+  - id: start
+    type: core.start
+  - id: fetch
+    type: http.request
+    with:
+      connection: hubspot
+      url: crm/v3/objects/contacts
+      query:
+        properties: email,firstname,lastname
+      paginate:
+        style: cursor
+        items: results
+        next: paging.next.after
+        param: after
+        size: 100
+        sizeParam: limit
+      timeout: 30s
+  - id: report
+    type: core.log
+    with:
+      message: "{{ results.fetch.output.count }} contacts: {{ join(map(results.fetch.output.items, #.properties.email), ', ') }}"
+links:
+  - { from: start, to: fetch }
+  - { from: fetch, to: report }

@@ -1,0 +1,31 @@
+# Creates a contact and returns its id; a connector for other workflows.
+#   runnel run --param EMAIL=ada@example.com --param FIRSTNAME=Ada workflows/create-contact.workflow.yaml
+kind: Workflow
+apiVersion: runnel/v1
+name: create-contact
+parameters:
+  - name: EMAIL
+    required: true
+  - name: FIRSTNAME
+    default: ""
+  - name: LASTNAME
+    default: ""
+outputs:
+  - name: ID
+    value: "{{ results.create.output.body.id }}"
+actions:
+  - id: start
+    type: core.start
+  - id: create
+    type: http.request
+    with:
+      connection: hubspot
+      method: POST
+      url: crm/v3/objects/contacts
+      body:
+        properties:
+          email: "${EMAIL}"
+          firstname: "${FIRSTNAME}"
+          lastname: "${LASTNAME}"
+links:
+  - { from: start, to: create }

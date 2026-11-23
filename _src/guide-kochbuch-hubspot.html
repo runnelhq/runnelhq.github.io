@@ -1,0 +1,63 @@
+<!-- {
+  "out": "handbuch/kochbuch-hubspot.html",
+  "section": "guide",
+  "title": {
+    "de": "Kochbuch: HubSpot",
+    "en": "Cookbook: HubSpot"
+  },
+  "description": {
+    "de": "Liest alle Kontakte aus dem HubSpot-CRM und legt neue Kontakte an. create-contact ist ein Connector mit Parametern und der ID als Output.",
+    "en": "Reads all contacts from the HubSpot CRM and creates new contacts. create-contact is a connector with parameters and the ID as output."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+          <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch · Kochbuch</p>
+          <h1>HubSpot</h1>
+          <p class="docs-lead">Liest alle Kontakte aus dem HubSpot-CRM und legt neue Kontakte an. <code>create-contact</code> ist ein Connector mit Parametern und der ID als Output.</p>
+          <dl class="recipe-meta"><dt>API</dt><dd><a href="https://developers.hubspot.com/docs/api/crm/contacts">HubSpot CRM API v3, Contacts</a></dd><dt>Anmeldung</dt><dd>Access Token einer Private App als <code>bearer</code></dd><dt>Stand</dt><dd>Runnel-seitig geprüft am 23.11.2026: <code>runnel validate</code> und Ausführung gegen einen Testserver, der die API nachbildet. Gegen die echte API noch nicht ausgeführt – Endpunkte und Felder nach der Dokumentation des Anbieters (Stand 11/2026).</dd></dl>
+          <h2 id="prereq">Voraussetzungen</h2>
+          <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Art</th><th>Bedeutung</th></tr></thead><tbody><tr><td><code>HUBSPOT_TOKEN</code></td><td>Secret</td><td>Access Token einer Private App mit den Bereichen <code>crm.objects.contacts.read</code> und <code>.write</code></td></tr></tbody></table></div>
+          <p>Secrets kommen hier aus Umgebungsvariablen (<code>secretStore: env</code> in <code>project.yaml</code>). Für den Dienst die Variable beim Dienstkonto setzen.</p>
+          <h2 id="files">Dateien</h2>
+          {{snippet:../kochbuch/hubspot/project.yaml|project.yaml}}
+          {{snippet:../kochbuch/hubspot/connections/hubspot.yaml|connections/hubspot.yaml}}
+          {{snippet:../kochbuch/hubspot/workflows/contacts.workflow.yaml|workflows/contacts.workflow.yaml}}
+          {{snippet:../kochbuch/hubspot/workflows/create-contact.workflow.yaml|workflows/create-contact.workflow.yaml}}
+          <p>HubSpot liefert den Cursor der nächsten Seite in <code>paging.next.after</code> und erwartet ihn als Query-Parameter <code>after</code>, daher <code>style: cursor</code>. Auf der letzten Seite fehlt <code>paging.next</code>.</p>
+          <h2 id="run">Ausführen</h2><p>Im Ordner des Rezepts (PowerShell):</p>
+          <pre><code class="lang-bash" data-caption="PowerShell">$env:HUBSPOT_TOKEN = &quot;pat-…&quot;
+runnel run workflows/contacts.workflow.yaml
+runnel run --param EMAIL=ada@example.com --param FIRSTNAME=Ada workflows/create-contact.workflow.yaml</code></pre>
+          <h2 id="adapt">Anpassen</h2><ul><li>Weitere Eigenschaften über <code>query.properties</code> lesen bzw. unter <code>body.properties</code> schreiben.</li><li>Firmen und Deals funktionieren gleich: <code>crm/v3/objects/companies</code>, <code>crm/v3/objects/deals</code>.</li><li>Gibt es eine E-Mail schon, antwortet HubSpot mit <code>409</code>. Mit <code>failOnError: false</code> und einem Link mit Bedingung auf <code>result.output.status</code> lässt sich das abfangen.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/hubspot">Quellen auf GitHub: <code>_src/kochbuch/hubspot</code></a></p>
+          </article>
+
+          <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide · Cookbook</p>
+          <h1>HubSpot</h1>
+          <p class="docs-lead">Reads all contacts from the HubSpot CRM and creates new contacts. <code>create-contact</code> is a connector with parameters and the ID as output.</p>
+          <dl class="recipe-meta"><dt>API</dt><dd><a href="https://developers.hubspot.com/docs/api/crm/contacts">HubSpot CRM API v3, Contacts</a></dd><dt>Sign-in</dt><dd>Private app access token as <code>bearer</code></dd><dt>Status</dt><dd>Checked on the Runnel side on 2026-11-23: <code>runnel validate</code> and runs against a test server that mimics the API. Not yet run against the real API – endpoints and fields per the provider's documentation (as of 11/2026).</dd></dl>
+          <h2 id="prereq-en">Prerequisites</h2>
+          <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Kind</th><th>Meaning</th></tr></thead><tbody><tr><td><code>HUBSPOT_TOKEN</code></td><td>Secret</td><td>Access token of a private app with the scopes <code>crm.objects.contacts.read</code> and <code>.write</code></td></tr></tbody></table></div>
+          <p>Secrets come from environment variables here (<code>secretStore: env</code> in <code>project.yaml</code>). For the service, set the variable for the service account.</p>
+          <h2 id="files-en">Files</h2>
+          {{snippet:../kochbuch/hubspot/project.yaml|project.yaml}}
+          {{snippet:../kochbuch/hubspot/connections/hubspot.yaml|connections/hubspot.yaml}}
+          {{snippet:../kochbuch/hubspot/workflows/contacts.workflow.yaml|workflows/contacts.workflow.yaml}}
+          {{snippet:../kochbuch/hubspot/workflows/create-contact.workflow.yaml|workflows/create-contact.workflow.yaml}}
+          <p>HubSpot returns the next page's cursor in <code>paging.next.after</code> and expects it as the query parameter <code>after</code>, hence <code>style: cursor</code>. On the last page <code>paging.next</code> is missing.</p>
+          <h2 id="run-en">Running</h2><p>In the recipe folder (PowerShell):</p>
+          <pre><code class="lang-bash" data-caption="PowerShell">$env:HUBSPOT_TOKEN = &quot;pat-…&quot;
+runnel run workflows/contacts.workflow.yaml
+runnel run --param EMAIL=ada@example.com --param FIRSTNAME=Ada workflows/create-contact.workflow.yaml</code></pre>
+          <h2 id="adapt-en">Adapting</h2><ul><li>Read more properties via <code>query.properties</code> or write them under <code>body.properties</code>.</li><li>Companies and deals work the same: <code>crm/v3/objects/companies</code>, <code>crm/v3/objects/deals</code>.</li><li>If an e-mail already exists, HubSpot answers <code>409</code>. With <code>failOnError: false</code> and a link conditioned on <code>result.output.status</code> this can be handled.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/hubspot">Sources on GitHub: <code>_src/kochbuch/hubspot</code></a></p>
+          </article>
+      </div>
+    </div>

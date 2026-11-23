@@ -1,441 +1,441 @@
 {
-  "roots": [
+ "roots": [
+  {
+   "name": "params",
+   "type": "map",
+   "description": "Parameters of the workflow, with their declared type",
+   "example": "{{ params.ORDERS > 10 }}"
+  },
+  {
+   "name": "vars",
+   "type": "map",
+   "description": "All variables of the run as text: parameters, project, environment",
+   "example": "{{ vars.THRESHOLD }}"
+  },
+  {
+   "name": "env",
+   "type": "map",
+   "description": "Environment variables of the operating system",
+   "example": "{{ env.COMPUTERNAME }}"
+  },
+  {
+   "name": "run",
+   "type": "map",
+   "description": "The current run",
+   "example": "{{ run.lastError }}",
+   "fields": [
     {
-      "name": "params",
-      "type": "map",
-      "description": "Parameters of the workflow, with their declared type",
-      "example": "{{ params.ORDERS \u003e 10 }}"
+     "name": "id",
+     "type": "string",
+     "description": "Id of the run"
     },
     {
-      "name": "vars",
-      "type": "map",
-      "description": "All variables of the run as text: parameters, project, environment",
-      "example": "{{ vars.THRESHOLD }}"
+     "name": "workflow",
+     "type": "string",
+     "description": "Name of the workflow"
     },
     {
-      "name": "env",
-      "type": "map",
-      "description": "Environment variables of the operating system",
-      "example": "{{ env.COMPUTERNAME }}"
+     "name": "environment",
+     "type": "string",
+     "description": "Name of the environment; empty without one"
     },
     {
-      "name": "run",
-      "type": "map",
-      "description": "The current run",
-      "example": "{{ run.lastError }}",
-      "fields": [
-        {
-          "name": "id",
-          "type": "string",
-          "description": "Id of the run"
-        },
-        {
-          "name": "workflow",
-          "type": "string",
-          "description": "Name of the workflow"
-        },
-        {
-          "name": "environment",
-          "type": "string",
-          "description": "Name of the environment; empty without one"
-        },
-        {
-          "name": "startedAt",
-          "type": "date",
-          "description": "Start of the run"
-        },
-        {
-          "name": "lastError",
-          "type": "string",
-          "description": "Error of the last failed action; empty if none failed"
-        }
-      ]
+     "name": "startedAt",
+     "type": "date",
+     "description": "Start of the run"
     },
     {
-      "name": "result",
-      "type": "map",
-      "description": "Result of the action the link starts from (in link conditions)",
-      "example": "{{ result.success }}",
-      "fields": [
-        {
-          "name": "success",
-          "type": "bool",
-          "description": "Whether the action succeeded"
-        },
-        {
-          "name": "status",
-          "type": "string",
-          "description": "succeeded, failed, skipped or cancelled"
-        },
-        {
-          "name": "output",
-          "type": "any",
-          "description": "Output data of the action, e.g. the list of files of file.list"
-        },
-        {
-          "name": "error",
-          "type": "string",
-          "description": "Reason of the failure; empty if it succeeded"
-        },
-        {
-          "name": "durationMs",
-          "type": "integer",
-          "description": "Duration in milliseconds"
-        },
-        {
-          "name": "id",
-          "type": "string",
-          "description": "Id of the action"
-        },
-        {
-          "name": "type",
-          "type": "string",
-          "description": "Type of the action, e.g. core.log"
-        }
-      ]
-    },
-    {
-      "name": "results",
-      "type": "map",
-      "description": "Results of the actions that have run, by action id",
-      "example": "{{ results.load.status }}",
-      "fields": [
-        {
-          "name": "success",
-          "type": "bool",
-          "description": "Whether the action succeeded"
-        },
-        {
-          "name": "status",
-          "type": "string",
-          "description": "succeeded, failed, skipped or cancelled"
-        },
-        {
-          "name": "output",
-          "type": "any",
-          "description": "Output data of the action, e.g. the list of files of file.list"
-        },
-        {
-          "name": "error",
-          "type": "string",
-          "description": "Reason of the failure; empty if it succeeded"
-        },
-        {
-          "name": "durationMs",
-          "type": "integer",
-          "description": "Duration in milliseconds"
-        },
-        {
-          "name": "id",
-          "type": "string",
-          "description": "Id of the action"
-        },
-        {
-          "name": "type",
-          "type": "string",
-          "description": "Type of the action, e.g. core.log"
-        }
-      ]
-    },
-    {
-      "name": "row",
-      "type": "any",
-      "description": "The current entry of forEach; only in actions with forEach",
-      "example": "{{ row.path }}"
-    },
-    {
-      "name": "request",
-      "type": "map",
-      "description": "The request of the caller of an http trigger; nil if the run was not started by one",
-      "example": "{{ request?.body?.customer?.id }}",
-      "fields": [
-        {
-          "name": "method",
-          "type": "string",
-          "description": "HTTP method, e.g. POST"
-        },
-        {
-          "name": "path",
-          "type": "string",
-          "description": "Path of the request, e.g. /api/customers/4711"
-        },
-        {
-          "name": "headers",
-          "type": "map",
-          "description": "Headers by name, e.g. request.headers['Content-Type']"
-        },
-        {
-          "name": "query",
-          "type": "map",
-          "description": "Query parameters by name (the first value of each)"
-        },
-        {
-          "name": "body",
-          "type": "any",
-          "description": "The body: the JSON value, the fields of a form, or the text"
-        },
-        {
-          "name": "client",
-          "type": "string",
-          "description": "Address of the caller"
-        }
-      ]
+     "name": "lastError",
+     "type": "string",
+     "description": "Error of the last failed action; empty if none failed"
     }
-  ],
-  "functions": [
+   ]
+  },
+  {
+   "name": "result",
+   "type": "map",
+   "description": "Result of the action the link starts from (in link conditions)",
+   "example": "{{ result.success }}",
+   "fields": [
     {
-      "name": "today",
-      "signature": "today()",
-      "type": "date",
-      "description": "Today, 00:00 local time",
-      "example": "{{ today() }}",
-      "group": "Date"
+     "name": "success",
+     "type": "bool",
+     "description": "Whether the action succeeded"
     },
     {
-      "name": "now",
-      "signature": "now()",
-      "type": "date",
-      "description": "The current date and time",
-      "example": "{{ now() }}",
-      "group": "Date"
+     "name": "status",
+     "type": "string",
+     "description": "succeeded, failed, skipped or cancelled"
     },
     {
-      "name": "formatDate",
-      "signature": "formatDate(date, pattern)",
-      "type": "string",
-      "description": "Writes a date as text. Pattern letters: yyyy year, MM month, dd day, HH:mm:ss time, EEE weekday, MMMM month name, 'text' in quotes",
-      "example": "{{ formatDate(today(), 'dd.MM.yyyy') }}",
-      "group": "Date"
+     "name": "output",
+     "type": "any",
+     "description": "Output data of the action, e.g. the list of files of file.list"
     },
     {
-      "name": "parseDate",
-      "signature": "parseDate(text, pattern)",
-      "type": "date",
-      "description": "Reads a date from text with a pattern like formatDate",
-      "example": "{{ parseDate('19.11.2026', 'dd.MM.yyyy') }}",
-      "group": "Date"
+     "name": "error",
+     "type": "string",
+     "description": "Reason of the failure; empty if it succeeded"
     },
     {
-      "name": "addDays",
-      "signature": "addDays(date, n)",
-      "type": "date",
-      "description": "Adds days; negative numbers go back",
-      "example": "{{ addDays(today(), -1) }}",
-      "group": "Date"
+     "name": "durationMs",
+     "type": "integer",
+     "description": "Duration in milliseconds"
     },
     {
-      "name": "addHours",
-      "signature": "addHours(date, n)",
-      "type": "date",
-      "description": "Adds hours",
-      "example": "{{ addHours(now(), 2) }}",
-      "group": "Date"
+     "name": "id",
+     "type": "string",
+     "description": "Id of the action"
     },
     {
-      "name": "addMonths",
-      "signature": "addMonths(date, n)",
-      "type": "date",
-      "description": "Adds months",
-      "example": "{{ addMonths(today(), 1) }}",
-      "group": "Date"
-    },
-    {
-      "name": "dayOfWeek",
-      "signature": "dayOfWeek(date)",
-      "type": "integer",
-      "description": "Weekday: 1 Monday … 7 Sunday",
-      "example": "{{ dayOfWeek(today()) \u003e= 6 }}",
-      "group": "Date"
-    },
-    {
-      "name": "diffDays",
-      "signature": "diffDays(from, to)",
-      "type": "integer",
-      "description": "Days from one date to another",
-      "example": "{{ diffDays('2026-11-19', today()) }}",
-      "group": "Date"
-    },
-    {
-      "name": "upper",
-      "signature": "upper(text)",
-      "type": "string",
-      "description": "Text in capital letters",
-      "example": "{{ upper('abc') }}",
-      "group": "Text"
-    },
-    {
-      "name": "lower",
-      "signature": "lower(text)",
-      "type": "string",
-      "description": "Text in small letters",
-      "example": "{{ lower('ABC') }}",
-      "group": "Text"
-    },
-    {
-      "name": "trim",
-      "signature": "trim(text)",
-      "type": "string",
-      "description": "Removes spaces at the start and end",
-      "example": "{{ trim(' a ') }}",
-      "group": "Text"
-    },
-    {
-      "name": "replace",
-      "signature": "replace(text, old, new)",
-      "type": "string",
-      "description": "Replaces all occurrences",
-      "example": "{{ replace('a-b', '-', '_') }}",
-      "group": "Text"
-    },
-    {
-      "name": "split",
-      "signature": "split(text, separator)",
-      "type": "list",
-      "description": "Splits text into a list",
-      "example": "{{ split('a;b', ';') }}",
-      "group": "Text"
-    },
-    {
-      "name": "padLeft",
-      "signature": "padLeft(text, length, fill)",
-      "type": "string",
-      "description": "Fills on the left up to a length, e.g. 007; fill defaults to a space",
-      "example": "{{ padLeft('7', 3, '0') }}",
-      "group": "Text"
-    },
-    {
-      "name": "padRight",
-      "signature": "padRight(text, length, fill)",
-      "type": "string",
-      "description": "Fills on the right up to a length",
-      "example": "{{ padRight('ab', 4) }}",
-      "group": "Text"
-    },
-    {
-      "name": "substr",
-      "signature": "substr(text, start, length)",
-      "type": "string",
-      "description": "Part of a text, counting from 0; length is optional",
-      "example": "{{ substr('Runnel', 1, 3) }}",
-      "group": "Text"
-    },
-    {
-      "name": "left",
-      "signature": "left(text, n)",
-      "type": "string",
-      "description": "The first n characters",
-      "example": "{{ left('Runnel', 3) }}",
-      "group": "Text"
-    },
-    {
-      "name": "right",
-      "signature": "right(text, n)",
-      "type": "string",
-      "description": "The last n characters",
-      "example": "{{ right('Runnel', 3) }}",
-      "group": "Text"
-    },
-    {
-      "name": "concat",
-      "signature": "concat(separator, a, b, …)",
-      "type": "string",
-      "description": "Joins values with a separator and leaves out empty ones, so no separator stands alone; lists count with their entries",
-      "example": "{{ concat(', ', record.street, record.city) }}",
-      "group": "Text"
-    },
-    {
-      "name": "normalize",
-      "signature": "normalize(text)",
-      "type": "string",
-      "description": "Replaces umlauts and ß, joins spaces – e.g. for file names",
-      "example": "{{ normalize('Jürgen Groß') }}",
-      "group": "Text"
-    },
-    {
-      "name": "len",
-      "signature": "len(value)",
-      "type": "integer",
-      "description": "Number of characters, entries of a list or keys of a map",
-      "example": "{{ len(['a', 'b']) }}",
-      "group": "Numbers and lists"
-    },
-    {
-      "name": "round",
-      "signature": "round(number)",
-      "type": "number",
-      "description": "Rounds to a whole number",
-      "example": "{{ round(2.5) }}",
-      "group": "Numbers and lists"
-    },
-    {
-      "name": "sum",
-      "signature": "sum(list)",
-      "type": "number",
-      "description": "Sum of a list of numbers",
-      "example": "{{ sum([1, 2, 3]) }}",
-      "group": "Numbers and lists"
-    },
-    {
-      "name": "map",
-      "signature": "map(list, .field)",
-      "type": "list",
-      "description": "Takes a field of each entry, e.g. the sizes of files",
-      "example": "{{ map([{'size': 1}], .size) }}",
-      "group": "Numbers and lists"
-    },
-    {
-      "name": "filter",
-      "signature": "filter(list, condition)",
-      "type": "list",
-      "description": "Keeps the entries for which the condition is true",
-      "example": "{{ filter([1, 5, 9], # \u003e 3) }}",
-      "group": "Numbers and lists"
-    },
-    {
-      "name": "join",
-      "signature": "join(list, separator)",
-      "type": "string",
-      "description": "Joins a list of texts",
-      "example": "{{ join(['a', 'b'], ', ') }}",
-      "group": "Numbers and lists"
-    },
-    {
-      "name": "coalesce",
-      "signature": "coalesce(a, b, …)",
-      "type": "any",
-      "description": "The first value that is not empty",
-      "example": "{{ coalesce(run.environment, 'none') }}",
-      "group": "Empty values"
-    },
-    {
-      "name": "isEmpty",
-      "signature": "isEmpty(value)",
-      "type": "bool",
-      "description": "Whether a value is empty: nothing, empty text, list or map",
-      "example": "{{ isEmpty(run.lastError) }}",
-      "group": "Empty values"
+     "name": "type",
+     "type": "string",
+     "description": "Type of the action, e.g. core.log"
     }
-  ],
-  "variables": [
+   ]
+  },
+  {
+   "name": "results",
+   "type": "map",
+   "description": "Results of the actions that have run, by action id",
+   "example": "{{ results.load.status }}",
+   "fields": [
     {
-      "name": "OUTBOX",
-      "value": "${env:TEMP}\\runnel-hello",
-      "source": "project.yaml"
+     "name": "success",
+     "type": "bool",
+     "description": "Whether the action succeeded"
     },
     {
-      "name": "PROJECT_DIR",
-      "value": "/home/user/runnel/examples/hello",
-      "source": "built-in"
+     "name": "status",
+     "type": "string",
+     "description": "succeeded, failed, skipped or cancelled"
     },
     {
-      "name": "STAGE",
-      "value": "development",
-      "source": "environments/dev.yaml"
+     "name": "output",
+     "type": "any",
+     "description": "Output data of the action, e.g. the list of files of file.list"
     },
     {
-      "name": "TARGET",
-      "value": "World",
-      "source": "project.yaml"
+     "name": "error",
+     "type": "string",
+     "description": "Reason of the failure; empty if it succeeded"
+    },
+    {
+     "name": "durationMs",
+     "type": "integer",
+     "description": "Duration in milliseconds"
+    },
+    {
+     "name": "id",
+     "type": "string",
+     "description": "Id of the action"
+    },
+    {
+     "name": "type",
+     "type": "string",
+     "description": "Type of the action, e.g. core.log"
     }
-  ]
+   ]
+  },
+  {
+   "name": "row",
+   "type": "any",
+   "description": "The current entry of forEach; only in actions with forEach",
+   "example": "{{ row.path }}"
+  },
+  {
+   "name": "request",
+   "type": "map",
+   "description": "The request of the caller of an http trigger; nil if the run was not started by one",
+   "example": "{{ request?.body?.customer?.id }}",
+   "fields": [
+    {
+     "name": "method",
+     "type": "string",
+     "description": "HTTP method, e.g. POST"
+    },
+    {
+     "name": "path",
+     "type": "string",
+     "description": "Path of the request, e.g. /api/customers/4711"
+    },
+    {
+     "name": "headers",
+     "type": "map",
+     "description": "Headers by name, e.g. request.headers['Content-Type']"
+    },
+    {
+     "name": "query",
+     "type": "map",
+     "description": "Query parameters by name (the first value of each)"
+    },
+    {
+     "name": "body",
+     "type": "any",
+     "description": "The body: the JSON value, the fields of a form, or the text"
+    },
+    {
+     "name": "client",
+     "type": "string",
+     "description": "Address of the caller"
+    }
+   ]
+  }
+ ],
+ "functions": [
+  {
+   "name": "today",
+   "signature": "today()",
+   "type": "date",
+   "description": "Today, 00:00 local time",
+   "example": "{{ today() }}",
+   "group": "Date"
+  },
+  {
+   "name": "now",
+   "signature": "now()",
+   "type": "date",
+   "description": "The current date and time",
+   "example": "{{ now() }}",
+   "group": "Date"
+  },
+  {
+   "name": "formatDate",
+   "signature": "formatDate(date, pattern)",
+   "type": "string",
+   "description": "Writes a date as text. Pattern letters: yyyy year, MM month, dd day, HH:mm:ss time, EEE weekday, MMMM month name, 'text' in quotes",
+   "example": "{{ formatDate(today(), 'dd.MM.yyyy') }}",
+   "group": "Date"
+  },
+  {
+   "name": "parseDate",
+   "signature": "parseDate(text, pattern)",
+   "type": "date",
+   "description": "Reads a date from text with a pattern like formatDate",
+   "example": "{{ parseDate('19.11.2026', 'dd.MM.yyyy') }}",
+   "group": "Date"
+  },
+  {
+   "name": "addDays",
+   "signature": "addDays(date, n)",
+   "type": "date",
+   "description": "Adds days; negative numbers go back",
+   "example": "{{ addDays(today(), -1) }}",
+   "group": "Date"
+  },
+  {
+   "name": "addHours",
+   "signature": "addHours(date, n)",
+   "type": "date",
+   "description": "Adds hours",
+   "example": "{{ addHours(now(), 2) }}",
+   "group": "Date"
+  },
+  {
+   "name": "addMonths",
+   "signature": "addMonths(date, n)",
+   "type": "date",
+   "description": "Adds months",
+   "example": "{{ addMonths(today(), 1) }}",
+   "group": "Date"
+  },
+  {
+   "name": "dayOfWeek",
+   "signature": "dayOfWeek(date)",
+   "type": "integer",
+   "description": "Weekday: 1 Monday … 7 Sunday",
+   "example": "{{ dayOfWeek(today()) >= 6 }}",
+   "group": "Date"
+  },
+  {
+   "name": "diffDays",
+   "signature": "diffDays(from, to)",
+   "type": "integer",
+   "description": "Days from one date to another",
+   "example": "{{ diffDays('2026-11-19', today()) }}",
+   "group": "Date"
+  },
+  {
+   "name": "upper",
+   "signature": "upper(text)",
+   "type": "string",
+   "description": "Text in capital letters",
+   "example": "{{ upper('abc') }}",
+   "group": "Text"
+  },
+  {
+   "name": "lower",
+   "signature": "lower(text)",
+   "type": "string",
+   "description": "Text in small letters",
+   "example": "{{ lower('ABC') }}",
+   "group": "Text"
+  },
+  {
+   "name": "trim",
+   "signature": "trim(text)",
+   "type": "string",
+   "description": "Removes spaces at the start and end",
+   "example": "{{ trim(' a ') }}",
+   "group": "Text"
+  },
+  {
+   "name": "replace",
+   "signature": "replace(text, old, new)",
+   "type": "string",
+   "description": "Replaces all occurrences",
+   "example": "{{ replace('a-b', '-', '_') }}",
+   "group": "Text"
+  },
+  {
+   "name": "split",
+   "signature": "split(text, separator)",
+   "type": "list",
+   "description": "Splits text into a list",
+   "example": "{{ split('a;b', ';') }}",
+   "group": "Text"
+  },
+  {
+   "name": "padLeft",
+   "signature": "padLeft(text, length, fill)",
+   "type": "string",
+   "description": "Fills on the left up to a length, e.g. 007; fill defaults to a space",
+   "example": "{{ padLeft('7', 3, '0') }}",
+   "group": "Text"
+  },
+  {
+   "name": "padRight",
+   "signature": "padRight(text, length, fill)",
+   "type": "string",
+   "description": "Fills on the right up to a length",
+   "example": "{{ padRight('ab', 4) }}",
+   "group": "Text"
+  },
+  {
+   "name": "substr",
+   "signature": "substr(text, start, length)",
+   "type": "string",
+   "description": "Part of a text, counting from 0; length is optional",
+   "example": "{{ substr('Runnel', 1, 3) }}",
+   "group": "Text"
+  },
+  {
+   "name": "left",
+   "signature": "left(text, n)",
+   "type": "string",
+   "description": "The first n characters",
+   "example": "{{ left('Runnel', 3) }}",
+   "group": "Text"
+  },
+  {
+   "name": "right",
+   "signature": "right(text, n)",
+   "type": "string",
+   "description": "The last n characters",
+   "example": "{{ right('Runnel', 3) }}",
+   "group": "Text"
+  },
+  {
+   "name": "concat",
+   "signature": "concat(separator, a, b, …)",
+   "type": "string",
+   "description": "Joins values with a separator and leaves out empty ones, so no separator stands alone; lists count with their entries",
+   "example": "{{ concat(', ', record.street, record.city) }}",
+   "group": "Text"
+  },
+  {
+   "name": "normalize",
+   "signature": "normalize(text)",
+   "type": "string",
+   "description": "Replaces umlauts and ß, joins spaces – e.g. for file names",
+   "example": "{{ normalize('Jürgen Groß') }}",
+   "group": "Text"
+  },
+  {
+   "name": "len",
+   "signature": "len(value)",
+   "type": "integer",
+   "description": "Number of characters, entries of a list or keys of a map",
+   "example": "{{ len(['a', 'b']) }}",
+   "group": "Numbers and lists"
+  },
+  {
+   "name": "round",
+   "signature": "round(number)",
+   "type": "number",
+   "description": "Rounds to a whole number",
+   "example": "{{ round(2.5) }}",
+   "group": "Numbers and lists"
+  },
+  {
+   "name": "sum",
+   "signature": "sum(list)",
+   "type": "number",
+   "description": "Sum of a list of numbers",
+   "example": "{{ sum([1, 2, 3]) }}",
+   "group": "Numbers and lists"
+  },
+  {
+   "name": "map",
+   "signature": "map(list, .field)",
+   "type": "list",
+   "description": "Takes a field of each entry, e.g. the sizes of files",
+   "example": "{{ map([{'size': 1}], .size) }}",
+   "group": "Numbers and lists"
+  },
+  {
+   "name": "filter",
+   "signature": "filter(list, condition)",
+   "type": "list",
+   "description": "Keeps the entries for which the condition is true",
+   "example": "{{ filter([1, 5, 9], # > 3) }}",
+   "group": "Numbers and lists"
+  },
+  {
+   "name": "join",
+   "signature": "join(list, separator)",
+   "type": "string",
+   "description": "Joins a list of texts",
+   "example": "{{ join(['a', 'b'], ', ') }}",
+   "group": "Numbers and lists"
+  },
+  {
+   "name": "coalesce",
+   "signature": "coalesce(a, b, …)",
+   "type": "any",
+   "description": "The first value that is not empty",
+   "example": "{{ coalesce(run.environment, 'none') }}",
+   "group": "Empty values"
+  },
+  {
+   "name": "isEmpty",
+   "signature": "isEmpty(value)",
+   "type": "bool",
+   "description": "Whether a value is empty: nothing, empty text, list or map",
+   "example": "{{ isEmpty(run.lastError) }}",
+   "group": "Empty values"
+  }
+ ],
+ "variables": [
+  {
+   "name": "OUTBOX",
+   "value": "${env:TEMP}\\runnel-hello",
+   "source": "project.yaml"
+  },
+  {
+   "name": "PROJECT_DIR",
+   "value": "/home/user/runnel/examples/hello",
+   "source": "built-in"
+  },
+  {
+   "name": "STAGE",
+   "value": "development",
+   "source": "environments/dev.yaml"
+  },
+  {
+   "name": "TARGET",
+   "value": "World",
+   "source": "project.yaml"
+  }
+ ]
 }

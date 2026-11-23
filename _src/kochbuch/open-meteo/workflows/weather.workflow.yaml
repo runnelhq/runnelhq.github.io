@@ -1,0 +1,41 @@
+# Reads the current temperature and wind speed for a place.
+#   runnel run workflows/weather.workflow.yaml
+#   runnel run --param LAT=48.14 --param LON=11.58 --param PLACE=München workflows/weather.workflow.yaml
+kind: Workflow
+apiVersion: runnel/v1
+name: weather
+parameters:
+  - name: LAT
+    description: Latitude
+    default: "50.94"
+  - name: LON
+    description: Longitude
+    default: "6.96"
+  - name: PLACE
+    description: Name of the place for the log
+    default: Köln
+outputs:
+  - name: TEMPERATURE
+    type: number
+    value: "{{ results.fetch.output.body.current.temperature_2m }}"
+actions:
+  - id: start
+    type: core.start
+  - id: fetch
+    type: http.request
+    with:
+      connection: open-meteo
+      url: forecast
+      query:
+        latitude: ${LAT}
+        longitude: ${LON}
+        current: temperature_2m,wind_speed_10m
+        timezone: Europe/Berlin
+      timeout: 30s
+  - id: report
+    type: core.log
+    with:
+      message: "${PLACE}: {{ results.fetch.output.body.current.temperature_2m }} °C, wind {{ results.fetch.output.body.current.wind_speed_10m }} km/h"
+links:
+  - { from: start, to: fetch }
+  - { from: fetch, to: report }

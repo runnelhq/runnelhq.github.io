@@ -1,0 +1,7 @@
+# Recipe: current weather from Open-Meteo (no sign-in needed).
+kind: Project
+apiVersion: runnel/v1
+name: open-meteo
+description: Current weather from Open-Meteo
+variables:
+  OPEN_METEO_URL: https://api.open-meteo.com/v1/

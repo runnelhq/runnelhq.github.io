@@ -1,0 +1,26 @@
+# Example of a caller: if "work" fails, the channel gets a message, and the run still
+# ends as failed.
+kind: Workflow
+apiVersion: runnel/v1
+name: notify-on-failure
+actions:
+  - id: start
+    type: core.start
+  - id: work
+    type: core.check
+    with:
+      condition: "{{ false }}"
+      message: Something went wrong
+  - id: tell-teams
+    type: core.run-workflow
+    with:
+      workflow: workflows/notify.workflow.yaml
+      params:
+        TITLE: "Run {{ run.id }} failed"
+        TEXT: "{{ results.work.error }}"
+  - id: failed
+    type: core.abort
+links:
+  - { from: start, to: work }
+  - { from: work, to: tell-teams, when: failure }
+  - { from: tell-teams, to: failed, when: always }

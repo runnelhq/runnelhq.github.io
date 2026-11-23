@@ -1,0 +1,10 @@
+# Recipe: post a message to a Microsoft Teams channel through a workflow webhook.
+# TEAMS_URL is the webhook address from Teams without the part "&sig=…";
+# the signature is a secret and comes from the environment variable TEAMS_SIG.
+kind: Project
+apiVersion: runnel/v1
+name: teams
+description: Messages to a Teams channel
+secretStore: env
+variables:
+  TEAMS_URL: https://example.westeurope.logic.azure.com/workflows/0000/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0

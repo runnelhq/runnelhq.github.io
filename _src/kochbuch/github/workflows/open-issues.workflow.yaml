@@ -1,0 +1,37 @@
+# Reads all open issues of a repository, page by page (GitHub names the next page in
+# the header Link), and logs them.
+#   runnel run --param REPO=owner/name workflows/open-issues.workflow.yaml
+kind: Workflow
+apiVersion: runnel/v1
+name: open-issues
+parameters:
+  - name: REPO
+    description: Repository as owner/name
+    required: true
+outputs:
+  - name: COUNT
+    type: integer
+    value: "{{ results.fetch.output.count }}"
+actions:
+  - id: start
+    type: core.start
+  - id: fetch
+    type: http.request
+    with:
+      connection: github
+      url: repos/${REPO}/issues
+      query:
+        state: open
+      paginate:
+        style: link
+        size: 100
+        sizeParam: per_page
+      timeout: 30s
+  - id: report
+    type: core.log
+    forEach: "{{ results.fetch.output.items }}"
+    with:
+      message: "#{{ row.number }} {{ row.title }}"
+links:
+  - { from: start, to: fetch }
+  - { from: fetch, to: report, when: "{{ results.fetch.output.count > 0 }}" }

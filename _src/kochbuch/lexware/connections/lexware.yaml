@@ -1,0 +1,11 @@
+kind: Connection
+apiVersion: runnel/v1
+name: lexware
+description: Lexware Office public API with an API key
+type: http
+with:
+  baseUrl: ${LEXWARE_URL}
+  auth: bearer
+  token: ${secret:LEXWARE_API_KEY}
+  headers:
+    Accept: application/json

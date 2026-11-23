@@ -18,7 +18,7 @@
           <p class="docs-eyebrow">Handbuch</p>
           <h1>Runnel benutzen</h1>
           <p class="docs-lead">Dieses Handbuch richtet sich an alle, die Runnel installieren, Workflows und Pipelines bauen und betreiben. Es beschreibt den Stand der Vorabversion – einige Funktionen kommen erst noch, sie sind entsprechend markiert.</p>
-          <p class="docs-source">Stand: <code>main</code> vom 23.11.2026 (nach Schritt S23c). Grundlage sind <a href="https://github.com/runnelhq/runnel#verwendung">README</a>, <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md">Konzept</a> und die Beispiele unter <a href="https://github.com/runnelhq/runnel/tree/main/examples"><code>examples/</code></a>. Die Referenzen zu Bausteinen und Ausdrücken sind direkt aus dem Programm erzeugt.</p>
+          <p class="docs-source">Stand: <code>main</code> vom 23.11.2026 (nach Schritt S63c). Grundlage sind <a href="https://github.com/runnelhq/runnel#verwendung">README</a>, <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md">Konzept</a> und die Beispiele unter <a href="https://github.com/runnelhq/runnel/tree/main/examples"><code>examples/</code></a>. Die Referenzen zu Bausteinen und Ausdrücken sind direkt aus dem Programm erzeugt.</p>
 
           <div class="callout">
             <strong>Vorabversion</strong>
@@ -34,7 +34,7 @@
             <dt>Environment</dt><dd>Eine Umgebung wie <code>dev</code> oder <code>prod</code> mit eigenen Variablen, z. B. Pfaden und Servernamen. Datei <code>environments/&lt;name&gt;.yaml</code>.</dd>
             <dt>Variable, Parameter</dt><dd><code>${NAME}</code> setzt Werte aus Projekt, Environment oder Startparametern ein. Parameter sind die Eingaben eines Workflows oder einer Pipeline.</dd>
             <dt>Ausdruck</dt><dd><code>{{ … }}</code> berechnet Werte zur Laufzeit, z. B. ein Datum oder eine Bedingung. Siehe <a href="ausdruecke.html">Ausdrücke</a>.</dd>
-            <dt>Connection</dt><dd>Zugangsdaten zu einer Datenbank, abgelegt unter <code>connections/</code>. Passwörter stehen dort als <code>${secret:…}</code>.</dd>
+            <dt>Connection</dt><dd>Zugang zu einer Datenbank, einer HTTP-API oder einem Mailserver, abgelegt unter <code>connections/</code>. Passwörter stehen dort als <code>${secret:…}</code>.</dd>
             <dt>Trigger</dt><dd>Startet Workflows oder Pipelines automatisch: nach Zeitplan, im Intervall, bei neuen Dateien oder per HTTP. Datei unter <code>triggers/</code>.</dd>
           </dl>
 
@@ -78,6 +78,7 @@
             <a class="docs-card" href="trigger.html"><strong>Trigger</strong><span>Zeitplan, Intervall, Ordner-Überwachung, HTTP.</span></a>
             <a class="docs-card" href="ausdruecke.html"><strong>Ausdrücke</strong><span>Kontext und alle Funktionen von <code>{{ … }}</code>.</span></a>
             <a class="docs-card" href="bausteine.html"><strong>Bausteine</strong><span>Alle Actions und Transforms mit Feldern und Beispielen.</span></a>
+            <a class="docs-card" href="kochbuch.html"><strong>Kochbuch</strong><span>Rezepte für APIs wie Teams, GitHub, HubSpot und Lexware Office.</span></a>
           </div>
         </article>
 
@@ -86,7 +87,7 @@
           <p class="docs-eyebrow">User guide</p>
           <h1>Using Runnel</h1>
           <p class="docs-lead">This guide is for everyone who installs Runnel, builds workflows and pipelines and runs them. It describes the pre-release – some features are still to come and are marked as such.</p>
-          <p class="docs-source">As of <code>main</code> on 2026-11-23 (after step S23c). Based on the <a href="https://github.com/runnelhq/runnel#verwendung">README</a>, the <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md">concept</a> (German) and the examples under <a href="https://github.com/runnelhq/runnel/tree/main/examples"><code>examples/</code></a>. The component and expression references are generated directly from the program.</p>
+          <p class="docs-source">As of <code>main</code> on 2026-11-23 (after step S63c). Based on the <a href="https://github.com/runnelhq/runnel#verwendung">README</a>, the <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md">concept</a> (German) and the examples under <a href="https://github.com/runnelhq/runnel/tree/main/examples"><code>examples/</code></a>. The component and expression references are generated directly from the program.</p>
 
           <div class="callout">
             <strong>Pre-release</strong>
@@ -102,7 +103,7 @@
             <dt>Environment</dt><dd>An environment such as <code>dev</code> or <code>prod</code> with its own variables, e.g. paths and server names. File <code>environments/&lt;name&gt;.yaml</code>.</dd>
             <dt>Variable, parameter</dt><dd><code>${NAME}</code> inserts values from the project, the environment or start parameters. Parameters are the inputs of a workflow or pipeline.</dd>
             <dt>Expression</dt><dd><code>{{ … }}</code> computes values at run time, e.g. a date or a condition. See <a href="ausdruecke.html">Expressions</a>.</dd>
-            <dt>Connection</dt><dd>Access to a database, stored under <code>connections/</code>. Passwords appear there as <code>${secret:…}</code>.</dd>
+            <dt>Connection</dt><dd>Access to a database, an HTTP API or a mail server, stored under <code>connections/</code>. Passwords appear there as <code>${secret:…}</code>.</dd>
             <dt>Trigger</dt><dd>Starts workflows or pipelines automatically: on a schedule, at intervals, for new files or via HTTP. File under <code>triggers/</code>.</dd>
           </dl>
 
@@ -146,6 +147,7 @@
             <a class="docs-card" href="trigger.html"><strong>Triggers</strong><span>Schedule, interval, folder watching, HTTP.</span></a>
             <a class="docs-card" href="ausdruecke.html"><strong>Expressions</strong><span>Context and every function of <code>{{ … }}</code>.</span></a>
             <a class="docs-card" href="bausteine.html"><strong>Components</strong><span>All actions and transforms with fields and examples.</span></a>
+            <a class="docs-card" href="kochbuch.html"><strong>Cookbook</strong><span>Recipes for APIs such as Teams, GitHub, HubSpot and Lexware Office.</span></a>
           </div>
         </article>
       </div>

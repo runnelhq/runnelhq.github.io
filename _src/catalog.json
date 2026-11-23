@@ -413,6 +413,64 @@
       "example": "connection: app-db\nsql: DELETE FROM orders WHERE created \u003c @before\nparams:\n  before: ${CUTOFF_DATE}\n"
     },
     {
+      "type": "db.query",
+      "kind": "action",
+      "category": "database",
+      "label": "Query SQL",
+      "description": "Reads the rows of an SQL query into the workflow; output: rows, count, first and value",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "connection": {
+            "type": "string",
+            "description": "Connection of the database (a file in connections/)",
+            "format": "runnel-connection",
+            "examples": [
+              "app-db"
+            ],
+            "x-runnel-connection": [
+              "sqlite",
+              "sqlserver",
+              "postgres"
+            ]
+          },
+          "sql": {
+            "type": "string",
+            "description": "The query; values as @name with the value under params, never written into the query",
+            "format": "runnel-sql",
+            "examples": [
+              "SELECT COUNT(*) FROM orders"
+            ]
+          },
+          "params": {
+            "type": "object",
+            "description": "Values of the parameters @name of the query; may use ${…} and {{ … }}",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "maxRows": {
+            "type": "string",
+            "description": "Most rows the query may return; more fail the action (for large results use a pipeline with db.table-input)",
+            "default": "1000"
+          },
+          "timeout": {
+            "type": "string",
+            "description": "Longest time the query may take",
+            "format": "runnel-duration",
+            "default": "1m"
+          }
+        },
+        "required": [
+          "connection",
+          "sql"
+        ],
+        "additionalProperties": false
+      },
+      "example": "connection: app-db\nsql: SELECT COUNT(*) AS open FROM orders WHERE status = @status\nparams:\n  status: open\n"
+    },
+    {
       "type": "file.copy",
       "kind": "action",
       "category": "files",
@@ -698,9 +756,20 @@
             ],
             "default": "GET"
           },
+          "connection": {
+            "type": "string",
+            "description": "Connection of the API (a file in connections/) with base address and sign-in; empty: url is a full address",
+            "format": "runnel-connection",
+            "examples": [
+              "shop-api"
+            ],
+            "x-runnel-connection": [
+              "http"
+            ]
+          },
           "url": {
             "type": "string",
-            "description": "Address with http:// or https://, e.g. https://api.example.com/orders",
+            "description": "Address with http:// or https://, e.g. https://api.example.com/orders; with connection relative to its baseUrl, e.g. orders",
             "examples": [
               "https://api.example.com/orders"
             ]
@@ -714,7 +783,7 @@
           },
           "headers": {
             "type": "object",
-            "description": "Headers of the request, e.g. Authorization; take tokens from variables such as ${env:API_TOKEN}, never write them into the file",
+            "description": "Headers of the request, e.g. Accept; tokens belong into a connection, never into the file",
             "additionalProperties": {
               "type": "string"
             }
@@ -724,7 +793,7 @@
           },
           "timeout": {
             "type": "string",
-            "description": "Longest time for the request and its answer, e.g. 30s or 5m; the timeout of the action limits all attempts together",
+            "description": "Longest time for one request and its answer (with paginate: per page), e.g. 30s or 5m; the timeout of the action limits all together",
             "format": "runnel-duration",
             "default": "60s"
           },
@@ -735,16 +804,120 @@
           },
           "maxSize": {
             "type": "string",
-            "description": "Largest answer to read, e.g. 10MB or 500KB",
+            "description": "Largest answer to read, e.g. 10MB or 500KB; with paginate per page",
             "default": "10MB"
+          },
+          "retryAfter": {
+            "type": "object",
+            "description": "Asking again when the API answers 429 or 503 with Retry-After (wait in seconds or a date); on by default",
+            "properties": {
+              "maxRetries": {
+                "type": "integer",
+                "description": "Most repeats of one request after 429 or 503 with Retry-After; 0: none",
+                "default": 3
+              },
+              "maxWait": {
+                "type": "string",
+                "description": "Longest wait the API may ask for; a longer one fails the action",
+                "format": "runnel-duration",
+                "default": "1m"
+              }
+            },
+            "additionalProperties": false
+          },
+          "paginate": {
+            "type": "object",
+            "description": "Reading all pages of a paged API; output: items (all items), count and pages instead of body",
+            "properties": {
+              "style": {
+                "type": "string",
+                "description": "How the next page is found: link (header Link rel=next), url (address in the body), cursor (value in the body as query parameter), page (page number) or offset (items read so far)",
+                "enum": [
+                  "link",
+                  "url",
+                  "cursor",
+                  "page",
+                  "offset"
+                ]
+              },
+              "items": {
+                "type": "string",
+                "description": "Path to the list of items in the body, e.g. data.items; empty: the body is the list",
+                "examples": [
+                  "data"
+                ]
+              },
+              "next": {
+                "type": "string",
+                "description": "Path in the body to the address of the next page (url) or to the cursor (cursor), e.g. @odata.nextLink or meta.next_cursor",
+                "examples": [
+                  "meta.next_cursor"
+                ],
+                "x-runnel-only": {
+                  "style": [
+                    "url",
+                    "cursor"
+                  ]
+                }
+              },
+              "param": {
+                "type": "string",
+                "description": "Query parameter for the cursor, page number or offset; empty: cursor, page or offset",
+                "examples": [
+                  "starting_after"
+                ],
+                "x-runnel-only": {
+                  "style": [
+                    "cursor",
+                    "page",
+                    "offset"
+                  ]
+                }
+              },
+              "start": {
+                "type": "integer",
+                "description": "First page number (page) or offset (offset); empty: 1 for page, 0 for offset",
+                "x-runnel-only": {
+                  "style": [
+                    "page",
+                    "offset"
+                  ]
+                }
+              },
+              "size": {
+                "type": "integer",
+                "description": "Items per page; a shorter page is the last one; with sizeParam it is also sent",
+                "examples": [
+                  100
+                ]
+              },
+              "sizeParam": {
+                "type": "string",
+                "description": "Query parameter for the page size, e.g. per_page or limit",
+                "examples": [
+                  "per_page"
+                ]
+              },
+              "maxPages": {
+                "type": "integer",
+                "description": "Most pages to read; more fail the action",
+                "default": 100
+              },
+              "maxItems": {
+                "type": "integer",
+                "description": "Most items to read; more fail the action (use a pipeline for larger amounts)",
+                "default": 10000
+              }
+            },
+            "required": [
+              "style"
+            ],
+            "additionalProperties": false
           }
         },
-        "required": [
-          "url"
-        ],
         "additionalProperties": false
       },
-      "example": "method: GET\nurl: https://api.example.com/orders\nquery:\n  status: open\nheaders:\n  Authorization: \"Bearer ${env:API_TOKEN}\"\n"
+      "example": "connection: shop-api\nurl: orders\nquery:\n  status: open\n"
     },
     {
       "type": "http.response",
@@ -778,6 +951,246 @@
         "additionalProperties": false
       },
       "example": "status: 404\nbody:\n  error: \"customer {{ params.KDNR }} not found\"\n"
+    },
+    {
+      "type": "mail.send",
+      "kind": "action",
+      "category": "network",
+      "label": "Send Mail",
+      "description": "Sends a mail through a mail server, with text or HTML and attachments",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "connection": {
+            "type": "string",
+            "description": "Connection of the mail server (a file in connections/)",
+            "format": "runnel-connection",
+            "examples": [
+              "mail"
+            ],
+            "x-runnel-connection": [
+              "smtp"
+            ]
+          },
+          "from": {
+            "type": "string",
+            "description": "Sender, e.g. Runnel \u003crunnel@example.com\u003e; empty: from of the connection",
+            "examples": [
+              "runnel@example.com"
+            ]
+          },
+          "to": {
+            "type": "string",
+            "description": "Recipients, separated by commas, e.g. ops@example.com, Ada \u003cada@example.com\u003e",
+            "examples": [
+              "ops@example.com"
+            ]
+          },
+          "cc": {
+            "type": "string",
+            "description": "Recipients of a copy, separated by commas",
+            "examples": [
+              "team@example.com"
+            ]
+          },
+          "bcc": {
+            "type": "string",
+            "description": "Recipients of a blind copy, separated by commas; they do not appear in the mail",
+            "examples": [
+              "audit@example.com"
+            ]
+          },
+          "replyTo": {
+            "type": "string",
+            "description": "Address for replies, if not the sender",
+            "examples": [
+              "support@example.com"
+            ]
+          },
+          "subject": {
+            "type": "string",
+            "description": "Subject; line breaks become spaces",
+            "examples": [
+              "Import finished"
+            ]
+          },
+          "body": {
+            "type": "string",
+            "description": "Text of the mail"
+          },
+          "html": {
+            "type": "string",
+            "description": "Text of the mail as HTML; with body, mail programs show the HTML and keep the text as an alternative"
+          },
+          "attachments": {
+            "type": "array",
+            "description": "Files to attach, relative to the project folder; at most 25 MB together",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "connection",
+          "subject"
+        ],
+        "additionalProperties": false
+      },
+      "example": "connection: mail\nto: ${ADMIN_MAIL}\nsubject: \"Import failed: {{ run.id }}\"\nbody: \"{{ run.lastError }}\"\n"
+    },
+    {
+      "type": "shell.powershell",
+      "kind": "action",
+      "category": "execution",
+      "label": "PowerShell",
+      "description": "Runs a PowerShell script with named parameters; output: exitCode, stdout, stderr and optionally JSON",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "script": {
+            "type": "string",
+            "description": "The script; no ${…} or {{ … }} – values come as params",
+            "format": "runnel-script"
+          },
+          "file": {
+            "type": "string",
+            "description": "A script file instead of script, relative to the project folder, e.g. scripts/cleanup.ps1",
+            "format": "runnel-script"
+          },
+          "params": {
+            "type": "object",
+            "description": "Named parameters of the script (param(...)); numbers, true/false, lists and objects keep their type; may use ${…} and {{ … }}",
+            "additionalProperties": {}
+          },
+          "json": {
+            "type": "boolean",
+            "description": "Read the last JSON value of stdout (e.g. of ConvertTo-Json) into output.json",
+            "default": false
+          },
+          "edition": {
+            "type": "string",
+            "description": "auto: PowerShell 7 (pwsh) if installed, else Windows PowerShell 5.1; pwsh or windows to choose one",
+            "enum": [
+              "auto",
+              "pwsh",
+              "windows"
+            ],
+            "default": "auto"
+          },
+          "workdir": {
+            "type": "string",
+            "description": "Working folder, relative to the project folder; empty: the project folder"
+          },
+          "env": {
+            "type": "object",
+            "description": "Further environment variables, e.g. secrets ($env:NAME in the script)",
+            "format": "runnel-secret",
+            "additionalProperties": {
+              "type": "string",
+              "format": "runnel-secret"
+            }
+          },
+          "maxOutput": {
+            "type": "integer",
+            "description": "Most bytes of stdout and of stderr kept; more is dropped (truncated)",
+            "default": 1048576
+          },
+          "timeout": {
+            "type": "string",
+            "description": "Longest time the script may run; then it ends with all processes it started",
+            "format": "runnel-duration",
+            "default": "10m"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": "script: |\n  param([string]$Folder)\n  Get-ChildItem $Folder | Select-Object Name, Length | ConvertTo-Json\nparams:\n  Folder: data\njson: true\n"
+    },
+    {
+      "type": "shell.run",
+      "kind": "action",
+      "category": "execution",
+      "label": "Run Program",
+      "description": "Starts a program with arguments, without a shell; output: exitCode, stdout and stderr",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "program": {
+            "type": "string",
+            "description": "Program to start: a name found through PATH, or a path relative to the project folder; may use variables of the project, but no parameters of the workflow and no expressions",
+            "format": "runnel-program",
+            "examples": [
+              "robocopy"
+            ]
+          },
+          "args": {
+            "type": "array",
+            "description": "Arguments, one per entry; each is passed as one argument, never read by a shell, and may use ${…} and {{ … }}",
+            "items": {
+              "type": "string"
+            }
+          },
+          "okCodes": {
+            "type": "array",
+            "description": "Exit codes that count as success; empty: 0 only",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "workdir": {
+            "type": "string",
+            "description": "Working folder, relative to the project folder; empty: the project folder"
+          },
+          "env": {
+            "type": "object",
+            "description": "Further environment variables; the only place for secrets (${secret:…}), as arguments are visible to other users",
+            "format": "runnel-secret",
+            "additionalProperties": {
+              "type": "string",
+              "format": "runnel-secret"
+            }
+          },
+          "input": {
+            "type": "string",
+            "description": "Text for stdin; missing: stdin is empty, so that a program waiting for input does not hang"
+          },
+          "encoding": {
+            "type": "string",
+            "description": "Encoding of stdout and stderr; auto: UTF-8, else the OEM code page of Windows",
+            "enum": [
+              "auto",
+              "utf-8",
+              "oem",
+              "windows-1252"
+            ],
+            "default": "auto"
+          },
+          "json": {
+            "type": "boolean",
+            "description": "Read stdout as JSON into output.json",
+            "default": false
+          },
+          "maxOutput": {
+            "type": "integer",
+            "description": "Most bytes of stdout and of stderr kept; more is dropped (truncated)",
+            "default": 1048576
+          },
+          "timeout": {
+            "type": "string",
+            "description": "Longest time the program may run; then it ends with all processes it started",
+            "format": "runnel-duration",
+            "default": "10m"
+          }
+        },
+        "required": [
+          "program"
+        ],
+        "additionalProperties": false
+      },
+      "example": "program: robocopy\nargs: [ data/out, \"\\\\\\\\server\\\\share\\\\in\", \"*.csv\", /MIR ]\nokCodes: [ 0, 1, 2, 3 ]\ntimeout: 10m\n"
     }
   ],
   "transforms": [

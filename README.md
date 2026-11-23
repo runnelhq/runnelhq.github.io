@@ -19,6 +19,7 @@ _src/                   # Quellen der Unterseiten (von GitHub Pages nicht veröf
 ├─ *.html               # Inhalt von <main> mit JSON-Kopf (Ausgabepfad, Titel, Beschreibung)
 ├─ catalog.json         # `runnel catalog --json`: Bausteine der Startseite und Referenz im Handbuch
 ├─ expressions.json     # `GET /api/v1/expressions` von `runnel serve`: Ausdrucks-Referenz im Handbuch
+├─ kochbuch/            # Rezepte des Kochbuchs als lauffähige Mini-Projekte (je Ordner ein Rezept)
 └─ snippets/            # Codebeispiele, z. B. Kopien aus runnel/internal/actions
 tools/build.py          # erzeugt die Unterseiten (Python 3.9+, keine Abhängigkeiten)
 favicon.svg, favicon.ico
@@ -84,6 +85,19 @@ Farben, Schriften, Logos und Ton stammen aus [`runnel/design`](https://github.co
 Die Seiten unter `handbuch/` beschreiben Installation, Betrieb und Konfiguration für Anwender. Grundlage sind README,
 `docs/KONZEPT.md` (Kap. 2, 5, 13), die Schemas (`runnel schema …`) und die Beispiele des Runnel-Repositorys;
 Bausteine und Ausdrücke sind aus dem Programm erzeugt. Neue Seiten in `GUIDE_NAV` in `tools/build.py` eintragen.
+
+## Kochbuch
+
+Die Rezepte unter `handbuch/kochbuch-*.html` zeigen Dateien aus `_src/kochbuch/<rezept>/`. Jeder Ordner ist ein
+vollständiges kleines Projekt. Vor dem Commit prüfen (Secrets mit Platzhalterwerten):
+
+```bash
+for r in _src/kochbuch/*; do GITHUB_TOKEN=x HUBSPOT_TOKEN=x LEXWARE_API_KEY=x TEAMS_SIG=x runnel validate "$r"; done
+```
+
+Ein neues Rezept: Ordner anlegen, Seite `_src/guide-kochbuch-<rezept>.html` nach dem Muster der vorhandenen schreiben,
+in `GUIDE_NAV` (Gruppe „Kochbuch“) und in die Tabelle auf `_src/guide-kochbuch.html` eintragen. Jede Seite nennt unter
+„Stand“, womit das Rezept geprüft ist.
 
 ## Entwicklerdoku
 
