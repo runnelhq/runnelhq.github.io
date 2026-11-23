@@ -1,0 +1,59 @@
+<!-- {
+  "out": "handbuch/kochbuch-lexware.html",
+  "section": "guide",
+  "title": {
+    "de": "Kochbuch: Lexware Office",
+    "en": "Cookbook: Lexware Office"
+  },
+  "description": {
+    "de": "Liest alle Kontakte aus Lexware Office (vormals lexoffice). Das Rezept zeigt Paginierung mit Seitennummern und den Umgang mit dem Rate-Limit der API.",
+    "en": "Reads all contacts from Lexware Office (formerly lexoffice). The recipe shows page-number pagination and handling the API's rate limit."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+          <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch · Kochbuch</p>
+          <h1>Lexware Office</h1>
+          <p class="docs-lead">Liest alle Kontakte aus Lexware Office (vormals lexoffice). Das Rezept zeigt Paginierung mit Seitennummern und den Umgang mit dem Rate-Limit der API.</p>
+          <dl class="recipe-meta"><dt>API</dt><dd>Lexware Office Public API, <code>https://api.lexware.io/v1/</code> (der frühere Host <code>api.lexoffice.io</code> wird abgelöst)</dd><dt>Anmeldung</dt><dd>API-Schlüssel als <code>bearer</code></dd><dt>Stand</dt><dd>Runnel-seitig geprüft am 23.11.2026: <code>runnel validate</code> und Ausführung gegen einen Testserver, der die API nachbildet. Gegen die echte API noch nicht ausgeführt – Endpunkte und Felder nach der Dokumentation des Anbieters (Stand 11/2026).</dd></dl>
+          <h2 id="prereq">Voraussetzungen</h2>
+          <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Art</th><th>Bedeutung</th></tr></thead><tbody><tr><td><code>LEXWARE_API_KEY</code></td><td>Secret</td><td>API-Schlüssel aus den Einstellungen von Lexware Office („Öffentliche API“)</td></tr></tbody></table></div>
+          <p>Secrets kommen hier aus Umgebungsvariablen (<code>secretStore: env</code> in <code>project.yaml</code>). Für den Dienst die Variable beim Dienstkonto setzen.</p>
+          <h2 id="files">Dateien</h2>
+          {{snippet:../kochbuch/lexware/project.yaml|project.yaml}}
+          {{snippet:../kochbuch/lexware/connections/lexware.yaml|connections/lexware.yaml}}
+          {{snippet:../kochbuch/lexware/workflows/contacts.workflow.yaml|workflows/contacts.workflow.yaml}}
+          <p>Die offizielle Dokumentation (developers.lexware.io) war beim Erstellen nicht erreichbar; Host, Paging und Rate-Limit stammen aus mehreren übereinstimmenden Quellen. Vor dem Einsatz bitte dort prüfen.</p>
+          <h2 id="run">Ausführen</h2><p>Im Ordner des Rezepts (PowerShell):</p>
+          <pre><code class="lang-bash" data-caption="PowerShell">$env:LEXWARE_API_KEY = &quot;…&quot;
+runnel run workflows/contacts.workflow.yaml</code></pre>
+          <h2 id="adapt">Anpassen</h2><ul><li>Die Kontakte stehen je Seite in <code>content</code>; Seiten zählen ab <code>0</code>, bis zu 250 Einträge je Seite.</li><li>Die API erlaubt etwa 2 Anfragen pro Sekunde und antwortet darüber mit <code>429</code>. Sendet sie <code>Retry-After</code>, wartet Runnel; sonst wiederholt <code>retry</code> die Anfrage mit wachsendem Abstand.</li><li>Weitere Listen mit demselben Muster, z. B. Belege über <code>voucherlist</code>.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/lexware">Quellen auf GitHub: <code>_src/kochbuch/lexware</code></a></p>
+          </article>
+
+          <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide · Cookbook</p>
+          <h1>Lexware Office</h1>
+          <p class="docs-lead">Reads all contacts from Lexware Office (formerly lexoffice). The recipe shows page-number pagination and handling the API's rate limit.</p>
+          <dl class="recipe-meta"><dt>API</dt><dd>Lexware Office public API, <code>https://api.lexware.io/v1/</code> (the former host <code>api.lexoffice.io</code> is being retired)</dd><dt>Sign-in</dt><dd>API key as <code>bearer</code></dd><dt>Status</dt><dd>Checked on the Runnel side on 2026-11-23: <code>runnel validate</code> and runs against a test server that mimics the API. Not yet run against the real API – endpoints and fields per the provider's documentation (as of 11/2026).</dd></dl>
+          <h2 id="prereq-en">Prerequisites</h2>
+          <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Kind</th><th>Meaning</th></tr></thead><tbody><tr><td><code>LEXWARE_API_KEY</code></td><td>Secret</td><td>API key from the Lexware Office settings (“Public API”)</td></tr></tbody></table></div>
+          <p>Secrets come from environment variables here (<code>secretStore: env</code> in <code>project.yaml</code>). For the service, set the variable for the service account.</p>
+          <h2 id="files-en">Files</h2>
+          {{snippet:../kochbuch/lexware/project.yaml|project.yaml}}
+          {{snippet:../kochbuch/lexware/connections/lexware.yaml|connections/lexware.yaml}}
+          {{snippet:../kochbuch/lexware/workflows/contacts.workflow.yaml|workflows/contacts.workflow.yaml}}
+          <p>The official documentation (developers.lexware.io) could not be reached when this recipe was written; host, paging and rate limit come from several matching sources. Please check there before use.</p>
+          <h2 id="run-en">Running</h2><p>In the recipe folder (PowerShell):</p>
+          <pre><code class="lang-bash" data-caption="PowerShell">$env:LEXWARE_API_KEY = &quot;…&quot;
+runnel run workflows/contacts.workflow.yaml</code></pre>
+          <h2 id="adapt-en">Adapting</h2><ul><li>Contacts are in <code>content</code> per page; pages count from <code>0</code>, up to 250 entries per page.</li><li>The API allows about 2 requests per second and answers <code>429</code> above that. If it sends <code>Retry-After</code>, Runnel waits; otherwise <code>retry</code> repeats the request with growing delays.</li><li>Other lists follow the same pattern, e.g. vouchers via <code>voucherlist</code>.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/lexware">Sources on GitHub: <code>_src/kochbuch/lexware</code></a></p>
+          </article>
+      </div>
+    </div>

@@ -1,0 +1,190 @@
+<!-- {
+  "out": "handbuch/kochbuch.html",
+  "section": "guide",
+  "title": {"de": "Kochbuch", "en": "Cookbook"},
+  "description": {
+    "de": "Kochbuch für Runnel: Rezepte für Anbindungen an APIs wie Microsoft Teams, GitHub, HubSpot und Lexware Office – mit Connection http, Anmeldung, Paginierung und Retry-After.",
+    "en": "Runnel cookbook: recipes for connecting APIs such as Microsoft Teams, GitHub, HubSpot and Lexware Office – with the http connection, sign-in, pagination and Retry-After."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch · Kochbuch</p>
+          <h1>Kochbuch</h1>
+          <p class="docs-lead">Rezepte für Anbindungen, Dateien und Datenbanken. Runnel bringt keine hunderte fertigen Konnektoren mit, sondern einen generischen HTTP-Baustein und eine Connection für Adresse und Anmeldung. Die Rezepte zeigen, wie man damit bekannte APIs anbindet – als lesbare Dateien, die man übernimmt und anpasst.</p>
+
+          <h2 id="rezepte">Rezepte</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Rezept</th><th>Anmeldung</th><th>zeigt</th></tr></thead>
+            <tbody>
+              <tr><td><a href="kochbuch-open-meteo.html">Wetter (Open-Meteo)</a></td><td>keine</td><td>erste Anfrage, Antwort lesen, Outputs</td></tr>
+              <tr><td><a href="kochbuch-teams.html">Microsoft Teams</a></td><td>Signatur in der Adresse (<code>apiKey</code> in der Query)</td><td>Nachricht als Karte, Sub-Workflow als Connector, Meldung bei Fehlern</td></tr>
+              <tr><td><a href="kochbuch-github.html">GitHub</a></td><td>Token (<code>bearer</code>)</td><td>Paginierung über den Header <code>Link</code>, Daten anlegen</td></tr>
+              <tr><td><a href="kochbuch-hubspot.html">HubSpot</a></td><td>Token einer Private App (<code>bearer</code>)</td><td>Paginierung mit Cursor, Kontakt anlegen</td></tr>
+              <tr><td><a href="kochbuch-lexware.html">Lexware Office</a></td><td>API-Schlüssel (<code>bearer</code>)</td><td>Paginierung mit Seitennummer, Rate-Limit mit <code>Retry-After</code></td></tr>
+            </tbody>
+          </table></div>
+          <p>Jedes Rezept ist ein kleines, vollständiges Projekt: <code>project.yaml</code>, eine Connection und ein oder zwei Workflows. Alle Dateien sind mit <code>runnel validate</code> geprüft und gegen einen Testserver ausgeführt, der die jeweilige API nachbildet. Die Quellen liegen auf <a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch">GitHub</a>.</p>
+          <p><strong>Übernehmen:</strong> Ordner des Rezepts in ein eigenes Projekt kopieren – oder nur die Connection und die Workflows übernehmen – und die Werte unter „Anpassen“ setzen. APIs ändern sich; vor dem produktiven Einsatz die Anfragen mit der aktuellen Dokumentation des Anbieters abgleichen.</p>
+
+          <h2 id="connection">Die Connection <code>http</code></h2>
+          <p>Eine Connection beschreibt eine API einmal für das ganze Projekt: Basisadresse, feste Header und Anmeldung. Workflows nennen sie mit <code>connection:</code> und geben nur noch den Pfad an.</p>
+<pre><code class="lang-yaml" data-caption="connections/shop.yaml">kind: Connection
+apiVersion: runnel/v1
+name: shop
+type: http
+with:
+  baseUrl: https://api.example.com/v1/
+  auth: bearer
+  token: ${secret:SHOP_TOKEN}
+  headers:
+    Accept: application/json</code></pre>
+<pre><code class="lang-yaml" data-caption="Action">- id: orders
+  type: http.request
+  with:
+    connection: shop
+    url: orders            # ergibt https://api.example.com/v1/orders
+    query: { status: open }</code></pre>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th><code>auth</code></th><th>Felder</th><th>typisch für</th></tr></thead>
+            <tbody>
+              <tr><td><code>none</code></td><td>–</td><td>offene APIs</td></tr>
+              <tr><td><code>bearer</code></td><td><code>token</code></td><td>Personal Access Tokens, API-Schlüssel als <code>Authorization: Bearer</code></td></tr>
+              <tr><td><code>basic</code></td><td><code>user</code>, <code>password</code></td><td>Jira, ServiceNow, ältere APIs</td></tr>
+              <tr><td><code>apiKey</code></td><td><code>apiKey</code>, <code>apiKeyName</code> (Standard <code>X-API-Key</code>), <code>apiKeyIn</code>: <code>header</code> oder <code>query</code></td><td>Schlüssel in einem eigenen Header oder in der Adresse</td></tr>
+              <tr><td><code>oauth2</code></td><td><code>tokenUrl</code>, <code>clientId</code>, <code>clientSecret</code>, <code>scope</code></td><td>Microsoft Graph, Personio, Salesforce (Client Credentials)</td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li><strong>Secrets</strong> stehen als <code>${secret:NAME}</code> in <code>token</code>, <code>password</code>, <code>apiKey</code>, <code>clientSecret</code> und in den <code>headers</code> der Connection – nie in Workflows. Sie werden in Log, Fehlern und Ergebnissen maskiert. Woher sie kommen, legt das Environment fest, siehe <a href="projekt.html#secrets">Secrets</a>.</li>
+            <li><strong>Nur an den eigenen Host:</strong> Eine absolute <code>url</code> zu einem anderen Host ist ein Fehler. Mit Anmeldung ist <code>http://</code> nur zum eigenen Rechner erlaubt.</li>
+            <li><strong>Header:</strong> zuerst die der Connection, dann die der Action, zuletzt die Anmeldung.</li>
+            <li><strong>OAuth2:</strong> Runnel holt das Token selbst, hält es bis kurz vor Ablauf im Speicher und holt nach <code>401</code> einmal ein neues.</li>
+          </ul>
+
+          <h2 id="antwort">Die Antwort lesen</h2>
+          <p><code>http.request</code> liefert <code>status</code>, <code>headers</code> und <code>body</code>; JSON ist bereits als Wert gelesen. Folgende Actions greifen mit <code>results.&lt;id&gt;.output.body…</code> darauf zu. Ab Status 400 schlägt die Action fehl – mit <code>failOnError: false</code> steht der Status stattdessen nur im Ergebnis, z. B. um <code>404</code> als „nicht gefunden“ zu behandeln.</p>
+
+          <h2 id="paginierung">Paginierung</h2>
+          <p>Mit <code>paginate</code> liest <code>http.request</code> alle Seiten und liefert statt <code>body</code> die Felder <code>items</code> (alle Einträge), <code>count</code> und <code>pages</code>.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th><code>style</code></th><th>nächste Seite steht …</th><th>Rezept</th></tr></thead>
+            <tbody>
+              <tr><td><code>link</code></td><td>im Header <code>Link: …; rel="next"</code></td><td><a href="kochbuch-github.html">GitHub</a></td></tr>
+              <tr><td><code>url</code></td><td>als Adresse im Body, z. B. <code>@odata.nextLink</code></td><td>Microsoft Graph, OData</td></tr>
+              <tr><td><code>cursor</code></td><td>als Wert im Body, der als Query-Parameter zurückgeht</td><td><a href="kochbuch-hubspot.html">HubSpot</a></td></tr>
+              <tr><td><code>page</code></td><td>als fortlaufende Seitennummer</td><td><a href="kochbuch-lexware.html">Lexware Office</a></td></tr>
+              <tr><td><code>offset</code></td><td>als Zahl der bisher gelesenen Einträge</td><td>viele SQL-nahe APIs</td></tr>
+            </tbody>
+          </table></div>
+          <p>Weitere Felder: <code>items</code> (Pfad zur Liste im Body), <code>next</code> (Pfad zur Adresse oder zum Cursor), <code>param</code>, <code>start</code>, <code>size</code> und <code>sizeParam</code>. Grenzen schützen vor Endlosschleifen und Speicherüberlauf: <code>maxPages</code> (Standard 100) und <code>maxItems</code> (Standard 10.000); mehr ist ein Fehler. Folgeseiten werden nur auf demselben Host angefragt.</p>
+
+          <h2 id="rate-limits">Rate-Limits</h2>
+          <p>Antwortet eine API mit <code>429</code> oder <code>503</code> und dem Header <code>Retry-After</code>, wartet <code>http.request</code> und fragt erneut – standardmäßig bis zu 3-mal und je höchstens eine Minute (<code>retryAfter.maxRetries</code>, <code>retryAfter.maxWait</code>). Bei Paginierung gilt das je Seite. Ohne den Header hilft <code>retry</code> an der Action, z. B. <code>retry: { attempts: 3, backoff: 2s, strategy: exponential }</code>.</p>
+
+          <h2 id="connector">Sub-Workflow als Connector</h2>
+          <p>Was bei anderen Werkzeugen ein fertiger Knoten ist, ist in Runnel ein kleiner Workflow mit <strong>Parametern</strong> und <strong>Outputs</strong>, z. B. <code>create-contact.workflow.yaml</code> mit dem Parameter <code>EMAIL</code> und dem Output <code>ID</code>. Andere Workflows rufen ihn mit <code>core.run-workflow</code> auf und lesen das Ergebnis aus <code>results.&lt;id&gt;.output</code>. So bleibt die Anbindung an einer Stelle, und sie lässt sich einzeln testen: <code>runnel run --param EMAIL=… workflows/create-contact.workflow.yaml</code>.</p>
+
+          <h2 id="aufbau">Aufbau eines Rezepts</h2>
+          <ul>
+            <li><strong>Zweck</strong> und <strong>Voraussetzungen</strong>: Konto, Token, Variablen und Secrets</li>
+            <li><strong>Dateien</strong>: Projekt, Connection, Workflows – mit <code>runnel validate</code> geprüft</li>
+            <li><strong>Ausführen</strong> und <strong>Anpassen</strong></li>
+            <li><strong>Stand</strong>: womit das Rezept geprüft ist und wann</li>
+          </ul>
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide · Cookbook</p>
+          <h1>Cookbook</h1>
+          <p class="docs-lead">Recipes for connecting APIs, files and databases. Runnel doesn't ship hundreds of ready-made connectors but a generic HTTP component and a connection for address and sign-in. The recipes show how to connect well-known APIs with them – as readable files you take over and adapt.</p>
+
+          <h2 id="recipes">Recipes</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Recipe</th><th>Sign-in</th><th>Shows</th></tr></thead>
+            <tbody>
+              <tr><td><a href="kochbuch-open-meteo.html">Weather (Open-Meteo)</a></td><td>none</td><td>First request, reading the response, outputs</td></tr>
+              <tr><td><a href="kochbuch-teams.html">Microsoft Teams</a></td><td>Signature in the address (<code>apiKey</code> in the query)</td><td>Message as a card, sub-workflow as a connector, notification on failure</td></tr>
+              <tr><td><a href="kochbuch-github.html">GitHub</a></td><td>Token (<code>bearer</code>)</td><td>Pagination via the <code>Link</code> header, creating data</td></tr>
+              <tr><td><a href="kochbuch-hubspot.html">HubSpot</a></td><td>Private app token (<code>bearer</code>)</td><td>Cursor pagination, creating a contact</td></tr>
+              <tr><td><a href="kochbuch-lexware.html">Lexware Office</a></td><td>API key (<code>bearer</code>)</td><td>Page-number pagination, rate limit with <code>Retry-After</code></td></tr>
+            </tbody>
+          </table></div>
+          <p>Every recipe is a small, complete project: <code>project.yaml</code>, a connection and one or two workflows. All files are checked with <code>runnel validate</code> and run against a test server that mimics the API. The sources are on <a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch">GitHub</a>.</p>
+          <p><strong>Taking it over:</strong> copy the recipe folder into your own project – or only the connection and workflows – and set the values under “Adapting”. APIs change; check the requests against the provider's current documentation before production use.</p>
+
+          <h2 id="connection-en">The <code>http</code> connection</h2>
+          <p>A connection describes an API once for the whole project: base address, fixed headers and sign-in. Workflows name it with <code>connection:</code> and only give the path.</p>
+<pre><code class="lang-yaml" data-caption="connections/shop.yaml">kind: Connection
+apiVersion: runnel/v1
+name: shop
+type: http
+with:
+  baseUrl: https://api.example.com/v1/
+  auth: bearer
+  token: ${secret:SHOP_TOKEN}
+  headers:
+    Accept: application/json</code></pre>
+<pre><code class="lang-yaml" data-caption="Action">- id: orders
+  type: http.request
+  with:
+    connection: shop
+    url: orders            # becomes https://api.example.com/v1/orders
+    query: { status: open }</code></pre>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th><code>auth</code></th><th>Fields</th><th>Typical for</th></tr></thead>
+            <tbody>
+              <tr><td><code>none</code></td><td>–</td><td>Open APIs</td></tr>
+              <tr><td><code>bearer</code></td><td><code>token</code></td><td>Personal access tokens, API keys as <code>Authorization: Bearer</code></td></tr>
+              <tr><td><code>basic</code></td><td><code>user</code>, <code>password</code></td><td>Jira, ServiceNow, older APIs</td></tr>
+              <tr><td><code>apiKey</code></td><td><code>apiKey</code>, <code>apiKeyName</code> (default <code>X-API-Key</code>), <code>apiKeyIn</code>: <code>header</code> or <code>query</code></td><td>Keys in a custom header or in the address</td></tr>
+              <tr><td><code>oauth2</code></td><td><code>tokenUrl</code>, <code>clientId</code>, <code>clientSecret</code>, <code>scope</code></td><td>Microsoft Graph, Personio, Salesforce (client credentials)</td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li><strong>Secrets</strong> go as <code>${secret:NAME}</code> into <code>token</code>, <code>password</code>, <code>apiKey</code>, <code>clientSecret</code> and the connection's <code>headers</code> – never into workflows. They are masked in log, errors and results. The environment decides where they come from, see <a href="projekt.html#secrets-en">Secrets</a>.</li>
+            <li><strong>Own host only:</strong> an absolute <code>url</code> to another host is an error. With a sign-in, <code>http://</code> is only allowed to the local machine.</li>
+            <li><strong>Headers:</strong> the connection's first, then the action's, finally the sign-in.</li>
+            <li><strong>OAuth2:</strong> Runnel fetches the token itself, keeps it in memory until shortly before it expires and fetches a new one once after <code>401</code>.</li>
+          </ul>
+
+          <h2 id="response">Reading the response</h2>
+          <p><code>http.request</code> returns <code>status</code>, <code>headers</code> and <code>body</code>; JSON is already parsed. Later actions access it via <code>results.&lt;id&gt;.output.body…</code>. From status 400 the action fails – with <code>failOnError: false</code> the status is only in the result instead, e.g. to treat <code>404</code> as “not found”.</p>
+
+          <h2 id="pagination">Pagination</h2>
+          <p>With <code>paginate</code>, <code>http.request</code> reads all pages and returns <code>items</code> (all entries), <code>count</code> and <code>pages</code> instead of <code>body</code>.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th><code>style</code></th><th>The next page is …</th><th>Recipe</th></tr></thead>
+            <tbody>
+              <tr><td><code>link</code></td><td>in the header <code>Link: …; rel="next"</code></td><td><a href="kochbuch-github.html">GitHub</a></td></tr>
+              <tr><td><code>url</code></td><td>an address in the body, e.g. <code>@odata.nextLink</code></td><td>Microsoft Graph, OData</td></tr>
+              <tr><td><code>cursor</code></td><td>a value in the body sent back as a query parameter</td><td><a href="kochbuch-hubspot.html">HubSpot</a></td></tr>
+              <tr><td><code>page</code></td><td>a running page number</td><td><a href="kochbuch-lexware.html">Lexware Office</a></td></tr>
+              <tr><td><code>offset</code></td><td>the number of entries read so far</td><td>many SQL-like APIs</td></tr>
+            </tbody>
+          </table></div>
+          <p>Further fields: <code>items</code> (path to the list in the body), <code>next</code> (path to the address or cursor), <code>param</code>, <code>start</code>, <code>size</code> and <code>sizeParam</code>. Limits protect against endless loops and memory overflow: <code>maxPages</code> (default 100) and <code>maxItems</code> (default 10,000); more is an error. Following pages are only requested on the same host.</p>
+
+          <h2 id="rate-limits-en">Rate limits</h2>
+          <p>If an API answers <code>429</code> or <code>503</code> with a <code>Retry-After</code> header, <code>http.request</code> waits and asks again – by default up to 3 times and at most one minute each (<code>retryAfter.maxRetries</code>, <code>retryAfter.maxWait</code>). With pagination this applies per page. Without the header, <code>retry</code> on the action helps, e.g. <code>retry: { attempts: 3, backoff: 2s, strategy: exponential }</code>.</p>
+
+          <h2 id="connector-en">Sub-workflow as a connector</h2>
+          <p>What other tools ship as a ready-made node is a small workflow with <strong>parameters</strong> and <strong>outputs</strong> in Runnel, e.g. <code>create-contact.workflow.yaml</code> with the parameter <code>EMAIL</code> and the output <code>ID</code>. Other workflows call it with <code>core.run-workflow</code> and read the result from <code>results.&lt;id&gt;.output</code>. The integration stays in one place and can be tested on its own: <code>runnel run --param EMAIL=… workflows/create-contact.workflow.yaml</code>.</p>
+
+          <h2 id="structure">Structure of a recipe</h2>
+          <ul>
+            <li><strong>Purpose</strong> and <strong>prerequisites</strong>: account, token, variables and secrets</li>
+            <li><strong>Files</strong>: project, connection, workflows – checked with <code>runnel validate</code></li>
+            <li><strong>Running</strong> and <strong>adapting</strong></li>
+            <li><strong>Status</strong>: what the recipe was checked with and when</li>
+          </ul>
+        </article>
+      </div>
+    </div>

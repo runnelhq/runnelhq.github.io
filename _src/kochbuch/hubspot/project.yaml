@@ -1,0 +1,8 @@
+# Recipe: HubSpot CRM with the access token of a private app from HUBSPOT_TOKEN.
+kind: Project
+apiVersion: runnel/v1
+name: hubspot
+description: Contacts in HubSpot
+secretStore: env
+variables:
+  HUBSPOT_URL: https://api.hubapi.com/

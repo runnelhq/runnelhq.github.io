@@ -1,0 +1,34 @@
+# Posts a card with a title and a text to the channel. Other workflows call it with
+# core.run-workflow, e.g. on a failure link (see notify-on-failure.workflow.yaml).
+#   runnel run --param TITLE="Import done" --param TEXT="1.234 rows" workflows/notify.workflow.yaml
+kind: Workflow
+apiVersion: runnel/v1
+name: notify
+parameters:
+  - name: TITLE
+    required: true
+  - name: TEXT
+    default: ""
+actions:
+  - id: start
+    type: core.start
+  - id: post
+    type: http.request
+    with:
+      connection: teams
+      method: POST
+      url: ${TEAMS_URL}          # the full address; the connection adds the signature
+      body:
+        type: message
+        attachments:
+          - contentType: application/vnd.microsoft.card.adaptive
+            content:
+              $schema: http://adaptivecards.io/schemas/adaptive-card.json
+              type: AdaptiveCard
+              version: "1.4"
+              body:
+                - { type: TextBlock, text: "${TITLE}", weight: Bolder, size: Medium, wrap: true }
+                - { type: TextBlock, text: "${TEXT}", wrap: true }
+      timeout: 30s
+links:
+  - { from: start, to: post }

@@ -1,0 +1,8 @@
+# Recipe: Lexware Office (formerly lexoffice) with an API key from LEXWARE_API_KEY.
+kind: Project
+apiVersion: runnel/v1
+name: lexware
+description: Contacts in Lexware Office
+secretStore: env
+variables:
+  LEXWARE_URL: https://api.lexware.io/v1/

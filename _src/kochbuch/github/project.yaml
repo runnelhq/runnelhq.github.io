@@ -1,0 +1,8 @@
+# Recipe: GitHub REST API with a personal access token from GITHUB_TOKEN.
+kind: Project
+apiVersion: runnel/v1
+name: github
+description: Issues of a GitHub repository
+secretStore: env
+variables:
+  GITHUB_URL: https://api.github.com/

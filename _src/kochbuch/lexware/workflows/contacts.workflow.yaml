@@ -1,0 +1,35 @@
+# Reads all contacts page by page (page from 0, up to 250 per page; the list is in
+# "content"). The API allows about 2 requests per second: retryAfter waits when it
+# answers 429 with Retry-After, retry repeats the whole request otherwise.
+#   runnel run workflows/contacts.workflow.yaml
+kind: Workflow
+apiVersion: runnel/v1
+name: contacts
+outputs:
+  - name: COUNT
+    type: integer
+    value: "{{ results.fetch.output.count }}"
+actions:
+  - id: start
+    type: core.start
+  - id: fetch
+    type: http.request
+    retry: { attempts: 3, backoff: 2s, strategy: exponential }
+    with:
+      connection: lexware
+      url: contacts
+      paginate:
+        style: page
+        items: content
+        param: page
+        start: 0
+        size: 250
+        sizeParam: size
+      timeout: 30s
+  - id: report
+    type: core.log
+    with:
+      message: "{{ results.fetch.output.count }} contacts on {{ results.fetch.output.pages }} page(s)"
+links:
+  - { from: start, to: fetch }
+  - { from: fetch, to: report }

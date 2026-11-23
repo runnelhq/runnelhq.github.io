@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="de" data-theme="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kochbuch: Wetter (Open-Meteo) – Runnel</title>
+  <meta name="description" content="Liest die aktuelle Temperatur und Windgeschwindigkeit für einen Ort. Ohne Anmeldung – das einfachste Rezept zum Ausprobieren.">
+  <meta name="title-en" content="Cookbook: Weather (Open-Meteo) – Runnel">
+  <meta name="description-en" content="Reads the current temperature and wind speed for a place. No sign-in – the simplest recipe to try things out.">
+  <meta name="theme-color" content="#0A6DA6">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="../assets/img/runnel-icon-180.png">
+  <link rel="preload" href="../assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/runnel.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+
+<!-- Erzeugt von tools/build.py aus _src/guide-kochbuch-open-meteo.html – nicht von Hand bearbeiten. -->
+<!-- Wiederverwendbare Symbole -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></g></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7 10.5l5 5 5-5"/><path d="M5 20h14"/></g></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="logo" viewBox="0 0 204 64"><rect width="64" height="64" rx="15" fill="#0A6DA6"/><circle cx="14.5" cy="22" r="6.5" fill="#FFFFFF"/><path d="M25 22C33.5 22 30.5 42 37.5 42" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/><circle cx="48.5" cy="42" r="5.25" fill="none" stroke="#7CC5EB" stroke-width="4.75"/><path transform="translate(80 43.25) scale(0.020134)" fill="currentColor" d="M138 0V-1118H390V-931H402Q432 -1028 507 -1080.5Q582 -1133 678 -1133Q700 -1133 727 -1131Q754 -1129 773 -1126V-887Q757 -892 721 -896Q685 -900 650 -900Q578 -900 520.5 -869Q463 -838 430.5 -783.5Q398 -729 398 -658V0Z M1293 14Q1178 14 1091.5 -35Q1005 -84 957.5 -178.5Q910 -273 910 -407V-1118H1170V-447Q1170 -335 1228.5 -271Q1287 -207 1389 -207Q1458 -207 1512 -237Q1566 -267 1596.5 -325Q1627 -383 1627 -463V-1118H1888V0H1641L1638 -276H1658Q1611 -130 1519 -58Q1427 14 1293 14Z M2383.1 -655V0H2123.1V-1118H2369.1L2373.1 -842H2352.1Q2399.1 -987 2490.1 -1059.5Q2581.1 -1132 2718.1 -1132Q2833.1 -1132 2919.1 -1083Q3005.1 -1034 3052.6 -940Q3100.1 -846 3100.1 -711V0H2840.1V-671Q2840.1 -783 2782.1 -847Q2724.1 -911 2622.1 -911Q2553.1 -911 2499.1 -881Q2445.1 -851 2414.1 -793.5Q2383.1 -736 2383.1 -655Z M3595.1 -655V0H3335.1V-1118H3581.1L3585.1 -842H3564.1Q3611.1 -987 3702.1 -1059.5Q3793.1 -1132 3930.1 -1132Q4045.1 -1132 4131.1 -1083Q4217.1 -1034 4264.6 -940Q4312.1 -846 4312.1 -711V0H4052.1V-671Q4052.1 -783 3994.1 -847Q3936.1 -911 3834.1 -911Q3765.1 -911 3711.1 -881Q3657.1 -851 3626.1 -793.5Q3595.1 -736 3595.1 -655Z M5041.2 23Q4872.2 23 4750.7 -48Q4629.2 -119 4563.7 -248Q4498.2 -377 4498.2 -552Q4498.2 -725 4562.7 -855Q4627.2 -985 4745.7 -1058.5Q4864.2 -1132 5024.2 -1132Q5126.2 -1132 5218.7 -1099Q5311.2 -1066 5382.7 -997Q5454.2 -928 5494.7 -821.5Q5535.2 -715 5535.2 -568V-486H4621.2V-663H5406.2L5284.2 -611Q5284.2 -705 5255.2 -776.5Q5226.2 -848 5168.7 -888Q5111.2 -928 5025.2 -928Q4939.2 -928 4879.2 -887.5Q4819.2 -847 4787.7 -779.5Q4756.2 -712 4756.2 -629V-507Q4756.2 -401 4792.2 -328Q4828.2 -255 4893.2 -218Q4958.2 -181 5044.2 -181Q5101.2 -181 5147.7 -197.5Q5194.2 -214 5228.2 -246.5Q5262.2 -279 5279.2 -326L5518.2 -277Q5491.2 -187 5426.2 -119.5Q5361.2 -52 5263.7 -14.5Q5166.2 23 5041.2 23Z M5977.2 -1490V0H5717.2V-1490Z"/></symbol>
+  <!-- Strömungslinien (Gestaltungselement aus dem Corporate Design) -->
+  <symbol id="flow" viewBox="0 0 640 640" preserveAspectRatio="xMaxYMin meet">
+    <g fill="none" stroke-linecap="round">
+      <path d="M120 -40 C 340 -40 300 300 520 300 S 700 260 760 260" stroke="#0A6DA6" stroke-width="28" opacity=".55"/>
+      <path d="M60 120 C 280 120 240 460 460 460 S 660 420 760 420" stroke="#1688C6" stroke-width="18" opacity=".45"/>
+      <path d="M200 300 C 360 300 340 620 500 620 S 680 600 760 600" stroke="#3FA6DD" stroke-width="10" opacity=".35"/>
+    </g>
+    <circle cx="520" cy="300" r="34" fill="none" stroke="#7CC5EB" stroke-width="22"/>
+  </symbol>
+</svg>
+
+<a class="sr-only" href="#main" data-i18n="a11y.skip">Zum Inhalt springen</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html#top" aria-label="Runnel">
+      <svg viewBox="0 0 204 64" aria-hidden="true"><use href="#logo"/></svg>
+    </a>
+    <nav class="nav" aria-label="Hauptnavigation" data-i18n-attr="aria-label:nav.label">
+      <a href="../index.html#features" data-i18n="nav.features">Funktionen</a>
+      <a href="../index.html#model" data-i18n="nav.model">Modell</a>
+      <a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a>
+      <a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a>
+      <a href="../handbuch/" aria-current="page" data-i18n="nav.guide">Handbuch</a>
+      <a href="../docs/" data-i18n="nav.docs">Doku</a>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Sprache" data-i18n-attr="aria-label:lang.label">
+        <button type="button" data-lang="de" aria-pressed="true" lang="de" title="Deutsch">DE</button>
+        <button type="button" data-lang="en" aria-pressed="false" lang="en" title="English">EN</button>
+      </div>
+      <a class="icon-btn gh-link" href="https://github.com/runnelhq/runnel" aria-label="GitHub"><svg aria-hidden="true"><use href="#i-github"/></svg></a>
+      <a class="btn btn--primary btn--sm" href="https://github.com/runnelhq/runnel/releases" data-i18n="cta.download">Herunterladen</a>
+      <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Menü öffnen" data-i18n-attr="aria-label:nav.open">
+        <svg aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-nav" id="mobile-nav" data-open="false">
+    <div class="wrap">
+      <ul>
+        <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+        <li><a href="../index.html#model" data-i18n="nav.model">Modell</a></li>
+        <li><a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a></li>
+        <li><a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a></li>
+        <li><a href="../handbuch/" aria-current="page" data-i18n="nav.guide">Handbuch</a></li>
+        <li><a href="../docs/" data-i18n="nav.docs">Doku</a></li>
+      </ul>
+      <div class="mobile-ctas">
+        <a class="btn btn--primary" href="https://github.com/runnelhq/runnel/releases"><svg aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="cta.download">Herunterladen</span></a>
+        <a class="btn btn--outline" href="https://github.com/runnelhq/runnel"><svg aria-hidden="true"><use href="#i-github"/></svg>GitHub</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="docs-page">
+<div class="wrap docs-layout">
+      <details class="docs-side docs-side--mobile"><summary><span data-lang-block="de">Inhalt</span><span data-lang-block="en" hidden>Contents</span></summary><p class="docs-side-title"><span data-lang-block="de">Handbuch</span><span data-lang-block="en" hidden>User guide</span></p><ul class="docs-nav"><li><a href="../handbuch/"><span data-lang-block="de">Überblick</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../handbuch/installation.html"><span data-lang-block="de">Installation</span><span data-lang-block="en" hidden>Installation</span></a></li><li><a href="../handbuch/betrieb.html"><span data-lang-block="de">Betrieb</span><span data-lang-block="en" hidden>Operation</span></a></li><li><a href="../handbuch/projekt.html"><span data-lang-block="de">Projekt und Konfiguration</span><span data-lang-block="en" hidden>Project and configuration</span></a></li><li><a href="../handbuch/workflows.html"><span data-lang-block="de">Workflows</span><span data-lang-block="en" hidden>Workflows</span></a></li><li><a href="../handbuch/pipelines.html"><span data-lang-block="de">Pipelines</span><span data-lang-block="en" hidden>Pipelines</span></a></li><li><a href="../handbuch/trigger.html"><span data-lang-block="de">Trigger</span><span data-lang-block="en" hidden>Triggers</span></a></li><li><a href="../handbuch/ausdruecke.html"><span data-lang-block="de">Ausdrücke</span><span data-lang-block="en" hidden>Expressions</span></a></li><li><a href="../handbuch/bausteine.html"><span data-lang-block="de">Bausteine (Referenz)</span><span data-lang-block="en" hidden>Components (reference)</span></a></li><li class="docs-nav-group"><span data-lang-block="de">Kochbuch</span><span data-lang-block="en" hidden>Cookbook</span></li><li><a href="../handbuch/kochbuch.html"><span data-lang-block="de">Grundlagen</span><span data-lang-block="en" hidden>Basics</span></a></li><li><a href="../handbuch/kochbuch-open-meteo.html" aria-current="page"><span data-lang-block="de">Wetter (Open-Meteo)</span><span data-lang-block="en" hidden>Weather (Open-Meteo)</span></a></li><li><a href="../handbuch/kochbuch-teams.html"><span data-lang-block="de">Microsoft Teams</span><span data-lang-block="en" hidden>Microsoft Teams</span></a></li><li><a href="../handbuch/kochbuch-github.html"><span data-lang-block="de">GitHub</span><span data-lang-block="en" hidden>GitHub</span></a></li><li><a href="../handbuch/kochbuch-hubspot.html"><span data-lang-block="de">HubSpot</span><span data-lang-block="en" hidden>HubSpot</span></a></li><li><a href="../handbuch/kochbuch-lexware.html"><span data-lang-block="de">Lexware Office</span><span data-lang-block="en" hidden>Lexware Office</span></a></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#prereq">Voraussetzungen</a></li><li><a href="#files">Dateien</a></li><li><a href="#run">Ausführen</a></li><li><a href="#adapt">Anpassen</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#prereq-en">Prerequisites</a></li><li><a href="#files-en">Files</a></li><li><a href="#run-en">Running</a></li><li><a href="#adapt-en">Adapting</a></li></ul></details>
+<aside class="docs-side docs-side--desktop" aria-label="Dokumentation"><p class="docs-side-title"><span data-lang-block="de">Handbuch</span><span data-lang-block="en" hidden>User guide</span></p><ul class="docs-nav"><li><a href="../handbuch/"><span data-lang-block="de">Überblick</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../handbuch/installation.html"><span data-lang-block="de">Installation</span><span data-lang-block="en" hidden>Installation</span></a></li><li><a href="../handbuch/betrieb.html"><span data-lang-block="de">Betrieb</span><span data-lang-block="en" hidden>Operation</span></a></li><li><a href="../handbuch/projekt.html"><span data-lang-block="de">Projekt und Konfiguration</span><span data-lang-block="en" hidden>Project and configuration</span></a></li><li><a href="../handbuch/workflows.html"><span data-lang-block="de">Workflows</span><span data-lang-block="en" hidden>Workflows</span></a></li><li><a href="../handbuch/pipelines.html"><span data-lang-block="de">Pipelines</span><span data-lang-block="en" hidden>Pipelines</span></a></li><li><a href="../handbuch/trigger.html"><span data-lang-block="de">Trigger</span><span data-lang-block="en" hidden>Triggers</span></a></li><li><a href="../handbuch/ausdruecke.html"><span data-lang-block="de">Ausdrücke</span><span data-lang-block="en" hidden>Expressions</span></a></li><li><a href="../handbuch/bausteine.html"><span data-lang-block="de">Bausteine (Referenz)</span><span data-lang-block="en" hidden>Components (reference)</span></a></li><li class="docs-nav-group"><span data-lang-block="de">Kochbuch</span><span data-lang-block="en" hidden>Cookbook</span></li><li><a href="../handbuch/kochbuch.html"><span data-lang-block="de">Grundlagen</span><span data-lang-block="en" hidden>Basics</span></a></li><li><a href="../handbuch/kochbuch-open-meteo.html" aria-current="page"><span data-lang-block="de">Wetter (Open-Meteo)</span><span data-lang-block="en" hidden>Weather (Open-Meteo)</span></a></li><li><a href="../handbuch/kochbuch-teams.html"><span data-lang-block="de">Microsoft Teams</span><span data-lang-block="en" hidden>Microsoft Teams</span></a></li><li><a href="../handbuch/kochbuch-github.html"><span data-lang-block="de">GitHub</span><span data-lang-block="en" hidden>GitHub</span></a></li><li><a href="../handbuch/kochbuch-hubspot.html"><span data-lang-block="de">HubSpot</span><span data-lang-block="en" hidden>HubSpot</span></a></li><li><a href="../handbuch/kochbuch-lexware.html"><span data-lang-block="de">Lexware Office</span><span data-lang-block="en" hidden>Lexware Office</span></a></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#prereq">Voraussetzungen</a></li><li><a href="#files">Dateien</a></li><li><a href="#run">Ausführen</a></li><li><a href="#adapt">Anpassen</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#prereq-en">Prerequisites</a></li><li><a href="#files-en">Files</a></li><li><a href="#run-en">Running</a></li><li><a href="#adapt-en">Adapting</a></li></ul></aside>
+
+      <div class="docs-content">
+          <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch · Kochbuch</p>
+          <h1>Wetter (Open-Meteo)</h1>
+          <p class="docs-lead">Liest die aktuelle Temperatur und Windgeschwindigkeit für einen Ort. Ohne Anmeldung – das einfachste Rezept zum Ausprobieren.</p>
+          <dl class="recipe-meta"><dt>API</dt><dd><a href="https://open-meteo.com/en/docs">Open-Meteo Forecast API</a>, für nicht-kommerzielle Nutzung frei</dd><dt>Anmeldung</dt><dd>keine</dd><dt>Stand</dt><dd>Runnel-seitig geprüft am 23.11.2026: <code>runnel validate</code> und Ausführung gegen einen Testserver, der die API nachbildet. Gegen die echte API noch nicht ausgeführt – Endpunkte und Felder nach der Dokumentation des Anbieters (Stand 11/2026).</dd></dl>
+          <h2 id="prereq">Voraussetzungen</h2>
+          <p>Keine Konten oder Schlüssel nötig.</p>
+          <h2 id="files">Dateien</h2>
+          <div class="code">
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-191"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-191"><code class="lang-yaml"><span class="tok-c"># Recipe: current weather from Open-Meteo (no sign-in needed).</span>
+<span class="tok-t">kind</span>: Project
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: open-meteo
+<span class="tok-t">description</span>: Current weather from Open-Meteo
+<span class="tok-t">variables</span>:
+  <span class="tok-t">OPEN_METEO_URL</span>: https://api.open-meteo.com/v1/</code></pre>
+</div>
+          <div class="code">
+  <div class="code-head"><span>connections/open-meteo.yaml</span><button class="copy-btn" type="button" data-copy-from="code-192"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-192"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: open-meteo
+<span class="tok-t">description</span>: Open-Meteo weather API, free without sign-in for non-commercial use
+<span class="tok-t">type</span>: http
+<span class="tok-t">with</span>:
+  <span class="tok-t">baseUrl</span>: ${OPEN_METEO_URL}</code></pre>
+</div>
+          <div class="code">
+  <div class="code-head"><span>workflows/weather.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-193"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-193"><code class="lang-yaml"><span class="tok-c"># Reads the current temperature and wind speed for a place.</span>
+<span class="tok-c">#   runnel run workflows/weather.workflow.yaml</span>
+<span class="tok-c">#   runnel run --param LAT=48.14 --param LON=11.58 --param PLACE=München workflows/weather.workflow.yaml</span>
+<span class="tok-t">kind</span>: Workflow
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: weather
+<span class="tok-t">parameters</span>:
+  - <span class="tok-t">name</span>: LAT
+    <span class="tok-t">description</span>: Latitude
+    <span class="tok-t">default</span>: <span class="tok-s">"50.94"</span>
+  - <span class="tok-t">name</span>: LON
+    <span class="tok-t">description</span>: Longitude
+    <span class="tok-t">default</span>: <span class="tok-s">"6.96"</span>
+  - <span class="tok-t">name</span>: PLACE
+    <span class="tok-t">description</span>: Name of the place for the log
+    <span class="tok-t">default</span>: Köln
+<span class="tok-t">outputs</span>:
+  - <span class="tok-t">name</span>: TEMPERATURE
+    <span class="tok-t">type</span>: number
+    <span class="tok-t">value</span>: <span class="tok-s">"{{ results.fetch.output.body.current.temperature_2m }}"</span>
+<span class="tok-t">actions</span>:
+  - <span class="tok-t">id</span>: start
+    <span class="tok-t">type</span>: core.start
+  - <span class="tok-t">id</span>: fetch
+    <span class="tok-t">type</span>: http.request
+    <span class="tok-t">with</span>:
+      <span class="tok-t">connection</span>: open-meteo
+      <span class="tok-t">url</span>: forecast
+      <span class="tok-t">query</span>:
+        <span class="tok-t">latitude</span>: ${LAT}
+        <span class="tok-t">longitude</span>: ${LON}
+        <span class="tok-t">current</span>: temperature_2m,wind_speed_10m
+        <span class="tok-t">timezone</span>: Europe/Berlin
+      <span class="tok-t">timeout</span>: 30s
+  - <span class="tok-t">id</span>: report
+    <span class="tok-t">type</span>: core.log
+    <span class="tok-t">with</span>:
+      <span class="tok-t">message</span>: <span class="tok-s">"${PLACE}: {{ results.fetch.output.body.current.temperature_2m }} °C, wind {{ results.fetch.output.body.current.wind_speed_10m }} km/h"</span>
+<span class="tok-t">links</span>:
+  - { <span class="tok-t">from</span>: start, <span class="tok-t">to</span>: fetch }
+  - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: report }</code></pre>
+</div>
+          <h2 id="run">Ausführen</h2><p>Im Ordner des Rezepts (PowerShell):</p>
+          <div class="code">
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-197"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-197"><code class="lang-bash">runnel run workflows/weather.workflow.yaml
+runnel run --param LAT=48.14 --param LON=11.58 --param PLACE=München workflows/weather.workflow.yaml</code></pre>
+</div>
+          <h2 id="adapt">Anpassen</h2><ul><li><code>LAT</code>, <code>LON</code>, <code>PLACE</code> als Parameter oder Standardwerte setzen.</li><li>Weitere Werte unter <code>current</code> abfragen, z. B. <code>relative_humidity_2m</code>; sie stehen dann unter <code>body.current</code>.</li><li>Für kommerzielle Nutzung die Bedingungen von Open-Meteo beachten.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/open-meteo">Quellen auf GitHub: <code>_src/kochbuch/open-meteo</code></a></p>
+          </article>
+
+          <article class="prose" data-lang-block="en" hidden lang="en">
+          <p class="docs-eyebrow">User guide · Cookbook</p>
+          <h1>Weather (Open-Meteo)</h1>
+          <p class="docs-lead">Reads the current temperature and wind speed for a place. No sign-in – the simplest recipe to try things out.</p>
+          <dl class="recipe-meta"><dt>API</dt><dd><a href="https://open-meteo.com/en/docs">Open-Meteo Forecast API</a>, free for non-commercial use</dd><dt>Sign-in</dt><dd>none</dd><dt>Status</dt><dd>Checked on the Runnel side on 2026-11-23: <code>runnel validate</code> and runs against a test server that mimics the API. Not yet run against the real API – endpoints and fields per the provider's documentation (as of 11/2026).</dd></dl>
+          <h2 id="prereq-en">Prerequisites</h2>
+          <p>No accounts or keys needed.</p>
+          <h2 id="files-en">Files</h2>
+          <div class="code">
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-194"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-194"><code class="lang-yaml"><span class="tok-c"># Recipe: current weather from Open-Meteo (no sign-in needed).</span>
+<span class="tok-t">kind</span>: Project
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: open-meteo
+<span class="tok-t">description</span>: Current weather from Open-Meteo
+<span class="tok-t">variables</span>:
+  <span class="tok-t">OPEN_METEO_URL</span>: https://api.open-meteo.com/v1/</code></pre>
+</div>
+          <div class="code">
+  <div class="code-head"><span>connections/open-meteo.yaml</span><button class="copy-btn" type="button" data-copy-from="code-195"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-195"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: open-meteo
+<span class="tok-t">description</span>: Open-Meteo weather API, free without sign-in for non-commercial use
+<span class="tok-t">type</span>: http
+<span class="tok-t">with</span>:
+  <span class="tok-t">baseUrl</span>: ${OPEN_METEO_URL}</code></pre>
+</div>
+          <div class="code">
+  <div class="code-head"><span>workflows/weather.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-196"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-196"><code class="lang-yaml"><span class="tok-c"># Reads the current temperature and wind speed for a place.</span>
+<span class="tok-c">#   runnel run workflows/weather.workflow.yaml</span>
+<span class="tok-c">#   runnel run --param LAT=48.14 --param LON=11.58 --param PLACE=München workflows/weather.workflow.yaml</span>
+<span class="tok-t">kind</span>: Workflow
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: weather
+<span class="tok-t">parameters</span>:
+  - <span class="tok-t">name</span>: LAT
+    <span class="tok-t">description</span>: Latitude
+    <span class="tok-t">default</span>: <span class="tok-s">"50.94"</span>
+  - <span class="tok-t">name</span>: LON
+    <span class="tok-t">description</span>: Longitude
+    <span class="tok-t">default</span>: <span class="tok-s">"6.96"</span>
+  - <span class="tok-t">name</span>: PLACE
+    <span class="tok-t">description</span>: Name of the place for the log
+    <span class="tok-t">default</span>: Köln
+<span class="tok-t">outputs</span>:
+  - <span class="tok-t">name</span>: TEMPERATURE
+    <span class="tok-t">type</span>: number
+    <span class="tok-t">value</span>: <span class="tok-s">"{{ results.fetch.output.body.current.temperature_2m }}"</span>
+<span class="tok-t">actions</span>:
+  - <span class="tok-t">id</span>: start
+    <span class="tok-t">type</span>: core.start
+  - <span class="tok-t">id</span>: fetch
+    <span class="tok-t">type</span>: http.request
+    <span class="tok-t">with</span>:
+      <span class="tok-t">connection</span>: open-meteo
+      <span class="tok-t">url</span>: forecast
+      <span class="tok-t">query</span>:
+        <span class="tok-t">latitude</span>: ${LAT}
+        <span class="tok-t">longitude</span>: ${LON}
+        <span class="tok-t">current</span>: temperature_2m,wind_speed_10m
+        <span class="tok-t">timezone</span>: Europe/Berlin
+      <span class="tok-t">timeout</span>: 30s
+  - <span class="tok-t">id</span>: report
+    <span class="tok-t">type</span>: core.log
+    <span class="tok-t">with</span>:
+      <span class="tok-t">message</span>: <span class="tok-s">"${PLACE}: {{ results.fetch.output.body.current.temperature_2m }} °C, wind {{ results.fetch.output.body.current.wind_speed_10m }} km/h"</span>
+<span class="tok-t">links</span>:
+  - { <span class="tok-t">from</span>: start, <span class="tok-t">to</span>: fetch }
+  - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: report }</code></pre>
+</div>
+          <h2 id="run-en">Running</h2><p>In the recipe folder (PowerShell):</p>
+          <div class="code">
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-198"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-198"><code class="lang-bash">runnel run workflows/weather.workflow.yaml
+runnel run --param LAT=48.14 --param LON=11.58 --param PLACE=München workflows/weather.workflow.yaml</code></pre>
+</div>
+          <h2 id="adapt-en">Adapting</h2><ul><li>Set <code>LAT</code>, <code>LON</code>, <code>PLACE</code> as parameters or defaults.</li><li>Request more values under <code>current</code>, e.g. <code>relative_humidity_2m</code>; they appear under <code>body.current</code>.</li><li>For commercial use, observe Open-Meteo's terms.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/open-meteo">Sources on GitHub: <code>_src/kochbuch/open-meteo</code></a></p>
+          </article>
+      </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <svg viewBox="0 0 204 64" role="img" aria-label="Runnel"><use href="#logo"/></svg>
+        <p data-i18n="footer.claim">Leicht. Lokal. Im Fluss. Workflows und Datenintegration für Windows.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.product">Produkt</h4>
+        <ul>
+          <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+          <li><a href="../handbuch/" data-i18n="footer.guide">Handbuch</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/releases" data-i18n="footer.releases">Releases</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.docs">Dokumentation</h4>
+        <ul>
+          <li><a href="../docs/" data-i18n="footer.devdocs">Entwicklerdoku</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md" data-i18n="footer.concept">Konzept</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/docs/adr" data-i18n="footer.adr">Entscheidungen (ADR)</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/design" data-i18n="footer.design">Corporate Design</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.project">Projekt</h4>
+        <ul>
+          <li><a href="https://github.com/runnelhq/runnel">GitHub</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/issues" data-i18n="footer.issues">Fehler melden</a></li>
+          <li><a href="../impressum.html" data-i18n="footer.imprint">Impressum</a></li>
+          <li><a href="../datenschutz.html" data-i18n="footer.privacy">Datenschutz</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n="footer.copy">© 2026 The Runnel authors · MIT-Lizenz</span>
+      <span data-i18n="footer.local">Mit KI entwickelt (Vibe Coding) · Diese Seite lädt keine externen Schriften oder Tracker.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/site.js"></script>
+</body>
+</html>

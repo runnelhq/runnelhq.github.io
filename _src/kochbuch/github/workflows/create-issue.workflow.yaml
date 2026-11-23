@@ -1,0 +1,32 @@
+# Creates an issue; other workflows call it with core.run-workflow.
+#   runnel run --param REPO=owner/name --param TITLE="Import failed" workflows/create-issue.workflow.yaml
+kind: Workflow
+apiVersion: runnel/v1
+name: create-issue
+parameters:
+  - name: REPO
+    required: true
+  - name: TITLE
+    required: true
+  - name: BODY
+    default: Created by Runnel
+outputs:
+  - name: NUMBER
+    type: integer
+    value: "{{ results.create.output.body.number }}"
+  - name: URL
+    value: "{{ results.create.output.body.html_url }}"
+actions:
+  - id: start
+    type: core.start
+  - id: create
+    type: http.request
+    with:
+      connection: github
+      method: POST
+      url: repos/${REPO}/issues
+      body:
+        title: "${TITLE}"
+        body: "${BODY}"
+links:
+  - { from: start, to: create }

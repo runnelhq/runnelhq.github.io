@@ -107,7 +107,7 @@ secretStore: env</code></pre>
           <p>Als Variable <code>${DAYS}</code> ist der Wert immer Text; in Ausdrücken liefert <code>params.DAYS</code> ihn mit seinem Typ.</p>
 
           <h2 id="secrets">Secrets</h2>
-          <p>Passwörter und Tokens stehen nie direkt im Workflow, sondern als <code>${secret:NAME}</code> oder <code>${secret:QUELLE/NAME}</code>. Erlaubt ist das nur in Feldern für Secrets (z. B. <code>password</code> einer Connection) und als Token von HTTP-Triggern – nicht über eine Variable. Ein fehlendes Secret verhindert den Start; Werte werden in Log, Fehlern und Ergebnissen maskiert.</p>
+          <p>Passwörter und Tokens stehen nie direkt im Workflow, sondern als <code>${secret:NAME}</code> oder <code>${secret:QUELLE/NAME}</code>. Erlaubt ist das nur in Feldern für Secrets (z. B. <code>password</code>, <code>token</code> oder <code>headers</code> einer Connection) und als Token von HTTP-Triggern – nicht über eine Variable. Ein fehlendes Secret verhindert den Start; Werte werden in Log, Fehlern und Ergebnissen maskiert.</p>
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Quelle</th><th>Woher der Wert kommt</th></tr></thead>
             <tbody>
@@ -129,7 +129,7 @@ name: prod
 secretStore: env          # liest die Umgebungsvariable ERP_PASSWORD</code></pre>
 
           <h2 id="connections">Connections</h2>
-          <p>Eine Connection beschreibt den Zugang zu einer Datenbank einmal für das ganze Projekt. Bausteine nennen sie mit <code>connection: &lt;name&gt;</code>; <code>validate</code> prüft, ob es sie gibt und ob der Typ passt. Unterschiede zwischen Environments kommen über Variablen.</p>
+          <p>Eine Connection beschreibt den Zugang zu einer Datenbank, einer HTTP-API oder einem Mailserver einmal für das ganze Projekt. Bausteine nennen sie mit <code>connection: &lt;name&gt;</code>; <code>validate</code> prüft, ob es sie gibt und ob der Typ passt. Unterschiede zwischen Environments kommen über Variablen.</p>
 <pre><code class="lang-yaml" data-caption="connections/erp.yaml">kind: Connection
 apiVersion: runnel/v1
 name: erp                       # = Dateiname
@@ -166,6 +166,25 @@ with:
               <tr><td><code>password</code></td><td>als <code>${secret:NAME}</code></td></tr>
               <tr><td><code>sslMode</code></td><td><code>verify-full</code> (Standard), <code>verify-ca</code>, <code>require</code> oder <code>disable</code></td></tr>
               <tr><td><code>connectTimeout</code></td><td>Standard <code>30s</code></td></tr>
+            </tbody>
+          </table></div>
+          <h3>HTTP-API (<code>http</code>)</h3>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><td><code>baseUrl</code> <span class="ref-req">Pflicht</span></td><td>Basisadresse; die <code>url</code> von <code>http.request</code> ist relativ dazu</td></tr>
+              <tr><td><code>headers</code></td><td>Header jeder Anfrage; Werte dürfen <code>${secret:NAME}</code> enthalten</td></tr>
+              <tr><td><code>auth</code></td><td><code>none</code> (Standard), <code>bearer</code> (<code>token</code>), <code>basic</code> (<code>user</code>, <code>password</code>), <code>apiKey</code> (<code>apiKey</code>, <code>apiKeyName</code>, <code>apiKeyIn</code>: <code>header</code> oder <code>query</code>) oder <code>oauth2</code> (<code>tokenUrl</code>, <code>clientId</code>, <code>clientSecret</code>, <code>scope</code>)</td></tr>
+            </tbody>
+          </table></div>
+          <p>Die Anmeldung geht nur an den Host der <code>baseUrl</code>; mit Anmeldung ist <code>http://</code> nur zum eigenen Rechner erlaubt. Beispiele für bekannte APIs stehen im <a href="kochbuch.html">Kochbuch</a>.</p>
+          <h3>Mailserver (<code>smtp</code>)</h3>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><td><code>host</code> <span class="ref-req">Pflicht</span></td><td>Mailserver</td></tr>
+              <tr><td><code>port</code>, <code>tls</code></td><td><code>starttls</code> (Standard, Port 587), <code>tls</code> (Port 465) oder <code>none</code> (nur für ein Relay im vertrauenswürdigen Netz); das Zertifikat wird immer geprüft</td></tr>
+              <tr><td><code>auth</code></td><td><code>password</code> (<code>user</code>, <code>password</code>), <code>oauth2</code> (Microsoft Entra: <code>tenant</code>, <code>clientId</code>, <code>clientSecret</code>; z. B. Office 365) oder <code>none</code></td></tr>
+              <tr><td><code>from</code></td><td>Absender, wenn <code>mail.send</code> keinen nennt</td></tr>
+              <tr><td><code>timeout</code></td><td>Verbinden und Senden einer Mail, Standard <code>1m</code></td></tr>
             </tbody>
           </table></div>
           <p>SQL bekommt Werte nur als Parameter (<code>@name</code> mit dem Feld <code>params</code>), nie als Text im SQL – das schützt vor SQL-Injection. Beispiel: <a href="bausteine.html#a-db-execute-de"><code>db.execute</code></a>.</p>
@@ -265,7 +284,7 @@ secretStore: env</code></pre>
           <p>As a variable <code>${DAYS}</code> the value is always text; in expressions <code>params.DAYS</code> returns it with its type.</p>
 
           <h2 id="secrets-en">Secrets</h2>
-          <p>Passwords and tokens never go directly into a workflow but appear as <code>${secret:NAME}</code> or <code>${secret:SOURCE/NAME}</code>. This is allowed only in secret fields (e.g. a connection's <code>password</code>) and as the token of HTTP triggers – not via a variable. A missing secret prevents the start; values are masked in log, errors and results.</p>
+          <p>Passwords and tokens never go directly into a workflow but appear as <code>${secret:NAME}</code> or <code>${secret:SOURCE/NAME}</code>. This is allowed only in secret fields (e.g. a connection's <code>password</code>, <code>token</code> or <code>headers</code>) and as the token of HTTP triggers – not via a variable. A missing secret prevents the start; values are masked in log, errors and results.</p>
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Source</th><th>Where the value comes from</th></tr></thead>
             <tbody>
@@ -287,7 +306,7 @@ name: prod
 secretStore: env          # reads the environment variable ERP_PASSWORD</code></pre>
 
           <h2 id="connections-en">Connections</h2>
-          <p>A connection describes access to a database once for the whole project. Components name it with <code>connection: &lt;name&gt;</code>; <code>validate</code> checks that it exists and the type fits. Differences between environments come from variables.</p>
+          <p>A connection describes access to a database, an HTTP API or a mail server once for the whole project. Components name it with <code>connection: &lt;name&gt;</code>; <code>validate</code> checks that it exists and the type fits. Differences between environments come from variables.</p>
 <pre><code class="lang-yaml" data-caption="connections/erp.yaml">kind: Connection
 apiVersion: runnel/v1
 name: erp                       # = file name
@@ -324,6 +343,25 @@ with:
               <tr><td><code>password</code></td><td>As <code>${secret:NAME}</code></td></tr>
               <tr><td><code>sslMode</code></td><td><code>verify-full</code> (default), <code>verify-ca</code>, <code>require</code> or <code>disable</code></td></tr>
               <tr><td><code>connectTimeout</code></td><td>Default <code>30s</code></td></tr>
+            </tbody>
+          </table></div>
+          <h3>HTTP API (<code>http</code>)</h3>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><td><code>baseUrl</code> <span class="ref-req">required</span></td><td>Base address; the <code>url</code> of <code>http.request</code> is relative to it</td></tr>
+              <tr><td><code>headers</code></td><td>Headers of every request; values may contain <code>${secret:NAME}</code></td></tr>
+              <tr><td><code>auth</code></td><td><code>none</code> (default), <code>bearer</code> (<code>token</code>), <code>basic</code> (<code>user</code>, <code>password</code>), <code>apiKey</code> (<code>apiKey</code>, <code>apiKeyName</code>, <code>apiKeyIn</code>: <code>header</code> or <code>query</code>) or <code>oauth2</code> (<code>tokenUrl</code>, <code>clientId</code>, <code>clientSecret</code>, <code>scope</code>)</td></tr>
+            </tbody>
+          </table></div>
+          <p>The sign-in only goes to the host of <code>baseUrl</code>; with a sign-in, <code>http://</code> is only allowed to the local machine. Examples for well-known APIs are in the <a href="kochbuch.html">cookbook</a>.</p>
+          <h3>Mail server (<code>smtp</code>)</h3>
+          <div class="table-scroll"><table class="doc-table">
+            <tbody>
+              <tr><td><code>host</code> <span class="ref-req">required</span></td><td>Mail server</td></tr>
+              <tr><td><code>port</code>, <code>tls</code></td><td><code>starttls</code> (default, port 587), <code>tls</code> (port 465) or <code>none</code> (only for a relay in a trusted network); the certificate is always checked</td></tr>
+              <tr><td><code>auth</code></td><td><code>password</code> (<code>user</code>, <code>password</code>), <code>oauth2</code> (Microsoft Entra: <code>tenant</code>, <code>clientId</code>, <code>clientSecret</code>; e.g. Office 365) or <code>none</code></td></tr>
+              <tr><td><code>from</code></td><td>Sender if <code>mail.send</code> names none</td></tr>
+              <tr><td><code>timeout</code></td><td>Connecting and sending one mail, default <code>1m</code></td></tr>
             </tbody>
           </table></div>
           <p>SQL receives values only as parameters (<code>@name</code> with the <code>params</code> field), never as text in the SQL – this protects against SQL injection. Example: <a href="bausteine.html#a-db-execute-en"><code>db.execute</code></a>.</p>

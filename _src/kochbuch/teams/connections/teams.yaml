@@ -1,0 +1,11 @@
+kind: Connection
+apiVersion: runnel/v1
+name: teams
+description: Workflow webhook of a Teams channel
+type: http
+with:
+  baseUrl: ${TEAMS_URL}
+  auth: apiKey
+  apiKeyIn: query
+  apiKeyName: sig
+  apiKey: ${secret:TEAMS_SIG}
