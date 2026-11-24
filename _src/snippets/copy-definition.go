@@ -11,7 +11,7 @@ var copyDefinition = action.Definition{
 type copyAction struct {
 	Source    string `json:"source" doc:"File or folder to copy; wildcards allowed" schema:"required,example=C:\\in\\*.csv"`
 	Target    string `json:"target" doc:"Target folder" schema:"required,example=D:\\archive"`
-	Overwrite bool   `json:"overwrite" doc:"Replace existing files" schema:"default=false"`
+	IfExists  string `json:"ifExists" doc:"If a file exists in the target: replace it, skip it, or fail" schema:"enum=replace|skip|fail,default=fail"`
 }
 
 func newCopy(with map[string]any) (action.Action, error) {

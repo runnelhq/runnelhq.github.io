@@ -28,9 +28,17 @@
               <tr><td><a href="kochbuch-github.html">GitHub</a></td><td>Token (<code>bearer</code>)</td><td>Paginierung über den Header <code>Link</code>, Daten anlegen</td></tr>
               <tr><td><a href="kochbuch-hubspot.html">HubSpot</a></td><td>Token einer Private App (<code>bearer</code>)</td><td>Paginierung mit Cursor, Kontakt anlegen</td></tr>
               <tr><td><a href="kochbuch-lexware.html">Lexware Office</a></td><td>API-Schlüssel (<code>bearer</code>)</td><td>Paginierung mit Seitennummer, Rate-Limit mit <code>Retry-After</code></td></tr>
+              <tr><td><a href="kochbuch-sharepoint.html">SharePoint (Microsoft Graph)</a></td><td>OAuth2 Client Credentials</td><td>Download mit <code>saveTo</code>, ZIP entpacken, Pipeline je Datei</td></tr>
             </tbody>
           </table></div>
-          <p>Jedes Rezept ist ein kleines, vollständiges Projekt: <code>project.yaml</code>, eine Connection und ein oder zwei Workflows. Alle Dateien sind mit <code>runnel validate</code> geprüft und gegen einen Testserver ausgeführt, der die jeweilige API nachbildet. Die Quellen liegen auf <a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch">GitHub</a>.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Rezept für Dateien</th><th>zeigt</th></tr></thead>
+            <tbody>
+              <tr><td><a href="kochbuch-excel.html">Excel lesen und schreiben</a></td><td>Blatt und Bereich lesen, typisierte Werte, formatierte Mappe schreiben, Fehler-Link</td></tr>
+              <tr><td><a href="kochbuch-xml.html">XML-Austausch</a></td><td>Elemente als Datensätze, Attribute und verschachtelte Elemente lesen und schreiben</td></tr>
+            </tbody>
+          </table></div>
+          <p>Jedes Rezept ist ein kleines, vollständiges Projekt: <code>project.yaml</code>, Connection, Workflows und Pipelines, bei Datei-Rezepten mit Beispieldaten. Alle Dateien sind mit <code>runnel validate</code> geprüft; API-Rezepte laufen gegen einen Testserver, der die API nachbildet, Datei-Rezepte vollständig mit ihren Beispieldaten. Die Quellen liegen auf <a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch">GitHub</a>.</p>
           <p><strong>Übernehmen:</strong> Ordner des Rezepts in ein eigenes Projekt kopieren – oder nur die Connection und die Workflows übernehmen – und die Werte unter „Anpassen“ setzen. APIs ändern sich; vor dem produktiven Einsatz die Anfragen mit der aktuellen Dokumentation des Anbieters abgleichen.</p>
 
           <h2 id="connection">Die Connection <code>http</code></h2>
@@ -77,7 +85,7 @@ with:
             <thead><tr><th><code>style</code></th><th>nächste Seite steht …</th><th>Rezept</th></tr></thead>
             <tbody>
               <tr><td><code>link</code></td><td>im Header <code>Link: …; rel="next"</code></td><td><a href="kochbuch-github.html">GitHub</a></td></tr>
-              <tr><td><code>url</code></td><td>als Adresse im Body, z. B. <code>@odata.nextLink</code></td><td>Microsoft Graph, OData</td></tr>
+              <tr><td><code>url</code></td><td>als Adresse im Body, z. B. <code>@odata.nextLink</code></td><td>Microsoft Graph, OData – siehe <a href="kochbuch-sharepoint.html">SharePoint</a></td></tr>
               <tr><td><code>cursor</code></td><td>als Wert im Body, der als Query-Parameter zurückgeht</td><td><a href="kochbuch-hubspot.html">HubSpot</a></td></tr>
               <tr><td><code>page</code></td><td>als fortlaufende Seitennummer</td><td><a href="kochbuch-lexware.html">Lexware Office</a></td></tr>
               <tr><td><code>offset</code></td><td>als Zahl der bisher gelesenen Einträge</td><td>viele SQL-nahe APIs</td></tr>
@@ -115,9 +123,17 @@ with:
               <tr><td><a href="kochbuch-github.html">GitHub</a></td><td>Token (<code>bearer</code>)</td><td>Pagination via the <code>Link</code> header, creating data</td></tr>
               <tr><td><a href="kochbuch-hubspot.html">HubSpot</a></td><td>Private app token (<code>bearer</code>)</td><td>Cursor pagination, creating a contact</td></tr>
               <tr><td><a href="kochbuch-lexware.html">Lexware Office</a></td><td>API key (<code>bearer</code>)</td><td>Page-number pagination, rate limit with <code>Retry-After</code></td></tr>
+              <tr><td><a href="kochbuch-sharepoint.html">SharePoint (Microsoft Graph)</a></td><td>OAuth2 client credentials</td><td>Download with <code>saveTo</code>, unpacking a ZIP, a pipeline per file</td></tr>
             </tbody>
           </table></div>
-          <p>Every recipe is a small, complete project: <code>project.yaml</code>, a connection and one or two workflows. All files are checked with <code>runnel validate</code> and run against a test server that mimics the API. The sources are on <a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch">GitHub</a>.</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Recipe for files</th><th>Shows</th></tr></thead>
+            <tbody>
+              <tr><td><a href="kochbuch-excel.html">Reading and writing Excel</a></td><td>Reading sheet and range, typed values, writing a formatted workbook, error link</td></tr>
+              <tr><td><a href="kochbuch-xml.html">XML exchange</a></td><td>Elements as records, reading and writing attributes and nested elements</td></tr>
+            </tbody>
+          </table></div>
+          <p>Every recipe is a small, complete project: <code>project.yaml</code>, connection, workflows and pipelines, with sample data for file recipes. All files are checked with <code>runnel validate</code>; API recipes run against a test server that mimics the API, file recipes run completely with their sample data. The sources are on <a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch">GitHub</a>.</p>
           <p><strong>Taking it over:</strong> copy the recipe folder into your own project – or only the connection and workflows – and set the values under “Adapting”. APIs change; check the requests against the provider's current documentation before production use.</p>
 
           <h2 id="connection-en">The <code>http</code> connection</h2>
@@ -164,7 +180,7 @@ with:
             <thead><tr><th><code>style</code></th><th>The next page is …</th><th>Recipe</th></tr></thead>
             <tbody>
               <tr><td><code>link</code></td><td>in the header <code>Link: …; rel="next"</code></td><td><a href="kochbuch-github.html">GitHub</a></td></tr>
-              <tr><td><code>url</code></td><td>an address in the body, e.g. <code>@odata.nextLink</code></td><td>Microsoft Graph, OData</td></tr>
+              <tr><td><code>url</code></td><td>an address in the body, e.g. <code>@odata.nextLink</code></td><td>Microsoft Graph, OData – see <a href="kochbuch-sharepoint.html">SharePoint</a></td></tr>
               <tr><td><code>cursor</code></td><td>a value in the body sent back as a query parameter</td><td><a href="kochbuch-hubspot.html">HubSpot</a></td></tr>
               <tr><td><code>page</code></td><td>a running page number</td><td><a href="kochbuch-lexware.html">Lexware Office</a></td></tr>
               <tr><td><code>offset</code></td><td>the number of entries read so far</td><td>many SQL-like APIs</td></tr>

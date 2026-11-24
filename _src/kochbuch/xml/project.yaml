@@ -1,0 +1,5 @@
+# Recipe: read orders from an XML export, write a CSV file and XML for a partner.
+kind: Project
+apiVersion: runnel/v1
+name: xml
+description: Orders from XML to CSV and to another XML structure

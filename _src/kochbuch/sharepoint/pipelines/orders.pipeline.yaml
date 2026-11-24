@@ -1,0 +1,26 @@
+# Reads one CSV file of a ZIP from SharePoint and appends its rows to
+# out/sharepoint-orders.csv; the rows also go back to the workflow (core.to-result).
+kind: Pipeline
+apiVersion: runnel/v1
+name: orders
+parameters:
+  - name: FILE
+    description: Unpacked CSV file
+    required: true
+transforms:
+  - id: read
+    type: csv.input
+    with:
+      path: ${FILE}
+      delimiter: ";"
+  - id: write
+    type: csv.output
+    with:
+      path: out/sharepoint-orders.csv
+      delimiter: ";"
+      ifExists: append
+  - id: result
+    type: core.to-result
+links:
+  - { from: read, to: write }
+  - { from: read, to: result }

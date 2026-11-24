@@ -92,12 +92,13 @@ Die Rezepte unter `handbuch/kochbuch-*.html` zeigen Dateien aus `_src/kochbuch/<
 vollständiges kleines Projekt. Vor dem Commit prüfen (Secrets mit Platzhalterwerten):
 
 ```bash
-for r in _src/kochbuch/*; do GITHUB_TOKEN=x HUBSPOT_TOKEN=x LEXWARE_API_KEY=x TEAMS_SIG=x runnel validate "$r"; done
+for r in _src/kochbuch/*; do GITHUB_TOKEN=x HUBSPOT_TOKEN=x LEXWARE_API_KEY=x TEAMS_SIG=x GRAPH_CLIENT_SECRET=x runnel validate "$r"; done
 ```
 
-Ein neues Rezept: Ordner anlegen, Seite `_src/guide-kochbuch-<rezept>.html` nach dem Muster der vorhandenen schreiben,
-in `GUIDE_NAV` (Gruppe „Kochbuch“) und in die Tabelle auf `_src/guide-kochbuch.html` eintragen. Jede Seite nennt unter
-„Stand“, womit das Rezept geprüft ist.
+Die Rezeptseiten erzeugt `tools/kochbuch.py` aus einer Liste (Titel, Texte DE/EN, Dateien, Voraussetzungen). Ein neues
+Rezept: Ordner unter `_src/kochbuch/` anlegen, Eintrag in `tools/kochbuch.py` ergänzen, in `GUIDE_NAV` (Gruppe
+„Kochbuch“) und in die Tabelle auf `_src/guide-kochbuch.html` eintragen, dann `python3 tools/kochbuch.py` und
+`python3 tools/build.py`. Jede Seite nennt unter „Stand“, womit das Rezept geprüft ist.
 
 ## Entwicklerdoku
 

@@ -1,0 +1,5 @@
+# Recipe: read orders from an Excel workbook, write a CSV file and a formatted workbook.
+kind: Project
+apiVersion: runnel/v1
+name: excel
+description: Orders from Excel to CSV and back to Excel

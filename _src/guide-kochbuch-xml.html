@@ -1,0 +1,57 @@
+<!-- {
+  "out": "handbuch/kochbuch-xml.html",
+  "section": "guide",
+  "title": {
+    "de": "Kochbuch: XML-Austausch",
+    "en": "Cookbook: XML exchange"
+  },
+  "description": {
+    "de": "Liest Bestellungen aus einem XML-Export eines ERP-Systems, schreibt sie als CSV und als XML in der Struktur, die ein Partner erwartet.",
+    "en": "Reads orders from an ERP system's XML export and writes them as CSV and as XML in the structure a partner expects."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+          <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch · Kochbuch</p>
+          <h1>XML-Austausch</h1>
+          <p class="docs-lead">Liest Bestellungen aus einem XML-Export eines ERP-Systems, schreibt sie als CSV und als XML in der Struktur, die ein Partner erwartet.</p>
+          <dl class="recipe-meta"><dt>Bausteine</dt><dd><code>xml.input</code>, <code>xml.output</code>, <code>csv.output</code></dd><dt>Anmeldung</dt><dd>keine – nur Dateien</dd><dt>Stand</dt><dd>Geprüft am 24.11.2026 mit <code>runnel validate</code> und vollständig ausgeführt mit den Beispieldaten des Rezepts.</dd></dl>
+          <h2 id="prereq">Voraussetzungen</h2>
+          <p>Keine Konten oder Schlüssel nötig.</p>
+          <h2 id="files">Dateien</h2>
+          {{snippet:../kochbuch/xml/project.yaml|project.yaml}}
+          {{snippet:../kochbuch/xml/data/orders.xml|data/orders.xml}}
+          {{snippet:../kochbuch/xml/pipelines/orders.pipeline.yaml|pipelines/orders.pipeline.yaml}}
+          {{snippet:../kochbuch/xml/workflows/export.workflow.yaml|workflows/export.workflow.yaml}}
+          <p>Bestellung 1004 hat „k. A.“ als Betrag und geht über den Fehler-Link nach <code>out/xml-rejected.csv</code>, mit der Zeile der Bestellung in <code>_error</code>.</p>
+          <h2 id="run">Ausführen</h2><p>Im Ordner des Rezepts (PowerShell):</p>
+          <pre><code class="lang-bash" data-caption="PowerShell">runnel run workflows/export.workflow.yaml</code></pre>
+          <h2 id="adapt">Anpassen</h2><ul><li><code>records</code> ist der Pfad der Elemente, die Datensätze sind (<code>Bestellungen/Bestellung</code>); Präfixe von Namensräumen werden nicht geschrieben.</li><li>Beim Lesen holt <code>from</code> ein Attribut (<code>@nr</code>), ein verschachteltes Element (<code>Kunde/Name</code>) oder dessen Attribut (<code>Kunde/@id</code>).</li><li>Beim Schreiben legt <code>as</code> fest, wohin ein Feld kommt: als Attribut (<code>@number</code>) oder verschachtelt (<code>customer/name</code>); <code>root</code> und <code>record</code> benennen Wurzel- und Datensatz-Element.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/xml">Quellen auf GitHub: <code>_src/kochbuch/xml</code></a></p>
+          </article>
+
+          <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide · Cookbook</p>
+          <h1>XML exchange</h1>
+          <p class="docs-lead">Reads orders from an ERP system's XML export and writes them as CSV and as XML in the structure a partner expects.</p>
+          <dl class="recipe-meta"><dt>Components</dt><dd><code>xml.input</code>, <code>xml.output</code>, <code>csv.output</code></dd><dt>Sign-in</dt><dd>none – files only</dd><dt>Status</dt><dd>Checked on 2026-11-24 with <code>runnel validate</code> and run completely with the recipe's sample data.</dd></dl>
+          <h2 id="prereq-en">Prerequisites</h2>
+          <p>No accounts or keys needed.</p>
+          <h2 id="files-en">Files</h2>
+          {{snippet:../kochbuch/xml/project.yaml|project.yaml}}
+          {{snippet:../kochbuch/xml/data/orders.xml|data/orders.xml}}
+          {{snippet:../kochbuch/xml/pipelines/orders.pipeline.yaml|pipelines/orders.pipeline.yaml}}
+          {{snippet:../kochbuch/xml/workflows/export.workflow.yaml|workflows/export.workflow.yaml}}
+          <p>Order 1004 has “k. A.” as amount and goes over the error link to <code>out/xml-rejected.csv</code>, with the order's line in <code>_error</code>.</p>
+          <h2 id="run-en">Running</h2><p>In the recipe folder (PowerShell):</p>
+          <pre><code class="lang-bash" data-caption="PowerShell">runnel run workflows/export.workflow.yaml</code></pre>
+          <h2 id="adapt-en">Adapting</h2><ul><li><code>records</code> is the path of the elements that are records (<code>Bestellungen/Bestellung</code>); namespace prefixes are not written.</li><li>When reading, <code>from</code> takes an attribute (<code>@nr</code>), a nested element (<code>Kunde/Name</code>) or its attribute (<code>Kunde/@id</code>).</li><li>When writing, <code>as</code> decides where a field goes: as an attribute (<code>@number</code>) or nested (<code>customer/name</code>); <code>root</code> and <code>record</code> name the root and record elements.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/xml">Sources on GitHub: <code>_src/kochbuch/xml</code></a></p>
+          </article>
+      </div>
+    </div>

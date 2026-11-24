@@ -1,0 +1,66 @@
+# Reads orders from data/orders.xlsx and writes them to a CSV file and a new workbook.
+# - "read": sheet "Bestellungen", the table starts in A3 (a title is above it);
+#   emptyRows: stop ends it before the sum below. Numbers, dates and true/false come
+#   typed from Excel; fields: chooses the columns and checks their types.
+# - An order with #N/A in Betrag goes over the error link to REJECTED instead of
+#   stopping the pipeline.
+# - "workbook": header bold and frozen, Betrag with an Excel number format, dates stay
+#   dates. ifExists: sheet would replace only this sheet in an existing workbook.
+kind: Pipeline
+apiVersion: runnel/v1
+name: orders
+parameters:
+  - name: OUTPUT
+    description: CSV file to write
+    default: out/excel-orders.csv
+  - name: REJECTED
+    description: CSV file for orders with errors
+    default: out/excel-rejected.csv
+  - name: WORKBOOK
+    description: Excel workbook to write
+    default: out/excel-orders.xlsx
+transforms:
+  - id: read
+    type: excel.input
+    with:
+      path: data/orders.xlsx
+      sheet: Bestellungen
+      range: A3
+      emptyRows: stop
+      fields:
+        - { name: Nr, type: int }
+        - { name: Kunde }
+        - { name: Betrag, type: decimal }
+        - { name: Datum, type: date }
+        - { name: Bezahlt, type: bool }
+  - id: write
+    type: csv.output
+    with:
+      path: ${OUTPUT}
+      delimiter: ";"
+      fields:
+        - { name: Nr }
+        - { name: Kunde }
+        - { name: Betrag, format: "#.##0,00" }
+        - { name: Datum, format: dd.MM.yyyy }
+        - { name: Bezahlt }
+  - id: workbook
+    type: excel.output
+    with:
+      path: ${WORKBOOK}
+      sheet: Bestellungen
+      fields:
+        - { name: Nr }
+        - { name: Kunde }
+        - { name: Betrag, excelFormat: "#,##0.00 \"€\"" }
+        - { name: Datum, format: dd.MM.yyyy }
+        - { name: Bezahlt }
+  - id: rejected
+    type: csv.output
+    with:
+      path: ${REJECTED}
+      delimiter: ";"
+links:
+  - { from: read, to: write }
+  - { from: read, to: workbook }
+  - { from: read, to: rejected, type: error }

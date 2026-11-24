@@ -1,0 +1,43 @@
+# One ZIP file from SharePoint Online, called by orders.workflow.yaml:
+# download it with http.request and saveTo (Graph answers /content with a redirect to the
+# download; the token does not go along), unpack the CSV files, read each of them.
+#   runnel run -v --param PATH=Exports/orders-north.zip workflows/file.workflow.yaml
+kind: Workflow
+apiVersion: runnel/v1
+name: file
+parameters:
+  - name: PATH
+    description: Path of the ZIP file in the document library, e.g. Exports/orders-north.zip
+    required: true
+outputs:
+  - name: ROWS
+    type: integer
+    value: "{{ sum(map(results.read.output.items, len(.output.rows))) }}"
+actions:
+  - id: start
+    type: core.start
+  - id: download
+    type: http.request
+    with:
+      connection: sharepoint
+      url: "sites/${SHAREPOINT_SITE}/drive/root:/${PATH}:/content"
+      saveTo: inbox/${PATH}
+      timeout: 10m
+  - id: unpack
+    type: archive.extract
+    with:
+      source: "{{ results.download.output.path }}"
+      target: inbox/unpacked/${PATH}
+      pattern: "*.csv"
+      ifExists: replace
+  - id: read
+    type: core.run-pipeline
+    forEach: "{{ results.unpack.output }}"
+    with:
+      pipeline: pipelines/orders.pipeline.yaml
+      params:
+        FILE: "{{ row }}"
+links:
+  - { from: start, to: download }
+  - { from: download, to: unpack }
+  - { from: unpack, to: read }

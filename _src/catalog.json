@@ -37,7 +37,7 @@
           },
           "ifExists": {
             "type": "string",
-            "description": "What happens if the archive exists: replace it once the new one is complete, or fail",
+            "description": "If the archive exists: replace it once the new one is complete, or fail",
             "enum": [
               "replace",
               "fail"
@@ -97,11 +97,11 @@
           },
           "ifExists": {
             "type": "string",
-            "description": "What happens to files that exist in the folder: fail before anything is written, replace them, or skip them",
+            "description": "If files exist in the folder: replace them, skip them, or fail before anything is written",
             "enum": [
-              "fail",
               "replace",
-              "skip"
+              "skip",
+              "fail"
             ],
             "default": "fail"
           },
@@ -494,10 +494,15 @@
               "D:\\archive"
             ]
           },
-          "overwrite": {
-            "type": "boolean",
-            "description": "Replace existing files in the target",
-            "default": false
+          "ifExists": {
+            "type": "string",
+            "description": "If a file exists in the target: replace it, skip it (it stays and is not in the output), or fail before anything is copied or moved",
+            "enum": [
+              "replace",
+              "skip",
+              "fail"
+            ],
+            "default": "fail"
           }
         },
         "required": [
@@ -506,7 +511,7 @@
         ],
         "additionalProperties": false
       },
-      "example": "source: inbox/*.csv\ntarget: archive/\noverwrite: true\n"
+      "example": "source: inbox/*.csv\ntarget: archive/\nifExists: replace\n"
     },
     {
       "type": "file.delete",
@@ -530,10 +535,14 @@
             "description": "Also delete folders with everything in them",
             "default": false
           },
-          "mustExist": {
-            "type": "boolean",
-            "description": "Fail if nothing matches the path",
-            "default": false
+          "ifMissing": {
+            "type": "string",
+            "description": "If nothing matches the path: skip (nothing is deleted) or fail",
+            "enum": [
+              "skip",
+              "fail"
+            ],
+            "default": "skip"
           }
         },
         "required": [
@@ -672,10 +681,15 @@
               "D:\\archive"
             ]
           },
-          "overwrite": {
-            "type": "boolean",
-            "description": "Replace existing files in the target",
-            "default": false
+          "ifExists": {
+            "type": "string",
+            "description": "If a file exists in the target: replace it, skip it (it stays and is not in the output), or fail before anything is copied or moved",
+            "enum": [
+              "replace",
+              "skip",
+              "fail"
+            ],
+            "default": "fail"
           }
         },
         "required": [
@@ -685,6 +699,66 @@
         "additionalProperties": false
       },
       "example": "source: inbox/orders.csv\ntarget: done/\n"
+    },
+    {
+      "type": "file.read",
+      "kind": "action",
+      "category": "files",
+      "label": "Read File",
+      "description": "Reads a small text file into the workflow, as text, lines or JSON; output: content, value or lines, size and modified",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File to read, relative to the project folder or absolute",
+            "examples": [
+              "config/settings.json"
+            ]
+          },
+          "format": {
+            "type": "string",
+            "description": "How the content is read: text, lines (a list without line ends) or json (a value, e.g. {{ results.read.output.value.customers }})",
+            "enum": [
+              "text",
+              "lines",
+              "json"
+            ],
+            "default": "text"
+          },
+          "encoding": {
+            "type": "string",
+            "description": "Encoding of the file; auto recognizes UTF-8 with or without byte order mark and UTF-16",
+            "enum": [
+              "auto",
+              "utf-8",
+              "windows-1252",
+              "utf-16"
+            ],
+            "default": "auto"
+          },
+          "ifMissing": {
+            "type": "string",
+            "description": "If the file does not exist: fail, or go on with empty content (output missing: true)",
+            "enum": [
+              "fail",
+              "empty"
+            ],
+            "default": "fail"
+          },
+          "maxSize": {
+            "type": "string",
+            "description": "Largest file to read, e.g. 500KB or 10MB; the content goes into the result of the run",
+            "default": "10MB"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "example": "path: config/customers.json\nformat: json\n"
     },
     {
       "type": "file.wait",
@@ -732,6 +806,74 @@
         "additionalProperties": false
       },
       "example": "path: inbox/*.csv\nmaxWait: 30m\nstableFor: 10s\n"
+    },
+    {
+      "type": "file.write",
+      "kind": "action",
+      "category": "files",
+      "label": "Write File",
+      "description": "Writes a text or a value as JSON to a file, replacing it or appending; output: path and size",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File to write, relative to the project folder or absolute; missing folders are created",
+            "examples": [
+              "out/status.txt"
+            ]
+          },
+          "content": {
+            "description": "What to write: a text, or with format: json any value, e.g. {{ results.query.output.rows }}"
+          },
+          "format": {
+            "type": "string",
+            "description": "text writes the content as text (other values as JSON), json writes the value as formatted JSON",
+            "enum": [
+              "text",
+              "json"
+            ],
+            "default": "text"
+          },
+          "encoding": {
+            "type": "string",
+            "description": "Encoding of the file; utf-8-bom lets Excel and older Windows programs recognize umlauts",
+            "enum": [
+              "utf-8",
+              "utf-8-bom",
+              "windows-1252",
+              "utf-16le"
+            ],
+            "default": "utf-8"
+          },
+          "lineEnds": {
+            "type": "string",
+            "description": "Line ends: as in the content, crlf (Windows) or lf",
+            "enum": [
+              "keep",
+              "crlf",
+              "lf"
+            ],
+            "default": "keep"
+          },
+          "ifExists": {
+            "type": "string",
+            "description": "If the file exists: replace it once the content is written, append to it, or fail",
+            "enum": [
+              "replace",
+              "append",
+              "fail"
+            ],
+            "default": "replace"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "example": "path: out/status.json\nformat: json\ncontent: \"{{ {'run': run.id, 'ok': true} }}\"\n"
     },
     {
       "type": "http.request",
@@ -804,8 +946,25 @@
           },
           "maxSize": {
             "type": "string",
-            "description": "Largest answer to read, e.g. 10MB or 500KB; with paginate per page",
+            "description": "Largest answer to read, e.g. 10MB or 500KB; with paginate per page; with saveTo the largest file (default 1GB)",
             "default": "10MB"
+          },
+          "saveTo": {
+            "type": "string",
+            "description": "Saves a successful answer (status 2xx) as a file instead of reading it, e.g. a ZIP or PDF; relative to the project folder or absolute. Written to a temporary file first, so no half file remains; output: path and size instead of body",
+            "examples": [
+              "inbox/export.zip"
+            ]
+          },
+          "ifExists": {
+            "type": "string",
+            "description": "With saveTo, if the file exists: replace it once the download is complete, skip the request, or fail before the request",
+            "enum": [
+              "replace",
+              "skip",
+              "fail"
+            ],
+            "default": "replace"
           },
           "retryAfter": {
             "type": "object",
@@ -1093,9 +1252,9 @@
             }
           },
           "maxOutput": {
-            "type": "integer",
-            "description": "Most bytes of stdout and of stderr kept; more is dropped (truncated)",
-            "default": 1048576
+            "type": "string",
+            "description": "Largest size of stdout and of stderr kept, e.g. 500KB or 10MB; more is dropped (truncated)",
+            "default": "1MB"
           },
           "timeout": {
             "type": "string",
@@ -1174,9 +1333,9 @@
             "default": false
           },
           "maxOutput": {
-            "type": "integer",
-            "description": "Most bytes of stdout and of stderr kept; more is dropped (truncated)",
-            "default": 1048576
+            "type": "string",
+            "description": "Largest size of stdout and of stderr kept, e.g. 500KB or 10MB; more is dropped (truncated)",
+            "default": "1MB"
           },
           "timeout": {
             "type": "string",
@@ -1219,7 +1378,7 @@
                 },
                 "value": {
                   "type": "string",
-                  "description": "Expression evaluated for every record, e.g. {{ record.price * record.quantity }}; text around {{ … }} makes the result a text",
+                  "description": "Value of the field: an expression in {{ … }} evaluated for every record, e.g. {{ record.price * record.quantity }}; text around {{ … }} makes the result a text; without {{ … }} a fixed value (a number, true, false or a text)",
                   "format": "runnel-text",
                   "examples": [
                     "{{ record.price * record.quantity }}"
@@ -1618,7 +1777,7 @@
               "status"
             ]
           },
-          "target": {
+          "as": {
             "type": "string",
             "description": "Field for the result; empty: the field itself"
           },
@@ -1660,7 +1819,7 @@
         ],
         "additionalProperties": false
       },
-      "example": "field: status\ntarget: statusText\nvalues:\n  - { from: A, to: Active }\n  - { from: I, to: Inactive }\ndefault: Unknown\n",
+      "example": "field: status\nas: statusText\nvalues:\n  - { from: A, to: Active }\n  - { from: I, to: Inactive }\ndefault: Unknown\n",
       "parallel": true
     },
     {
@@ -1762,7 +1921,7 @@
                     "kdnr"
                   ]
                 },
-                "rename": {
+                "as": {
                   "type": "string",
                   "description": "New name of the field; empty: the name stays",
                   "examples": [
@@ -1787,7 +1946,7 @@
         },
         "additionalProperties": false
       },
-      "example": "fields:\n  - { name: kdnr, rename: externalId }\n  - { name: name }\n# or instead of fields:\n# remove: [telefon]\n",
+      "example": "fields:\n  - { name: kdnr, as: externalId }\n  - { name: name }\n# or instead of fields:\n# remove: [telefon]\n",
       "parallel": true
     },
     {
@@ -2113,7 +2272,7 @@
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
-          "maxRows": {
+          "maxRecords": {
             "type": "string",
             "description": "Most records to return; more stop the pipeline, as they are held in memory",
             "default": "100000"
@@ -2121,7 +2280,7 @@
         },
         "additionalProperties": false
       },
-      "example": "maxRows: 1000\n"
+      "example": "maxRecords: 1000\n"
     },
     {
       "type": "csv.input",
@@ -2165,15 +2324,22 @@
           },
           "fields": {
             "type": "array",
-            "description": "Columns to read, with type and format, matched by name in the header or else by position; empty: all columns as text",
+            "description": "Columns to read, with type and format, matched by name (or from) in the header or else by position; empty: all columns as text",
             "items": {
               "type": "object",
               "properties": {
                 "name": {
                   "type": "string",
-                  "description": "Name of the field (and of the column in the header)",
+                  "description": "Name of the field",
                   "examples": [
                     "amount"
+                  ]
+                },
+                "from": {
+                  "type": "string",
+                  "description": "Column in the header; empty: the column named like the field",
+                  "examples": [
+                    "Betrag"
                   ]
                 },
                 "type": {
@@ -2245,17 +2411,18 @@
           },
           "encoding": {
             "type": "string",
-            "description": "Encoding of the file; utf-8-bom lets Excel recognize umlauts",
+            "description": "Encoding of the file; utf-8-bom lets Excel recognize umlauts, utf-16 is little endian with byte order mark",
             "enum": [
               "utf-8-bom",
               "utf-8",
-              "windows-1252"
+              "windows-1252",
+              "utf-16"
             ],
             "default": "utf-8-bom"
           },
           "ifExists": {
             "type": "string",
-            "description": "What happens if the file exists: replace it once all records are written, append to it, or fail",
+            "description": "If the file exists: replace it once all records are written, append to it, or fail",
             "enum": [
               "replace",
               "append",
@@ -2271,10 +2438,17 @@
               "properties": {
                 "name": {
                   "type": "string",
-                  "description": "Name of the field to write (and of the column in the header)",
+                  "description": "Name of the field to write",
                   "format": "runnel-field",
                   "examples": [
                     "amount"
+                  ]
+                },
+                "as": {
+                  "type": "string",
+                  "description": "Name of the column in the header; empty: the name of the field",
+                  "examples": [
+                    "Betrag"
                   ]
                 },
                 "format": {
@@ -2617,6 +2791,199 @@
       "recordErrors": true
     },
     {
+      "type": "excel.input",
+      "kind": "transform",
+      "category": "input",
+      "label": "Excel Input",
+      "description": "Reads the rows of a sheet of an Excel workbook (.xlsx) as records",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Workbook to read (.xlsx or .xlsm), relative to the project folder or absolute",
+            "examples": [
+              "data/orders.xlsx"
+            ]
+          },
+          "sheet": {
+            "type": "string",
+            "description": "Sheet to read: its name, or its number like 2; empty: the first sheet",
+            "examples": [
+              "Orders"
+            ]
+          },
+          "range": {
+            "type": "string",
+            "description": "Where the table is: its first cell like A3, with last column A3:F or with last row B2:D100; empty: from the first row with values",
+            "examples": [
+              "A3:F"
+            ]
+          },
+          "header": {
+            "type": "boolean",
+            "description": "Whether the first row of the table holds the names of the columns",
+            "default": true
+          },
+          "emptyRows": {
+            "type": "string",
+            "description": "Empty rows in the table: skip them, or stop at the first one, e.g. when notes follow the table",
+            "enum": [
+              "skip",
+              "stop"
+            ],
+            "default": "skip"
+          },
+          "fields": {
+            "type": "array",
+            "description": "Columns to read, with type and format, matched by name (or from) in the header or else by position; empty: all columns with the values of their cells",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the field",
+                  "examples": [
+                    "amount"
+                  ]
+                },
+                "from": {
+                  "type": "string",
+                  "description": "Column in the header; empty: the column named like the field",
+                  "examples": [
+                    "Betrag"
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Type of the value; empty: as in the cell (text, number, true/false, date)",
+                  "enum": [
+                    "string",
+                    "int",
+                    "decimal",
+                    "float",
+                    "bool",
+                    "date",
+                    "datetime",
+                    "json"
+                  ]
+                },
+                "format": {
+                  "type": "string",
+                  "description": "For text in the cells: number pattern like #.##0,00 or date pattern like dd.MM.yyyy; numbers and dates of Excel need none",
+                  "examples": [
+                    "dd.MM.yyyy"
+                  ]
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "example": "path: data/orders.xlsx\nsheet: Orders\nrange: A3\nfields:\n  - { name: Nr, type: int }\n  - { name: Date, type: date }\n  - { name: Amount, type: decimal }\n",
+      "recordErrors": true,
+      "detectFields": true
+    },
+    {
+      "type": "excel.output",
+      "kind": "transform",
+      "category": "output",
+      "label": "Excel Output",
+      "description": "Writes records to a sheet of an Excel workbook (.xlsx) and passes them on",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Workbook to write (.xlsx or .xlsm), relative to the project folder or absolute",
+            "examples": [
+              "out/orders.xlsx"
+            ]
+          },
+          "sheet": {
+            "type": "string",
+            "description": "Name of the sheet; empty: Sheet1",
+            "examples": [
+              "Orders"
+            ]
+          },
+          "header": {
+            "type": "boolean",
+            "description": "Whether the first row holds the names of the columns, bold and frozen",
+            "default": true
+          },
+          "ifExists": {
+            "type": "string",
+            "description": "If the workbook exists: replace it once all records are written, fail, or replace only the sheet (sheet) and keep the other sheets, charts and formulas",
+            "enum": [
+              "replace",
+              "fail",
+              "sheet"
+            ],
+            "default": "replace"
+          },
+          "fields": {
+            "type": "array",
+            "description": "Columns to write, in this order, with a number format; empty: all fields of the records",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the field to write",
+                  "format": "runnel-field",
+                  "examples": [
+                    "amount"
+                  ]
+                },
+                "as": {
+                  "type": "string",
+                  "description": "Name of the column in the header; empty: the name of the field",
+                  "examples": [
+                    "Betrag"
+                  ]
+                },
+                "format": {
+                  "type": "string",
+                  "description": "Number pattern like #.##0,00 or date pattern like dd.MM.yyyy HH:mm, as in the other outputs; Excel shows separators and names in the language of the user; empty: numbers as General, dates as short date",
+                  "examples": [
+                    "dd.MM.yyyy"
+                  ]
+                },
+                "excelFormat": {
+                  "type": "string",
+                  "description": "Number format of Excel as in English Excel instead of format, e.g. 0.0%, 0.0 \"kg\" or [Red]-#,##0.00",
+                  "examples": [
+                    "0.0%"
+                  ]
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "example": "path: out/orders.xlsx\nsheet: Orders\nfields:\n  - { name: Nr }\n  - { name: Amount, format: \"#.##0,00\" }\n  - { name: Date, format: dd.MM.yyyy }\n  - { name: Share, excelFormat: 0.0% }\n",
+      "recordErrors": true
+    },
+    {
       "type": "file.list",
       "kind": "transform",
       "category": "input",
@@ -2696,7 +3063,7 @@
             "description": "Fallback: answer also without records, but only if no other http.response answers (e.g. 404)",
             "default": false
           },
-          "maxRows": {
+          "maxRecords": {
             "type": "string",
             "description": "Most records in the answer; more stop the pipeline, as they are held in memory",
             "default": "10000"
@@ -2835,7 +3202,7 @@
           },
           "ifExists": {
             "type": "string",
-            "description": "What happens if the file exists: replace it once all records are written, or fail",
+            "description": "If the file exists: replace it once all records are written, or fail",
             "enum": [
               "replace",
               "fail"
@@ -2850,10 +3217,17 @@
               "properties": {
                 "name": {
                   "type": "string",
-                  "description": "Name of the field to write (and of the key)",
+                  "description": "Name of the field to write",
                   "format": "runnel-field",
                   "examples": [
                     "amount"
+                  ]
+                },
+                "as": {
+                  "type": "string",
+                  "description": "Key in the object, with dots for nested objects, e.g. address.city; empty: the name of the field",
+                  "examples": [
+                    "address.city"
                   ]
                 },
                 "format": {
@@ -2877,6 +3251,181 @@
         "additionalProperties": false
       },
       "example": "path: out/orders.json\nfields:\n  - { name: id }\n  - { name: day, format: dd.MM.yyyy }\n",
+      "recordErrors": true
+    },
+    {
+      "type": "xml.input",
+      "kind": "transform",
+      "category": "input",
+      "label": "XML Input",
+      "description": "Reads the elements of an XML file as records",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "XML file to read, relative to the project folder or absolute; the encoding comes from the byte order mark or the declaration",
+            "examples": [
+              "data/orders.xml"
+            ]
+          },
+          "records": {
+            "type": "string",
+            "description": "Elements that are records: a path of element names with /, matched at the end of the path of an element (a leading / starts at the root); empty: the children of the root element",
+            "examples": [
+              "orders/order"
+            ]
+          },
+          "fields": {
+            "type": "array",
+            "description": "Fields to read, with path and type; empty: attributes as @name and child elements as they are (text, objects, lists)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the field",
+                  "examples": [
+                    "amount"
+                  ]
+                },
+                "from": {
+                  "type": "string",
+                  "description": "Where the value is in the record element: a child like amount, a path like customer/name, an attribute like @id or customer/@id, or #text for its own text; empty: the child named like the field",
+                  "examples": [
+                    "customer/name"
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Type of the value; empty: as read (text, or objects and lists for elements with children)",
+                  "enum": [
+                    "string",
+                    "int",
+                    "decimal",
+                    "float",
+                    "bool",
+                    "date",
+                    "datetime",
+                    "json"
+                  ]
+                },
+                "format": {
+                  "type": "string",
+                  "description": "Number pattern like #.##0,00 or date pattern like dd.MM.yyyy for the text; empty: 1234.5 and ISO dates",
+                  "examples": [
+                    "dd.MM.yyyy"
+                  ]
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "example": "path: data/orders.xml\nrecords: orders/order\nfields:\n  - { name: id, from: \"@id\", type: int }\n  - { name: customer, from: customer/name }\n  - { name: amount, type: decimal }\n",
+      "recordErrors": true,
+      "detectFields": true
+    },
+    {
+      "type": "xml.output",
+      "kind": "transform",
+      "category": "output",
+      "label": "XML Output",
+      "description": "Writes records as elements of an XML file and passes them on",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "XML file to write (UTF-8), relative to the project folder or absolute",
+            "examples": [
+              "out/orders.xml"
+            ]
+          },
+          "root": {
+            "type": "string",
+            "description": "Name of the root element; empty: records",
+            "examples": [
+              "orders"
+            ]
+          },
+          "record": {
+            "type": "string",
+            "description": "Name of the element of each record; empty: record",
+            "examples": [
+              "order"
+            ]
+          },
+          "ifExists": {
+            "type": "string",
+            "description": "If the file exists: replace it once all records are written, or fail",
+            "enum": [
+              "replace",
+              "fail"
+            ],
+            "default": "replace"
+          },
+          "nulls": {
+            "type": "string",
+            "description": "Empty values: skip writes no element, empty writes an empty one",
+            "enum": [
+              "skip",
+              "empty"
+            ],
+            "default": "skip"
+          },
+          "fields": {
+            "type": "array",
+            "description": "Fields to write, in this order, with where they go; empty: all fields of the records as child elements",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the field to write",
+                  "format": "runnel-field",
+                  "examples": [
+                    "amount"
+                  ]
+                },
+                "as": {
+                  "type": "string",
+                  "description": "Where the value goes in the record element: a child like amount, a path like customer/name, an attribute like @id or customer/@id, or #text; empty: a child named like the field",
+                  "examples": [
+                    "customer/name"
+                  ]
+                },
+                "format": {
+                  "type": "string",
+                  "description": "Writes the value with a number pattern like #.##0,00 or a date pattern like dd.MM.yyyy; empty: numbers like 1234.5, dates in ISO 8601",
+                  "examples": [
+                    "dd.MM.yyyy"
+                  ]
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "example": "path: out/orders.xml\nroot: orders\nrecord: order\nfields:\n  - { name: id, as: \"@id\" }\n  - { name: customer, as: customer/name }\n  - { name: amount }\n",
       "recordErrors": true
     }
   ]
