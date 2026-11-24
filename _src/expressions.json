@@ -288,6 +288,14 @@
    "group": "Text"
   },
   {
+   "name": "replaceRegex",
+   "signature": "replaceRegex(text, pattern, new)",
+   "type": "string",
+   "description": "Replaces every match of a regular expression (write patterns with \\ in backticks, e.g. `\\d+`); new may use groups as $1 or ${name}, $$ for a $",
+   "example": "{{ replaceRegex('0221 / 123-45', '[^0-9]', '') }}",
+   "group": "Text"
+  },
+  {
    "name": "split",
    "signature": "split(text, separator)",
    "type": "list",
@@ -350,6 +358,30 @@
    "description": "Replaces umlauts and ß, joins spaces – e.g. for file names",
    "example": "{{ normalize('Jürgen Groß') }}",
    "group": "Text"
+  },
+  {
+   "name": "basename",
+   "signature": "basename(path)",
+   "type": "string",
+   "description": "Last part of a path or address, e.g. the file name; / and \\ both separate",
+   "example": "{{ basename('Exports/2026/orders.zip') }}",
+   "group": "Paths"
+  },
+  {
+   "name": "dirname",
+   "signature": "dirname(path)",
+   "type": "string",
+   "description": "The path without its last part, e.g. the folder of a file; empty without a folder",
+   "example": "{{ dirname('Exports/2026/orders.zip') }}",
+   "group": "Paths"
+  },
+  {
+   "name": "ext",
+   "signature": "ext(path)",
+   "type": "string",
+   "description": "Ending of the file name with its dot, e.g. .zip; empty without one",
+   "example": "{{ ext('Exports/2026/orders.zip') }}",
+   "group": "Paths"
   },
   {
    "name": "len",

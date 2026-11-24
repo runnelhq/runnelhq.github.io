@@ -36,6 +36,7 @@
             <li>Geänderte Trigger-Dateien übernimmt der Server ohne Neustart.</li>
             <li>Verpasste Zeitpunkte (Server lief nicht) werden nicht nachgeholt.</li>
             <li><code>overlap: skip</code> (Standard) startet keinen Lauf, solange der vorige dieses Triggers noch läuft; <code>allow</code> erlaubt parallele Läufe.</li>
+            <li>Im Editor öffnen Trigger als Formular mit Schalter für <code>enabled</code>, nächstem und letztem Lauf; „Run target now“ startet das Ziel sofort mit Environment und Parametern des Triggers.</li>
             <li><code>runnel triggers D:\flows</code> listet alle Trigger mit ihrem nächsten Zeitpunkt; <code>runnel validate</code> prüft Zeitplan, Ziel, Environment und Parameter.</li>
           </ul>
 <pre><code class="lang-bash" data-caption="runnel triggers">NAME        TYPE      SCHEDULE                      TARGET                                  NEXT
@@ -121,6 +122,7 @@ nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.wor
             <li>The server picks up changed trigger files without a restart.</li>
             <li>Missed times (server not running) are not caught up.</li>
             <li><code>overlap: skip</code> (default) starts no run while the trigger's previous run is still going; <code>allow</code> allows parallel runs.</li>
+            <li>In the editor, triggers open as a form with a switch for <code>enabled</code>, next and last run; “Run target now” starts the target immediately with the trigger's environment and parameters.</li>
             <li><code>runnel triggers D:\flows</code> lists all triggers with their next time; <code>runnel validate</code> checks schedule, target, environment and parameters.</li>
           </ul>
 <pre><code class="lang-bash" data-caption="runnel triggers">NAME        TYPE      SCHEDULE                      TARGET                                  NEXT

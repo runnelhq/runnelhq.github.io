@@ -52,6 +52,9 @@ GUIDE_NAV = [
     ("handbuch/kochbuch-github.html", "GitHub", "GitHub", None),
     ("handbuch/kochbuch-hubspot.html", "HubSpot", "HubSpot", None),
     ("handbuch/kochbuch-lexware.html", "Lexware Office", "Lexware Office", None),
+    ("handbuch/kochbuch-sharepoint.html", "SharePoint (Microsoft Graph)", "SharePoint (Microsoft Graph)", None),
+    ("handbuch/kochbuch-excel.html", "Excel lesen und schreiben", "Reading and writing Excel", None),
+    ("handbuch/kochbuch-xml.html", "XML-Austausch", "XML exchange", None),
 ]
 SECTIONS = {
     "docs": (DOCS_NAV, "Entwicklerdoku", "Developer docs"),

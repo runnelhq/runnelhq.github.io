@@ -29,9 +29,9 @@ transforms:
     type: core.select-fields
     with:
       fields:
-        - { name: kdnr, rename: externalId }
-        - { name: name, rename: companyName }
-        - { name: umsatz, rename: revenue }
+        - { name: kdnr, as: externalId }
+        - { name: name, as: companyName }
+        - { name: umsatz, as: revenue }
   - id: write
     type: csv.output
     with:

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Orders as an ERP exports them: the same as orders.csv and orders.xlsx -->
+<erp:Export xmlns:erp="urn:example:erp" erstellt="2026-11-24T06:00:00">
+  <erp:Bestellungen>
+    <erp:Bestellung nr="1001">
+      <erp:Kunde id="K-17"><erp:Name>Müller GmbH</erp:Name><erp:Ort>Köln</erp:Ort></erp:Kunde>
+      <erp:Betrag waehrung="EUR">1234.50</erp:Betrag>
+      <erp:Datum>2026-11-19</erp:Datum>
+      <erp:Bezahlt>true</erp:Bezahlt>
+    </erp:Bestellung>
+    <erp:Bestellung nr="1002">
+      <erp:Kunde id="K-3"><erp:Name>Schmidt &amp; Söhne</erp:Name><erp:Ort>Bonn</erp:Ort></erp:Kunde>
+      <erp:Betrag waehrung="EUR">89.90</erp:Betrag>
+      <erp:Datum>2026-11-19</erp:Datum>
+      <erp:Bezahlt>false</erp:Bezahlt>
+    </erp:Bestellung>
+    <erp:Bestellung nr="1003">
+      <erp:Kunde id="K-8"><erp:Name>Weber, Anna</erp:Name><erp:Ort>Aachen</erp:Ort></erp:Kunde>
+      <erp:Betrag waehrung="EUR">12500.00</erp:Betrag>
+      <erp:Datum>2026-11-20</erp:Datum>
+      <erp:Bezahlt>true</erp:Bezahlt>
+    </erp:Bestellung>
+    <erp:Bestellung nr="1004">
+      <erp:Kunde id="K-21"><erp:Name>Klein KG</erp:Name><erp:Ort>Essen</erp:Ort></erp:Kunde>
+      <erp:Betrag waehrung="EUR">k. A.</erp:Betrag>
+      <erp:Datum>2026-11-20</erp:Datum>
+      <erp:Bezahlt>true</erp:Bezahlt>
+    </erp:Bestellung>
+    <erp:Bestellung nr="1005">
+      <erp:Kunde id="K-5"><erp:Name>Braun AG</erp:Name><erp:Ort>Düsseldorf</erp:Ort></erp:Kunde>
+      <erp:Betrag waehrung="EUR">15800.00</erp:Betrag>
+      <erp:Datum>2026-11-21</erp:Datum>
+      <erp:Bezahlt>false</erp:Bezahlt>
+    </erp:Bestellung>
+  </erp:Bestellungen>
+</erp:Export>

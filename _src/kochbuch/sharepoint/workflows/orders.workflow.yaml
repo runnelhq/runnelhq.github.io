@@ -1,0 +1,45 @@
+# Downloads ZIP files from several SharePoint Online paths, unpacks them and reads the
+# CSV files they hold: one run of file.workflow.yaml per path (forEach),
+# one after the other, since all of them append to out/sharepoint-orders.csv.
+# Needs the connection sharepoint (see there) and SHAREPOINT_SITE in project.yaml:
+#   runnel run -v workflows/orders.workflow.yaml
+#   runnel run -v --param 'PATHS=["Exports/2026/orders-north.zip"]' workflows/orders.workflow.yaml
+kind: Workflow
+apiVersion: runnel/v1
+name: orders
+parameters:
+  - name: PATHS
+    type: json
+    description: Paths of the ZIP files in the document library of the site
+    default: '["Exports/orders-north.zip", "Exports/orders-south.zip"]'
+outputs:
+  - name: ROWS
+    type: integer
+    value: "{{ sum(map(results.files.output.items, .output.ROWS)) }}"
+actions:
+  - id: start
+    type: core.start
+  - id: prepare
+    type: file.mkdir
+    with:
+      path: out
+  - id: clear
+    type: file.delete
+    with:
+      path: out/sharepoint-orders.csv
+  - id: files
+    type: core.run-workflow
+    forEach: "{{ params.PATHS }}"
+    with:
+      workflow: workflows/file.workflow.yaml
+      params:
+        PATH: "{{ row }}"
+  - id: report
+    type: core.log
+    with:
+      message: "{{ len(params.PATHS) }} files, {{ sum(map(results.files.output.items, .output.ROWS)) }} rows written to out/sharepoint-orders.csv"
+links:
+  - { from: start, to: prepare }
+  - { from: prepare, to: clear }
+  - { from: clear, to: files }
+  - { from: files, to: report }

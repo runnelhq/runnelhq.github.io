@@ -1,0 +1,14 @@
+# Needs an application registered in Microsoft Entra with the application permission
+# Sites.Selected (access granted per site, recommended) or Files.Read.All.
+kind: Connection
+apiVersion: runnel/v1
+name: sharepoint
+description: SharePoint Online over Microsoft Graph
+type: http
+with:
+  baseUrl: ${GRAPH_URL}
+  auth: oauth2
+  tokenUrl: ${GRAPH_TOKEN_URL}
+  clientId: ${GRAPH_CLIENT_ID}
+  clientSecret: ${secret:GRAPH_CLIENT_SECRET}
+  scope: https://graph.microsoft.com/.default

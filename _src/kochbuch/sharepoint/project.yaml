@@ -1,0 +1,14 @@
+# Recipe: files from SharePoint Online over Microsoft Graph.
+# Tenant, application (client) id and site come from here (replace with your own); the
+# client secret comes from the environment variable GRAPH_CLIENT_SECRET.
+kind: Project
+apiVersion: runnel/v1
+name: sharepoint
+description: ZIP files with orders from SharePoint Online
+secretStore: env
+variables:
+  GRAPH_URL: https://graph.microsoft.com/v1.0/
+  GRAPH_TOKEN_URL: https://login.microsoftonline.com/${GRAPH_TENANT}/oauth2/v2.0/token
+  GRAPH_TENANT: contoso.onmicrosoft.com
+  GRAPH_CLIENT_ID: 00000000-0000-0000-0000-000000000000
+  SHAREPOINT_SITE: "contoso.sharepoint.com:/sites/Finance:"

@@ -1,0 +1,27 @@
+# Creates the output folder and runs the pipeline; csv.output and the other outputs
+# do not create missing folders. The counts of the pipeline are the outputs.
+#   runnel run workflows/export.workflow.yaml
+kind: Workflow
+apiVersion: runnel/v1
+name: export
+outputs:
+  - name: WRITTEN
+    type: integer
+    value: "{{ results.orders.output.transforms.write.written }}"
+  - name: REJECTED
+    type: integer
+    value: "{{ results.orders.output.errors }}"
+actions:
+  - id: start
+    type: core.start
+  - id: folder
+    type: file.mkdir
+    with:
+      path: out
+  - id: orders
+    type: core.run-pipeline
+    with:
+      pipeline: pipelines/orders.pipeline.yaml
+links:
+  - { from: start, to: folder }
+  - { from: folder, to: orders }

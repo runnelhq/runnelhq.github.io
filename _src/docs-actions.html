@@ -43,7 +43,7 @@
           </ul>
           <p class="chips-label">Reservierte Namensräume</p>
           <ul class="ns-list" aria-label="Reservierte Namensräume">
-            <li class="is-live">archive</li><li class="is-live">core</li><li class="is-live">csv</li><li class="is-live">db</li><li class="is-live">file</li><li class="is-live">http</li><li class="is-live">json</li><li>ai</li><li>excel</li><li>mail</li><li>mcp</li><li>shell</li><li>transfer</li><li>xml</li><li>mcp-&lt;connection&gt;</li>
+            <li class="is-live">archive</li><li class="is-live">core</li><li class="is-live">csv</li><li class="is-live">db</li><li class="is-live">excel</li><li class="is-live">file</li><li class="is-live">http</li><li class="is-live">json</li><li class="is-live">mail</li><li class="is-live">shell</li><li class="is-live">xml</li><li>ai</li><li>mcp</li><li>transfer</li><li>mcp-&lt;connection&gt;</li>
           </ul>
           <p class="legal-hint">Hervorgehoben: Namensräume mit bereits umgesetzten Actions oder Transforms. <code>mcp-&lt;connection&gt;</code> steht für Werkzeuge eines als Connection eingebundenen MCP-Servers (ADR 0012).</p>
           <p><strong>Neuer Namensraum?</strong> Nur wenn kein bestehender passt:</p>
@@ -94,6 +94,7 @@
           </table></div>
           <p class="legal-hint">Optionen mit Komma trennen (<code>schema:"required,example=30s"</code>), Werte dürfen daher kein Komma enthalten. Backslashes in Tags verdoppeln (<code>example=C:\\in</code>), sonst ist das ganze Tag ungültig.</p>
           <ul>
+            <li><strong>Namen der Parameter</strong> nach <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0025-einheitliche-parameter.md">ADR 0025</a>: gleiche Sache, gleicher Name – <code>ifExists</code>, <code>ifMissing</code>, <code>format</code>, <code>as</code>, <code>from</code>, <code>maxRows</code>/<code>maxRecords</code>, Größen als Text (<code>10MB</code>), <code>timeout</code> als Dauer, Ausgabe <code>path</code>. Abweichungen im PR begründen.</li>
             <li><strong>Typen:</strong> <code>string</code>, <code>bool</code>, Ganz- und Kommazahlen, Slices, <code>map[string]T</code>, verschachtelte Structs, <code>any</code>. Felder, die <code>${…}</code> oder <code>{{ … }}</code> enthalten dürfen, als <code>string</code> anlegen – auch Zahlen und Zeitangaben.</li>
             <li><strong><code>DecodeConfig</code></strong> verwenden – es lehnt unbekannte Felder ab, sodass Tippfehler im Workflow gemeldet werden, und prüft Pflichtfelder. Der Vertragstest prüft das.</li>
             <li><strong><code>New</code> prüft nur die Struktur:</strong> Pflichtfelder, Typen, unbekannte Felder. Werte wie Dauern, Zahlen in Textform, leere Texte oder Pfade werden erst in <code>Execute</code> geprüft.</li>
@@ -165,6 +166,7 @@
 
           <h2 id="checkliste">9. Checkliste für den PR</h2>
           <ul class="checklist">
+            <li>Namen der Parameter nach ADR 0025 (gleiche Sache, gleicher Name)</li>
             <li>Typname im passenden, reservierten Namensraum; bei neuem Namensraum: <code>namespaces.go</code>, <code>register.go</code>, <code>actions.go</code></li>
             <li>Eine Datei je Action, Tests daneben, Eintrag in <code>register.go</code></li>
             <li><code>Category</code>, <code>Label</code>, <code>Description</code>, <code>Config</code> gesetzt; jedes Feld mit <code>doc</code>, Pflichtfelder mit <code>required</code> und <code>example</code></li>
@@ -214,7 +216,7 @@
           </ul>
           <p class="chips-label">Reserved namespaces</p>
           <ul class="ns-list" aria-label="Reserved namespaces">
-            <li class="is-live">archive</li><li class="is-live">core</li><li class="is-live">csv</li><li class="is-live">db</li><li class="is-live">file</li><li class="is-live">http</li><li class="is-live">json</li><li>ai</li><li>excel</li><li>mail</li><li>mcp</li><li>shell</li><li>transfer</li><li>xml</li><li>mcp-&lt;connection&gt;</li>
+            <li class="is-live">archive</li><li class="is-live">core</li><li class="is-live">csv</li><li class="is-live">db</li><li class="is-live">excel</li><li class="is-live">file</li><li class="is-live">http</li><li class="is-live">json</li><li class="is-live">mail</li><li class="is-live">shell</li><li class="is-live">xml</li><li>ai</li><li>mcp</li><li>transfer</li><li>mcp-&lt;connection&gt;</li>
           </ul>
           <p class="legal-hint">Highlighted: namespaces with actions or transforms already implemented. <code>mcp-&lt;connection&gt;</code> stands for the tools of an MCP server added as a connection (ADR 0012).</p>
           <p><strong>New namespace?</strong> Only if no existing one fits:</p>
@@ -265,6 +267,7 @@
           </table></div>
           <p class="legal-hint">Separate options with commas (<code>schema:"required,example=30s"</code>), so values must not contain a comma. Double backslashes in tags (<code>example=C:\\in</code>), otherwise the whole tag is invalid.</p>
           <ul>
+            <li><strong>Parameter names</strong> per <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0025-einheitliche-parameter.md">ADR 0025</a>: same thing, same name – <code>ifExists</code>, <code>ifMissing</code>, <code>format</code>, <code>as</code>, <code>from</code>, <code>maxRows</code>/<code>maxRecords</code>, sizes as text (<code>10MB</code>), <code>timeout</code> as a duration, output <code>path</code>. Explain deviations in the PR.</li>
             <li><strong>Types:</strong> <code>string</code>, <code>bool</code>, integers and floats, slices, <code>map[string]T</code>, nested structs, <code>any</code>. Fields that may contain <code>${…}</code> or <code>{{ … }}</code> are declared as <code>string</code> – numbers and durations too.</li>
             <li>Use <strong><code>DecodeConfig</code></strong> – it rejects unknown fields so typos in workflows are reported, and checks required fields. The contract test checks this.</li>
             <li><strong><code>New</code> only checks the structure:</strong> required fields, types, unknown fields. Values such as durations, numbers as text, empty strings or paths are checked in <code>Execute</code>.</li>
@@ -336,6 +339,7 @@
 
           <h2 id="checklist">9. Pull request checklist</h2>
           <ul class="checklist">
+            <li>Parameter names per ADR 0025 (same thing, same name)</li>
             <li>Type name in the matching reserved namespace; for a new namespace: <code>namespaces.go</code>, <code>register.go</code>, <code>actions.go</code></li>
             <li>One file per action, tests next to it, entry in <code>register.go</code></li>
             <li><code>Category</code>, <code>Label</code>, <code>Description</code>, <code>Config</code> set; every field with <code>doc</code>, required fields with <code>required</code> and <code>example</code></li>

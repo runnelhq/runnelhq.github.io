@@ -17,7 +17,7 @@
           <p class="docs-eyebrow">Entwicklerdoku · Server</p>
           <h1>Server-API</h1>
           <p class="docs-lead">Die API von <code>runnel serve</code> ist die einzige Schnittstelle des Editors zum Server – und ebenso für Skripte nutzbar. Außerhalb von <code>/api/v1</code> liefert der Server den eingebetteten <a href="editor.html">Editor</a> aus.</p>
-          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/API.md"><code>docs/dev/API.md</code></a> (Stand S38c) – mit allen Feldern und den Endpunkten zum Bearbeiten, Kopieren, Felder ermitteln und zur Datenvorschau. Grundlagen: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0016-live-events-sse.md">ADR 0016</a> (Live-Ereignisse), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0018-http-trigger.md">ADR 0018</a> (HTTP-Trigger).</p>
+          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/API.md"><code>docs/dev/API.md</code></a> (Stand S70c) – mit allen Feldern und den Endpunkten zum Bearbeiten, Kopieren, Felder ermitteln und zur Datenvorschau. Grundlagen: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0016-live-events-sse.md">ADR 0016</a> (Live-Ereignisse), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0018-http-trigger.md">ADR 0018</a> (HTTP-Trigger).</p>
 <pre><code class="lang-bash" data-caption="Server starten">runnel serve examples/hello     # Projekt im Ordner oder darüber, Port 7300
 runnel serve --port 0 .          # freier Port; die Ausgabe nennt die Adresse</code></pre>
 
@@ -45,7 +45,11 @@ runnel serve --port 0 .          # freier Port; die Ausgabe nennt die Adresse</c
               <tr><td>POST</td><td><code>/rename</code></td><td>Datei oder Ordner umbenennen oder verschieben, Verweise auf Wunsch mit ändern</td></tr>
               <tr><td>GET</td><td><code>/references/{path}</code></td><td>Stellen, die auf eine Datei verweisen (Trigger-Ziele, Aufrufe mit festem Pfad)</td></tr>
               <tr><td>GET</td><td><code>/variables</code></td><td>Variablen des Projekts mit Werten je Ebene und Fundstellen</td></tr>
-              <tr><td>GET</td><td><code>/schemas/{kind}</code></td><td>JSON Schema einer Dateiart (<code>project</code>, <code>environment</code>, <code>trigger</code>) – wie <code>runnel schema</code></td></tr>
+              <tr><td>GET</td><td><code>/schemas/{kind}</code></td><td>JSON Schema einer Dateiart (<code>project</code>, <code>environment</code>, <code>trigger</code>, <code>connection</code>) – wie <code>runnel schema</code></td></tr>
+              <tr><td>GET</td><td><code>/connections</code></td><td>Connections des Projekts mit Name, Typ und Datei – für die Auswahl von <code>connection:</code></td></tr>
+              <tr><td>POST</td><td><code>/connections/{name}/test</code></td><td>Connection für ein Environment testen; Antwort <code>{ok, message, environment, durationMs}</code>, Meldungen ohne Secrets</td></tr>
+              <tr><td>GET</td><td><code>/secrets</code></td><td>Secrets des Projekts mit Fundstellen und Stand je Environment (<code>set</code>, <code>missing</code>, <code>unavailable</code>) – ohne Werte</td></tr>
+              <tr><td>POST</td><td><code>/forms/edit</code></td><td>Connection, Trigger, Environment oder <code>project.yaml</code> für das Formular lesen und ein Feld setzen (nicht speichern)</td></tr>
               <tr><td>GET</td><td><code>/catalog</code></td><td>Descriptors aller Actions und Transforms – wie <code>runnel catalog --json</code></td></tr>
               <tr><td>GET</td><td><code>/expressions</code></td><td>Referenz für den Ausdruckseditor: Kontext, Funktionen, Variablen</td></tr>
               <tr><td>POST</td><td><code>/validate</code></td><td>Workflow, Pipeline oder Projektdatei prüfen – gespeichert oder mit ungespeichertem <code>content</code>, genau wie <code>runnel validate</code></td></tr>
@@ -75,7 +79,7 @@ runnel serve --port 0 .          # freier Port; die Ausgabe nennt die Adresse</c
 
           <h2 id="laeufe">Läufe</h2>
           {{snippet:api-runs.sh|Lauf starten und verfolgen}}
-          <p>Gestartet wird die <strong>gespeicherte</strong> Datei – Workflow oder Pipeline –, vorher wird sie wie bei <code>runnel run</code> geprüft.</p>
+          <p>Gestartet wird die <strong>gespeicherte</strong> Datei – Workflow oder Pipeline –, vorher wird sie wie bei <code>runnel run</code> geprüft. Statt <code>path</code> startet <code>{"trigger": "triggers/nightly.yaml"}</code> das Ziel einer gespeicherten Trigger-Datei mit deren Environment und Parametern („Run target now“).</p>
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Antwort</th><th>Bedeutung</th></tr></thead>
             <tbody>
@@ -128,7 +132,7 @@ runnel serve --port 0 .          # freier Port; die Ausgabe nennt die Adresse</c
           <p class="docs-eyebrow">Developer docs · Server</p>
           <h1>Server API</h1>
           <p class="docs-lead">The API of <code>runnel serve</code> is the editor's only interface to the server – and just as usable from scripts. Outside <code>/api/v1</code> the server delivers the embedded <a href="editor.html">editor</a>.</p>
-          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/API.md"><code>docs/dev/API.md</code></a> (as of S38c) – with every field and the endpoints for editing, copying, field detection and data preview. Background: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0016-live-events-sse.md">ADR 0016</a> (live events), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0018-http-trigger.md">ADR 0018</a> (HTTP triggers).</p>
+          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/API.md"><code>docs/dev/API.md</code></a> (as of S70c) – with every field and the endpoints for editing, copying, field detection and data preview. Background: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0016-live-events-sse.md">ADR 0016</a> (live events), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0018-http-trigger.md">ADR 0018</a> (HTTP triggers).</p>
 <pre><code class="lang-bash" data-caption="Start the server">runnel serve examples/hello     # project in the folder or above, port 7300
 runnel serve --port 0 .          # free port; the output names the address</code></pre>
 
@@ -156,7 +160,11 @@ runnel serve --port 0 .          # free port; the output names the address</code
               <tr><td>POST</td><td><code>/rename</code></td><td>Rename or move a file or folder, optionally updating references</td></tr>
               <tr><td>GET</td><td><code>/references/{path}</code></td><td>Places that refer to a file (trigger targets, calls with a fixed path)</td></tr>
               <tr><td>GET</td><td><code>/variables</code></td><td>Project variables with values per level and usages</td></tr>
-              <tr><td>GET</td><td><code>/schemas/{kind}</code></td><td>JSON Schema of a file kind (<code>project</code>, <code>environment</code>, <code>trigger</code>) – like <code>runnel schema</code></td></tr>
+              <tr><td>GET</td><td><code>/schemas/{kind}</code></td><td>JSON Schema of a file kind (<code>project</code>, <code>environment</code>, <code>trigger</code>, <code>connection</code>) – like <code>runnel schema</code></td></tr>
+              <tr><td>GET</td><td><code>/connections</code></td><td>Project connections with name, type and file – for choosing <code>connection:</code></td></tr>
+              <tr><td>POST</td><td><code>/connections/{name}/test</code></td><td>Test a connection for an environment; response <code>{ok, message, environment, durationMs}</code>, messages without secrets</td></tr>
+              <tr><td>GET</td><td><code>/secrets</code></td><td>Project secrets with usages and state per environment (<code>set</code>, <code>missing</code>, <code>unavailable</code>) – without values</td></tr>
+              <tr><td>POST</td><td><code>/forms/edit</code></td><td>Read a connection, trigger, environment or <code>project.yaml</code> for the form and set a field (without saving)</td></tr>
               <tr><td>GET</td><td><code>/catalog</code></td><td>Descriptors of all actions and transforms – like <code>runnel catalog --json</code></td></tr>
               <tr><td>GET</td><td><code>/expressions</code></td><td>Reference for the expression editor: context, functions, variables</td></tr>
               <tr><td>POST</td><td><code>/validate</code></td><td>Check a workflow, pipeline or project file – saved or with unsaved <code>content</code>, exactly like <code>runnel validate</code></td></tr>
@@ -186,7 +194,7 @@ runnel serve --port 0 .          # free port; the output names the address</code
 
           <h2 id="runs">Runs</h2>
           {{snippet:api-runs-en.sh|Start and follow a run}}
-          <p>The <strong>saved</strong> file is started – workflow or pipeline – after the same checks as <code>runnel run</code>.</p>
+          <p>The <strong>saved</strong> file is started – workflow or pipeline – after the same checks as <code>runnel run</code>. Instead of <code>path</code>, <code>{"trigger": "triggers/nightly.yaml"}</code> starts the target of a saved trigger file with its environment and parameters (“Run target now”).</p>
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Response</th><th>Meaning</th></tr></thead>
             <tbody>

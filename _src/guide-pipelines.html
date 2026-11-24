@@ -59,6 +59,25 @@ INFO  pipeline "customers" succeeded in 1ms</code></pre>
           <p>Formate beschreiben Text: Zahlen wie <code>#.##0,00</code> (deutsch) oder <code>#,##0.00</code>, Daten wie <code>dd.MM.yyyy</code>. Ohne Format gelten <code>1234.5</code> und ISO-Daten. Eingabedateien dürfen UTF-8 (mit oder ohne BOM), UTF-16 oder Windows-1252 sein (<code>encoding</code>). Im Editor schlägt „Detect fields…“ Felder und Typen aus einer Beispieldatei vor.</p>
           <p><code>runnel validate</code> prüft, ob die Felder, die ein Transform liest, am Link davor bekannt sind – mit Vorschlag bei Tippfehlern.</p>
 
+          <h2 id="dateiformate">Dateiformate</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Format</th><th>Lesen</th><th>Schreiben</th><th>Besonderheiten</th></tr></thead>
+            <tbody>
+              <tr><td>CSV</td><td><code>csv.input</code></td><td><code>csv.output</code></td><td>Trennzeichen, Kopfzeile, Kodierung (UTF-8, UTF-16, Windows-1252); beim Schreiben Standard UTF-8 mit BOM, damit Excel Umlaute erkennt</td></tr>
+              <tr><td>JSON, NDJSON</td><td><code>json.input</code></td><td><code>json.output</code></td><td><code>records</code> wählt eine Liste im Dokument; NDJSON ein Objekt je Zeile</td></tr>
+              <tr><td>Excel (.xlsx)</td><td><code>excel.input</code></td><td><code>excel.output</code></td><td>Blatt (<code>sheet</code>), Bereich ab einer Zelle (<code>range: A3</code>), Ende bei leerer Zeile (<code>emptyRows: stop</code>); Zahlen und Daten kommen typisiert. Beim Schreiben bleiben Zahlen und Daten Zahlen und Daten, Excel zeigt sie im Format von <code>fields[].format</code>; <code>ifExists: sheet</code> ersetzt nur ein Blatt</td></tr>
+              <tr><td>XML</td><td><code>xml.input</code></td><td><code>xml.output</code></td><td><code>records</code> ist der Pfad der Elemente (<code>Bestellungen/Bestellung</code>); <code>from</code> liest Attribute (<code>@nr</code>) und verschachtelte Elemente (<code>Kunde/Name</code>); Namensräume werden ohne Präfix verglichen</td></tr>
+            </tbody>
+          </table></div>
+          <p>Die Felder heißen bei allen Formaten gleich:</p>
+          <ul>
+            <li><code>fields[].from</code> beim <strong>Lesen</strong>: Spalte, Schlüssel oder Pfad in der Datei – leer wie <code>name</code>.</li>
+            <li><code>fields[].as</code> beim <strong>Schreiben</strong>: Spalte, Schlüssel oder Pfad in der Datei – leer wie <code>name</code>. Dasselbe <code>as</code> benennt Felder in <code>core.select-fields</code> um.</li>
+            <li><code>fields[].format</code>: immer ein Runnel-Muster wie <code>#.##0,00</code> oder <code>dd.MM.yyyy</code>; in Excel zusätzlich <code>excelFormat</code> für eigene Excel-Codes.</li>
+            <li><code>ifExists</code> an Ausgaben: <code>replace</code> (Standard; geschrieben über eine temporäre Datei, bei einem Fehler bleibt die alte), <code>append</code> (CSV) oder <code>fail</code>.</li>
+          </ul>
+          <p>Alte Feldnamen wie <code>rename</code> oder <code>overwrite</code> meldet <code>runnel validate</code> bis Version 1.0 mit dem neuen Namen. Rezepte mit Excel und XML stehen im <a href="kochbuch.html">Kochbuch</a>.</p>
+
           <h2 id="fehler">Fehler-Links</h2>
           <p>Kann ein Transform einen einzelnen Datensatz nicht verarbeiten (z. B. „k. A.“ als Zahl), geht er über einen Link mit <code>type: error</code> weiter – unverändert, ergänzt um <code>_error</code> (Meldung), <code>_errorField</code> (Feld) und <code>_errorTransform</code> (ID). Ohne Fehler-Link bricht die Pipeline ab. Welche Transforms Fehler-Links nutzen, zeigt die <a href="bausteine.html#transforms-de">Referenz</a> (Kennzeichen „Fehler-Link“); an anderen warnt <code>validate</code>, dass der Link nie genutzt wird.</p>
 
@@ -126,6 +145,25 @@ INFO  pipeline "customers" succeeded in 1ms</code></pre>
           </table></div>
           <p>Formats describe text: numbers like <code>#.##0,00</code> (German) or <code>#,##0.00</code>, dates like <code>dd.MM.yyyy</code>. Without a format, <code>1234.5</code> and ISO dates apply. Input files may be UTF-8 (with or without BOM), UTF-16 or Windows-1252 (<code>encoding</code>). In the editor, “Detect fields…” proposes fields and types from a sample file.</p>
           <p><code>runnel validate</code> checks that the fields a transform reads are known on the link before it – with a suggestion for typos.</p>
+
+          <h2 id="file-formats">File formats</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Format</th><th>Read</th><th>Write</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>CSV</td><td><code>csv.input</code></td><td><code>csv.output</code></td><td>Delimiter, header, encoding (UTF-8, UTF-16, Windows-1252); writing defaults to UTF-8 with BOM so Excel recognizes umlauts</td></tr>
+              <tr><td>JSON, NDJSON</td><td><code>json.input</code></td><td><code>json.output</code></td><td><code>records</code> picks a list inside the document; NDJSON one object per line</td></tr>
+              <tr><td>Excel (.xlsx)</td><td><code>excel.input</code></td><td><code>excel.output</code></td><td>Sheet (<code>sheet</code>), range from a cell (<code>range: A3</code>), end at an empty row (<code>emptyRows: stop</code>); numbers and dates come typed. When writing, numbers and dates stay numbers and dates and Excel shows them in the format of <code>fields[].format</code>; <code>ifExists: sheet</code> replaces just one sheet</td></tr>
+              <tr><td>XML</td><td><code>xml.input</code></td><td><code>xml.output</code></td><td><code>records</code> is the path of the elements (<code>Orders/Order</code>); <code>from</code> reads attributes (<code>@nr</code>) and nested elements (<code>Customer/Name</code>); namespaces are compared without prefix</td></tr>
+            </tbody>
+          </table></div>
+          <p>Fields have the same names in every format:</p>
+          <ul>
+            <li><code>fields[].from</code> when <strong>reading</strong>: column, key or path in the file – empty like <code>name</code>.</li>
+            <li><code>fields[].as</code> when <strong>writing</strong>: column, key or path in the file – empty like <code>name</code>. The same <code>as</code> renames fields in <code>core.select-fields</code>.</li>
+            <li><code>fields[].format</code>: always a Runnel pattern such as <code>#.##0,00</code> or <code>dd.MM.yyyy</code>; Excel additionally has <code>excelFormat</code> for custom Excel codes.</li>
+            <li><code>ifExists</code> on outputs: <code>replace</code> (default; written via a temporary file, the old one stays on error), <code>append</code> (CSV) or <code>fail</code>.</li>
+          </ul>
+          <p>Until version 1.0, <code>runnel validate</code> reports old field names such as <code>rename</code> or <code>overwrite</code> with their new name. Recipes with Excel and XML are in the <a href="kochbuch.html">cookbook</a>.</p>
 
           <h2 id="errors">Error links</h2>
           <p>If a transform can't process a single record (e.g. “n/a” as a number), it passes it on over a link with <code>type: error</code> – unchanged, extended by <code>_error</code> (message), <code>_errorField</code> (field) and <code>_errorTransform</code> (ID). Without an error link the pipeline stops. Which transforms use error links is shown in the <a href="bausteine.html#transforms-en">reference</a> (marked “error link”); on others <code>validate</code> warns that the link is never used.</p>

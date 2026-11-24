@@ -32,6 +32,7 @@
             <li><strong>Kategorie</strong> (<code>transform.Category…</code>): <code>input</code>, <code>transform</code>, <code>flow</code>, <code>execution</code>, <code>combine</code>, <code>output</code>.</li>
             <li><strong>Konfiguration</strong> wie bei Actions mit <code>transform.DecodeConfig</code> und den Tags <code>doc</code> und <code>schema</code>. Felder, die <code>${…}</code> enthalten dürfen, als <code>string</code> anlegen – auch Zahlen wie <code>rows</code>. Der Wert wird in <code>Process</code> geprüft, nicht in <code>New</code>: <code>runnel validate</code> ruft <code>New</code> mit den Variablen, wie sie in der Datei stehen.</li>
             <li><strong>Für den Editor:</strong> Namen vorhandener Felder der eingehenden Datensätze mit <code>schema:"format=runnel-field"</code> (auch an Listen wie <code>groupBy</code>), Ziele von Daten-Links mit <code>format=runnel-target</code>, Eigenschaften, die nur für einige Werte einer anderen gelten, mit <code>only=&lt;feld&gt;:&lt;a&gt;|&lt;b&gt;</code>. Namen neuer Felder bleiben ohne Format.</li>
+            <li><strong>Namen der Parameter</strong> nach ADR 0025 wie bei Actions; in Pipelines <code>maxRecords</code>, bei Dateien <code>fields[].from</code> (Lesen) und <code>fields[].as</code> (Schreiben), <code>fields[].format</code> als Runnel-Muster.</li>
             <li>Jeder Transform mit Konfiguration bekommt ein <strong><code>Example</code></strong> (die <code>with:</code>-Werte in YAML) für die Hilfe im Panel; der Vertragstest prüft, dass <code>New</code> es annimmt.</li>
           </ul>
 
@@ -80,6 +81,7 @@
 
           <h2 id="checkliste">5. Checkliste für den PR</h2>
           <ul class="checklist">
+            <li>Namen der Parameter nach ADR 0025 (gleiche Sache, gleicher Name)</li>
             <li>Eine Datei je Transform, Eintrag in <code>register.go</code>, Kategorie, Label, Beschreibung, <code>doc</code> für jedes Feld</li>
             <li>Feldnamen mit <code>format=runnel-field</code>, Link-Ziele mit <code>format=runnel-target</code>; ein <code>Example</code></li>
             <li>Werte mit Variablen werden in <code>Process</code> geprüft; <code>Emit</code>-Fehler werden zurückgegeben</li>
@@ -113,6 +115,7 @@
             <li><strong>Category</strong> (<code>transform.Category…</code>): <code>input</code>, <code>transform</code>, <code>flow</code>, <code>execution</code>, <code>combine</code>, <code>output</code>.</li>
             <li><strong>Configuration</strong> as for actions with <code>transform.DecodeConfig</code> and the <code>doc</code> and <code>schema</code> tags. Fields that may contain <code>${…}</code> are declared as <code>string</code> – numbers such as <code>rows</code> too. The value is checked in <code>Process</code>, not in <code>New</code>: <code>runnel validate</code> calls <code>New</code> with the variables as written in the file.</li>
             <li><strong>For the editor:</strong> names of existing fields of incoming records with <code>schema:"format=runnel-field"</code> (also on lists such as <code>groupBy</code>), targets of data links with <code>format=runnel-target</code>, properties that only apply to some values of another one with <code>only=&lt;field&gt;:&lt;a&gt;|&lt;b&gt;</code>. Names of new fields get no format.</li>
+            <li><strong>Parameter names</strong> per ADR 0025 as for actions; in pipelines <code>maxRecords</code>, for files <code>fields[].from</code> (reading) and <code>fields[].as</code> (writing), <code>fields[].format</code> as a Runnel pattern.</li>
             <li>Every transform with a configuration gets an <strong><code>Example</code></strong> (the <code>with:</code> values in YAML) for the help in the panel; the contract test checks that <code>New</code> accepts it.</li>
           </ul>
 
@@ -161,6 +164,7 @@
 
           <h2 id="checklist">5. Pull request checklist</h2>
           <ul class="checklist">
+            <li>Parameter names per ADR 0025 (same thing, same name)</li>
             <li>One file per transform, entry in <code>register.go</code>, category, label, description, <code>doc</code> for every field</li>
             <li>Field names with <code>format=runnel-field</code>, link targets with <code>format=runnel-target</code>; an <code>Example</code></li>
             <li>Values with variables are checked in <code>Process</code>; <code>Emit</code> errors are returned</li>

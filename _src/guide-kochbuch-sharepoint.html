@@ -1,0 +1,65 @@
+<!-- {
+  "out": "handbuch/kochbuch-sharepoint.html",
+  "section": "guide",
+  "title": {
+    "de": "Kochbuch: SharePoint (Microsoft Graph)",
+    "en": "Cookbook: SharePoint (Microsoft Graph)"
+  },
+  "description": {
+    "de": "Lädt ZIP-Dateien aus einer SharePoint-Dokumentbibliothek herunter, entpackt sie und liest die enthaltenen CSV-Dateien in eine Datei. Das Rezept zeigt die Anmeldung mit OAuth2 (Client Credentials) und den Download mit saveTo.",
+    "en": "Downloads ZIP files from a SharePoint document library, unpacks them and reads the CSV files inside into one file. The recipe shows OAuth2 sign-in (client credentials) and downloading with saveTo."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+          <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch · Kochbuch</p>
+          <h1>SharePoint (Microsoft Graph)</h1>
+          <p class="docs-lead">Lädt ZIP-Dateien aus einer SharePoint-Dokumentbibliothek herunter, entpackt sie und liest die enthaltenen CSV-Dateien in eine Datei. Das Rezept zeigt die Anmeldung mit OAuth2 (Client Credentials) und den Download mit <code>saveTo</code>.</p>
+          <dl class="recipe-meta"><dt>API</dt><dd><a href="https://learn.microsoft.com/en-us/graph/api/driveitem-get-content">Microsoft Graph, Inhalt einer Datei herunterladen</a></dd><dt>Anmeldung</dt><dd>OAuth2 Client Credentials einer in Microsoft Entra registrierten Anwendung</dd><dt>Stand</dt><dd>Runnel-seitig geprüft am 24.11.2026: <code>runnel validate</code> und Ausführung gegen einen Testserver mit Token-Abruf, Weiterleitung und ZIP-Download. Gegen Microsoft Graph noch nicht ausgeführt – nach der Dokumentation von Microsoft (Stand 11/2026).</dd></dl>
+          <h2 id="prereq">Voraussetzungen</h2>
+          <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Art</th><th>Bedeutung</th></tr></thead><tbody><tr><td><code>GRAPH_TENANT</code></td><td>Variable</td><td>Tenant, z. B. <code>contoso.onmicrosoft.com</code></td></tr><tr><td><code>GRAPH_CLIENT_ID</code></td><td>Variable</td><td>Anwendungs-ID (Client-ID) der registrierten Anwendung</td></tr><tr><td><code>SHAREPOINT_SITE</code></td><td>Variable</td><td>Site als <code>host:/pfad:</code>, z. B. <code>contoso.sharepoint.com:/sites/Finance:</code></td></tr><tr><td><code>GRAPH_CLIENT_SECRET</code></td><td>Secret</td><td>Geheimer Clientschlüssel der Anwendung</td></tr></tbody></table></div>
+          <p>Secrets kommen hier aus Umgebungsvariablen (<code>secretStore: env</code> in <code>project.yaml</code>). Für den Dienst die Variable beim Dienstkonto setzen.</p>
+          <h2 id="files">Dateien</h2>
+          {{snippet:../kochbuch/sharepoint/project.yaml|project.yaml}}
+          {{snippet:../kochbuch/sharepoint/connections/sharepoint.yaml|connections/sharepoint.yaml}}
+          {{snippet:../kochbuch/sharepoint/workflows/orders.workflow.yaml|workflows/orders.workflow.yaml}}
+          {{snippet:../kochbuch/sharepoint/workflows/file.workflow.yaml|workflows/file.workflow.yaml}}
+          {{snippet:../kochbuch/sharepoint/pipelines/orders.pipeline.yaml|pipelines/orders.pipeline.yaml}}
+          <p>Runnel holt das Token selbst und hält es bis kurz vor Ablauf im Speicher. Graph beantwortet <code>…:/content</code> mit einer Weiterleitung zum Download; zu einem anderen Host geht das Token dabei nicht mit. <code>saveTo</code> schreibt die Antwort direkt in eine Datei, ihr Pfad steht in <code>output.path</code>. Die Dateien werden nacheinander verarbeitet (<code>forEach</code> ohne <code>parallel</code>), weil alle an dieselbe CSV-Datei anhängen.</p>
+          <h2 id="run">Ausführen</h2><p>Im Ordner des Rezepts (PowerShell):</p>
+          <pre><code class="lang-bash" data-caption="PowerShell">$env:GRAPH_CLIENT_SECRET = &quot;…&quot;
+runnel run -v workflows/orders.workflow.yaml
+runnel run -v --param &#x27;PATHS=[&quot;Exports/2026/orders-north.zip&quot;]&#x27; workflows/orders.workflow.yaml</code></pre>
+          <h2 id="adapt">Anpassen</h2><ul><li>In Microsoft Entra eine Anwendung registrieren und ihr die Anwendungsberechtigung <code>Sites.Selected</code> geben (Zugriff je Site freigeben, empfohlen) oder <code>Files.Read.All</code>; einen geheimen Clientschlüssel anlegen.</li><li>Die Pfade der Dateien stehen im Parameter <code>PATHS</code> (JSON-Liste), relativ zur Dokumentbibliothek der Site.</li><li>Für andere Dateiarten den Schritt <code>unpack</code> weglassen und die Pipeline direkt mit <code>results.download.output.path</code> aufrufen.</li><li>Andere Graph-Endpunkte (Mail, Teams, Benutzer) nutzen dieselbe Connection; Listen mit <code>paginate: { style: url, next: "@odata.nextLink", items: value }</code>.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/sharepoint">Quellen auf GitHub: <code>_src/kochbuch/sharepoint</code></a></p>
+          </article>
+
+          <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide · Cookbook</p>
+          <h1>SharePoint (Microsoft Graph)</h1>
+          <p class="docs-lead">Downloads ZIP files from a SharePoint document library, unpacks them and reads the CSV files inside into one file. The recipe shows OAuth2 sign-in (client credentials) and downloading with <code>saveTo</code>.</p>
+          <dl class="recipe-meta"><dt>API</dt><dd><a href="https://learn.microsoft.com/en-us/graph/api/driveitem-get-content">Microsoft Graph, download a file's content</a></dd><dt>Sign-in</dt><dd>OAuth2 client credentials of an application registered in Microsoft Entra</dd><dt>Status</dt><dd>Checked on the Runnel side on 2026-11-24: <code>runnel validate</code> and runs against a test server with token request, redirect and ZIP download. Not yet run against Microsoft Graph – per Microsoft's documentation (as of 11/2026).</dd></dl>
+          <h2 id="prereq-en">Prerequisites</h2>
+          <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Kind</th><th>Meaning</th></tr></thead><tbody><tr><td><code>GRAPH_TENANT</code></td><td>Variable</td><td>Tenant, e.g. <code>contoso.onmicrosoft.com</code></td></tr><tr><td><code>GRAPH_CLIENT_ID</code></td><td>Variable</td><td>Application (client) ID of the registered application</td></tr><tr><td><code>SHAREPOINT_SITE</code></td><td>Variable</td><td>Site as <code>host:/path:</code>, e.g. <code>contoso.sharepoint.com:/sites/Finance:</code></td></tr><tr><td><code>GRAPH_CLIENT_SECRET</code></td><td>Secret</td><td>Client secret of the application</td></tr></tbody></table></div>
+          <p>Secrets come from environment variables here (<code>secretStore: env</code> in <code>project.yaml</code>). For the service, set the variable for the service account.</p>
+          <h2 id="files-en">Files</h2>
+          {{snippet:../kochbuch/sharepoint/project.yaml|project.yaml}}
+          {{snippet:../kochbuch/sharepoint/connections/sharepoint.yaml|connections/sharepoint.yaml}}
+          {{snippet:../kochbuch/sharepoint/workflows/orders.workflow.yaml|workflows/orders.workflow.yaml}}
+          {{snippet:../kochbuch/sharepoint/workflows/file.workflow.yaml|workflows/file.workflow.yaml}}
+          {{snippet:../kochbuch/sharepoint/pipelines/orders.pipeline.yaml|pipelines/orders.pipeline.yaml}}
+          <p>Runnel fetches the token itself and keeps it in memory until shortly before it expires. Graph answers <code>…:/content</code> with a redirect to the download; the token does not go along to another host. <code>saveTo</code> writes the response straight into a file, its path is in <code>output.path</code>. Files are processed one after the other (<code>forEach</code> without <code>parallel</code>) because all of them append to the same CSV file.</p>
+          <h2 id="run-en">Running</h2><p>In the recipe folder (PowerShell):</p>
+          <pre><code class="lang-bash" data-caption="PowerShell">$env:GRAPH_CLIENT_SECRET = &quot;…&quot;
+runnel run -v workflows/orders.workflow.yaml
+runnel run -v --param &#x27;PATHS=[&quot;Exports/2026/orders-north.zip&quot;]&#x27; workflows/orders.workflow.yaml</code></pre>
+          <h2 id="adapt-en">Adapting</h2><ul><li>Register an application in Microsoft Entra and give it the application permission <code>Sites.Selected</code> (access granted per site, recommended) or <code>Files.Read.All</code>; create a client secret.</li><li>The file paths are in the parameter <code>PATHS</code> (JSON list), relative to the site's document library.</li><li>For other file types, drop the <code>unpack</code> step and call the pipeline directly with <code>results.download.output.path</code>.</li><li>Other Graph endpoints (mail, Teams, users) use the same connection; lists with <code>paginate: { style: url, next: "@odata.nextLink", items: value }</code>.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/sharepoint">Sources on GitHub: <code>_src/kochbuch/sharepoint</code></a></p>
+          </article>
+      </div>
+    </div>

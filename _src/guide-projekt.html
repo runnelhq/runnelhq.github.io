@@ -47,6 +47,7 @@ workflow:
           </table></div>
 
           <h2 id="environments">Environments</h2>
+          <p>Im Editor öffnen <code>project.yaml</code> und Environments als Formular mit einer Tabelle der Variablen; daneben steht jeweils der Wert aus <code>project.yaml</code>.</p>
           <p>Ein Environment überschreibt Variablen für eine Umgebung. Der Name muss dem Dateinamen entsprechen. Gewählt wird es mit <code>--env</code>, im Editor beim Start oder im Trigger; sonst gilt <code>defaultEnvironment</code>.</p>
 <pre><code class="lang-yaml" data-caption="environments/prod.yaml">kind: Environment
 apiVersion: runnel/v1
@@ -140,6 +141,7 @@ with:
   database: ERP
   user: runnel_read
   password: ${secret:ERP_PASSWORD}</code></pre>
+          <p><strong>Im Editor</strong> öffnen Connections als Formular mit den Feldern ihres Typs (umschaltbar auf YAML). „Test connection“ prüft eine Connection für das gewählte Environment; Secret-Felder zeigen je Environment, ob das Secret gesetzt ist. Neue Connections legt „New → Connection“ an.</p>
           <h3>SQLite (<code>sqlite</code>)</h3>
           <div class="table-scroll"><table class="doc-table">
             <tbody>
@@ -224,6 +226,7 @@ workflow:
           </table></div>
 
           <h2 id="environments-en">Environments</h2>
+          <p>In the editor, <code>project.yaml</code> and environments open as a form with a table of variables, each next to its value from <code>project.yaml</code>.</p>
           <p>An environment overrides variables for one environment. Its name must match the file name. It is chosen with <code>--env</code>, in the editor when starting or in the trigger; otherwise <code>defaultEnvironment</code> applies.</p>
 <pre><code class="lang-yaml" data-caption="environments/prod.yaml">kind: Environment
 apiVersion: runnel/v1
@@ -317,6 +320,7 @@ with:
   database: ERP
   user: runnel_read
   password: ${secret:ERP_PASSWORD}</code></pre>
+          <p><strong>In the editor</strong> connections open as a form with the fields of their type (switchable to YAML). “Test connection” checks a connection for the selected environment; secret fields show per environment whether the secret is set. “New → Connection” creates new ones.</p>
           <h3>SQLite (<code>sqlite</code>)</h3>
           <div class="table-scroll"><table class="doc-table">
             <tbody>

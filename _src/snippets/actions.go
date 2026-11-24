@@ -6,6 +6,8 @@ var namespaces = []func(*action.Registry){
 	db.Register,
 	file.Register,
 	http.Register,
+	mail.Register,
+	shell.Register,
 }
 
 // Builtin returns a new registry with all built-in actions.

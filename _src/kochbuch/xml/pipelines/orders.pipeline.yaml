@@ -1,0 +1,67 @@
+# Reads orders from an XML export (data/orders.xml) and writes them to a CSV file and to
+# another XML file in the structure a partner expects.
+# - "read": the elements <Bestellung> are the records; the namespace prefix erp: is not
+#   written. from: takes attributes (@nr), nested elements (Kunde/Name) and attributes
+#   of them (Kunde/@id).
+# - An order with "k. A." as Betrag goes over the error link to REJECTED.
+# - "export": as: places each field – as attribute (@number) or nested (customer/name).
+kind: Pipeline
+apiVersion: runnel/v1
+name: orders
+parameters:
+  - name: OUTPUT
+    description: CSV file to write
+    default: out/xml-orders.csv
+  - name: REJECTED
+    description: CSV file for orders with errors
+    default: out/xml-rejected.csv
+  - name: EXPORT
+    description: XML file to write
+    default: out/xml-orders-export.xml
+transforms:
+  - id: read
+    type: xml.input
+    with:
+      path: data/orders.xml
+      records: Bestellungen/Bestellung
+      fields:
+        - { name: Nr, from: "@nr", type: int }
+        - { name: Kunde, from: Kunde/Name }
+        - { name: KundenNr, from: Kunde/@id }
+        - { name: Betrag, type: decimal }
+        - { name: Datum, type: date }
+        - { name: Bezahlt, type: bool }
+  - id: write
+    type: csv.output
+    with:
+      path: ${OUTPUT}
+      delimiter: ";"
+      fields:
+        - { name: Nr }
+        - { name: Kunde }
+        - { name: KundenNr }
+        - { name: Betrag, format: "#.##0,00" }
+        - { name: Datum, format: dd.MM.yyyy }
+        - { name: Bezahlt }
+  - id: export
+    type: xml.output
+    with:
+      path: ${EXPORT}
+      root: orders
+      record: order
+      fields:
+        - { name: Nr, as: "@number" }
+        - { name: KundenNr, as: customer/@id }
+        - { name: Kunde, as: customer/name }
+        - { name: Betrag, as: amount }
+        - { name: Datum, as: date }
+        - { name: Bezahlt, as: paid }
+  - id: rejected
+    type: csv.output
+    with:
+      path: ${REJECTED}
+      delimiter: ";"
+links:
+  - { from: read, to: write }
+  - { from: read, to: export }
+  - { from: read, to: rejected, type: error }

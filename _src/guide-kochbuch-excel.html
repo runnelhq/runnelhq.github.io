@@ -1,0 +1,55 @@
+<!-- {
+  "out": "handbuch/kochbuch-excel.html",
+  "section": "guide",
+  "title": {
+    "de": "Kochbuch: Excel lesen und schreiben",
+    "en": "Cookbook: Reading and writing Excel"
+  },
+  "description": {
+    "de": "Liest Bestellungen aus einer Excel-Mappe, schreibt sie als CSV-Datei und als neue, formatierte Mappe. Fehlerhafte Zeilen gehen in eine eigene Datei.",
+    "en": "Reads orders from an Excel workbook and writes them as a CSV file and as a new, formatted workbook. Faulty rows go into a separate file."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+          <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch · Kochbuch</p>
+          <h1>Excel lesen und schreiben</h1>
+          <p class="docs-lead">Liest Bestellungen aus einer Excel-Mappe, schreibt sie als CSV-Datei und als neue, formatierte Mappe. Fehlerhafte Zeilen gehen in eine eigene Datei.</p>
+          <dl class="recipe-meta"><dt>Bausteine</dt><dd><code>excel.input</code>, <code>excel.output</code>, <code>csv.output</code></dd><dt>Anmeldung</dt><dd>keine – nur Dateien</dd><dt>Stand</dt><dd>Geprüft am 24.11.2026 mit <code>runnel validate</code> und vollständig ausgeführt mit den Beispieldaten des Rezepts.</dd></dl>
+          <h2 id="prereq">Voraussetzungen</h2>
+          <p>Keine Konten oder Schlüssel nötig.</p>
+          <h2 id="files">Dateien</h2>
+          {{snippet:../kochbuch/excel/project.yaml|project.yaml}}
+          {{snippet:../kochbuch/excel/pipelines/orders.pipeline.yaml|pipelines/orders.pipeline.yaml}}
+          {{snippet:../kochbuch/excel/workflows/export.workflow.yaml|workflows/export.workflow.yaml}}
+          <p>Die Beispielmappe <code>data/orders.xlsx</code> hat über der Tabelle einen Titel und darunter eine Summenzeile; Bestellung 1004 enthält <code>#N/A</code> im Betrag und landet über den Fehler-Link in <code>out/excel-rejected.csv</code>. Der Workflow legt den Ordner <code>out</code> an, weil die Ausgaben fehlende Ordner nicht erzeugen.</p>
+          <h2 id="run">Ausführen</h2><p>Im Ordner des Rezepts (PowerShell):</p>
+          <pre><code class="lang-bash" data-caption="PowerShell">runnel run workflows/export.workflow.yaml</code></pre>
+          <h2 id="adapt">Anpassen</h2><ul><li><code>sheet</code> und <code>range</code> an die eigene Mappe anpassen: <code>range: A3</code> heißt, die Tabelle beginnt mit der Kopfzeile in A3; <code>emptyRows: stop</code> endet an der ersten leeren Zeile, etwa vor einer Summenzeile.</li><li>Zahlen, Daten und Wahrheitswerte kommen aus Excel bereits typisiert; <code>fields</code> wählt nur die Spalten und prüft die Typen. Spalten mit anderem Namen holt <code>from</code>.</li><li>Beim Schreiben bleibt eine Zahl eine Zahl: <code>format</code> nimmt ein Runnel-Muster wie <code>#.##0,00</code>, <code>excelFormat</code> einen eigenen Excel-Code wie <code>#,##0.00 "€"</code>. Mit <code>ifExists: sheet</code> ersetzt Runnel nur ein Blatt einer vorhandenen Mappe.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/excel">Quellen auf GitHub: <code>_src/kochbuch/excel</code></a></p>
+          </article>
+
+          <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide · Cookbook</p>
+          <h1>Reading and writing Excel</h1>
+          <p class="docs-lead">Reads orders from an Excel workbook and writes them as a CSV file and as a new, formatted workbook. Faulty rows go into a separate file.</p>
+          <dl class="recipe-meta"><dt>Components</dt><dd><code>excel.input</code>, <code>excel.output</code>, <code>csv.output</code></dd><dt>Sign-in</dt><dd>none – files only</dd><dt>Status</dt><dd>Checked on 2026-11-24 with <code>runnel validate</code> and run completely with the recipe's sample data.</dd></dl>
+          <h2 id="prereq-en">Prerequisites</h2>
+          <p>No accounts or keys needed.</p>
+          <h2 id="files-en">Files</h2>
+          {{snippet:../kochbuch/excel/project.yaml|project.yaml}}
+          {{snippet:../kochbuch/excel/pipelines/orders.pipeline.yaml|pipelines/orders.pipeline.yaml}}
+          {{snippet:../kochbuch/excel/workflows/export.workflow.yaml|workflows/export.workflow.yaml}}
+          <p>The sample workbook <code>data/orders.xlsx</code> has a title above the table and a sum row below it; order 1004 contains <code>#N/A</code> as amount and goes over the error link into <code>out/excel-rejected.csv</code>. The workflow creates the folder <code>out</code> because the outputs don't create missing folders.</p>
+          <h2 id="run-en">Running</h2><p>In the recipe folder (PowerShell):</p>
+          <pre><code class="lang-bash" data-caption="PowerShell">runnel run workflows/export.workflow.yaml</code></pre>
+          <h2 id="adapt-en">Adapting</h2><ul><li>Adapt <code>sheet</code> and <code>range</code> to your workbook: <code>range: A3</code> means the table starts with its header in A3; <code>emptyRows: stop</code> ends at the first empty row, e.g. before a sum row.</li><li>Numbers, dates and booleans already come typed from Excel; <code>fields</code> only picks the columns and checks their types. Columns with another name are taken with <code>from</code>.</li><li>When writing, a number stays a number: <code>format</code> takes a Runnel pattern such as <code>#.##0,00</code>, <code>excelFormat</code> a custom Excel code such as <code>#,##0.00 "€"</code>. With <code>ifExists: sheet</code> Runnel replaces just one sheet of an existing workbook.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/excel">Sources on GitHub: <code>_src/kochbuch/excel</code></a></p>
+          </article>
+      </div>
+    </div>
