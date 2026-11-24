@@ -42,7 +42,7 @@ window.RUNNEL_I18N = {
     "blocks.dual": "Exists as an action and as a transform – with its own fields for each kind:",
     "blocks.dualLabel": "Action and transform",
     "meta.title": "Runnel – Lightweight. Local. Flowing.",
-    "meta.description": "Workflows and data integration for Windows – one executable, no runtime, no database. Open source under the MIT license.",
+    "meta.description": "Workflows and data integration for Windows – one executable, no runtime, no database server. Open source under the MIT license.",
     "a11y.skip": "Skip to content",
     "nav.label": "Main navigation",
     "nav.open": "Open menu",
@@ -61,7 +61,7 @@ window.RUNNEL_I18N = {
     "ui.copyCmd": "Copy command",
 
     "hero.title": "Lightweight. Local.<br><em>Flowing.</em>",
-    "hero.lead": "Workflows and data integration for Windows – one executable, no runtime, no database. Design visually in the editor, run via CLI, server or Windows service.",
+    "hero.lead": "Workflows and data integration for Windows – one executable, no runtime, no database server. Design visually in the editor, run via CLI, server or Windows service.",
     "hero.meta": "For Windows and Linux (amd64) · one <code>runnel.exe</code>, no installation required",
     "hero.termLabel": "Output of runnel run for the hello example",
 

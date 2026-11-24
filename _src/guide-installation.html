@@ -17,7 +17,7 @@
         <article class="prose" data-lang-block="de" lang="de">
           <p class="docs-eyebrow">Handbuch</p>
           <h1>Installation</h1>
-          <p class="docs-lead">Runnel ist eine einzige ausführbare Datei. Es gibt kein Setup, keine Runtime und keine Datenbank: herunterladen, entpacken, starten.</p>
+          <p class="docs-lead">Runnel ist eine einzige ausführbare Datei. Es gibt kein Setup, keine Runtime und keinen Datenbank-Server: herunterladen, entpacken, starten.</p>
 
           <h2 id="voraussetzungen">Voraussetzungen</h2>
           <ul>
@@ -86,7 +86,7 @@ C:\Tools\Runnel\runnel.exe version</code></pre>
           <ul>
             <li><strong>Stopp:</strong> <code>service stop</code> wartet bis zu 30 s auf laufende Runs und bricht sie danach ab – am besten außerhalb der Zeitpläne wechseln.</li>
             <li><strong>Während des Wechsels</strong> entfallen Zeitpunkte von Zeitplan- und Intervall-Triggern; neue Dateien in überwachten Ordnern verarbeitet der Dienst nach dem Start; Aufrufe von HTTP-Triggern scheitern, bis er wieder läuft.</li>
-            <li><strong>Läufe:</strong> Die Liste der Läufe liegt nur im Speicher und beginnt nach dem Neustart leer.</li>
+            <li><strong>Läufe:</strong> Die Liste der Läufe liegt heute nur im Speicher und beginnt nach dem Neustart leer. Mit der Run-Historie (<a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0026-run-historie.md">ADR 0026</a>) bleiben sie erhalten; sie liegt im Datenordner, nicht neben der exe.</li>
             <li><strong>Mehrere Dienste</strong>, die dieselbe <code>runnel.exe</code> starten, vorher alle stoppen – Windows sperrt die Datei, solange einer läuft.</li>
             <li><strong>Ohne Dienst:</strong> <code>runnel serve</code> mit Strg+C beenden, Datei ersetzen, neu starten.</li>
             <li><strong>Zurück:</strong> Dienst stoppen, <code>runnel-old.exe</code> wieder in <code>runnel.exe</code> umbenennen, Dienst starten.</li>
@@ -105,7 +105,7 @@ C:\Tools\Runnel\runnel.exe version</code></pre>
         <article class="prose" data-lang-block="en" lang="en">
           <p class="docs-eyebrow">User guide</p>
           <h1>Installation</h1>
-          <p class="docs-lead">Runnel is a single executable. There is no setup, no runtime and no database: download, unpack, start.</p>
+          <p class="docs-lead">Runnel is a single executable. There is no setup, no runtime and no database server: download, unpack, start.</p>
 
           <h2 id="requirements">Requirements</h2>
           <ul>
@@ -174,7 +174,7 @@ C:\Tools\Runnel\runnel.exe version</code></pre>
           <ul>
             <li><strong>Stopping:</strong> <code>service stop</code> waits up to 30 s for running runs, then cancels them – best switch outside the schedules.</li>
             <li><strong>During the switch</strong> schedule and interval trigger times are skipped; new files in watched folders are processed after the start; calls to HTTP triggers fail until the service runs again.</li>
-            <li><strong>Runs:</strong> the list of runs lives in memory only and starts empty after the restart.</li>
+            <li><strong>Runs:</strong> today the list of runs lives in memory only and starts empty after the restart. With the run history (<a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0026-run-historie.md">ADR 0026</a>) they are kept; it lives in the data folder, not next to the executable.</li>
             <li><strong>Several services</strong> starting the same <code>runnel.exe</code>: stop them all first – Windows locks the file while one runs.</li>
             <li><strong>Without a service:</strong> end <code>runnel serve</code> with Ctrl+C, replace the file, start again.</li>
             <li><strong>Going back:</strong> stop the service, rename <code>runnel-old.exe</code> back to <code>runnel.exe</code>, start the service.</li>
