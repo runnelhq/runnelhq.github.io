@@ -118,8 +118,18 @@ runnel serve --triggers 0.0.0.0:7301 --triggers-cert C:\certs\runnel.crt --trigg
           <ul>
             <li><strong>CLI:</strong> Das Log erscheint in der Konsole; mit <code>-v</code> ausführlich.</li>
             <li><strong>Editor:</strong> Tab „Log“ unter dem Canvas, Status an jeder Action, Ergebnis im Panel.</li>
-            <li><strong>Server und Dienst:</strong> Die letzten 100 Läufe (dazu die letzten 100 von HTTP-Triggern) stehen im Speicher und im Editor; eine dauerhafte Historie ist geplant. Der Dienst schreibt zusätzlich die Log-Datei.</li>
+            <li><strong>Server und Dienst:</strong> Die letzten 100 Läufe (dazu die letzten 100 von HTTP-Triggern) stehen im Speicher und im Editor. Der Dienst schreibt zusätzlich die Log-Datei.</li>
             <li><strong>Secrets</strong> werden in Log, Fehlern und Ergebnissen durch <code>***</code> ersetzt.</li>
+          </ul>
+
+          <h3 id="historie">Run-Historie (in Arbeit)</h3>
+          <p>Beschlossen in <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0026-run-historie.md">ADR 0026</a>, umgesetzt in den nächsten Schritten: Läufe überstehen dann Neustarts, und auch Läufe von <code>runnel run</code> und der Aufgabenplanung werden sichtbar. Es bleibt bei „kein Datenbank-Server“ – die Historie ist eine SQLite-Datei, die die exe selbst schreibt; nichts zu installieren und nichts zu verwalten.</p>
+          <ul>
+            <li><strong>Ort:</strong> eine Datei <code>runs.db</code> je Projekt im Datenordner, nicht im Projektordner (gehört nicht in Git; SQLite ist auf Netzlaufwerken nicht sicher). Dienst: <code>%ProgramData%\runnel\history\…</code>, Benutzer: <code>%LOCALAPPDATA%\runnel\history\…</code>; mit <code>--history-dir</code> frei wählbar, z. B. portabel neben der exe.</li>
+            <li><strong>Inhalt:</strong> Lauf, Status je Action bzw. Transform und Log (höchstens 5.000 Zeilen je Lauf); keine Datensätze, Secrets bereits maskiert.</li>
+            <li><strong>Gleichzeitig:</strong> Dienst, <code>runnel serve</code> und <code>runnel run</code> schreiben in dieselbe Datei. Ein Fehler der Historie hält keinen Lauf auf.</li>
+            <li><strong>Ansehen:</strong> im Editor, über die API oder mit <code>runnel runs</code> bzw. <code>runnel runs &lt;id&gt;</code> – ohne SQLite-Werkzeug.</li>
+            <li><strong>Aufbewahrung</strong> in <code>project.yaml</code> unter <code>settings.history</code>: <code>keepDays</code> (Standard 30), <code>maxRuns</code> (10.000), <code>cli</code> (<code>all</code>, <code>errors</code>, <code>none</code>); <code>history:</code> gilt dann für alle Trigger-Arten.</li>
           </ul>
         </article>
 
@@ -228,8 +238,18 @@ runnel serve --triggers 0.0.0.0:7301 --triggers-cert C:\certs\runnel.crt --trigg
           <ul>
             <li><strong>CLI:</strong> the log appears in the console; detailed with <code>-v</code>.</li>
             <li><strong>Editor:</strong> “Log” tab below the canvas, status on every action, result in the panel.</li>
-            <li><strong>Server and service:</strong> the last 100 runs (plus the last 100 from HTTP triggers) are kept in memory and shown in the editor; a persistent history is planned. The service also writes the log file.</li>
+            <li><strong>Server and service:</strong> the last 100 runs (plus the last 100 from HTTP triggers) are kept in memory and shown in the editor. The service also writes the log file.</li>
             <li><strong>Secrets</strong> are replaced by <code>***</code> in log, errors and results.</li>
+          </ul>
+
+          <h3 id="history-en">Run history (in progress)</h3>
+          <p>Decided in <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0026-run-historie.md">ADR 0026</a> (German), implemented in the next steps: runs then survive restarts, and runs from <code>runnel run</code> and the Task Scheduler become visible too. It stays “no database server” – the history is an SQLite file handled by the executable itself, nothing to install or administer.</p>
+          <ul>
+            <li><strong>Location:</strong> one file <code>runs.db</code> per project in the data folder, not in the project folder (it does not belong in Git; SQLite is not safe on network drives). Service: <code>%ProgramData%\runnel\history\…</code>, user: <code>%LOCALAPPDATA%\runnel\history\…</code>; <code>--history-dir</code> sets it freely, e.g. portable next to the executable.</li>
+            <li><strong>Content:</strong> run, status per action or transform and log (at most 5,000 lines per run); no records, secrets already masked.</li>
+            <li><strong>Concurrent:</strong> service, <code>runnel serve</code> and <code>runnel run</code> write to the same file. A history error never holds up a run.</li>
+            <li><strong>Viewing:</strong> in the editor, via the API or with <code>runnel runs</code> or <code>runnel runs &lt;id&gt;</code> – no SQLite tool needed.</li>
+            <li><strong>Retention</strong> in <code>project.yaml</code> under <code>settings.history</code>: <code>keepDays</code> (default 30), <code>maxRuns</code> (10,000), <code>cli</code> (<code>all</code>, <code>errors</code>, <code>none</code>); <code>history:</code> then applies to all trigger kinds.</li>
           </ul>
         </article>
       </div>

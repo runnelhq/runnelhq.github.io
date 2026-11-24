@@ -91,7 +91,7 @@ runnel serve --port 0 .          # freier Port; die Ausgabe nennt die Adresse</c
             </tbody>
           </table></div>
           {{snippet:api-run.json|Run}}
-          <p><code>status</code> ist <code>running</code>, <code>succeeded</code>, <code>failed</code> oder <code>cancelled</code>; <code>trigger</code> nennt, was den Lauf gestartet hat (<code>cron:&lt;name&gt;</code>, <code>interval:…</code>, <code>file:…</code>, <code>http:…</code>). <code>GET /runs/{id}</code> ergänzt den Status je Action und das Log (höchstens 5.000 Zeilen). Läufe liegen nur im Speicher – die letzten 100, dazu die letzten 100 von HTTP-Triggern; eine dauerhafte Historie folgt mit S26, ohne dass sich die API ändert.</p>
+          <p><code>status</code> ist <code>running</code>, <code>succeeded</code>, <code>failed</code> oder <code>cancelled</code>; <code>trigger</code> nennt, was den Lauf gestartet hat (<code>cron:&lt;name&gt;</code>, <code>interval:…</code>, <code>file:…</code>, <code>http:…</code>). <code>GET /runs/{id}</code> ergänzt den Status je Action und das Log (höchstens 5.000 Zeilen). Läufe liegen nur im Speicher – die letzten 100, dazu die letzten 100 von HTTP-Triggern; eine dauerhafte Historie folgt mit S26 (<a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0026-run-historie.md">ADR 0026</a>): eine SQLite-Datei je Projekt im Datenordner. Die Antworten bleiben gleich; laufende Läufe kommen weiter aus dem Speicher, alle anderen aus der Historie, dazu Filter und Seiten (<code>status</code>, <code>path</code>, <code>trigger</code>, <code>before</code>, <code>limit</code>).</p>
 
           <h2 id="events">Live-Ereignisse (<code>/events</code>)</h2>
           {{snippet:api-event.txt|Beispiel}}
@@ -206,7 +206,7 @@ runnel serve --port 0 .          # free port; the output names the address</code
             </tbody>
           </table></div>
           {{snippet:api-run.json|Run}}
-          <p><code>status</code> is <code>running</code>, <code>succeeded</code>, <code>failed</code> or <code>cancelled</code>; <code>trigger</code> names what started the run (<code>cron:&lt;name&gt;</code>, <code>interval:…</code>, <code>file:…</code>, <code>http:…</code>). <code>GET /runs/{id}</code> adds the status per action and the log (at most 5,000 lines). Runs are kept in memory only – the last 100 plus the last 100 from HTTP triggers; a persistent history follows with S26 without changing the API.</p>
+          <p><code>status</code> is <code>running</code>, <code>succeeded</code>, <code>failed</code> or <code>cancelled</code>; <code>trigger</code> names what started the run (<code>cron:&lt;name&gt;</code>, <code>interval:…</code>, <code>file:…</code>, <code>http:…</code>). <code>GET /runs/{id}</code> adds the status per action and the log (at most 5,000 lines). Runs are kept in memory only – the last 100 plus the last 100 from HTTP triggers; a persistent history follows with S26 (<a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0026-run-historie.md">ADR 0026</a>): one SQLite file per project in the data folder. The responses stay the same; running runs still come from memory, all others from the history, plus filters and pages (<code>status</code>, <code>path</code>, <code>trigger</code>, <code>before</code>, <code>limit</code>).</p>
 
           <h2 id="events-en">Live events (<code>/events</code>)</h2>
           {{snippet:api-event.txt|Example}}
