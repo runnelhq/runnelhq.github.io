@@ -1,0 +1,11 @@
+kind: Connection
+apiVersion: runnel/v1
+name: ad
+description: Active Directory, read only
+type: ldap                         # connection type of the plugin ldap
+with:
+  url: ${LDAP_URL}                 # ldaps:// (TLS); ldap:// only with startTls: true
+  bindDn: ${LDAP_USER}             # DN or user@domain
+  password: ${secret:AD_PASSWORD}
+  baseDn: ${LDAP_BASE}
+  # caFile: certs/company-ca.pem   # CA of the server, if this computer does not trust it

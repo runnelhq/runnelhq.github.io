@@ -48,6 +48,7 @@
     <nav class="nav" aria-label="Hauptnavigation" data-i18n-attr="aria-label:nav.label">
       <a href="../index.html#features" data-i18n="nav.features">Funktionen</a>
       <a href="../index.html#model" data-i18n="nav.model">Modell</a>
+      <a href="../index.html#plugins" data-i18n="nav.plugins">Plugins</a>
       <a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a>
       <a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a>
       <a href="../handbuch/" data-i18n="nav.guide">Handbuch</a>
@@ -70,6 +71,7 @@
       <ul>
         <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
         <li><a href="../index.html#model" data-i18n="nav.model">Modell</a></li>
+        <li><a href="../index.html#plugins" data-i18n="nav.plugins">Plugins</a></li>
         <li><a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a></li>
         <li><a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a></li>
         <li><a href="../handbuch/" data-i18n="nav.guide">Handbuch</a></li>
@@ -85,8 +87,8 @@
 
 <main id="main" class="docs-page">
 <div class="wrap docs-layout">
-      <details class="docs-side docs-side--mobile"><summary><span data-lang-block="de">Inhalt</span><span data-lang-block="en" hidden>Contents</span></summary><p class="docs-side-title"><span data-lang-block="de">Entwicklerdoku</span><span data-lang-block="en" hidden>Developer docs</span></p><ul class="docs-nav"><li><a href="../docs/"><span data-lang-block="de">Übersicht</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../docs/actions.html"><span data-lang-block="de">Actions entwickeln</span><span data-lang-block="en" hidden>Developing actions</span></a></li><li><a href="../docs/transforms.html" aria-current="page"><span data-lang-block="de">Transforms entwickeln</span><span data-lang-block="en" hidden>Developing transforms</span></a></li><li><a href="../docs/editor.html"><span data-lang-block="de">Editor entwickeln</span><span data-lang-block="en" hidden>Developing the editor</span></a></li><li><a href="../docs/api.html"><span data-lang-block="de">Server-API</span><span data-lang-block="en" hidden>Server API</span></a></li><li><span class="docs-nav-soon"><span data-lang-block="de">Plugins entwickeln</span><span data-lang-block="en" hidden>Developing plugins</span><small><span data-lang-block="de">folgt mit S49–S51</span><span data-lang-block="en" hidden>coming with S49–S51</span></small></span></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#aufbau">1. Aufbau</a></li><li><a href="#process">2. Verarbeiten (Process)</a></li><li><a href="#init">3. Schema (Init)</a></li><li><a href="#tests">4. Tests</a></li><li><a href="#checkliste">5. Checkliste für den PR</a></li><li><a href="#vorlage">Vorlage: core.filter</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#layout">1. Layout</a></li><li><a href="#process-en">2. Processing (Process)</a></li><li><a href="#init-en">3. Schema (Init)</a></li><li><a href="#tests-en">4. Tests</a></li><li><a href="#checklist">5. Pull request checklist</a></li><li><a href="#template">Template: core.filter</a></li></ul></details>
-<aside class="docs-side docs-side--desktop" aria-label="Dokumentation"><p class="docs-side-title"><span data-lang-block="de">Entwicklerdoku</span><span data-lang-block="en" hidden>Developer docs</span></p><ul class="docs-nav"><li><a href="../docs/"><span data-lang-block="de">Übersicht</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../docs/actions.html"><span data-lang-block="de">Actions entwickeln</span><span data-lang-block="en" hidden>Developing actions</span></a></li><li><a href="../docs/transforms.html" aria-current="page"><span data-lang-block="de">Transforms entwickeln</span><span data-lang-block="en" hidden>Developing transforms</span></a></li><li><a href="../docs/editor.html"><span data-lang-block="de">Editor entwickeln</span><span data-lang-block="en" hidden>Developing the editor</span></a></li><li><a href="../docs/api.html"><span data-lang-block="de">Server-API</span><span data-lang-block="en" hidden>Server API</span></a></li><li><span class="docs-nav-soon"><span data-lang-block="de">Plugins entwickeln</span><span data-lang-block="en" hidden>Developing plugins</span><small><span data-lang-block="de">folgt mit S49–S51</span><span data-lang-block="en" hidden>coming with S49–S51</span></small></span></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#aufbau">1. Aufbau</a></li><li><a href="#process">2. Verarbeiten (Process)</a></li><li><a href="#init">3. Schema (Init)</a></li><li><a href="#tests">4. Tests</a></li><li><a href="#checkliste">5. Checkliste für den PR</a></li><li><a href="#vorlage">Vorlage: core.filter</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#layout">1. Layout</a></li><li><a href="#process-en">2. Processing (Process)</a></li><li><a href="#init-en">3. Schema (Init)</a></li><li><a href="#tests-en">4. Tests</a></li><li><a href="#checklist">5. Pull request checklist</a></li><li><a href="#template">Template: core.filter</a></li></ul></aside>
+      <details class="docs-side docs-side--mobile"><summary><span data-lang-block="de">Inhalt</span><span data-lang-block="en" hidden>Contents</span></summary><p class="docs-side-title"><span data-lang-block="de">Entwicklerdoku</span><span data-lang-block="en" hidden>Developer docs</span></p><ul class="docs-nav"><li><a href="../docs/"><span data-lang-block="de">Übersicht</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../docs/actions.html"><span data-lang-block="de">Actions entwickeln</span><span data-lang-block="en" hidden>Developing actions</span></a></li><li><a href="../docs/transforms.html" aria-current="page"><span data-lang-block="de">Transforms entwickeln</span><span data-lang-block="en" hidden>Developing transforms</span></a></li><li><a href="../docs/editor.html"><span data-lang-block="de">Editor entwickeln</span><span data-lang-block="en" hidden>Developing the editor</span></a></li><li><a href="../docs/api.html"><span data-lang-block="de">Server-API</span><span data-lang-block="en" hidden>Server API</span></a></li><li><a href="../docs/plugins.html"><span data-lang-block="de">Plugins entwickeln</span><span data-lang-block="en" hidden>Developing plugins</span></a></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#aufbau">1. Aufbau</a></li><li><a href="#process">2. Verarbeiten (Process)</a></li><li><a href="#init">3. Schema (Init)</a></li><li><a href="#tests">4. Tests</a></li><li><a href="#checkliste">5. Checkliste für den PR</a></li><li><a href="#vorlage">Vorlage: core.filter</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#layout">1. Layout</a></li><li><a href="#process-en">2. Processing (Process)</a></li><li><a href="#init-en">3. Schema (Init)</a></li><li><a href="#tests-en">4. Tests</a></li><li><a href="#checklist">5. Pull request checklist</a></li><li><a href="#template">Template: core.filter</a></li></ul></details>
+<aside class="docs-side docs-side--desktop" aria-label="Dokumentation"><p class="docs-side-title"><span data-lang-block="de">Entwicklerdoku</span><span data-lang-block="en" hidden>Developer docs</span></p><ul class="docs-nav"><li><a href="../docs/"><span data-lang-block="de">Übersicht</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../docs/actions.html"><span data-lang-block="de">Actions entwickeln</span><span data-lang-block="en" hidden>Developing actions</span></a></li><li><a href="../docs/transforms.html" aria-current="page"><span data-lang-block="de">Transforms entwickeln</span><span data-lang-block="en" hidden>Developing transforms</span></a></li><li><a href="../docs/editor.html"><span data-lang-block="de">Editor entwickeln</span><span data-lang-block="en" hidden>Developing the editor</span></a></li><li><a href="../docs/api.html"><span data-lang-block="de">Server-API</span><span data-lang-block="en" hidden>Server API</span></a></li><li><a href="../docs/plugins.html"><span data-lang-block="de">Plugins entwickeln</span><span data-lang-block="en" hidden>Developing plugins</span></a></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#aufbau">1. Aufbau</a></li><li><a href="#process">2. Verarbeiten (Process)</a></li><li><a href="#init">3. Schema (Init)</a></li><li><a href="#tests">4. Tests</a></li><li><a href="#checkliste">5. Checkliste für den PR</a></li><li><a href="#vorlage">Vorlage: core.filter</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#layout">1. Layout</a></li><li><a href="#process-en">2. Processing (Process)</a></li><li><a href="#init-en">3. Schema (Init)</a></li><li><a href="#tests-en">4. Tests</a></li><li><a href="#checklist">5. Pull request checklist</a></li><li><a href="#template">Template: core.filter</a></li></ul></aside>
 
       <div class="docs-content">
         <!-- ===================== DEUTSCH ===================== -->
@@ -104,8 +106,8 @@
 
           <h2 id="aufbau">1. Aufbau</h2>
           <div class="code">
-  <div class="code-head"><span>Aufbau</span><button class="copy-btn" type="button" data-copy-from="code-31"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-31"><code class="lang-bash">internal/transforms/&lt;namensraum&gt;/
+  <div class="code-head"><span>Aufbau</span><button class="copy-btn" type="button" data-copy-from="code-45"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-45"><code class="lang-bash">internal/transforms/&lt;namensraum&gt;/
   register.go          <span class="tok-c"># eine Zeile je Transform</span>
   &lt;name&gt;.go            <span class="tok-c"># der Transform</span>
   &lt;name&gt;_test.go       <span class="tok-c"># seine Tests</span></code></pre>
@@ -121,8 +123,8 @@
 
           <h2 id="process">2. Verarbeiten (<code>Process</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>Beispiel: Text in Großbuchstaben</span><button class="copy-btn" type="button" data-copy-from="code-32"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-32"><code class="lang-go"><span class="tok-k">func</span> (t *upper) Process(ctx context.Context, in &lt;-<span class="tok-k">chan</span> transform.Batch, out *transform.Output) error {
+  <div class="code-head"><span>Beispiel: Text in Großbuchstaben</span><button class="copy-btn" type="button" data-copy-from="code-46"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-46"><code class="lang-go"><span class="tok-k">func</span> (t *upper) Process(ctx context.Context, in &lt;-<span class="tok-k">chan</span> transform.Batch, out *transform.Output) error {
 	<span class="tok-k">for</span> b := <span class="tok-k">range</span> in {                 <span class="tok-c">// bis alle eingehenden Links beendet sind</span>
 		<span class="tok-k">for</span> _, r := <span class="tok-k">range</span> b {
 			v, _ := r.Get(t.Field)
@@ -158,8 +160,8 @@
 
           <h2 id="init">3. Schema (<code>Init</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>Beispiel</span><button class="copy-btn" type="button" data-copy-from="code-33"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-33"><code class="lang-go"><span class="tok-c">// Init meldet das Schema der ausgegebenen Records und die gelesenen Felder (ADR 0007).</span>
+  <div class="code-head"><span>Beispiel</span><button class="copy-btn" type="button" data-copy-from="code-47"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-47"><code class="lang-go"><span class="tok-c">// Init meldet das Schema der ausgegebenen Records und die gelesenen Felder (ADR 0007).</span>
 <span class="tok-k">func</span> (t *upper) Init(ic *transform.InitContext) (record.Schema, error) {
 	ic.Use(t.Field, <span class="tok-s">"field"</span>)            <span class="tok-c">// Pfad innerhalb von with: – für Datei, Zeile, Spalte</span>
 	<span class="tok-k">return</span> ic.In.With(t.Field, record.String), <span class="tok-k">nil</span>
@@ -176,8 +178,8 @@
 
           <h2 id="tests">4. Tests</h2>
           <div class="code">
-  <div class="code-head"><span>Beispiel</span><button class="copy-btn" type="button" data-copy-from="code-34"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-34"><code class="lang-go"><span class="tok-k">func</span> TestUpper(t *testing.T) {
+  <div class="code-head"><span>Beispiel</span><button class="copy-btn" type="button" data-copy-from="code-48"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-48"><code class="lang-go"><span class="tok-k">func</span> TestUpper(t *testing.T) {
 	tr := transformtest.New(t, upperDefinition, <span class="tok-k">map</span>[string]any{<span class="tok-s">"field"</span>: <span class="tok-s">"name"</span>})
 	out, logs, err := transformtest.Run(context.Background(), tr, record.New(record.Field{Name: <span class="tok-s">"name"</span>, Value: <span class="tok-s">"ada"</span>}))
 	…
@@ -204,8 +206,8 @@
           <h2 id="vorlage">Vorlage: <code>core.filter</code></h2>
           <p>Ein vollständiger Transform aus dem Repository mit Ausdruck je Datensatz, Feldmeldung in <code>Init</code>, Fehler-Link über <code>out.Fail</code>, Kopien (<code>Parallel</code>) und einer Log-Zeile am Ende.</p>
           <div class="code">
-  <div class="code-head"><span>internal/transforms/core/filter.go</span><button class="copy-btn" type="button" data-copy-from="code-35"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-35"><code class="lang-go"><span class="tok-k">package</span> core
+  <div class="code-head"><span>internal/transforms/core/filter.go</span><button class="copy-btn" type="button" data-copy-from="code-49"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-49"><code class="lang-go"><span class="tok-k">package</span> core
 
 <span class="tok-k">import</span> (
 	<span class="tok-s">"context"</span>
@@ -308,8 +310,8 @@
 
           <h2 id="layout">1. Layout</h2>
           <div class="code">
-  <div class="code-head"><span>Layout</span><button class="copy-btn" type="button" data-copy-from="code-36"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-36"><code class="lang-bash">internal/transforms/&lt;namespace&gt;/
+  <div class="code-head"><span>Layout</span><button class="copy-btn" type="button" data-copy-from="code-50"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-50"><code class="lang-bash">internal/transforms/&lt;namespace&gt;/
   register.go          <span class="tok-c"># one line per transform</span>
   &lt;name&gt;.go            <span class="tok-c"># the transform</span>
   &lt;name&gt;_test.go       <span class="tok-c"># its tests</span></code></pre>
@@ -325,8 +327,8 @@
 
           <h2 id="process-en">2. Processing (<code>Process</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>Example: upper-case text</span><button class="copy-btn" type="button" data-copy-from="code-37"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-37"><code class="lang-go"><span class="tok-k">func</span> (t *upper) Process(ctx context.Context, in &lt;-<span class="tok-k">chan</span> transform.Batch, out *transform.Output) error {
+  <div class="code-head"><span>Example: upper-case text</span><button class="copy-btn" type="button" data-copy-from="code-51"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-51"><code class="lang-go"><span class="tok-k">func</span> (t *upper) Process(ctx context.Context, in &lt;-<span class="tok-k">chan</span> transform.Batch, out *transform.Output) error {
 	<span class="tok-k">for</span> b := <span class="tok-k">range</span> in {                 <span class="tok-c">// until all incoming links have ended</span>
 		<span class="tok-k">for</span> _, r := <span class="tok-k">range</span> b {
 			v, _ := r.Get(t.Field)
@@ -362,8 +364,8 @@
 
           <h2 id="init-en">3. Schema (<code>Init</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>Example</span><button class="copy-btn" type="button" data-copy-from="code-38"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-38"><code class="lang-go"><span class="tok-c">// Init reports the schema of the emitted records and the fields it reads (ADR 0007).</span>
+  <div class="code-head"><span>Example</span><button class="copy-btn" type="button" data-copy-from="code-52"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-52"><code class="lang-go"><span class="tok-c">// Init reports the schema of the emitted records and the fields it reads (ADR 0007).</span>
 <span class="tok-k">func</span> (t *upper) Init(ic *transform.InitContext) (record.Schema, error) {
 	ic.Use(t.Field, <span class="tok-s">"field"</span>)            <span class="tok-c">// path within with: – for file, line, column</span>
 	<span class="tok-k">return</span> ic.In.With(t.Field, record.String), <span class="tok-k">nil</span>
@@ -380,8 +382,8 @@
 
           <h2 id="tests-en">4. Tests</h2>
           <div class="code">
-  <div class="code-head"><span>Example</span><button class="copy-btn" type="button" data-copy-from="code-39"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-39"><code class="lang-go"><span class="tok-k">func</span> TestUpper(t *testing.T) {
+  <div class="code-head"><span>Example</span><button class="copy-btn" type="button" data-copy-from="code-53"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-53"><code class="lang-go"><span class="tok-k">func</span> TestUpper(t *testing.T) {
 	tr := transformtest.New(t, upperDefinition, <span class="tok-k">map</span>[string]any{<span class="tok-s">"field"</span>: <span class="tok-s">"name"</span>})
 	out, logs, err := transformtest.Run(context.Background(), tr, record.New(record.Field{Name: <span class="tok-s">"name"</span>, Value: <span class="tok-s">"ada"</span>}))
 	…
@@ -408,8 +410,8 @@
           <h2 id="template">Template: <code>core.filter</code></h2>
           <p>A complete transform from the repository with a per-record expression, field reporting in <code>Init</code>, an error link via <code>out.Fail</code>, copies (<code>Parallel</code>) and a log line at the end.</p>
           <div class="code">
-  <div class="code-head"><span>internal/transforms/core/filter.go</span><button class="copy-btn" type="button" data-copy-from="code-40"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-40"><code class="lang-go"><span class="tok-k">package</span> core
+  <div class="code-head"><span>internal/transforms/core/filter.go</span><button class="copy-btn" type="button" data-copy-from="code-54"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-54"><code class="lang-go"><span class="tok-k">package</span> core
 
 <span class="tok-k">import</span> (
 	<span class="tok-s">"context"</span>

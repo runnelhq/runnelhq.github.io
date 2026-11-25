@@ -1,0 +1,35 @@
+kind: Pipeline
+apiVersion: runnel/v1
+name: accounts
+description: Checks every IBAN; valid ones go to accounts-ok.csv, invalid ones with the reason to accounts-rejected.csv
+transforms:
+  - id: read
+    type: csv.input
+    with:
+      path: data/accounts.csv
+      delimiter: ";"
+      fields:
+        - { name: id, type: int }
+        - { name: name }
+        - { name: iban }
+  - id: check
+    type: iban.validate
+    with:
+      field: iban
+      format: electronic        # DE89370400440532013000; print: in groups of four
+      countryField: country
+      bankCodeField: bankCode
+  - id: ok
+    type: csv.output
+    with:
+      path: out/accounts-ok.csv
+      delimiter: ";"
+  - id: rejected
+    type: csv.output
+    with:
+      path: out/accounts-rejected.csv
+      delimiter: ";"
+links:
+  - { from: read, to: check }
+  - { from: check, to: ok }
+  - { from: check, to: rejected, type: error }

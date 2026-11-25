@@ -1,0 +1,9 @@
+kind: Project
+apiVersion: runnel/v1
+name: ldap
+description: Exports the users of an Active Directory with the plugin ldap
+secretStore: env                   # AD_PASSWORD from an environment variable
+variables:
+  LDAP_URL: ldaps://dc1.example.com
+  LDAP_USER: svc-runnel@example.com
+  LDAP_BASE: DC=example,DC=com

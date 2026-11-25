@@ -5,3 +5,6 @@ curl -X POST http://127.0.0.1:7300/api/v1/runs \
 
 # follow events live (server-sent events)
 curl -N "http://127.0.0.1:7300/api/v1/events?run=<id>"
+
+# failed runs of one file from the run history, 50 per page
+curl "http://127.0.0.1:7300/api/v1/runs?status=failed&path=workflows/hello.workflow.yaml&limit=50"

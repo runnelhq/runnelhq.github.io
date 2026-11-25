@@ -1,0 +1,230 @@
+<!-- {
+  "out": "handbuch/plugins.html",
+  "section": "guide",
+  "title": {"de": "Plugins", "en": "Plugins"},
+  "description": {
+    "de": "Plugins installieren, freigeben und nutzen: eigene Actions, Transforms und Connection-Typen, offizielle Plugins für IBAN und LDAP.",
+    "en": "Installing, trusting and using plugins: your own actions, transforms and connection types, official plugins for IBAN and LDAP."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch</p>
+          <h1>Plugins</h1>
+          <p class="docs-lead">Plugins ergänzen Runnel um Actions, Transforms und Connection-Typen, die nicht in die exe gehören – etwa für ein Verzeichnis, ein ERP oder ein Fachverfahren. Ein Plugin ist ein eigenes Programm im Projektordner; im Editor und in den Dateien verhält es sich wie die eingebauten Bausteine.</p>
+
+          <h2 id="ueberblick">So funktioniert es</h2>
+          <ul>
+            <li><strong>Im Projekt:</strong> Jedes Plugin liegt in <code>plugins/&lt;name&gt;/</code> mit einer <code>plugin.yaml</code> und seinem Programm. Plugins gelten nur für dieses Projekt; ein Projektordner enthält so alles, was er zum Laufen braucht.</li>
+            <li><strong>Eigener Prozess:</strong> Runnel startet das Plugin bei Bedarf als Kindprozess und spricht über stdin/stdout mit ihm – ohne offenen Port. Je Lauf gibt es einen Prozess je Plugin; er endet mit dem Lauf. Stürzt ein Plugin ab, scheitert der Lauf, nicht der Server.</li>
+            <li><strong>Eigener Namensraum:</strong> Die Typen eines Plugins beginnen mit seinem Namensraum, z. B. <code>ldap.search</code>. Eingebaute Namensräume wie <code>core</code> oder <code>http</code> kann ein Plugin nicht belegen.</li>
+            <li><strong>Erst nach Freigabe:</strong> Ein Plugin ist Code mit den Rechten von Runnel. Runnel startet es erst, wenn es auf diesem Rechner für dieses Projekt freigegeben ist – ein geklontes Projekt führt beim Öffnen oder Prüfen also keinen fremden Code aus.</li>
+          </ul>
+
+          <h2 id="offiziell">Offizielle Plugins</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Plugin</th><th>Typen</th><th>Stand</th></tr></thead>
+            <tbody>
+              <tr><td><a href="https://github.com/runnelhq/plugin-iban"><code>iban</code></a> – IBAN und BIC prüfen, IBAN bilden; rechnet nur lokal</td><td>Actions <code>iban.validate</code>, <code>iban.validate-bic</code>, <code>iban.create</code>; Transform <code>iban.validate</code> mit Fehler-Link</td><td>v0.2.0, <a href="https://github.com/runnelhq/plugin-iban/releases">Releases</a></td></tr>
+              <tr><td><a href="https://github.com/runnelhq/plugin-ldap"><code>ldap</code></a> – Active Directory und OpenLDAP</td><td>Connection-Typ <code>ldap</code> mit „Test connection“; Actions <code>ldap.search</code>, <code>ldap.authenticate</code>, <code>ldap.add</code>, <code>ldap.modify</code>, <code>ldap.delete</code>; Eingabe <code>ldap.input</code> mit „Detect fields“</td><td>v0.1.0 in Vorbereitung; bis zum ersten Release selbst bauen (<code>make build</code>)</td></tr>
+            </tbody>
+          </table></div>
+          <p>Beispiele: <a href="kochbuch-iban.html">IBANs prüfen</a> und <a href="kochbuch-ldap.html">Active Directory</a> im Kochbuch. Beide Plugins gibt es für Windows und Linux (x64), wie Runnel selbst.</p>
+
+          <h2 id="installieren">Installieren</h2>
+          <ol class="steps">
+            <li><strong>Archiv laden und prüfen:</strong> von den Releases des Plugins das Archiv für das System, z. B. <code>runnel-plugin-iban_0.2.0_windows_amd64.zip</code>, dazu <code>SHA256SUMS</code>. Die Prüfsumme vergleichen; die Herkunft prüft auf Wunsch <code>gh attestation verify &lt;archiv&gt; --repo runnelhq/plugin-iban</code>.</li>
+            <li><strong>In das Projekt entpacken,</strong> sodass <code>plugins/iban/plugin.yaml</code> entsteht.</li>
+            <li><strong>Freigeben</strong> mit <code>runnel plugins trust</code> (siehe unten) oder im Editor.</li>
+            <li><strong>Prüfen:</strong> <code>runnel plugins</code> zeigt das Plugin als <code>trusted</code> mit seinen Typen; <code>runnel validate</code> prüft die Dateien, die sie nutzen.</li>
+          </ol>
+<pre><code class="lang-bash" data-caption="PowerShell">Get-FileHash .\runnel-plugin-iban_0.2.0_windows_amd64.zip -Algorithm SHA256
+Expand-Archive .\runnel-plugin-iban_0.2.0_windows_amd64.zip -DestinationPath D:\flows\plugins
+runnel plugins trust D:\flows --plugin iban
+runnel plugins D:\flows</code></pre>
+<pre><code class="lang-text" data-caption="D:\flows\plugins">plugins\
+  iban\
+    plugin.yaml           # Name, Version, Namensraum, Programm je Betriebssystem
+    README.md             # Anleitung, im Editor lesbar
+    bin\iban.exe
+    LICENSE
+    THIRD_PARTY_NOTICES</code></pre>
+
+          <h2 id="freigabe">Freigeben</h2>
+<pre><code class="lang-text" data-caption="runnel plugins trust D:\flows --plugin iban">Plugin iban 0.2.0 (namespace iban)
+  folder:  plugins/iban
+  program: bin/iban.exe
+  hash:    sha256:74ae620da2ddc62cace24286da6e9dd4a0966d61c63d9fe9c2a2f16a3c264a7f
+A plugin runs with the rights of Runnel. Trust it only if you know where it comes from.
+Trust plugin iban? [y/N] y
+Plugin iban is trusted.</code></pre>
+          <ul>
+            <li><strong>Hash:</strong> Die Freigabe gilt einem Stand des ganzen Plugin-Ordners (SHA-256 über alle Dateien). Jede Änderung – auch ein Update – hebt sie auf; <code>runnel plugins</code> zeigt dann <code>changed since trusted</code>, und Läufe, die das Plugin brauchen, starten nicht.</li>
+            <li><strong>Optionen:</strong> <code>--plugin &lt;name&gt;</code> wählt einzelne Plugins, <code>--yes</code> gibt ohne Rückfrage frei (für Skripte). <code>runnel plugins untrust D:\flows --plugin iban</code> nimmt die Freigabe zurück.</li>
+            <li><strong>Wo:</strong> Freigaben stehen nie im Projekt, sondern beim Benutzer in <code>%AppData%\runnel\trusted-plugins.json</code>.</li>
+            <li><strong>Windows-Dienst:</strong> Der Dienst hat eigene Freigaben in <code>%ProgramData%\runnel\trust\plugins.json</code>, die nur Administratoren ändern: <code>runnel plugins trust --service D:\flows</code> in einer Konsole „als Administrator“. <code>runnel plugins</code> zeigt <code>trusted (service)</code>.</li>
+          </ul>
+
+          <h2 id="nutzen">Nutzen</h2>
+          <p>Die Typen eines freigegebenen Plugins stehen in Workflows, Pipelines und Connections bereit wie eingebaute; Runnel prüft die Felder gegen das Schema des Plugins und löst Variablen, Ausdrücke und Connections vorher auf.</p>
+<pre><code class="lang-yaml" data-caption="Action, Transform und Connection eines Plugins"># Workflow: Ergebnis unter results.check.output
+- id: check
+  type: iban.validate
+  with:
+    iban: ${IBAN}
+
+# Pipeline: Transform mit Fehler-Link
+- id: users
+  type: ldap.input
+  with:
+    connection: ad
+    filter: (objectClass=user)
+
+# connections/ad.yaml: Connection-Typ des Plugins
+kind: Connection
+apiVersion: runnel/v1
+name: ad
+type: ldap
+with:
+  url: ldaps://dc1.example.com
+  bindDn: svc-runnel@example.com
+  password: ${secret:AD_PASSWORD}</code></pre>
+          <ul>
+            <li>Ist ein Plugin nicht freigegeben oder geändert, melden <code>runnel validate</code> und der Editor das am Schritt bzw. an der Connection: „plugin "iban" is not trusted on this computer“.</li>
+            <li>Was das Plugin auf stderr schreibt, steht im Log des Laufs; Secrets sind darin, in Fehlern und Ergebnissen maskiert.</li>
+            <li>Welche Felder ein Typ hat, steht in der Anleitung des Plugins (<code>README.md</code> im Plugin-Ordner) und im Eigenschafts-Panel des Editors.</li>
+          </ul>
+
+          <h2 id="editor">Im Editor</h2>
+          <ul>
+            <li><strong>Explorer:</strong> Plugin-Ordner tragen einen Stecker, ihre Version und ihren Stand: ✓ freigegeben, ! nicht freigegeben oder geändert, ✕ startet nicht.</li>
+            <li><strong>Übersicht:</strong> Ein Klick öffnet <code>plugin.yaml</code> als Übersicht („Overview | YAML“) mit Freigaben für Konto und Dienst, Typen, „Used by“ (wo das Projekt sie nutzt) und Programm.</li>
+            <li><strong>Freigeben:</strong> „Trust…“ zeigt Ordner, Programm, Dateien und Hash wie <code>runnel plugins trust</code> und gibt das Plugin für das Konto frei, unter dem <code>runnel serve</code> läuft. „Untrust“ nimmt die Freigabe zurück, „Try again“ startet ein Plugin nach einem Fehler neu. Im Dienst zeigt der Editor stattdessen den Befehl für Administratoren.</li>
+            <li><strong>Palette:</strong> Typen ohne eingebaute Kategorie stehen in einer eigenen Gruppe „Plugin: &lt;name&gt;“. Ein Schritt eines nicht nutzbaren Plugins zeigt im Panel und unter „Problems“ den Grund mit „Open plugin …“.</li>
+          </ul>
+
+          <h2 id="aktualisieren">Aktualisieren und entfernen</h2>
+          <ul>
+            <li><strong>Update:</strong> den Ordner <code>plugins/&lt;name&gt;/</code> durch den Inhalt des neuen Archivs ersetzen, dann erneut <code>runnel plugins trust</code> (beim Dienst mit <code>--service</code>).</li>
+            <li><strong>Entfernen:</strong> <code>runnel plugins untrust D:\flows --plugin &lt;name&gt;</code>, dann den Ordner löschen.</li>
+            <li><strong>Versionen</strong> von Plugins sind unabhängig von Runnel. Die Anleitung jedes Plugins nennt, ab welchem Stand von Runnel es läuft.</li>
+          </ul>
+
+          <h2 id="eigene">Eigene Plugins</h2>
+          <p>Plugins lassen sich in jeder Sprache schreiben, die stdin und stdout lesen kann. Für Go gibt es das <a href="https://github.com/runnelhq/sdk-go">Go-SDK</a>; damit sind auch die offiziellen Plugins gebaut. Eigene Plugins bekommen einen Namensraum mit Präfix der Firma (z. B. <code>contoso-sap</code>). Wie es geht: <a href="../docs/plugins.html">Plugins entwickeln</a> in der Entwicklerdoku.</p>
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide</p>
+          <h1>Plugins</h1>
+          <p class="docs-lead">Plugins add actions, transforms and connection types to Runnel that do not belong in the executable – for a directory, an ERP or a specialist system, say. A plugin is a program of its own in the project folder; in the editor and in the files it behaves like the built-in components.</p>
+
+          <h2 id="overview">How it works</h2>
+          <ul>
+            <li><strong>In the project:</strong> each plugin lives in <code>plugins/&lt;name&gt;/</code> with a <code>plugin.yaml</code> and its program. Plugins apply to this project only; that way a project folder contains everything it needs to run.</li>
+            <li><strong>A process of its own:</strong> Runnel starts the plugin when needed as a child process and talks to it over stdin/stdout – no open port. There is one process per plugin and run; it ends with the run. If a plugin crashes, the run fails, not the server.</li>
+            <li><strong>Its own namespace:</strong> a plugin's types start with its namespace, e.g. <code>ldap.search</code>. A plugin cannot take built-in namespaces such as <code>core</code> or <code>http</code>.</li>
+            <li><strong>Only once trusted:</strong> a plugin is code with Runnel's rights. Runnel starts it only once it is trusted on this computer for this project – so a cloned project runs no foreign code when it is opened or validated.</li>
+          </ul>
+
+          <h2 id="official">Official plugins</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Plugin</th><th>Types</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td><a href="https://github.com/runnelhq/plugin-iban"><code>iban</code></a> – validate IBAN and BIC, build IBANs; computes locally only</td><td>Actions <code>iban.validate</code>, <code>iban.validate-bic</code>, <code>iban.create</code>; transform <code>iban.validate</code> with error link</td><td>v0.2.0, <a href="https://github.com/runnelhq/plugin-iban/releases">releases</a></td></tr>
+              <tr><td><a href="https://github.com/runnelhq/plugin-ldap"><code>ldap</code></a> – Active Directory and OpenLDAP</td><td>Connection type <code>ldap</code> with “Test connection”; actions <code>ldap.search</code>, <code>ldap.authenticate</code>, <code>ldap.add</code>, <code>ldap.modify</code>, <code>ldap.delete</code>; input <code>ldap.input</code> with “Detect fields”</td><td>v0.1.0 in preparation; build it yourself until the first release (<code>make build</code>)</td></tr>
+            </tbody>
+          </table></div>
+          <p>Examples: <a href="kochbuch-iban.html">Validating IBANs</a> and <a href="kochbuch-ldap.html">Active Directory</a> in the cookbook. Both plugins are available for Windows and Linux (x64), like Runnel itself.</p>
+
+          <h2 id="install">Installing</h2>
+          <ol class="steps">
+            <li><strong>Download and check the archive:</strong> from the plugin's releases, the archive for your system, e.g. <code>runnel-plugin-iban_0.2.0_windows_amd64.zip</code>, plus <code>SHA256SUMS</code>. Compare the checksum; optionally check the origin with <code>gh attestation verify &lt;archive&gt; --repo runnelhq/plugin-iban</code>.</li>
+            <li><strong>Unpack it into the project</strong> so that <code>plugins/iban/plugin.yaml</code> exists.</li>
+            <li><strong>Trust it</strong> with <code>runnel plugins trust</code> (see below) or in the editor.</li>
+            <li><strong>Check:</strong> <code>runnel plugins</code> shows the plugin as <code>trusted</code> with its types; <code>runnel validate</code> checks the files that use them.</li>
+          </ol>
+<pre><code class="lang-bash" data-caption="PowerShell">Get-FileHash .\runnel-plugin-iban_0.2.0_windows_amd64.zip -Algorithm SHA256
+Expand-Archive .\runnel-plugin-iban_0.2.0_windows_amd64.zip -DestinationPath D:\flows\plugins
+runnel plugins trust D:\flows --plugin iban
+runnel plugins D:\flows</code></pre>
+<pre><code class="lang-text" data-caption="D:\flows\plugins">plugins\
+  iban\
+    plugin.yaml           # name, version, namespace, program per operating system
+    README.md             # guide, readable in the editor
+    bin\iban.exe
+    LICENSE
+    THIRD_PARTY_NOTICES</code></pre>
+
+          <h2 id="trust">Trusting</h2>
+<pre><code class="lang-text" data-caption="runnel plugins trust D:\flows --plugin iban">Plugin iban 0.2.0 (namespace iban)
+  folder:  plugins/iban
+  program: bin/iban.exe
+  hash:    sha256:74ae620da2ddc62cace24286da6e9dd4a0966d61c63d9fe9c2a2f16a3c264a7f
+A plugin runs with the rights of Runnel. Trust it only if you know where it comes from.
+Trust plugin iban? [y/N] y
+Plugin iban is trusted.</code></pre>
+          <ul>
+            <li><strong>Hash:</strong> an approval applies to one state of the whole plugin folder (SHA-256 over all files). Any change – an update too – voids it; <code>runnel plugins</code> then shows <code>changed since trusted</code>, and runs that need the plugin do not start.</li>
+            <li><strong>Options:</strong> <code>--plugin &lt;name&gt;</code> picks single plugins, <code>--yes</code> trusts without asking (for scripts). <code>runnel plugins untrust D:\flows --plugin iban</code> withdraws the approval.</li>
+            <li><strong>Where:</strong> approvals are never stored in the project but with the user in <code>%AppData%\runnel\trusted-plugins.json</code>.</li>
+            <li><strong>Windows service:</strong> the service has its own approvals in <code>%ProgramData%\runnel\trust\plugins.json</code>, which only administrators change: <code>runnel plugins trust --service D:\flows</code> in a console “as administrator”. <code>runnel plugins</code> shows <code>trusted (service)</code>.</li>
+          </ul>
+
+          <h2 id="use">Using</h2>
+          <p>The types of a trusted plugin are available in workflows, pipelines and connections like built-in ones; Runnel checks the fields against the plugin's schema and resolves variables, expressions and connections beforehand.</p>
+<pre><code class="lang-yaml" data-caption="Action, transform and connection of a plugin"># Workflow: result under results.check.output
+- id: check
+  type: iban.validate
+  with:
+    iban: ${IBAN}
+
+# Pipeline: transform with error link
+- id: users
+  type: ldap.input
+  with:
+    connection: ad
+    filter: (objectClass=user)
+
+# connections/ad.yaml: the plugin's connection type
+kind: Connection
+apiVersion: runnel/v1
+name: ad
+type: ldap
+with:
+  url: ldaps://dc1.example.com
+  bindDn: svc-runnel@example.com
+  password: ${secret:AD_PASSWORD}</code></pre>
+          <ul>
+            <li>If a plugin is not trusted or has changed, <code>runnel validate</code> and the editor report it on the step or connection: “plugin "iban" is not trusted on this computer”.</li>
+            <li>What the plugin writes to stderr appears in the run log; secrets are masked there and in errors and results.</li>
+            <li>The fields of a type are described in the plugin's guide (<code>README.md</code> in the plugin folder) and in the editor's properties panel.</li>
+          </ul>
+
+          <h2 id="editor-en">In the editor</h2>
+          <ul>
+            <li><strong>Explorer:</strong> plugin folders carry a plug, their version and their state: ✓ trusted, ! not trusted or changed, ✕ does not start.</li>
+            <li><strong>Overview:</strong> a click opens <code>plugin.yaml</code> as an overview (“Overview | YAML”) with approvals for account and service, types, “Used by” (where the project uses them) and program.</li>
+            <li><strong>Trusting:</strong> “Trust…” shows folder, program, files and hash like <code>runnel plugins trust</code> and trusts the plugin for the account <code>runnel serve</code> runs as. “Untrust” withdraws the approval, “Try again” restarts a plugin after an error. In the service, the editor shows the command for administrators instead.</li>
+            <li><strong>Palette:</strong> types without a built-in category appear in a group of their own, “Plugin: &lt;name&gt;”. A step of an unusable plugin shows the reason with “Open plugin …” in the panel and under “Problems”.</li>
+          </ul>
+
+          <h2 id="updating">Updating and removing</h2>
+          <ul>
+            <li><strong>Update:</strong> replace the folder <code>plugins/&lt;name&gt;/</code> with the contents of the new archive, then run <code>runnel plugins trust</code> again (with <code>--service</code> for the service).</li>
+            <li><strong>Remove:</strong> <code>runnel plugins untrust D:\flows --plugin &lt;name&gt;</code>, then delete the folder.</li>
+            <li><strong>Versions</strong> of plugins are independent of Runnel. Each plugin's guide names the Runnel state it needs.</li>
+          </ul>
+
+          <h2 id="own">Your own plugins</h2>
+          <p>Plugins can be written in any language that can read stdin and write stdout. For Go there is the <a href="https://github.com/runnelhq/sdk-go">Go SDK</a>; the official plugins are built with it too. Your own plugins get a namespace with a company prefix (e.g. <code>contoso-sap</code>). How it works: <a href="../docs/plugins.html">Developing plugins</a> in the developer docs.</p>
+        </article>
+      </div>
+    </div>

@@ -1,0 +1,38 @@
+# Creates the output folder, checks the IBANs of data/accounts.csv and builds an IBAN.
+#   runnel run workflows/check.workflow.yaml
+kind: Workflow
+apiVersion: runnel/v1
+name: check
+outputs:
+  - name: VALID
+    type: integer
+    value: "{{ results.accounts.output.transforms.ok.written }}"
+  - name: REJECTED
+    type: integer
+    value: "{{ results.accounts.output.errors }}"
+actions:
+  - id: start
+    type: core.start
+  - id: out
+    type: file.mkdir
+    with:
+      path: out
+  - id: accounts
+    type: core.run-pipeline
+    with:
+      pipeline: pipelines/accounts.pipeline.yaml
+  - id: create
+    type: iban.create
+    with:
+      country: DE
+      bankCode: "37040044"
+      accountNumber: "532013000"
+  - id: log
+    type: core.log
+    with:
+      message: "IBAN built from bank code and account number: {{ results.create.output.formatted }}"
+links:
+  - { from: start, to: out }
+  - { from: out, to: accounts }
+  - { from: accounts, to: create }
+  - { from: create, to: log }

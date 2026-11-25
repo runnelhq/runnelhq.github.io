@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="de" data-theme="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plugins – Runnel</title>
+  <meta name="description" content="Plugins installieren, freigeben und nutzen: eigene Actions, Transforms und Connection-Typen, offizielle Plugins für IBAN und LDAP.">
+  <meta name="title-en" content="Plugins – Runnel">
+  <meta name="description-en" content="Installing, trusting and using plugins: your own actions, transforms and connection types, official plugins for IBAN and LDAP.">
+  <meta name="theme-color" content="#0A6DA6">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="../assets/img/runnel-icon-180.png">
+  <link rel="preload" href="../assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/runnel.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+
+<!-- Erzeugt von tools/build.py aus _src/guide-plugins.html – nicht von Hand bearbeiten. -->
+<!-- Wiederverwendbare Symbole -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></g></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7 10.5l5 5 5-5"/><path d="M5 20h14"/></g></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="logo" viewBox="0 0 204 64"><rect width="64" height="64" rx="15" fill="#0A6DA6"/><circle cx="14.5" cy="22" r="6.5" fill="#FFFFFF"/><path d="M25 22C33.5 22 30.5 42 37.5 42" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/><circle cx="48.5" cy="42" r="5.25" fill="none" stroke="#7CC5EB" stroke-width="4.75"/><path transform="translate(80 43.25) scale(0.020134)" fill="currentColor" d="M138 0V-1118H390V-931H402Q432 -1028 507 -1080.5Q582 -1133 678 -1133Q700 -1133 727 -1131Q754 -1129 773 -1126V-887Q757 -892 721 -896Q685 -900 650 -900Q578 -900 520.5 -869Q463 -838 430.5 -783.5Q398 -729 398 -658V0Z M1293 14Q1178 14 1091.5 -35Q1005 -84 957.5 -178.5Q910 -273 910 -407V-1118H1170V-447Q1170 -335 1228.5 -271Q1287 -207 1389 -207Q1458 -207 1512 -237Q1566 -267 1596.5 -325Q1627 -383 1627 -463V-1118H1888V0H1641L1638 -276H1658Q1611 -130 1519 -58Q1427 14 1293 14Z M2383.1 -655V0H2123.1V-1118H2369.1L2373.1 -842H2352.1Q2399.1 -987 2490.1 -1059.5Q2581.1 -1132 2718.1 -1132Q2833.1 -1132 2919.1 -1083Q3005.1 -1034 3052.6 -940Q3100.1 -846 3100.1 -711V0H2840.1V-671Q2840.1 -783 2782.1 -847Q2724.1 -911 2622.1 -911Q2553.1 -911 2499.1 -881Q2445.1 -851 2414.1 -793.5Q2383.1 -736 2383.1 -655Z M3595.1 -655V0H3335.1V-1118H3581.1L3585.1 -842H3564.1Q3611.1 -987 3702.1 -1059.5Q3793.1 -1132 3930.1 -1132Q4045.1 -1132 4131.1 -1083Q4217.1 -1034 4264.6 -940Q4312.1 -846 4312.1 -711V0H4052.1V-671Q4052.1 -783 3994.1 -847Q3936.1 -911 3834.1 -911Q3765.1 -911 3711.1 -881Q3657.1 -851 3626.1 -793.5Q3595.1 -736 3595.1 -655Z M5041.2 23Q4872.2 23 4750.7 -48Q4629.2 -119 4563.7 -248Q4498.2 -377 4498.2 -552Q4498.2 -725 4562.7 -855Q4627.2 -985 4745.7 -1058.5Q4864.2 -1132 5024.2 -1132Q5126.2 -1132 5218.7 -1099Q5311.2 -1066 5382.7 -997Q5454.2 -928 5494.7 -821.5Q5535.2 -715 5535.2 -568V-486H4621.2V-663H5406.2L5284.2 -611Q5284.2 -705 5255.2 -776.5Q5226.2 -848 5168.7 -888Q5111.2 -928 5025.2 -928Q4939.2 -928 4879.2 -887.5Q4819.2 -847 4787.7 -779.5Q4756.2 -712 4756.2 -629V-507Q4756.2 -401 4792.2 -328Q4828.2 -255 4893.2 -218Q4958.2 -181 5044.2 -181Q5101.2 -181 5147.7 -197.5Q5194.2 -214 5228.2 -246.5Q5262.2 -279 5279.2 -326L5518.2 -277Q5491.2 -187 5426.2 -119.5Q5361.2 -52 5263.7 -14.5Q5166.2 23 5041.2 23Z M5977.2 -1490V0H5717.2V-1490Z"/></symbol>
+  <!-- Strömungslinien (Gestaltungselement aus dem Corporate Design) -->
+  <symbol id="flow" viewBox="0 0 640 640" preserveAspectRatio="xMaxYMin meet">
+    <g fill="none" stroke-linecap="round">
+      <path d="M120 -40 C 340 -40 300 300 520 300 S 700 260 760 260" stroke="#0A6DA6" stroke-width="28" opacity=".55"/>
+      <path d="M60 120 C 280 120 240 460 460 460 S 660 420 760 420" stroke="#1688C6" stroke-width="18" opacity=".45"/>
+      <path d="M200 300 C 360 300 340 620 500 620 S 680 600 760 600" stroke="#3FA6DD" stroke-width="10" opacity=".35"/>
+    </g>
+    <circle cx="520" cy="300" r="34" fill="none" stroke="#7CC5EB" stroke-width="22"/>
+  </symbol>
+</svg>
+
+<a class="sr-only" href="#main" data-i18n="a11y.skip">Zum Inhalt springen</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html#top" aria-label="Runnel">
+      <svg viewBox="0 0 204 64" aria-hidden="true"><use href="#logo"/></svg>
+    </a>
+    <nav class="nav" aria-label="Hauptnavigation" data-i18n-attr="aria-label:nav.label">
+      <a href="../index.html#features" data-i18n="nav.features">Funktionen</a>
+      <a href="../index.html#model" data-i18n="nav.model">Modell</a>
+      <a href="../index.html#plugins" data-i18n="nav.plugins">Plugins</a>
+      <a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a>
+      <a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a>
+      <a href="../handbuch/" aria-current="page" data-i18n="nav.guide">Handbuch</a>
+      <a href="../docs/" data-i18n="nav.docs">Doku</a>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Sprache" data-i18n-attr="aria-label:lang.label">
+        <button type="button" data-lang="de" aria-pressed="true" lang="de" title="Deutsch">DE</button>
+        <button type="button" data-lang="en" aria-pressed="false" lang="en" title="English">EN</button>
+      </div>
+      <a class="icon-btn gh-link" href="https://github.com/runnelhq/runnel" aria-label="GitHub"><svg aria-hidden="true"><use href="#i-github"/></svg></a>
+      <a class="btn btn--primary btn--sm" href="https://github.com/runnelhq/runnel/releases" data-i18n="cta.download">Herunterladen</a>
+      <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Menü öffnen" data-i18n-attr="aria-label:nav.open">
+        <svg aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-nav" id="mobile-nav" data-open="false">
+    <div class="wrap">
+      <ul>
+        <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+        <li><a href="../index.html#model" data-i18n="nav.model">Modell</a></li>
+        <li><a href="../index.html#plugins" data-i18n="nav.plugins">Plugins</a></li>
+        <li><a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a></li>
+        <li><a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a></li>
+        <li><a href="../handbuch/" aria-current="page" data-i18n="nav.guide">Handbuch</a></li>
+        <li><a href="../docs/" data-i18n="nav.docs">Doku</a></li>
+      </ul>
+      <div class="mobile-ctas">
+        <a class="btn btn--primary" href="https://github.com/runnelhq/runnel/releases"><svg aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="cta.download">Herunterladen</span></a>
+        <a class="btn btn--outline" href="https://github.com/runnelhq/runnel"><svg aria-hidden="true"><use href="#i-github"/></svg>GitHub</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="docs-page">
+<div class="wrap docs-layout">
+      <details class="docs-side docs-side--mobile"><summary><span data-lang-block="de">Inhalt</span><span data-lang-block="en" hidden>Contents</span></summary><p class="docs-side-title"><span data-lang-block="de">Handbuch</span><span data-lang-block="en" hidden>User guide</span></p><ul class="docs-nav"><li><a href="../handbuch/"><span data-lang-block="de">Überblick</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../handbuch/installation.html"><span data-lang-block="de">Installation</span><span data-lang-block="en" hidden>Installation</span></a></li><li><a href="../handbuch/betrieb.html"><span data-lang-block="de">Betrieb</span><span data-lang-block="en" hidden>Operation</span></a></li><li><a href="../handbuch/projekt.html"><span data-lang-block="de">Projekt und Konfiguration</span><span data-lang-block="en" hidden>Project and configuration</span></a></li><li><a href="../handbuch/workflows.html"><span data-lang-block="de">Workflows</span><span data-lang-block="en" hidden>Workflows</span></a></li><li><a href="../handbuch/pipelines.html"><span data-lang-block="de">Pipelines</span><span data-lang-block="en" hidden>Pipelines</span></a></li><li><a href="../handbuch/trigger.html"><span data-lang-block="de">Trigger</span><span data-lang-block="en" hidden>Triggers</span></a></li><li><a href="../handbuch/plugins.html" aria-current="page"><span data-lang-block="de">Plugins</span><span data-lang-block="en" hidden>Plugins</span></a></li><li><a href="../handbuch/ausdruecke.html"><span data-lang-block="de">Ausdrücke</span><span data-lang-block="en" hidden>Expressions</span></a></li><li><a href="../handbuch/bausteine.html"><span data-lang-block="de">Bausteine (Referenz)</span><span data-lang-block="en" hidden>Components (reference)</span></a></li><li class="docs-nav-group"><span data-lang-block="de">Kochbuch</span><span data-lang-block="en" hidden>Cookbook</span></li><li><a href="../handbuch/kochbuch.html"><span data-lang-block="de">Grundlagen</span><span data-lang-block="en" hidden>Basics</span></a></li><li><a href="../handbuch/kochbuch-open-meteo.html"><span data-lang-block="de">Wetter (Open-Meteo)</span><span data-lang-block="en" hidden>Weather (Open-Meteo)</span></a></li><li><a href="../handbuch/kochbuch-teams.html"><span data-lang-block="de">Microsoft Teams</span><span data-lang-block="en" hidden>Microsoft Teams</span></a></li><li><a href="../handbuch/kochbuch-github.html"><span data-lang-block="de">GitHub</span><span data-lang-block="en" hidden>GitHub</span></a></li><li><a href="../handbuch/kochbuch-hubspot.html"><span data-lang-block="de">HubSpot</span><span data-lang-block="en" hidden>HubSpot</span></a></li><li><a href="../handbuch/kochbuch-lexware.html"><span data-lang-block="de">Lexware Office</span><span data-lang-block="en" hidden>Lexware Office</span></a></li><li><a href="../handbuch/kochbuch-sharepoint.html"><span data-lang-block="de">SharePoint (Microsoft Graph)</span><span data-lang-block="en" hidden>SharePoint (Microsoft Graph)</span></a></li><li><a href="../handbuch/kochbuch-excel.html"><span data-lang-block="de">Excel lesen und schreiben</span><span data-lang-block="en" hidden>Reading and writing Excel</span></a></li><li><a href="../handbuch/kochbuch-xml.html"><span data-lang-block="de">XML-Austausch</span><span data-lang-block="en" hidden>XML exchange</span></a></li><li><a href="../handbuch/kochbuch-iban.html"><span data-lang-block="de">IBANs prüfen (Plugin)</span><span data-lang-block="en" hidden>Validating IBANs (plugin)</span></a></li><li><a href="../handbuch/kochbuch-ldap.html"><span data-lang-block="de">Active Directory (Plugin)</span><span data-lang-block="en" hidden>Active Directory (plugin)</span></a></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#ueberblick">So funktioniert es</a></li><li><a href="#offiziell">Offizielle Plugins</a></li><li><a href="#installieren">Installieren</a></li><li><a href="#freigabe">Freigeben</a></li><li><a href="#nutzen">Nutzen</a></li><li><a href="#editor">Im Editor</a></li><li><a href="#aktualisieren">Aktualisieren und entfernen</a></li><li><a href="#eigene">Eigene Plugins</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#overview">How it works</a></li><li><a href="#official">Official plugins</a></li><li><a href="#install">Installing</a></li><li><a href="#trust">Trusting</a></li><li><a href="#use">Using</a></li><li><a href="#editor-en">In the editor</a></li><li><a href="#updating">Updating and removing</a></li><li><a href="#own">Your own plugins</a></li></ul></details>
+<aside class="docs-side docs-side--desktop" aria-label="Dokumentation"><p class="docs-side-title"><span data-lang-block="de">Handbuch</span><span data-lang-block="en" hidden>User guide</span></p><ul class="docs-nav"><li><a href="../handbuch/"><span data-lang-block="de">Überblick</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../handbuch/installation.html"><span data-lang-block="de">Installation</span><span data-lang-block="en" hidden>Installation</span></a></li><li><a href="../handbuch/betrieb.html"><span data-lang-block="de">Betrieb</span><span data-lang-block="en" hidden>Operation</span></a></li><li><a href="../handbuch/projekt.html"><span data-lang-block="de">Projekt und Konfiguration</span><span data-lang-block="en" hidden>Project and configuration</span></a></li><li><a href="../handbuch/workflows.html"><span data-lang-block="de">Workflows</span><span data-lang-block="en" hidden>Workflows</span></a></li><li><a href="../handbuch/pipelines.html"><span data-lang-block="de">Pipelines</span><span data-lang-block="en" hidden>Pipelines</span></a></li><li><a href="../handbuch/trigger.html"><span data-lang-block="de">Trigger</span><span data-lang-block="en" hidden>Triggers</span></a></li><li><a href="../handbuch/plugins.html" aria-current="page"><span data-lang-block="de">Plugins</span><span data-lang-block="en" hidden>Plugins</span></a></li><li><a href="../handbuch/ausdruecke.html"><span data-lang-block="de">Ausdrücke</span><span data-lang-block="en" hidden>Expressions</span></a></li><li><a href="../handbuch/bausteine.html"><span data-lang-block="de">Bausteine (Referenz)</span><span data-lang-block="en" hidden>Components (reference)</span></a></li><li class="docs-nav-group"><span data-lang-block="de">Kochbuch</span><span data-lang-block="en" hidden>Cookbook</span></li><li><a href="../handbuch/kochbuch.html"><span data-lang-block="de">Grundlagen</span><span data-lang-block="en" hidden>Basics</span></a></li><li><a href="../handbuch/kochbuch-open-meteo.html"><span data-lang-block="de">Wetter (Open-Meteo)</span><span data-lang-block="en" hidden>Weather (Open-Meteo)</span></a></li><li><a href="../handbuch/kochbuch-teams.html"><span data-lang-block="de">Microsoft Teams</span><span data-lang-block="en" hidden>Microsoft Teams</span></a></li><li><a href="../handbuch/kochbuch-github.html"><span data-lang-block="de">GitHub</span><span data-lang-block="en" hidden>GitHub</span></a></li><li><a href="../handbuch/kochbuch-hubspot.html"><span data-lang-block="de">HubSpot</span><span data-lang-block="en" hidden>HubSpot</span></a></li><li><a href="../handbuch/kochbuch-lexware.html"><span data-lang-block="de">Lexware Office</span><span data-lang-block="en" hidden>Lexware Office</span></a></li><li><a href="../handbuch/kochbuch-sharepoint.html"><span data-lang-block="de">SharePoint (Microsoft Graph)</span><span data-lang-block="en" hidden>SharePoint (Microsoft Graph)</span></a></li><li><a href="../handbuch/kochbuch-excel.html"><span data-lang-block="de">Excel lesen und schreiben</span><span data-lang-block="en" hidden>Reading and writing Excel</span></a></li><li><a href="../handbuch/kochbuch-xml.html"><span data-lang-block="de">XML-Austausch</span><span data-lang-block="en" hidden>XML exchange</span></a></li><li><a href="../handbuch/kochbuch-iban.html"><span data-lang-block="de">IBANs prüfen (Plugin)</span><span data-lang-block="en" hidden>Validating IBANs (plugin)</span></a></li><li><a href="../handbuch/kochbuch-ldap.html"><span data-lang-block="de">Active Directory (Plugin)</span><span data-lang-block="en" hidden>Active Directory (plugin)</span></a></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#ueberblick">So funktioniert es</a></li><li><a href="#offiziell">Offizielle Plugins</a></li><li><a href="#installieren">Installieren</a></li><li><a href="#freigabe">Freigeben</a></li><li><a href="#nutzen">Nutzen</a></li><li><a href="#editor">Im Editor</a></li><li><a href="#aktualisieren">Aktualisieren und entfernen</a></li><li><a href="#eigene">Eigene Plugins</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#overview">How it works</a></li><li><a href="#official">Official plugins</a></li><li><a href="#install">Installing</a></li><li><a href="#trust">Trusting</a></li><li><a href="#use">Using</a></li><li><a href="#editor-en">In the editor</a></li><li><a href="#updating">Updating and removing</a></li><li><a href="#own">Your own plugins</a></li></ul></aside>
+
+      <div class="docs-content">
+        <!-- ===================== DEUTSCH ===================== -->
+        <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch</p>
+          <h1>Plugins</h1>
+          <p class="docs-lead">Plugins ergänzen Runnel um Actions, Transforms und Connection-Typen, die nicht in die exe gehören – etwa für ein Verzeichnis, ein ERP oder ein Fachverfahren. Ein Plugin ist ein eigenes Programm im Projektordner; im Editor und in den Dateien verhält es sich wie die eingebauten Bausteine.</p>
+
+          <h2 id="ueberblick">So funktioniert es</h2>
+          <ul>
+            <li><strong>Im Projekt:</strong> Jedes Plugin liegt in <code>plugins/&lt;name&gt;/</code> mit einer <code>plugin.yaml</code> und seinem Programm. Plugins gelten nur für dieses Projekt; ein Projektordner enthält so alles, was er zum Laufen braucht.</li>
+            <li><strong>Eigener Prozess:</strong> Runnel startet das Plugin bei Bedarf als Kindprozess und spricht über stdin/stdout mit ihm – ohne offenen Port. Je Lauf gibt es einen Prozess je Plugin; er endet mit dem Lauf. Stürzt ein Plugin ab, scheitert der Lauf, nicht der Server.</li>
+            <li><strong>Eigener Namensraum:</strong> Die Typen eines Plugins beginnen mit seinem Namensraum, z. B. <code>ldap.search</code>. Eingebaute Namensräume wie <code>core</code> oder <code>http</code> kann ein Plugin nicht belegen.</li>
+            <li><strong>Erst nach Freigabe:</strong> Ein Plugin ist Code mit den Rechten von Runnel. Runnel startet es erst, wenn es auf diesem Rechner für dieses Projekt freigegeben ist – ein geklontes Projekt führt beim Öffnen oder Prüfen also keinen fremden Code aus.</li>
+          </ul>
+
+          <h2 id="offiziell">Offizielle Plugins</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Plugin</th><th>Typen</th><th>Stand</th></tr></thead>
+            <tbody>
+              <tr><td><a href="https://github.com/runnelhq/plugin-iban"><code>iban</code></a> – IBAN und BIC prüfen, IBAN bilden; rechnet nur lokal</td><td>Actions <code>iban.validate</code>, <code>iban.validate-bic</code>, <code>iban.create</code>; Transform <code>iban.validate</code> mit Fehler-Link</td><td>v0.2.0, <a href="https://github.com/runnelhq/plugin-iban/releases">Releases</a></td></tr>
+              <tr><td><a href="https://github.com/runnelhq/plugin-ldap"><code>ldap</code></a> – Active Directory und OpenLDAP</td><td>Connection-Typ <code>ldap</code> mit „Test connection“; Actions <code>ldap.search</code>, <code>ldap.authenticate</code>, <code>ldap.add</code>, <code>ldap.modify</code>, <code>ldap.delete</code>; Eingabe <code>ldap.input</code> mit „Detect fields“</td><td>v0.1.0 in Vorbereitung; bis zum ersten Release selbst bauen (<code>make build</code>)</td></tr>
+            </tbody>
+          </table></div>
+          <p>Beispiele: <a href="kochbuch-iban.html">IBANs prüfen</a> und <a href="kochbuch-ldap.html">Active Directory</a> im Kochbuch. Beide Plugins gibt es für Windows und Linux (x64), wie Runnel selbst.</p>
+
+          <h2 id="installieren">Installieren</h2>
+          <ol class="steps">
+            <li><strong>Archiv laden und prüfen:</strong> von den Releases des Plugins das Archiv für das System, z. B. <code>runnel-plugin-iban_0.2.0_windows_amd64.zip</code>, dazu <code>SHA256SUMS</code>. Die Prüfsumme vergleichen; die Herkunft prüft auf Wunsch <code>gh attestation verify &lt;archiv&gt; --repo runnelhq/plugin-iban</code>.</li>
+            <li><strong>In das Projekt entpacken,</strong> sodass <code>plugins/iban/plugin.yaml</code> entsteht.</li>
+            <li><strong>Freigeben</strong> mit <code>runnel plugins trust</code> (siehe unten) oder im Editor.</li>
+            <li><strong>Prüfen:</strong> <code>runnel plugins</code> zeigt das Plugin als <code>trusted</code> mit seinen Typen; <code>runnel validate</code> prüft die Dateien, die sie nutzen.</li>
+          </ol>
+<div class="code">
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-299"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-299"><code class="lang-bash">Get-FileHash .\runnel-plugin-iban_0.2.0_windows_amd64.zip -Algorithm SHA256
+Expand-Archive .\runnel-plugin-iban_0.2.0_windows_amd64.zip -DestinationPath D:\flows\plugins
+runnel plugins trust D:\flows --plugin iban
+runnel plugins D:\flows</code></pre>
+</div>
+<div class="code">
+  <div class="code-head"><span>D:\flows\plugins</span><button class="copy-btn" type="button" data-copy-from="code-300"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-300"><code class="lang-text">plugins\
+  iban\
+    plugin.yaml           # Name, Version, Namensraum, Programm je Betriebssystem
+    README.md             # Anleitung, im Editor lesbar
+    bin\iban.exe
+    LICENSE
+    THIRD_PARTY_NOTICES</code></pre>
+</div>
+
+          <h2 id="freigabe">Freigeben</h2>
+<div class="code">
+  <div class="code-head"><span>runnel plugins trust D:\flows --plugin iban</span><button class="copy-btn" type="button" data-copy-from="code-301"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-301"><code class="lang-text">Plugin iban 0.2.0 (namespace iban)
+  folder:  plugins/iban
+  program: bin/iban.exe
+  hash:    sha256:74ae620da2ddc62cace24286da6e9dd4a0966d61c63d9fe9c2a2f16a3c264a7f
+A plugin runs with the rights of Runnel. Trust it only if you know where it comes from.
+Trust plugin iban? [y/N] y
+Plugin iban is trusted.</code></pre>
+</div>
+          <ul>
+            <li><strong>Hash:</strong> Die Freigabe gilt einem Stand des ganzen Plugin-Ordners (SHA-256 über alle Dateien). Jede Änderung – auch ein Update – hebt sie auf; <code>runnel plugins</code> zeigt dann <code>changed since trusted</code>, und Läufe, die das Plugin brauchen, starten nicht.</li>
+            <li><strong>Optionen:</strong> <code>--plugin &lt;name&gt;</code> wählt einzelne Plugins, <code>--yes</code> gibt ohne Rückfrage frei (für Skripte). <code>runnel plugins untrust D:\flows --plugin iban</code> nimmt die Freigabe zurück.</li>
+            <li><strong>Wo:</strong> Freigaben stehen nie im Projekt, sondern beim Benutzer in <code>%AppData%\runnel\trusted-plugins.json</code>.</li>
+            <li><strong>Windows-Dienst:</strong> Der Dienst hat eigene Freigaben in <code>%ProgramData%\runnel\trust\plugins.json</code>, die nur Administratoren ändern: <code>runnel plugins trust --service D:\flows</code> in einer Konsole „als Administrator“. <code>runnel plugins</code> zeigt <code>trusted (service)</code>.</li>
+          </ul>
+
+          <h2 id="nutzen">Nutzen</h2>
+          <p>Die Typen eines freigegebenen Plugins stehen in Workflows, Pipelines und Connections bereit wie eingebaute; Runnel prüft die Felder gegen das Schema des Plugins und löst Variablen, Ausdrücke und Connections vorher auf.</p>
+<div class="code">
+  <div class="code-head"><span>Action, Transform und Connection eines Plugins</span><button class="copy-btn" type="button" data-copy-from="code-302"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-302"><code class="lang-yaml"><span class="tok-c"># Workflow: Ergebnis unter results.check.output</span>
+- <span class="tok-t">id</span>: check
+  <span class="tok-t">type</span>: iban.validate
+  <span class="tok-t">with</span>:
+    <span class="tok-t">iban</span>: ${IBAN}
+
+<span class="tok-c"># Pipeline: Transform mit Fehler-Link</span>
+- <span class="tok-t">id</span>: users
+  <span class="tok-t">type</span>: ldap.input
+  <span class="tok-t">with</span>:
+    <span class="tok-t">connection</span>: ad
+    <span class="tok-t">filter</span>: (objectClass=user)
+
+<span class="tok-c"># connections/ad.yaml: Connection-Typ des Plugins</span>
+<span class="tok-t">kind</span>: Connection
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: ad
+<span class="tok-t">type</span>: ldap
+<span class="tok-t">with</span>:
+  <span class="tok-t">url</span>: ldaps://dc1.example.com
+  <span class="tok-t">bindDn</span>: svc-runnel@example.com
+  <span class="tok-t">password</span>: ${secret:AD_PASSWORD}</code></pre>
+</div>
+          <ul>
+            <li>Ist ein Plugin nicht freigegeben oder geändert, melden <code>runnel validate</code> und der Editor das am Schritt bzw. an der Connection: „plugin "iban" is not trusted on this computer“.</li>
+            <li>Was das Plugin auf stderr schreibt, steht im Log des Laufs; Secrets sind darin, in Fehlern und Ergebnissen maskiert.</li>
+            <li>Welche Felder ein Typ hat, steht in der Anleitung des Plugins (<code>README.md</code> im Plugin-Ordner) und im Eigenschafts-Panel des Editors.</li>
+          </ul>
+
+          <h2 id="editor">Im Editor</h2>
+          <ul>
+            <li><strong>Explorer:</strong> Plugin-Ordner tragen einen Stecker, ihre Version und ihren Stand: ✓ freigegeben, ! nicht freigegeben oder geändert, ✕ startet nicht.</li>
+            <li><strong>Übersicht:</strong> Ein Klick öffnet <code>plugin.yaml</code> als Übersicht („Overview | YAML“) mit Freigaben für Konto und Dienst, Typen, „Used by“ (wo das Projekt sie nutzt) und Programm.</li>
+            <li><strong>Freigeben:</strong> „Trust…“ zeigt Ordner, Programm, Dateien und Hash wie <code>runnel plugins trust</code> und gibt das Plugin für das Konto frei, unter dem <code>runnel serve</code> läuft. „Untrust“ nimmt die Freigabe zurück, „Try again“ startet ein Plugin nach einem Fehler neu. Im Dienst zeigt der Editor stattdessen den Befehl für Administratoren.</li>
+            <li><strong>Palette:</strong> Typen ohne eingebaute Kategorie stehen in einer eigenen Gruppe „Plugin: &lt;name&gt;“. Ein Schritt eines nicht nutzbaren Plugins zeigt im Panel und unter „Problems“ den Grund mit „Open plugin …“.</li>
+          </ul>
+
+          <h2 id="aktualisieren">Aktualisieren und entfernen</h2>
+          <ul>
+            <li><strong>Update:</strong> den Ordner <code>plugins/&lt;name&gt;/</code> durch den Inhalt des neuen Archivs ersetzen, dann erneut <code>runnel plugins trust</code> (beim Dienst mit <code>--service</code>).</li>
+            <li><strong>Entfernen:</strong> <code>runnel plugins untrust D:\flows --plugin &lt;name&gt;</code>, dann den Ordner löschen.</li>
+            <li><strong>Versionen</strong> von Plugins sind unabhängig von Runnel. Die Anleitung jedes Plugins nennt, ab welchem Stand von Runnel es läuft.</li>
+          </ul>
+
+          <h2 id="eigene">Eigene Plugins</h2>
+          <p>Plugins lassen sich in jeder Sprache schreiben, die stdin und stdout lesen kann. Für Go gibt es das <a href="https://github.com/runnelhq/sdk-go">Go-SDK</a>; damit sind auch die offiziellen Plugins gebaut. Eigene Plugins bekommen einen Namensraum mit Präfix der Firma (z. B. <code>contoso-sap</code>). Wie es geht: <a href="../docs/plugins.html">Plugins entwickeln</a> in der Entwicklerdoku.</p>
+        </article>
+
+        <!-- ===================== ENGLISH ===================== -->
+        <article class="prose" data-lang-block="en" hidden lang="en">
+          <p class="docs-eyebrow">User guide</p>
+          <h1>Plugins</h1>
+          <p class="docs-lead">Plugins add actions, transforms and connection types to Runnel that do not belong in the executable – for a directory, an ERP or a specialist system, say. A plugin is a program of its own in the project folder; in the editor and in the files it behaves like the built-in components.</p>
+
+          <h2 id="overview">How it works</h2>
+          <ul>
+            <li><strong>In the project:</strong> each plugin lives in <code>plugins/&lt;name&gt;/</code> with a <code>plugin.yaml</code> and its program. Plugins apply to this project only; that way a project folder contains everything it needs to run.</li>
+            <li><strong>A process of its own:</strong> Runnel starts the plugin when needed as a child process and talks to it over stdin/stdout – no open port. There is one process per plugin and run; it ends with the run. If a plugin crashes, the run fails, not the server.</li>
+            <li><strong>Its own namespace:</strong> a plugin's types start with its namespace, e.g. <code>ldap.search</code>. A plugin cannot take built-in namespaces such as <code>core</code> or <code>http</code>.</li>
+            <li><strong>Only once trusted:</strong> a plugin is code with Runnel's rights. Runnel starts it only once it is trusted on this computer for this project – so a cloned project runs no foreign code when it is opened or validated.</li>
+          </ul>
+
+          <h2 id="official">Official plugins</h2>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Plugin</th><th>Types</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td><a href="https://github.com/runnelhq/plugin-iban"><code>iban</code></a> – validate IBAN and BIC, build IBANs; computes locally only</td><td>Actions <code>iban.validate</code>, <code>iban.validate-bic</code>, <code>iban.create</code>; transform <code>iban.validate</code> with error link</td><td>v0.2.0, <a href="https://github.com/runnelhq/plugin-iban/releases">releases</a></td></tr>
+              <tr><td><a href="https://github.com/runnelhq/plugin-ldap"><code>ldap</code></a> – Active Directory and OpenLDAP</td><td>Connection type <code>ldap</code> with “Test connection”; actions <code>ldap.search</code>, <code>ldap.authenticate</code>, <code>ldap.add</code>, <code>ldap.modify</code>, <code>ldap.delete</code>; input <code>ldap.input</code> with “Detect fields”</td><td>v0.1.0 in preparation; build it yourself until the first release (<code>make build</code>)</td></tr>
+            </tbody>
+          </table></div>
+          <p>Examples: <a href="kochbuch-iban.html">Validating IBANs</a> and <a href="kochbuch-ldap.html">Active Directory</a> in the cookbook. Both plugins are available for Windows and Linux (x64), like Runnel itself.</p>
+
+          <h2 id="install">Installing</h2>
+          <ol class="steps">
+            <li><strong>Download and check the archive:</strong> from the plugin's releases, the archive for your system, e.g. <code>runnel-plugin-iban_0.2.0_windows_amd64.zip</code>, plus <code>SHA256SUMS</code>. Compare the checksum; optionally check the origin with <code>gh attestation verify &lt;archive&gt; --repo runnelhq/plugin-iban</code>.</li>
+            <li><strong>Unpack it into the project</strong> so that <code>plugins/iban/plugin.yaml</code> exists.</li>
+            <li><strong>Trust it</strong> with <code>runnel plugins trust</code> (see below) or in the editor.</li>
+            <li><strong>Check:</strong> <code>runnel plugins</code> shows the plugin as <code>trusted</code> with its types; <code>runnel validate</code> checks the files that use them.</li>
+          </ol>
+<div class="code">
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-303"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-303"><code class="lang-bash">Get-FileHash .\runnel-plugin-iban_0.2.0_windows_amd64.zip -Algorithm SHA256
+Expand-Archive .\runnel-plugin-iban_0.2.0_windows_amd64.zip -DestinationPath D:\flows\plugins
+runnel plugins trust D:\flows --plugin iban
+runnel plugins D:\flows</code></pre>
+</div>
+<div class="code">
+  <div class="code-head"><span>D:\flows\plugins</span><button class="copy-btn" type="button" data-copy-from="code-304"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-304"><code class="lang-text">plugins\
+  iban\
+    plugin.yaml           # name, version, namespace, program per operating system
+    README.md             # guide, readable in the editor
+    bin\iban.exe
+    LICENSE
+    THIRD_PARTY_NOTICES</code></pre>
+</div>
+
+          <h2 id="trust">Trusting</h2>
+<div class="code">
+  <div class="code-head"><span>runnel plugins trust D:\flows --plugin iban</span><button class="copy-btn" type="button" data-copy-from="code-305"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-305"><code class="lang-text">Plugin iban 0.2.0 (namespace iban)
+  folder:  plugins/iban
+  program: bin/iban.exe
+  hash:    sha256:74ae620da2ddc62cace24286da6e9dd4a0966d61c63d9fe9c2a2f16a3c264a7f
+A plugin runs with the rights of Runnel. Trust it only if you know where it comes from.
+Trust plugin iban? [y/N] y
+Plugin iban is trusted.</code></pre>
+</div>
+          <ul>
+            <li><strong>Hash:</strong> an approval applies to one state of the whole plugin folder (SHA-256 over all files). Any change – an update too – voids it; <code>runnel plugins</code> then shows <code>changed since trusted</code>, and runs that need the plugin do not start.</li>
+            <li><strong>Options:</strong> <code>--plugin &lt;name&gt;</code> picks single plugins, <code>--yes</code> trusts without asking (for scripts). <code>runnel plugins untrust D:\flows --plugin iban</code> withdraws the approval.</li>
+            <li><strong>Where:</strong> approvals are never stored in the project but with the user in <code>%AppData%\runnel\trusted-plugins.json</code>.</li>
+            <li><strong>Windows service:</strong> the service has its own approvals in <code>%ProgramData%\runnel\trust\plugins.json</code>, which only administrators change: <code>runnel plugins trust --service D:\flows</code> in a console “as administrator”. <code>runnel plugins</code> shows <code>trusted (service)</code>.</li>
+          </ul>
+
+          <h2 id="use">Using</h2>
+          <p>The types of a trusted plugin are available in workflows, pipelines and connections like built-in ones; Runnel checks the fields against the plugin's schema and resolves variables, expressions and connections beforehand.</p>
+<div class="code">
+  <div class="code-head"><span>Action, transform and connection of a plugin</span><button class="copy-btn" type="button" data-copy-from="code-306"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-306"><code class="lang-yaml"><span class="tok-c"># Workflow: result under results.check.output</span>
+- <span class="tok-t">id</span>: check
+  <span class="tok-t">type</span>: iban.validate
+  <span class="tok-t">with</span>:
+    <span class="tok-t">iban</span>: ${IBAN}
+
+<span class="tok-c"># Pipeline: transform with error link</span>
+- <span class="tok-t">id</span>: users
+  <span class="tok-t">type</span>: ldap.input
+  <span class="tok-t">with</span>:
+    <span class="tok-t">connection</span>: ad
+    <span class="tok-t">filter</span>: (objectClass=user)
+
+<span class="tok-c"># connections/ad.yaml: the plugin's connection type</span>
+<span class="tok-t">kind</span>: Connection
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: ad
+<span class="tok-t">type</span>: ldap
+<span class="tok-t">with</span>:
+  <span class="tok-t">url</span>: ldaps://dc1.example.com
+  <span class="tok-t">bindDn</span>: svc-runnel@example.com
+  <span class="tok-t">password</span>: ${secret:AD_PASSWORD}</code></pre>
+</div>
+          <ul>
+            <li>If a plugin is not trusted or has changed, <code>runnel validate</code> and the editor report it on the step or connection: “plugin "iban" is not trusted on this computer”.</li>
+            <li>What the plugin writes to stderr appears in the run log; secrets are masked there and in errors and results.</li>
+            <li>The fields of a type are described in the plugin's guide (<code>README.md</code> in the plugin folder) and in the editor's properties panel.</li>
+          </ul>
+
+          <h2 id="editor-en">In the editor</h2>
+          <ul>
+            <li><strong>Explorer:</strong> plugin folders carry a plug, their version and their state: ✓ trusted, ! not trusted or changed, ✕ does not start.</li>
+            <li><strong>Overview:</strong> a click opens <code>plugin.yaml</code> as an overview (“Overview | YAML”) with approvals for account and service, types, “Used by” (where the project uses them) and program.</li>
+            <li><strong>Trusting:</strong> “Trust…” shows folder, program, files and hash like <code>runnel plugins trust</code> and trusts the plugin for the account <code>runnel serve</code> runs as. “Untrust” withdraws the approval, “Try again” restarts a plugin after an error. In the service, the editor shows the command for administrators instead.</li>
+            <li><strong>Palette:</strong> types without a built-in category appear in a group of their own, “Plugin: &lt;name&gt;”. A step of an unusable plugin shows the reason with “Open plugin …” in the panel and under “Problems”.</li>
+          </ul>
+
+          <h2 id="updating">Updating and removing</h2>
+          <ul>
+            <li><strong>Update:</strong> replace the folder <code>plugins/&lt;name&gt;/</code> with the contents of the new archive, then run <code>runnel plugins trust</code> again (with <code>--service</code> for the service).</li>
+            <li><strong>Remove:</strong> <code>runnel plugins untrust D:\flows --plugin &lt;name&gt;</code>, then delete the folder.</li>
+            <li><strong>Versions</strong> of plugins are independent of Runnel. Each plugin's guide names the Runnel state it needs.</li>
+          </ul>
+
+          <h2 id="own">Your own plugins</h2>
+          <p>Plugins can be written in any language that can read stdin and write stdout. For Go there is the <a href="https://github.com/runnelhq/sdk-go">Go SDK</a>; the official plugins are built with it too. Your own plugins get a namespace with a company prefix (e.g. <code>contoso-sap</code>). How it works: <a href="../docs/plugins.html">Developing plugins</a> in the developer docs.</p>
+        </article>
+      </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <svg viewBox="0 0 204 64" role="img" aria-label="Runnel"><use href="#logo"/></svg>
+        <p data-i18n="footer.claim">Leicht. Lokal. Im Fluss. Workflows und Datenintegration für Windows.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.product">Produkt</h4>
+        <ul>
+          <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+          <li><a href="../handbuch/" data-i18n="footer.guide">Handbuch</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/releases" data-i18n="footer.releases">Releases</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.docs">Dokumentation</h4>
+        <ul>
+          <li><a href="../docs/" data-i18n="footer.devdocs">Entwicklerdoku</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md" data-i18n="footer.concept">Konzept</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/docs/adr" data-i18n="footer.adr">Entscheidungen (ADR)</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/design" data-i18n="footer.design">Corporate Design</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.project">Projekt</h4>
+        <ul>
+          <li><a href="https://github.com/runnelhq/runnel">GitHub</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/issues" data-i18n="footer.issues">Fehler melden</a></li>
+          <li><a href="../impressum.html" data-i18n="footer.imprint">Impressum</a></li>
+          <li><a href="../datenschutz.html" data-i18n="footer.privacy">Datenschutz</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n="footer.copy">© 2026 The Runnel authors · MIT-Lizenz</span>
+      <span data-i18n="footer.local">Mit KI entwickelt (Vibe Coding) · Diese Seite lädt keine externen Schriften oder Tracker.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/site.js"></script>
+</body>
+</html>

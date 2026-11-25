@@ -17,7 +17,7 @@
           <p class="docs-eyebrow">Entwicklerdoku · Server</p>
           <h1>Server-API</h1>
           <p class="docs-lead">Die API von <code>runnel serve</code> ist die einzige Schnittstelle des Editors zum Server – und ebenso für Skripte nutzbar. Außerhalb von <code>/api/v1</code> liefert der Server den eingebetteten <a href="editor.html">Editor</a> aus.</p>
-          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/API.md"><code>docs/dev/API.md</code></a> (Stand S70c) – mit allen Feldern und den Endpunkten zum Bearbeiten, Kopieren, Felder ermitteln und zur Datenvorschau. Grundlagen: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0016-live-events-sse.md">ADR 0016</a> (Live-Ereignisse), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0018-http-trigger.md">ADR 0018</a> (HTTP-Trigger).</p>
+          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/API.md"><code>docs/dev/API.md</code></a> (Stand S71) – mit allen Feldern und den Endpunkten zum Bearbeiten, Kopieren, Felder ermitteln und zur Datenvorschau. Grundlagen: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0016-live-events-sse.md">ADR 0016</a> (Live-Ereignisse), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0018-http-trigger.md">ADR 0018</a> (HTTP-Trigger).</p>
 <pre><code class="lang-bash" data-caption="Server starten">runnel serve examples/hello     # Projekt im Ordner oder darüber, Port 7300
 runnel serve --port 0 .          # freier Port; die Ausgabe nennt die Adresse</code></pre>
 
@@ -57,10 +57,11 @@ runnel serve --port 0 .          # freier Port; die Ausgabe nennt die Adresse</c
               <tr><td>POST</td><td><code>/copy</code></td><td>Actions oder Transforms als YAML-Text für die Zwischenablage</td></tr>
               <tr><td>POST</td><td><code>/pipelines/fields</code></td><td>Felder eines Eingabe-Transforms ermitteln</td></tr>
               <tr><td>POST</td><td><code>/preview</code></td><td>Datenvorschau einer Pipeline bis zu einem Transform</td></tr>
-              <tr><td>POST · GET</td><td><code>/runs</code>, <code>/runs/{id}</code></td><td>Lauf starten; Läufe auflisten bzw. mit Status je Action und Log lesen</td></tr>
+              <tr><td>POST · GET</td><td><code>/runs</code>, <code>/runs/{id}</code></td><td>Lauf starten; Läufe aus Speicher und Run-Historie auflisten (mit Filtern) bzw. mit Status je Action und Log lesen</td></tr>
               <tr><td>POST</td><td><code>/runs/{id}/cancel</code></td><td>Lauf abbrechen (<code>202</code>; bereits beendet <code>409</code>)</td></tr>
               <tr><td>GET</td><td><code>/events</code></td><td>Live-Ereignisse als Server-Sent Events</td></tr>
               <tr><td>GET</td><td><code>/triggers</code></td><td>Trigger des Projekts mit Zeitplan, nächstem Zeitpunkt und letztem Ergebnis</td></tr>
+              <tr><td>GET · POST</td><td><code>/plugins</code>, <code>/plugins/{name}/trust</code>, <code>…/untrust</code>, <code>…/reload</code></td><td>Plugins mit Stand, Typen und Verwendung; freigeben, Freigabe zurücknehmen, neu starten</td></tr>
             </tbody>
           </table></div>
 
@@ -91,7 +92,8 @@ runnel serve --port 0 .          # freier Port; die Ausgabe nennt die Adresse</c
             </tbody>
           </table></div>
           {{snippet:api-run.json|Run}}
-          <p><code>status</code> ist <code>running</code>, <code>succeeded</code>, <code>failed</code> oder <code>cancelled</code>; <code>trigger</code> nennt, was den Lauf gestartet hat (<code>cron:&lt;name&gt;</code>, <code>interval:…</code>, <code>file:…</code>, <code>http:…</code>). <code>GET /runs/{id}</code> ergänzt den Status je Action und das Log (höchstens 5.000 Zeilen). Läufe liegen nur im Speicher – die letzten 100, dazu die letzten 100 von HTTP-Triggern; eine dauerhafte Historie folgt mit S26 (<a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0026-run-historie.md">ADR 0026</a>): eine SQLite-Datei je Projekt im Datenordner. Die Antworten bleiben gleich; laufende Läufe kommen weiter aus dem Speicher, alle anderen aus der Historie, dazu Filter und Seiten (<code>status</code>, <code>path</code>, <code>trigger</code>, <code>before</code>, <code>limit</code>).</p>
+          <p><code>status</code> ist <code>running</code>, <code>succeeded</code>, <code>failed</code> oder <code>cancelled</code>; <code>trigger</code> nennt, was den Lauf gestartet hat (<code>cron:&lt;name&gt;</code>, <code>interval:…</code>, <code>file:…</code>, <code>http:…</code>). <code>trigger</code> ist zusätzlich <code>cli</code> für <code>runnel run</code> und <code>editor</code> für Läufe aus dem Editor oder mit <code>POST /runs</code>. <code>GET /runs/{id}</code> ergänzt den Status je Action und das Log (höchstens 5.000 Zeilen).</p>
+          <p><strong>Run-Historie:</strong> <code>GET /runs</code> liefert laufende und kürzlich beendete Läufe aus dem Speicher und alle älteren aus der <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0026-run-historie.md">Run-Historie</a> (SQLite-Datei je Projekt im Datenordner), neueste zuerst. Filter: <code>status</code>, <code>path</code>, <code>trigger</code>; Seiten mit <code>before=&lt;lauf-id&gt;</code> und <code>limit</code> (Standard 200, höchstens 1.000, sonst <code>400</code>). <code>GET /projects/current</code> nennt unter <code>history</code> die Aufbewahrung (<code>keepDays</code>, <code>maxRuns</code>).</p>
 
           <h2 id="events">Live-Ereignisse (<code>/events</code>)</h2>
           {{snippet:api-event.txt|Beispiel}}
@@ -110,6 +112,22 @@ runnel serve --port 0 .          # freier Port; die Ausgabe nennt die Adresse</c
           <ul>
             <li>Ohne Angabe kommen nur <strong>neue</strong> Ereignisse. Mit <code>Last-Event-ID</code> oder <code>?since=&lt;seq&gt;</code> folgen zuerst die verpassten; vorrätig sind die letzten 2.000.</li>
             <li><code>?run=&lt;id&gt;</code> liefert nur die Ereignisse eines Laufs. Alle 15 s hält ein Kommentar (<code>: ping</code>) die Verbindung offen.</li>
+          </ul>
+
+          <h2 id="plugins">Plugins</h2>
+          <p>Für die Plugin-Verwaltung im Editor; dieselben Freigaben wie <code>runnel plugins trust</code> (<a href="plugins.html">Plugins entwickeln</a>).</p>
+<pre><code class="lang-bash" data-caption="GET /api/v1/plugins (gekürzt)">{ "plugins": [ {
+    "name": "iban", "version": "0.2.0", "namespace": "iban",
+    "folder": "plugins/iban", "program": "bin/iban.exe", "hash": "8b0d5e…41d2",
+    "state": "trusted",
+    "user": { "version": "0.2.0", "hash": "8b0d5e…41d2", "trusted": "2026-11-25T09:12:00Z", "current": true },
+    "types": { "actions": [ … ], "transforms": [ … ], "connectionTypes": [ … ] },
+    "uses": [ { "file": "pipelines/accounts.pipeline.yaml", "kind": "transform", "id": "check", "type": "iban.validate" } ] } ],
+  "serviceApprovals": false, "canTrust": true }</code></pre>
+          <ul>
+            <li><code>state</code>: <code>trusted</code>, <code>not-trusted</code>, <code>changed</code> (seit der Freigabe geändert) oder <code>error</code> (Grund in <code>message</code>). <code>types</code> nur bei <code>trusted</code>; <code>uses</code> liest Runnel aus den Dateien, ohne das Plugin zu starten.</li>
+            <li><code>POST /plugins/{name}/trust</code> mit <code>{"hash": "…"}</code> gibt das Plugin für das Konto von <code>runnel serve</code> frei – nie für den Dienst. Der Hash muss dem Stand jetzt entsprechen: <code>409</code>, wenn sich das Plugin seitdem geändert hat; <code>400</code> ohne Hash, <code>404</code> unbekannt, <code>403</code> im Windows-Dienst (<code>canTrust: false</code>).</li>
+            <li><code>…/untrust</code> nimmt die Freigabe zurück, <code>…/reload</code> prüft und startet das Plugin erneut. Freigaben stehen im Server-Log.</li>
           </ul>
 
           <h2 id="http-trigger">HTTP-Trigger</h2>
@@ -132,7 +150,7 @@ runnel serve --port 0 .          # freier Port; die Ausgabe nennt die Adresse</c
           <p class="docs-eyebrow">Developer docs · Server</p>
           <h1>Server API</h1>
           <p class="docs-lead">The API of <code>runnel serve</code> is the editor's only interface to the server – and just as usable from scripts. Outside <code>/api/v1</code> the server delivers the embedded <a href="editor.html">editor</a>.</p>
-          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/API.md"><code>docs/dev/API.md</code></a> (as of S70c) – with every field and the endpoints for editing, copying, field detection and data preview. Background: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0016-live-events-sse.md">ADR 0016</a> (live events), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0018-http-trigger.md">ADR 0018</a> (HTTP triggers).</p>
+          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/API.md"><code>docs/dev/API.md</code></a> (as of S71) – with every field and the endpoints for editing, copying, field detection and data preview. Background: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0016-live-events-sse.md">ADR 0016</a> (live events), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0018-http-trigger.md">ADR 0018</a> (HTTP triggers).</p>
 <pre><code class="lang-bash" data-caption="Start the server">runnel serve examples/hello     # project in the folder or above, port 7300
 runnel serve --port 0 .          # free port; the output names the address</code></pre>
 
@@ -172,10 +190,11 @@ runnel serve --port 0 .          # free port; the output names the address</code
               <tr><td>POST</td><td><code>/copy</code></td><td>Actions or transforms as YAML text for the clipboard</td></tr>
               <tr><td>POST</td><td><code>/pipelines/fields</code></td><td>Detect the fields of an input transform</td></tr>
               <tr><td>POST</td><td><code>/preview</code></td><td>Data preview of a pipeline up to a transform</td></tr>
-              <tr><td>POST · GET</td><td><code>/runs</code>, <code>/runs/{id}</code></td><td>Start a run; list runs or read one with status per action and log</td></tr>
+              <tr><td>POST · GET</td><td><code>/runs</code>, <code>/runs/{id}</code></td><td>Start a run; list runs from memory and run history (with filters) or read one with status per action and log</td></tr>
               <tr><td>POST</td><td><code>/runs/{id}/cancel</code></td><td>Cancel a run (<code>202</code>; already finished <code>409</code>)</td></tr>
               <tr><td>GET</td><td><code>/events</code></td><td>Live events as server-sent events</td></tr>
               <tr><td>GET</td><td><code>/triggers</code></td><td>Project triggers with schedule, next time and last result</td></tr>
+              <tr><td>GET · POST</td><td><code>/plugins</code>, <code>/plugins/{name}/trust</code>, <code>…/untrust</code>, <code>…/reload</code></td><td>Plugins with state, types and usage; trust, withdraw approval, restart</td></tr>
             </tbody>
           </table></div>
 
@@ -206,7 +225,8 @@ runnel serve --port 0 .          # free port; the output names the address</code
             </tbody>
           </table></div>
           {{snippet:api-run.json|Run}}
-          <p><code>status</code> is <code>running</code>, <code>succeeded</code>, <code>failed</code> or <code>cancelled</code>; <code>trigger</code> names what started the run (<code>cron:&lt;name&gt;</code>, <code>interval:…</code>, <code>file:…</code>, <code>http:…</code>). <code>GET /runs/{id}</code> adds the status per action and the log (at most 5,000 lines). Runs are kept in memory only – the last 100 plus the last 100 from HTTP triggers; a persistent history follows with S26 (<a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0026-run-historie.md">ADR 0026</a>): one SQLite file per project in the data folder. The responses stay the same; running runs still come from memory, all others from the history, plus filters and pages (<code>status</code>, <code>path</code>, <code>trigger</code>, <code>before</code>, <code>limit</code>).</p>
+          <p><code>status</code> is <code>running</code>, <code>succeeded</code>, <code>failed</code> or <code>cancelled</code>; <code>trigger</code> names what started the run (<code>cron:&lt;name&gt;</code>, <code>interval:…</code>, <code>file:…</code>, <code>http:…</code>). <code>trigger</code> can also be <code>cli</code> for <code>runnel run</code> and <code>editor</code> for runs from the editor or via <code>POST /runs</code>. <code>GET /runs/{id}</code> adds the status per action and the log (at most 5,000 lines).</p>
+          <p><strong>Run history:</strong> <code>GET /runs</code> returns running and recently finished runs from memory and all older ones from the <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0026-run-historie.md">run history</a> (one SQLite file per project in the data folder), newest first. Filters: <code>status</code>, <code>path</code>, <code>trigger</code>; pages with <code>before=&lt;run id&gt;</code> and <code>limit</code> (default 200, at most 1,000, else <code>400</code>). <code>GET /projects/current</code> names the retention under <code>history</code> (<code>keepDays</code>, <code>maxRuns</code>).</p>
 
           <h2 id="events-en">Live events (<code>/events</code>)</h2>
           {{snippet:api-event.txt|Example}}
@@ -225,6 +245,22 @@ runnel serve --port 0 .          # free port; the output names the address</code
           <ul>
             <li>Without parameters only <strong>new</strong> events arrive. With <code>Last-Event-ID</code> or <code>?since=&lt;seq&gt;</code> the missed ones come first; the last 2,000 are kept.</li>
             <li><code>?run=&lt;id&gt;</code> delivers only the events of one run. A comment (<code>: ping</code>) every 15 s keeps the connection open.</li>
+          </ul>
+
+          <h2 id="plugins-en">Plugins</h2>
+          <p>For plugin management in the editor; the same approvals as <code>runnel plugins trust</code> (<a href="plugins.html">Developing plugins</a>).</p>
+<pre><code class="lang-bash" data-caption="GET /api/v1/plugins (shortened)">{ "plugins": [ {
+    "name": "iban", "version": "0.2.0", "namespace": "iban",
+    "folder": "plugins/iban", "program": "bin/iban.exe", "hash": "8b0d5e…41d2",
+    "state": "trusted",
+    "user": { "version": "0.2.0", "hash": "8b0d5e…41d2", "trusted": "2026-11-25T09:12:00Z", "current": true },
+    "types": { "actions": [ … ], "transforms": [ … ], "connectionTypes": [ … ] },
+    "uses": [ { "file": "pipelines/accounts.pipeline.yaml", "kind": "transform", "id": "check", "type": "iban.validate" } ] } ],
+  "serviceApprovals": false, "canTrust": true }</code></pre>
+          <ul>
+            <li><code>state</code>: <code>trusted</code>, <code>not-trusted</code>, <code>changed</code> (changed since trusted) or <code>error</code> (reason in <code>message</code>). <code>types</code> only when <code>trusted</code>; Runnel reads <code>uses</code> from the files without starting the plugin.</li>
+            <li><code>POST /plugins/{name}/trust</code> with <code>{"hash": "…"}</code> trusts the plugin for the account of <code>runnel serve</code> – never for the service. The hash must match the current state: <code>409</code> if the plugin has changed since; <code>400</code> without a hash, <code>404</code> unknown, <code>403</code> in the Windows service (<code>canTrust: false</code>).</li>
+            <li><code>…/untrust</code> withdraws the approval, <code>…/reload</code> checks and starts the plugin again. Approvals appear in the server log.</li>
           </ul>
 
           <h2 id="http-triggers">HTTP triggers</h2>

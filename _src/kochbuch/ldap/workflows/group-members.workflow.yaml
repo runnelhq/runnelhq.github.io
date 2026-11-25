@@ -1,0 +1,46 @@
+# Lists the members of a group, e.g. to check who may sign in to an application.
+#   runnel run --param GROUP=App-Users workflows/group-members.workflow.yaml
+kind: Workflow
+apiVersion: runnel/v1
+name: group-members
+parameters:
+  - name: GROUP
+    required: true
+outputs:
+  - name: MEMBERS
+    type: integer
+    value: "{{ results.find.output.count }}"
+actions:
+  - id: start
+    type: core.start
+  - id: group
+    type: ldap.search
+    with:
+      connection: ad
+      filter: (&(objectClass=group)(cn={group}))
+      filterValues:
+        group: ${GROUP}          # escaped for LDAP, never put values into filter directly
+      attributes: [distinguishedName]
+      sizeLimit: 1
+  - id: find
+    type: ldap.search
+    with:
+      connection: ad
+      filter: (&(objectClass=user)(memberOf={group}))
+      filterValues:
+        group: "{{ results.group.output.entries[0].dn }}"
+      attributes: [sAMAccountName, displayName, mail]
+      pageSize: 500
+  - id: missing
+    type: core.abort
+    with:
+      message: "group ${GROUP} not found"
+  - id: log
+    type: core.log
+    with:
+      message: "{{ results.find.output.count }} members: {{ join(map(results.find.output.entries, .attributes.sAMAccountName[0]), ', ') }}"
+links:
+  - { from: start, to: group }
+  - { from: group, to: find, when: "{{ results.group.output.count == 1 }}" }
+  - { from: group, to: missing, when: "{{ results.group.output.count == 0 }}" }
+  - { from: find, to: log }

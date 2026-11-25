@@ -33,7 +33,7 @@ DOCS_NAV = [
     ("docs/transforms.html", "Transforms entwickeln", "Developing transforms", None),
     ("docs/editor.html", "Editor entwickeln", "Developing the editor", None),
     ("docs/api.html", "Server-API", "Server API", None),
-    (None, "Plugins entwickeln", "Developing plugins", ("folgt mit S49–S51", "coming with S49–S51")),
+    ("docs/plugins.html", "Plugins entwickeln", "Developing plugins", None),
 ]
 GUIDE_NAV = [
     ("handbuch/index.html", "Überblick", "Overview", None),
@@ -43,6 +43,7 @@ GUIDE_NAV = [
     ("handbuch/workflows.html", "Workflows", "Workflows", None),
     ("handbuch/pipelines.html", "Pipelines", "Pipelines", None),
     ("handbuch/trigger.html", "Trigger", "Triggers", None),
+    ("handbuch/plugins.html", "Plugins", "Plugins", None),
     ("handbuch/ausdruecke.html", "Ausdrücke", "Expressions", None),
     ("handbuch/bausteine.html", "Bausteine (Referenz)", "Components (reference)", None),
     (None, "Kochbuch", "Cookbook", "group"),
@@ -55,6 +56,8 @@ GUIDE_NAV = [
     ("handbuch/kochbuch-sharepoint.html", "SharePoint (Microsoft Graph)", "SharePoint (Microsoft Graph)", None),
     ("handbuch/kochbuch-excel.html", "Excel lesen und schreiben", "Reading and writing Excel", None),
     ("handbuch/kochbuch-xml.html", "XML-Austausch", "XML exchange", None),
+    ("handbuch/kochbuch-iban.html", "IBANs prüfen (Plugin)", "Validating IBANs (plugin)", None),
+    ("handbuch/kochbuch-ldap.html", "Active Directory (Plugin)", "Active Directory (plugin)", None),
 ]
 SECTIONS = {
     "docs": (DOCS_NAV, "Entwicklerdoku", "Developer docs"),

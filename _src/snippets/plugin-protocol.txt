@@ -1,0 +1,8 @@
+→ {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":1,"encodings":["json"],"runnel":{"version":"0.9.0"}}}
+← {"jsonrpc":"2.0","id":1,"result":{"protocolVersion":1,"encoding":"json","name":"iban","version":"1.0.0","concurrency":4}}
+→ {"jsonrpc":"2.0","id":2,"method":"describe","params":{}}
+← {"jsonrpc":"2.0","id":2,"result":{"actions":[{"type":"iban.check","label":"Check IBAN","description":"Checks an IBAN","schema":{"type":"object","properties":{"iban":{"type":"string"}},"required":["iban"]}}]}}
+→ {"jsonrpc":"2.0","id":3,"method":"action.execute","params":{"type":"iban.check","config":{"iban":"DE02…"},"context":{"runId":"01M…","actionId":"check","projectDir":"D:\\flows","environment":"prod"}}}
+← {"jsonrpc":"2.0","id":3,"result":{"output":{"valid":true,"country":"DE"}}}
+→ {"jsonrpc":"2.0","id":4,"method":"shutdown","params":{}}
+← {"jsonrpc":"2.0","id":4,"result":null}

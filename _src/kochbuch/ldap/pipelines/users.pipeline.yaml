@@ -1,0 +1,37 @@
+kind: Pipeline
+apiVersion: runnel/v1
+name: users
+description: Reads the active users of an OU page by page and writes them to a CSV file
+parameters:
+  - name: OU
+    default: OU=Users
+transforms:
+  - id: users
+    type: ldap.input
+    with:
+      connection: ad
+      baseDn: ${OU},${LDAP_BASE}
+      # active users only: bit 2 of userAccountControl (disabled) is not set
+      filter: (&(objectCategory=person)(objectClass=user)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))
+      pageSize: 500
+      fields:
+        - { name: login, from: sAMAccountName }
+        - { name: name, from: displayName }
+        - { name: mail }
+        - { name: department }
+        - { name: groups, from: memberOf }          # several values joined with "; "
+        - { name: lastLogon, from: lastLogonTimestamp, type: datetime }
+        - { name: guid, from: objectGUID }
+  - id: write
+    type: csv.output
+    with:
+      path: out/ad-users.csv
+      delimiter: ";"
+  - id: rejected
+    type: csv.output
+    with:
+      path: out/ad-users-rejected.csv
+      delimiter: ";"
+links:
+  - { from: users, to: write }
+  - { from: users, to: rejected, type: error }

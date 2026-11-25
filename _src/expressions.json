@@ -451,7 +451,7 @@
  "variables": [
   {
    "name": "OUTBOX",
-   "value": "${env:TEMP}\\runnel-hello",
+   "value": "${env:TEMP:-.}\\runnel-hello",
    "source": "project.yaml"
   },
   {
