@@ -3,8 +3,8 @@
   "section": "guide",
   "title": {"de": "Betrieb", "en": "Operation"},
   "description": {
-    "de": "Runnel betreiben: prüfen, ausführen, Aufgabenplanung, Editor und Server, Windows-Dienst, HTTPS für Trigger, Logs und Läufe.",
-    "en": "Operating Runnel: validating, running, Task Scheduler, editor and server, Windows service, HTTPS for triggers, logs and runs."
+    "de": "Runnel betreiben: prüfen, ausführen, Aufgabenplanung, Editor und Server, Windows-Dienst, HTTPS für Trigger, Logs und Run-Historie.",
+    "en": "Operating Runnel: validating, running, Task Scheduler, editor and server, Windows service, HTTPS for triggers, logs and run history."
   },
   "nav": "handbuch/",
   "main_class": "docs-page"
@@ -26,9 +26,11 @@
               <tr><td><code>runnel run &lt;datei&gt;</code></td><td>einen Workflow oder eine Pipeline einmal ausführen</td></tr>
               <tr><td><code>runnel serve [projektordner]</code></td><td>Editor im Browser und Trigger starten</td></tr>
               <tr><td><code>runnel triggers [projektordner]</code></td><td>Trigger mit Zeitplan und nächstem Zeitpunkt auflisten</td></tr>
+              <tr><td><code>runnel runs [projektordner] [lauf-id]</code></td><td>Läufe aus der <a href="#historie">Run-Historie</a> auflisten oder einen mit Log zeigen</td></tr>
+              <tr><td><code>runnel plugins [trust|untrust] [projektordner]</code></td><td><a href="plugins.html">Plugins</a> anzeigen und freigeben</td></tr>
               <tr><td><code>runnel service …</code></td><td>Windows-Dienst einrichten und steuern</td></tr>
               <tr><td><code>runnel catalog [typ]</code></td><td>Bausteine nachschlagen, mit <code>--json</code> als JSON Schema</td></tr>
-              <tr><td><code>runnel schema &lt;art&gt;</code></td><td>JSON Schema einer Dateiart: <code>project</code>, <code>environment</code>, <code>connection</code>, <code>trigger</code></td></tr>
+              <tr><td><code>runnel schema &lt;art&gt;</code></td><td>JSON Schema einer Dateiart: <code>project</code>, <code>environment</code>, <code>connection</code>, <code>trigger</code>, <code>plugin</code></td></tr>
               <tr><td><code>runnel version</code></td><td>Version, Commit und Plattform</td></tr>
             </tbody>
           </table></div>
@@ -47,7 +49,10 @@ runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
             <tbody>
               <tr><td><code>--env &lt;name&gt;</code></td><td>Environment des Projekts; ohne Angabe das <code>defaultEnvironment</code></td></tr>
               <tr><td><code>--param KEY=VALUE</code></td><td>Parameter setzen, mehrfach möglich</td></tr>
-              <tr><td><code>-v</code></td><td>zusätzlich Debug-Meldungen und jeden Start und jedes Ende einer Action bzw. eines Transforms</td></tr>
+              <tr><td><code>-v</code></td><td>zusätzlich Debug-Meldungen und jeden Start und jedes Ende einer Action bzw. eines Transforms (wie <code>--log-level debug</code>)</td></tr>
+              <tr><td><code>--log-level &lt;stufe&gt;</code></td><td><code>debug</code>, <code>info</code> (Standard), <code>warn</code> oder <code>error</code></td></tr>
+              <tr><td><code>--log-format json</code></td><td>jede Zeile als JSON-Objekt, z. B. für Splunk oder ELK; Standard <code>text</code></td></tr>
+              <tr><td><code>--history &lt;art&gt;</code></td><td>ob der Lauf in der Run-Historie bleibt: <code>all</code>, <code>errors</code> oder <code>none</code>; ohne Angabe <code>settings.history.cli</code> des Projekts</td></tr>
             </tbody>
           </table></div>
           <p>Pipelines zeigen am Ende je Transform, wie viele Datensätze er gelesen, geschrieben und an Fehler-Links gegeben hat. <strong>Strg+C</strong> bricht einen Lauf sauber ab; ein zweites Strg+C beendet sofort.</p>
@@ -67,13 +72,15 @@ runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
           <h2 id="editor">Editor und Server</h2>
 <pre><code class="lang-bash" data-caption="PowerShell">runnel serve D:\flows
 # Editor: http://127.0.0.1:7300</code></pre>
-          <p>Der Editor zeigt Workflows und Pipelines als Canvas und als YAML, prüft beim Tippen, startet Läufe und zeigt sie live. Er arbeitet auf denselben Dateien wie die CLI – Änderungen aus Git oder einem Texteditor erkennt er beim Speichern (Konfliktdialog). Solange <code>serve</code> läuft, starten auch die Trigger des Projekts.</p>
+          <p>Der Editor zeigt Workflows und Pipelines als Canvas und als YAML, prüft beim Tippen, startet Läufe und zeigt sie live. Ein Schritt lässt sich aus der Palette direkt auf einen Link ziehen, um ihn zwischen zwei Schritte einzufügen. Der Tab „Runs“ zeigt die Run-Historie mit Filtern; „Open on canvas“ zeigt einen früheren Lauf mit Status und Log auf dem Canvas. Er arbeitet auf denselben Dateien wie die CLI – Änderungen aus Git oder einem Texteditor erkennt er beim Speichern (Konfliktdialog). Solange <code>serve</code> läuft, starten auch die Trigger des Projekts.</p>
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Option</th><th>Bedeutung</th></tr></thead>
             <tbody>
               <tr><td><code>--port &lt;n&gt;</code></td><td>Port auf <code>127.0.0.1</code>, Standard 7300; <code>0</code> wählt einen freien</td></tr>
               <tr><td><code>--stop-timeout &lt;dauer&gt;</code></td><td>Zeit, die laufende Runs beim Beenden bekommen, z. B. <code>30s</code></td></tr>
               <tr><td><code>--triggers &lt;adresse&gt;</code></td><td>Listener der HTTP-Trigger, Standard <code>127.0.0.1:7301</code>; <code>""</code> schaltet ihn ab</td></tr>
+              <tr><td><code>--log-level</code>, <code>--log-format</code></td><td>Server-Log wie bei <code>run</code>; je beendetem Lauf eine Zeile mit Lauf-ID, Pfad, Trigger, Status, Dauer und Fehler</td></tr>
+              <tr><td><code>--history-dir &lt;ordner&gt;</code></td><td>anderer Ordner für die Run-Historie, z. B. portabel neben der exe</td></tr>
             </tbody>
           </table></div>
           <p>Der Editor ist nur vom eigenen Rechner aus erreichbar. Eine Benutzerverwaltung gibt es bewusst nicht; mehrere Browser können gleichzeitig arbeiten.</p>
@@ -93,6 +100,8 @@ runnel service uninstall</code></pre>
               <tr><td><code>--start &lt;art&gt;</code></td><td><code>delayed</code> (Standard: automatisch, kurz nach dem Hochfahren), <code>auto</code> oder <code>manual</code></td></tr>
               <tr><td><code>--port</code>, <code>--triggers</code></td><td>wie bei <code>serve</code></td></tr>
               <tr><td><code>--stop-timeout</code></td><td>Zeit für laufende Runs beim Stoppen, Standard 30 s</td></tr>
+              <tr><td><code>--log-file</code>, <code>--log-max-size</code>, <code>--log-files</code></td><td>Log-Datei (Standard <code>%ProgramData%\runnel\logs\&lt;name&gt;.log</code>), Rotation ab Größe (Standard <code>10MB</code>) und Anzahl alter Dateien (Standard 5)</td></tr>
+              <tr><td><code>--log-level</code>, <code>--log-format</code>, <code>--history-dir</code></td><td>wie bei <code>serve</code>; geänderte Einstellungen gelten nach erneutem <code>service install</code></td></tr>
             </tbody>
           </table></div>
           <ul>
@@ -100,6 +109,7 @@ runnel service uninstall</code></pre>
             <li><strong>Wiederherstellung:</strong> Nach einem Fehler startet Windows den Dienst nach 10 s, 1 min und 5 min neu.</li>
             <li><strong>Stoppen:</strong> Keine neuen Läufe mehr; laufende bekommen <code>--stop-timeout</code>, danach werden sie abgebrochen.</li>
             <li><strong>Log:</strong> vollständig in <code>%ProgramData%\runnel\logs\&lt;name&gt;.log</code> (mit Rotation), Start, Stopp, Warnungen und Fehler zusätzlich in der Ereignisanzeige.</li>
+            <li><strong>Plugins</strong> braucht der Dienst eigens freigegeben: <code>runnel plugins trust --service</code> als Administrator (siehe <a href="plugins.html#freigabe">Plugins</a>).</li>
             <li>Der Dienst startet die <code>runnel.exe</code>, mit der er eingerichtet wurde. Nach dem Verschieben der exe neu einrichten.</li>
           </ul>
 
@@ -116,20 +126,25 @@ runnel serve --triggers 0.0.0.0:7301 --triggers-cert C:\certs\runnel.crt --trigg
 
           <h2 id="logs">Logs und Läufe</h2>
           <ul>
-            <li><strong>CLI:</strong> Das Log erscheint in der Konsole; mit <code>-v</code> ausführlich.</li>
-            <li><strong>Editor:</strong> Tab „Log“ unter dem Canvas, Status an jeder Action, Ergebnis im Panel.</li>
-            <li><strong>Server und Dienst:</strong> Die letzten 100 Läufe (dazu die letzten 100 von HTTP-Triggern) stehen im Speicher und im Editor. Der Dienst schreibt zusätzlich die Log-Datei.</li>
+            <li><strong>CLI:</strong> Das Log erscheint in der Konsole; mit <code>-v</code> ausführlich, mit <code>--log-format json</code> maschinenlesbar.</li>
+            <li><strong>Editor:</strong> Tab „Log“ unter dem Canvas, Status an jeder Action, Ergebnis im Panel; frühere Läufe im Tab „Runs“.</li>
+            <li><strong>Server und Dienst:</strong> je beendetem Lauf eine Zeile im Server-Log (gescheiterte als Warnung); der Dienst schreibt es in die Log-Datei.</li>
             <li><strong>Secrets</strong> werden in Log, Fehlern und Ergebnissen durch <code>***</code> ersetzt.</li>
           </ul>
 
-          <h3 id="historie">Run-Historie (in Arbeit)</h3>
-          <p>Beschlossen in <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0026-run-historie.md">ADR 0026</a>, umgesetzt in den nächsten Schritten: Läufe überstehen dann Neustarts, und auch Läufe von <code>runnel run</code> und der Aufgabenplanung werden sichtbar. Es bleibt bei „kein Datenbank-Server“ – die Historie ist eine SQLite-Datei, die die exe selbst schreibt; nichts zu installieren und nichts zu verwalten.</p>
+          <h3 id="historie">Run-Historie</h3>
+          <p>Jeder beendete Lauf bleibt mit Status je Action bzw. Transform und Log in der Run-Historie – egal ob er aus dem Editor, von einem Trigger, vom Dienst oder mit <code>runnel run</code> aus der Aufgabenplanung kam. Sie übersteht Neustarts und Updates. Einen Datenbank-Server braucht es dafür nicht: Die Historie ist eine SQLite-Datei, die die exe selbst schreibt.</p>
+<pre><code class="lang-bash" data-caption="PowerShell">runnel runs D:\flows
+runnel runs D:\flows --status failed --limit 50
+runnel runs D:\flows --path workflows/import.workflow.yaml --trigger cron:nightly
+runnel runs D:\flows 01M8A0J23JPQ51SMYGQSCD41PR</code></pre>
           <ul>
-            <li><strong>Ort:</strong> eine Datei <code>runs.db</code> je Projekt im Datenordner, nicht im Projektordner (gehört nicht in Git; SQLite ist auf Netzlaufwerken nicht sicher). Dienst: <code>%ProgramData%\runnel\history\…</code>, Benutzer: <code>%LOCALAPPDATA%\runnel\history\…</code>; mit <code>--history-dir</code> frei wählbar, z. B. portabel neben der exe.</li>
-            <li><strong>Inhalt:</strong> Lauf, Status je Action bzw. Transform und Log (höchstens 5.000 Zeilen je Lauf); keine Datensätze, Secrets bereits maskiert.</li>
-            <li><strong>Gleichzeitig:</strong> Dienst, <code>runnel serve</code> und <code>runnel run</code> schreiben in dieselbe Datei. Ein Fehler der Historie hält keinen Lauf auf.</li>
-            <li><strong>Ansehen:</strong> im Editor, über die API oder mit <code>runnel runs</code> bzw. <code>runnel runs &lt;id&gt;</code> – ohne SQLite-Werkzeug.</li>
-            <li><strong>Aufbewahrung</strong> in <code>project.yaml</code> unter <code>settings.history</code>: <code>keepDays</code> (Standard 30), <code>maxRuns</code> (10.000), <code>cli</code> (<code>all</code>, <code>errors</code>, <code>none</code>); <code>history:</code> gilt dann für alle Trigger-Arten.</li>
+            <li><strong>Anzeigen:</strong> <code>runnel runs</code> listet die neuesten Läufe zuerst; Filter <code>--status</code>, <code>--path</code>, <code>--trigger</code> (z. B. <code>cron:nightly</code>, <code>http:orders</code>, <code>cli</code>, <code>editor</code>), <code>--limit</code>, nächste Seite mit <code>--before &lt;lauf-id&gt;</code>. Mit einer Lauf-ID zeigt es den Lauf mit Status je Schritt und Log; <code>--json</code> gibt dasselbe aus wie die API.</li>
+            <li><strong>Ort:</strong> eine Datei <code>runs.db</code> je Projekt im Datenordner, nicht im Projektordner (gehört nicht in Git; SQLite ist auf Netzlaufwerken nicht sicher). Benutzer: <code>%LOCALAPPDATA%\runnel\history\…</code>, Dienst: <code>%ProgramData%\runnel\history\…</code> (nur für Dienstkonto und Administratoren lesbar). <code>--history-dir</code> wählt einen anderen Ordner.</li>
+            <li><strong>Dienst und Benutzer</strong> haben getrennte Historien. Die des Dienstes liest man als Administrator mit <code>runnel runs --history-dir %ProgramData%\runnel\history D:\flows</code>; wer Läufe von <code>runnel run</code> im Editor des Dienstes sehen will, setzt bei beiden denselben <code>--history-dir</code>.</li>
+            <li><strong>Inhalt:</strong> Lauf, Status je Action bzw. Transform und Log (höchstens 5.000 Zeilen je Lauf); keine Datensätze, Secrets bereits maskiert. Ein Fehler der Historie hält keinen Lauf auf.</li>
+            <li><strong>Abgebrochen:</strong> Endet Runnel während eines Laufs (Absturz, Stromausfall), steht der Lauf als <code>failed</code> mit „runnel stopped while the run was running“ in der Historie, sobald er 2 Minuten kein Lebenszeichen mehr gegeben hat. Läufe, die beim Stoppen des Dienstes abgebrochen werden, stehen dort als <code>cancelled</code>.</li>
+            <li><strong>Aufbewahrung</strong> in <code>project.yaml</code> unter <code>settings.history</code>: <code>keepDays</code> (Standard 30), <code>maxRuns</code> (Standard 10.000), <code>cli</code> für <code>runnel run</code> (<code>all</code>, <code>errors</code>, <code>none</code>). An Triggern legt <code>history:</code> fest, welche Läufe bleiben (siehe <a href="trigger.html">Trigger</a>). Ältere Läufe entfernen Server und <code>runnel run</code> selbst.</li>
           </ul>
         </article>
 
@@ -146,9 +161,11 @@ runnel serve --triggers 0.0.0.0:7301 --triggers-cert C:\certs\runnel.crt --trigg
               <tr><td><code>runnel run &lt;file&gt;</code></td><td>Run a workflow or a pipeline once</td></tr>
               <tr><td><code>runnel serve [project folder]</code></td><td>Start the browser-based editor and the triggers</td></tr>
               <tr><td><code>runnel triggers [project folder]</code></td><td>List triggers with schedule and next time</td></tr>
+              <tr><td><code>runnel runs [project folder] [run id]</code></td><td>List runs from the <a href="#history-en">run history</a> or show one with its log</td></tr>
+              <tr><td><code>runnel plugins [trust|untrust] [project folder]</code></td><td>List and trust <a href="plugins.html">plugins</a></td></tr>
               <tr><td><code>runnel service …</code></td><td>Set up and control the Windows service</td></tr>
               <tr><td><code>runnel catalog [type]</code></td><td>Look up components, with <code>--json</code> as JSON Schema</td></tr>
-              <tr><td><code>runnel schema &lt;kind&gt;</code></td><td>JSON Schema of a file kind: <code>project</code>, <code>environment</code>, <code>connection</code>, <code>trigger</code></td></tr>
+              <tr><td><code>runnel schema &lt;kind&gt;</code></td><td>JSON Schema of a file kind: <code>project</code>, <code>environment</code>, <code>connection</code>, <code>trigger</code>, <code>plugin</code></td></tr>
               <tr><td><code>runnel version</code></td><td>Version, commit and platform</td></tr>
             </tbody>
           </table></div>
@@ -167,7 +184,10 @@ runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
             <tbody>
               <tr><td><code>--env &lt;name&gt;</code></td><td>Environment of the project; without it the <code>defaultEnvironment</code></td></tr>
               <tr><td><code>--param KEY=VALUE</code></td><td>Set a parameter, repeatable</td></tr>
-              <tr><td><code>-v</code></td><td>Also debug messages and every start and end of an action or transform</td></tr>
+              <tr><td><code>-v</code></td><td>Also debug messages and every start and end of an action or transform (like <code>--log-level debug</code>)</td></tr>
+              <tr><td><code>--log-level &lt;level&gt;</code></td><td><code>debug</code>, <code>info</code> (default), <code>warn</code> or <code>error</code></td></tr>
+              <tr><td><code>--log-format json</code></td><td>Each line as a JSON object, e.g. for Splunk or ELK; default <code>text</code></td></tr>
+              <tr><td><code>--history &lt;kind&gt;</code></td><td>Whether the run stays in the run history: <code>all</code>, <code>errors</code> or <code>none</code>; if omitted, <code>settings.history.cli</code> of the project</td></tr>
             </tbody>
           </table></div>
           <p>Pipelines show at the end how many records each transform read, wrote and passed to error links. <strong>Ctrl+C</strong> cancels a run cleanly; a second Ctrl+C exits immediately.</p>
@@ -187,13 +207,15 @@ runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
           <h2 id="editor-en">Editor and server</h2>
 <pre><code class="lang-bash" data-caption="PowerShell">runnel serve D:\flows
 # editor: http://127.0.0.1:7300</code></pre>
-          <p>The editor shows workflows and pipelines as a canvas and as YAML, checks while you type, starts runs and shows them live. It works on the same files as the CLI – changes from Git or a text editor are detected when saving (conflict dialog). While <code>serve</code> runs, the project's triggers start too.</p>
+          <p>The editor shows workflows and pipelines as a canvas and as YAML, checks while you type, starts runs and shows them live. A step can be dragged from the palette straight onto a link to insert it between two steps. The “Runs” tab shows the run history with filters; “Open on canvas” shows an earlier run with status and log on the canvas. It works on the same files as the CLI – changes from Git or a text editor are detected when saving (conflict dialog). While <code>serve</code> runs, the project's triggers start too.</p>
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Option</th><th>Meaning</th></tr></thead>
             <tbody>
               <tr><td><code>--port &lt;n&gt;</code></td><td>Port on <code>127.0.0.1</code>, default 7300; <code>0</code> picks a free one</td></tr>
               <tr><td><code>--stop-timeout &lt;duration&gt;</code></td><td>Time running runs get when stopping, e.g. <code>30s</code></td></tr>
               <tr><td><code>--triggers &lt;address&gt;</code></td><td>Listener of HTTP triggers, default <code>127.0.0.1:7301</code>; <code>""</code> turns it off</td></tr>
+              <tr><td><code>--log-level</code>, <code>--log-format</code></td><td>Server log as with <code>run</code>; one line per finished run with run id, path, trigger, status, duration and error</td></tr>
+              <tr><td><code>--history-dir &lt;folder&gt;</code></td><td>Another folder for the run history, e.g. portable next to the executable</td></tr>
             </tbody>
           </table></div>
           <p>The editor is reachable from the same machine only. There is deliberately no user management; several browsers can work at the same time.</p>
@@ -213,6 +235,8 @@ runnel service uninstall</code></pre>
               <tr><td><code>--start &lt;type&gt;</code></td><td><code>delayed</code> (default: automatic, shortly after boot), <code>auto</code> or <code>manual</code></td></tr>
               <tr><td><code>--port</code>, <code>--triggers</code></td><td>as for <code>serve</code></td></tr>
               <tr><td><code>--stop-timeout</code></td><td>Time for running runs when stopping, default 30 s</td></tr>
+              <tr><td><code>--log-file</code>, <code>--log-max-size</code>, <code>--log-files</code></td><td>Log file (default <code>%ProgramData%\runnel\logs\&lt;name&gt;.log</code>), rotation from a size (default <code>10MB</code>) and number of old files (default 5)</td></tr>
+              <tr><td><code>--log-level</code>, <code>--log-format</code>, <code>--history-dir</code></td><td>As with <code>serve</code>; changed settings apply after running <code>service install</code> again</td></tr>
             </tbody>
           </table></div>
           <ul>
@@ -220,6 +244,7 @@ runnel service uninstall</code></pre>
             <li><strong>Recovery:</strong> after a failure, Windows restarts the service after 10 s, 1 min and 5 min.</li>
             <li><strong>Stopping:</strong> no new runs; running ones get <code>--stop-timeout</code>, then they are cancelled.</li>
             <li><strong>Log:</strong> in full in <code>%ProgramData%\runnel\logs\&lt;name&gt;.log</code> (rotated); start, stop, warnings and errors also in the Event Log.</li>
+            <li><strong>Plugins</strong> must be trusted for the service separately: <code>runnel plugins trust --service</code> as administrator (see <a href="plugins.html#trust">Plugins</a>).</li>
             <li>The service starts the <code>runnel.exe</code> it was set up with. After moving the executable, set it up again.</li>
           </ul>
 
@@ -236,20 +261,25 @@ runnel serve --triggers 0.0.0.0:7301 --triggers-cert C:\certs\runnel.crt --trigg
 
           <h2 id="logs-en">Logs and runs</h2>
           <ul>
-            <li><strong>CLI:</strong> the log appears in the console; detailed with <code>-v</code>.</li>
-            <li><strong>Editor:</strong> “Log” tab below the canvas, status on every action, result in the panel.</li>
-            <li><strong>Server and service:</strong> the last 100 runs (plus the last 100 from HTTP triggers) are kept in memory and shown in the editor. The service also writes the log file.</li>
+            <li><strong>CLI:</strong> the log appears in the console; detailed with <code>-v</code>, machine-readable with <code>--log-format json</code>.</li>
+            <li><strong>Editor:</strong> “Log” tab below the canvas, status on every action, result in the panel; earlier runs in the “Runs” tab.</li>
+            <li><strong>Server and service:</strong> one line per finished run in the server log (failed ones as a warning); the service writes it to the log file.</li>
             <li><strong>Secrets</strong> are replaced by <code>***</code> in log, errors and results.</li>
           </ul>
 
-          <h3 id="history-en">Run history (in progress)</h3>
-          <p>Decided in <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0026-run-historie.md">ADR 0026</a> (German), implemented in the next steps: runs then survive restarts, and runs from <code>runnel run</code> and the Task Scheduler become visible too. It stays “no database server” – the history is an SQLite file handled by the executable itself, nothing to install or administer.</p>
+          <h3 id="history-en">Run history</h3>
+          <p>Every finished run stays in the run history with the status of each action or transform and its log – whether it came from the editor, a trigger, the service or <code>runnel run</code> in Task Scheduler. It survives restarts and updates. No database server is needed: the history is an SQLite file written by the executable itself.</p>
+<pre><code class="lang-bash" data-caption="PowerShell">runnel runs D:\flows
+runnel runs D:\flows --status failed --limit 50
+runnel runs D:\flows --path workflows/import.workflow.yaml --trigger cron:nightly
+runnel runs D:\flows 01M8A0J23JPQ51SMYGQSCD41PR</code></pre>
           <ul>
-            <li><strong>Location:</strong> one file <code>runs.db</code> per project in the data folder, not in the project folder (it does not belong in Git; SQLite is not safe on network drives). Service: <code>%ProgramData%\runnel\history\…</code>, user: <code>%LOCALAPPDATA%\runnel\history\…</code>; <code>--history-dir</code> sets it freely, e.g. portable next to the executable.</li>
-            <li><strong>Content:</strong> run, status per action or transform and log (at most 5,000 lines per run); no records, secrets already masked.</li>
-            <li><strong>Concurrent:</strong> service, <code>runnel serve</code> and <code>runnel run</code> write to the same file. A history error never holds up a run.</li>
-            <li><strong>Viewing:</strong> in the editor, via the API or with <code>runnel runs</code> or <code>runnel runs &lt;id&gt;</code> – no SQLite tool needed.</li>
-            <li><strong>Retention</strong> in <code>project.yaml</code> under <code>settings.history</code>: <code>keepDays</code> (default 30), <code>maxRuns</code> (10,000), <code>cli</code> (<code>all</code>, <code>errors</code>, <code>none</code>); <code>history:</code> then applies to all trigger kinds.</li>
+            <li><strong>Viewing:</strong> <code>runnel runs</code> lists the newest runs first; filters <code>--status</code>, <code>--path</code>, <code>--trigger</code> (e.g. <code>cron:nightly</code>, <code>http:orders</code>, <code>cli</code>, <code>editor</code>), <code>--limit</code>, next page with <code>--before &lt;run id&gt;</code>. With a run id it shows the run with the status of each step and its log; <code>--json</code> prints the same as the API.</li>
+            <li><strong>Location:</strong> one file <code>runs.db</code> per project in the data folder, not in the project folder (it does not belong in Git; SQLite is not safe on network drives). User: <code>%LOCALAPPDATA%\runnel\history\…</code>, service: <code>%ProgramData%\runnel\history\…</code> (readable only by the service account and administrators). <code>--history-dir</code> chooses another folder.</li>
+            <li><strong>Service and user</strong> have separate histories. Read the service's as administrator with <code>runnel runs --history-dir %ProgramData%\runnel\history D:\flows</code>; to see runs of <code>runnel run</code> in the service's editor, give both the same <code>--history-dir</code>.</li>
+            <li><strong>Content:</strong> run, status per action or transform and log (at most 5,000 lines per run); no records, secrets already masked. A history error never holds up a run.</li>
+            <li><strong>Interrupted:</strong> if Runnel ends during a run (crash, power loss), the run shows up as <code>failed</code> with “runnel stopped while the run was running” once it has given no sign of life for 2 minutes. Runs cancelled when the service stops show up as <code>cancelled</code>.</li>
+            <li><strong>Retention</strong> in <code>project.yaml</code> under <code>settings.history</code>: <code>keepDays</code> (default 30), <code>maxRuns</code> (default 10,000), <code>cli</code> for <code>runnel run</code> (<code>all</code>, <code>errors</code>, <code>none</code>). On triggers, <code>history:</code> decides which runs are kept (see <a href="trigger.html">Triggers</a>). Server and <code>runnel run</code> remove older runs themselves.</li>
           </ul>
         </article>
       </div>

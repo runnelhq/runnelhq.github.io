@@ -1,0 +1,4 @@
+kind: Project
+apiVersion: runnel/v1
+name: iban
+description: Checks the IBANs of a CSV file with the plugin iban

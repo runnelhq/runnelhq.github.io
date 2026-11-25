@@ -70,7 +70,7 @@ runnel version</code></pre>
 gh attestation verify runnel_0.1.0-alpha.9_windows_amd64.zip --repo runnelhq/runnel</code></pre>
 
           <h2 id="aktualisieren">Aktualisieren</h2>
-          <p>Ein Update tauscht nur die <code>runnel.exe</code>; der Editor steckt in ihr. Projektordner, Logs und Zertifikate bleiben, wo sie sind. Ein Befehl <code>runnel update</code> ist geplant, bis dahin geht es so:</p>
+          <p>Ein Update tauscht nur die <code>runnel.exe</code>; der Editor steckt in ihr. Projektordner, Run-Historie, Logs und Zertifikate bleiben, wo sie sind. Ein Befehl <code>runnel update</code> ist geplant, bis dahin geht es so:</p>
           <ol class="steps">
             <li><strong>Laden und prüfen:</strong> ZIP der neuen Version und <code>SHA256SUMS</code> laden, Prüfsumme und Herkunft prüfen (siehe oben).</li>
             <li><strong>Vorher testen:</strong> das ZIP in einen eigenen Ordner entpacken und das Projekt mit der neuen Version prüfen, während die alte noch läuft. Neue Meldungen zeigen, was vor dem Wechsel anzupassen ist – bis Version 1.0 nennen sie bei umbenannten Feldern auch den neuen Namen.</li>
@@ -86,7 +86,7 @@ C:\Tools\Runnel\runnel.exe version</code></pre>
           <ul>
             <li><strong>Stopp:</strong> <code>service stop</code> wartet bis zu 30 s auf laufende Runs und bricht sie danach ab – am besten außerhalb der Zeitpläne wechseln.</li>
             <li><strong>Während des Wechsels</strong> entfallen Zeitpunkte von Zeitplan- und Intervall-Triggern; neue Dateien in überwachten Ordnern verarbeitet der Dienst nach dem Start; Aufrufe von HTTP-Triggern scheitern, bis er wieder läuft.</li>
-            <li><strong>Läufe:</strong> Die Liste der Läufe liegt heute nur im Speicher und beginnt nach dem Neustart leer. Mit der Run-Historie (<a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0026-run-historie.md">ADR 0026</a>) bleiben sie erhalten; sie liegt im Datenordner, nicht neben der exe.</li>
+            <li><strong>Läufe:</strong> Beendete Läufe bleiben in der <a href="betrieb.html#historie">Run-Historie</a> und sind nach dem Neustart weiter sichtbar; Läufe, die beim Stoppen abgebrochen wurden, stehen dort als <code>cancelled</code>.</li>
             <li><strong>Mehrere Dienste</strong>, die dieselbe <code>runnel.exe</code> starten, vorher alle stoppen – Windows sperrt die Datei, solange einer läuft.</li>
             <li><strong>Ohne Dienst:</strong> <code>runnel serve</code> mit Strg+C beenden, Datei ersetzen, neu starten.</li>
             <li><strong>Zurück:</strong> Dienst stoppen, <code>runnel-old.exe</code> wieder in <code>runnel.exe</code> umbenennen, Dienst starten.</li>
@@ -97,7 +97,7 @@ C:\Tools\Runnel\runnel.exe version</code></pre>
           <ul>
             <li>Dienst entfernen: <code>runnel service uninstall</code> (bei mehreren Diensten mit <code>--name</code>).</li>
             <li>Den Ordner mit der <code>runnel.exe</code> löschen. Projekte liegen getrennt davon und bleiben erhalten.</li>
-            <li>Bei Bedarf auch Logs und Zertifikate: <code>%ProgramData%\runnel\</code> (Dienst) und <code>%LOCALAPPDATA%\runnel\</code>.</li>
+            <li>Bei Bedarf auch Logs, Run-Historie und Zertifikate: <code>%ProgramData%\runnel\</code> (Dienst) und <code>%LOCALAPPDATA%\runnel\</code>; Freigaben von Plugins in <code>%AppData%\runnel\trusted-plugins.json</code>.</li>
           </ul>
         </article>
 
@@ -158,7 +158,7 @@ runnel version</code></pre>
 gh attestation verify runnel_0.1.0-alpha.9_windows_amd64.zip --repo runnelhq/runnel</code></pre>
 
           <h2 id="updating">Updating</h2>
-          <p>An update only replaces <code>runnel.exe</code>; the editor is inside it. Project folders, logs and certificates stay where they are. A <code>runnel update</code> command is planned; until then:</p>
+          <p>An update only replaces <code>runnel.exe</code>; the editor is inside it. Project folders, run history, logs and certificates stay where they are. A <code>runnel update</code> command is planned; until then:</p>
           <ol class="steps">
             <li><strong>Download and verify:</strong> get the new version's ZIP and <code>SHA256SUMS</code>, check checksum and origin (see above).</li>
             <li><strong>Test first:</strong> unpack the ZIP into its own folder and validate the project with the new version while the old one keeps running. New messages show what to adapt before switching – until version 1.0 they also name the new name of renamed fields.</li>
@@ -174,7 +174,7 @@ C:\Tools\Runnel\runnel.exe version</code></pre>
           <ul>
             <li><strong>Stopping:</strong> <code>service stop</code> waits up to 30 s for running runs, then cancels them – best switch outside the schedules.</li>
             <li><strong>During the switch</strong> schedule and interval trigger times are skipped; new files in watched folders are processed after the start; calls to HTTP triggers fail until the service runs again.</li>
-            <li><strong>Runs:</strong> today the list of runs lives in memory only and starts empty after the restart. With the run history (<a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0026-run-historie.md">ADR 0026</a>) they are kept; it lives in the data folder, not next to the executable.</li>
+            <li><strong>Runs:</strong> finished runs stay in the <a href="betrieb.html#history-en">run history</a> and remain visible after the restart; runs cancelled while stopping show up as <code>cancelled</code>.</li>
             <li><strong>Several services</strong> starting the same <code>runnel.exe</code>: stop them all first – Windows locks the file while one runs.</li>
             <li><strong>Without a service:</strong> end <code>runnel serve</code> with Ctrl+C, replace the file, start again.</li>
             <li><strong>Going back:</strong> stop the service, rename <code>runnel-old.exe</code> back to <code>runnel.exe</code>, start the service.</li>
@@ -185,7 +185,7 @@ C:\Tools\Runnel\runnel.exe version</code></pre>
           <ul>
             <li>Remove the service: <code>runnel service uninstall</code> (with <code>--name</code> for several services).</li>
             <li>Delete the folder with <code>runnel.exe</code>. Projects live separately and are kept.</li>
-            <li>If needed, also logs and certificates: <code>%ProgramData%\runnel\</code> (service) and <code>%LOCALAPPDATA%\runnel\</code>.</li>
+            <li>If needed, also logs, run history and certificates: <code>%ProgramData%\runnel\</code> (service) and <code>%LOCALAPPDATA%\runnel\</code>; plugin approvals in <code>%AppData%\runnel\trusted-plugins.json</code>.</li>
           </ul>
         </article>
       </div>

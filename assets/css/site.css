@@ -303,6 +303,19 @@ p { margin: 0; }
   .demo-canvas { order: 1; }
 }
 
+/* ---------- Plugins ---------- */
+.plugins { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.plugin-card { min-width: 0; display: flex; flex-direction: column; gap: 10px; padding: 24px; border-radius: var(--rn-radius-lg); background: var(--card); border: 1px solid var(--border); }
+.plugin-card h3 a { color: var(--foreground); text-decoration: none; }
+.plugin-card h3 a:hover { color: var(--primary); text-decoration: underline; }
+.plugin-card p { color: var(--muted-foreground); font-size: 15px; }
+.plugin-kind { align-self: flex-start; font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: var(--rn-radius-sm); background: var(--secondary); color: var(--secondary-foreground); }
+.plugin-types { margin-top: auto; display: flex; flex-wrap: wrap; gap: 6px; }
+.plugin-types code { font-size: 12.5px; padding: 2px 6px; border-radius: var(--rn-radius-sm); background: var(--muted); border: 1px solid var(--border); color: var(--foreground); overflow-wrap: anywhere; }
+.plugins-more { margin-top: 24px; font-size: 15px; color: var(--muted-foreground); }
+.plugins-more a { color: var(--primary); font-weight: 500; }
+@media (max-width: 960px) { .plugins { grid-template-columns: 1fr; } }
+
 /* ---------- Betriebsarten ---------- */
 .modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .mode { min-width: 0; display: flex; flex-direction: column; gap: 12px; padding: 24px; border-radius: var(--rn-radius-lg); background: var(--card); border: 1px solid var(--border); }

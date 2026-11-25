@@ -30,7 +30,7 @@
             <tbody>
               <tr><td>ein Schritt einmal pro Workflow-Lauf etwas tut (Datei kopieren, HTTP-Aufruf, Mail senden)</td><td><strong>Action</strong></td></tr>
               <tr><td>Datensätze in einer Pipeline verarbeitet werden (lesen, umformen, schreiben)</td><td><strong>Transform</strong> – siehe <a href="transforms.html">Transforms entwickeln</a></td></tr>
-              <tr><td>der Baustein ein fremdes System anbindet, das nicht zum Kern gehört (SAP, Spezial-APIs), oder in einer anderen Sprache geschrieben ist</td><td><strong>Plugin</strong> – Anleitung folgt mit S49–S51</td></tr>
+              <tr><td>der Baustein ein fremdes System anbindet, das nicht zum Kern gehört (SAP, Spezial-APIs), oder in einer anderen Sprache geschrieben ist</td><td><strong>Plugin</strong> – siehe <a href="plugins.html">Plugins entwickeln</a></td></tr>
             </tbody>
           </table></div>
           <p>Derselbe Name darf als Action <em>und</em> als Transform existieren, zum Beispiel <code>http.request</code>. Welche Registry gilt, ergibt sich aus der Datei: <code>*.workflow.yaml</code> → Actions, <code>*.pipeline.yaml</code> → Transforms. In Doku und Editor wird die Art deshalb immer mitgenannt: „Action <code>http.request</code>“.</p>
@@ -203,7 +203,7 @@
             <tbody>
               <tr><td>a step does something once per workflow run (copy a file, HTTP call, send mail)</td><td><strong>Action</strong></td></tr>
               <tr><td>records are processed in a pipeline (read, transform, write)</td><td><strong>Transform</strong> – see <a href="transforms.html">Developing transforms</a></td></tr>
-              <tr><td>the component connects a third-party system outside the core (SAP, special APIs) or is written in another language</td><td><strong>Plugin</strong> – guide follows with S49–S51</td></tr>
+              <tr><td>the component connects a third-party system outside the core (SAP, special APIs) or is written in another language</td><td><strong>Plugin</strong> – see <a href="plugins.html">Developing plugins</a></td></tr>
             </tbody>
           </table></div>
           <p>The same name may exist as an action <em>and</em> as a transform, for example <code>http.request</code>. The file decides which registry applies: <code>*.workflow.yaml</code> → actions, <code>*.pipeline.yaml</code> → transforms. Docs and editor therefore always name the kind: “action <code>http.request</code>”.</p>

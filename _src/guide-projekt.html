@@ -32,6 +32,9 @@ variables:
   ARCHIVE: ${BASE}\archive
 settings:
   maxConcurrentRuns: 4
+  history:
+    keepDays: 90
+    cli: errors
 workflow:
   defaultJoin: all</code></pre>
           <div class="table-scroll"><table class="doc-table">
@@ -42,6 +45,8 @@ workflow:
               <tr><td><code>variables</code></td><td>Variablen für alle Environments; Werte dürfen andere Variablen enthalten</td></tr>
               <tr><td><code>secretStore</code>, <code>secrets</code></td><td>Woher <code>${secret:…}</code> liest, falls ein Environment nichts festlegt – siehe <a href="#secrets">Secrets</a></td></tr>
               <tr><td><code>settings.maxConcurrentRuns</code></td><td>höchstens so viele Läufe des Projekts gleichzeitig auf dem Server; <code>0</code> = keine Grenze</td></tr>
+              <tr><td><code>settings.history.keepDays</code>, <code>maxRuns</code></td><td>wie lange beendete Läufe in der <a href="betrieb.html#historie">Run-Historie</a> bleiben: Standard 30 Tage und höchstens 10.000 Läufe</td></tr>
+              <tr><td><code>settings.history.cli</code></td><td>welche Läufe von <code>runnel run</code> bleiben: <code>all</code> (Standard), <code>errors</code> oder <code>none</code></td></tr>
               <tr><td><code>workflow.defaultJoin</code></td><td>Standard für Actions mit mehreren eingehenden Links: <code>all</code>, <code>first</code> oder <code>each</code> – siehe <a href="workflows.html#join">Join</a></td></tr>
             </tbody>
           </table></div>
@@ -63,6 +68,7 @@ secretStore: env</code></pre>
             <tbody>
               <tr><td><code>${NAME}</code></td><td>Variable aus Projekt, Environment oder Parametern</td></tr>
               <tr><td><code>${env:NAME}</code></td><td>Umgebungsvariable des Betriebssystems, z. B. <code>${env:COMPUTERNAME}</code>, <code>${env:TEMP}</code></td></tr>
+              <tr><td><code>${NAME:-text}</code>, <code>${env:NAME:-text}</code></td><td>Standardwert: <code>text</code>, wenn die Variable fehlt oder leer ist, z. B. <code>${env:TEMP:-C:\Temp}</code>; wörtlicher Text ohne <code>}</code> und ohne weitere <code>${…}</code>. Secrets haben keinen Standardwert</td></tr>
               <tr><td><code>${secret:NAME}</code></td><td>Secret – nur in bestimmten Feldern, siehe unten</td></tr>
               <tr><td><code>${PROJECT_DIR}</code></td><td>eingebaut: absoluter Pfad des Projektordners</td></tr>
               <tr><td><code>$${</code></td><td>ein wörtliches <code>${</code></td></tr>
@@ -141,6 +147,7 @@ with:
   database: ERP
   user: runnel_read
   password: ${secret:ERP_PASSWORD}</code></pre>
+          <p><strong>Weitere Typen</strong> bringen <a href="plugins.html">Plugins</a> mit, z. B. <code>ldap</code> für Active Directory; sie werden geprüft und im Editor bearbeitet wie die eingebauten.</p>
           <p><strong>Im Editor</strong> öffnen Connections als Formular mit den Feldern ihres Typs (umschaltbar auf YAML). „Test connection“ prüft eine Connection für das gewählte Environment; Secret-Felder zeigen je Environment, ob das Secret gesetzt ist. Neue Connections legt „New → Connection“ an.</p>
           <h3>SQLite (<code>sqlite</code>)</h3>
           <div class="table-scroll"><table class="doc-table">
@@ -211,6 +218,9 @@ variables:
   ARCHIVE: ${BASE}\archive
 settings:
   maxConcurrentRuns: 4
+  history:
+    keepDays: 90
+    cli: errors
 workflow:
   defaultJoin: all</code></pre>
           <div class="table-scroll"><table class="doc-table">
@@ -221,6 +231,8 @@ workflow:
               <tr><td><code>variables</code></td><td>Variables for all environments; values may contain other variables</td></tr>
               <tr><td><code>secretStore</code>, <code>secrets</code></td><td>Where <code>${secret:…}</code> reads from unless an environment sets its own – see <a href="#secrets-en">Secrets</a></td></tr>
               <tr><td><code>settings.maxConcurrentRuns</code></td><td>At most this many runs of the project at once on the server; <code>0</code> = no limit</td></tr>
+              <tr><td><code>settings.history.keepDays</code>, <code>maxRuns</code></td><td>How long finished runs stay in the <a href="betrieb.html#history-en">run history</a>: default 30 days and at most 10,000 runs</td></tr>
+              <tr><td><code>settings.history.cli</code></td><td>Which runs of <code>runnel run</code> are kept: <code>all</code> (default), <code>errors</code> or <code>none</code></td></tr>
               <tr><td><code>workflow.defaultJoin</code></td><td>Default for actions with several incoming links: <code>all</code>, <code>first</code> or <code>each</code> – see <a href="workflows.html#join-en">Join</a></td></tr>
             </tbody>
           </table></div>
@@ -242,6 +254,7 @@ secretStore: env</code></pre>
             <tbody>
               <tr><td><code>${NAME}</code></td><td>Variable from project, environment or parameters</td></tr>
               <tr><td><code>${env:NAME}</code></td><td>Operating system environment variable, e.g. <code>${env:COMPUTERNAME}</code>, <code>${env:TEMP}</code></td></tr>
+              <tr><td><code>${NAME:-text}</code>, <code>${env:NAME:-text}</code></td><td>Default: <code>text</code> if the variable is missing or empty, e.g. <code>${env:TEMP:-C:\Temp}</code>; literal text without <code>}</code> and without further <code>${…}</code>. Secrets have no default</td></tr>
               <tr><td><code>${secret:NAME}</code></td><td>Secret – only in certain fields, see below</td></tr>
               <tr><td><code>${PROJECT_DIR}</code></td><td>Built in: absolute path of the project folder</td></tr>
               <tr><td><code>$${</code></td><td>A literal <code>${</code></td></tr>
@@ -320,6 +333,7 @@ with:
   database: ERP
   user: runnel_read
   password: ${secret:ERP_PASSWORD}</code></pre>
+          <p><strong>More types</strong> come with <a href="plugins.html">plugins</a>, e.g. <code>ldap</code> for Active Directory; they are checked and edited in the editor like the built-in ones.</p>
           <p><strong>In the editor</strong> connections open as a form with the fields of their type (switchable to YAML). “Test connection” checks a connection for the selected environment; secret fields show per environment whether the secret is set. “New → Connection” creates new ones.</p>
           <h3>SQLite (<code>sqlite</code>)</h3>
           <div class="table-scroll"><table class="doc-table">

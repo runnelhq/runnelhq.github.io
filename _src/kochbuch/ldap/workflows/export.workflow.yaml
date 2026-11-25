@@ -1,0 +1,29 @@
+# Creates the output folder and exports the users.
+#   runnel run workflows/export.workflow.yaml
+#   runnel run --param OU=OU=Sales,OU=Users workflows/export.workflow.yaml
+kind: Workflow
+apiVersion: runnel/v1
+name: export
+parameters:
+  - name: OU
+    default: OU=Users
+outputs:
+  - name: USERS
+    type: integer
+    value: "{{ results.users.output.transforms.write.written }}"
+actions:
+  - id: start
+    type: core.start
+  - id: folder
+    type: file.mkdir
+    with:
+      path: out
+  - id: users
+    type: core.run-pipeline
+    with:
+      pipeline: pipelines/users.pipeline.yaml
+      params:
+        OU: ${OU}
+links:
+  - { from: start, to: folder }
+  - { from: folder, to: users }

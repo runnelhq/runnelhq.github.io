@@ -1,0 +1,67 @@
+<!-- {
+  "out": "handbuch/kochbuch-ldap.html",
+  "section": "guide",
+  "title": {
+    "de": "Kochbuch: Active Directory (Plugin)",
+    "en": "Cookbook: Active Directory (plugin)"
+  },
+  "description": {
+    "de": "Exportiert die aktiven Benutzer einer Organisationseinheit seitenweise als CSV-Datei und listet die Mitglieder einer Gruppe – mit dem Plugin ldap und seinem Connection-Typ.",
+    "en": "Exports the active users of an organizational unit page by page as a CSV file and lists the members of a group – with the ldap plugin and its connection type."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+          <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch · Kochbuch</p>
+          <h1>Active Directory (Plugin)</h1>
+          <p class="docs-lead">Exportiert die aktiven Benutzer einer Organisationseinheit seitenweise als CSV-Datei und listet die Mitglieder einer Gruppe – mit dem Plugin <code>ldap</code> und seinem Connection-Typ.</p>
+          <dl class="recipe-meta"><dt>Plugin</dt><dd><a href="https://github.com/runnelhq/plugin-ldap"><code>runnelhq/plugin-ldap</code></a>: Connection-Typ <code>ldap</code>, Transform <code>ldap.input</code>, Action <code>ldap.search</code>; auch für OpenLDAP</dd><dt>Anmeldung</dt><dd>Dienstkonto mit Lesezugriff, über LDAPS (TLS)</dd><dt>Stand</dt><dd>Geprüft am 25.11.2026 mit Runnel <code>main</code> und plugin-ldap 0.1.0: <code>runnel validate</code>; ausgeführt gegen OpenLDAP mit TLS und 1.200 Benutzern (Paging), dabei mit den Attributen von OpenLDAP statt <code>sAMAccountName</code>, <code>memberOf</code> und <code>objectGUID</code>. Gegen ein echtes Active Directory noch nicht ausgeführt.</dd></dl>
+          <h2 id="prereq">Voraussetzungen</h2>
+          <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Art</th><th>Bedeutung</th></tr></thead><tbody><tr><td><code>plugins/ldap</code></td><td>Plugin</td><td>Archiv von den <a href="https://github.com/runnelhq/plugin-ldap/releases">Releases</a> nach <code>plugins/</code> entpacken und mit <code>runnel plugins trust</code> freigeben</td></tr><tr><td><code>LDAP_URL, LDAP_USER, LDAP_BASE</code></td><td>Variable</td><td>Domänencontroller (<code>ldaps://…</code>), Dienstkonto (<code>user@domain</code>) und Basis der Suche</td></tr><tr><td><code>AD_PASSWORD</code></td><td>Secret</td><td>Passwort des Dienstkontos – als Umgebungsvariable</td></tr></tbody></table></div>
+          <p>Secrets kommen hier aus Umgebungsvariablen (<code>secretStore: env</code> in <code>project.yaml</code>). Für den Dienst die Variable beim Dienstkonto setzen.</p>
+          <h2 id="files">Dateien</h2>
+          {{snippet:../kochbuch/ldap/project.yaml|project.yaml}}
+          {{snippet:../kochbuch/ldap/connections/ad.yaml|connections/ad.yaml}}
+          {{snippet:../kochbuch/ldap/pipelines/users.pipeline.yaml|pipelines/users.pipeline.yaml}}
+          {{snippet:../kochbuch/ldap/workflows/export.workflow.yaml|workflows/export.workflow.yaml}}
+          {{snippet:../kochbuch/ldap/workflows/group-members.workflow.yaml|workflows/group-members.workflow.yaml}}
+          <p>Das Plugin liest mit <code>pageSize</code> seitenweise; so liefert Active Directory auch mehr als 1.000 Einträge, und im Speicher liegt immer nur etwa eine Seite. Mehrere Werte eines Attributs (<code>memberOf</code>) verbindet es im Textfeld mit <code>; </code>, <code>objectGUID</code> kommt in der üblichen Schreibweise. Der Filter wählt nur aktive Konten: Bit 2 von <code>userAccountControl</code> (deaktiviert) ist nicht gesetzt.</p>
+          <h2 id="run">Ausführen</h2><p>Im Ordner des Rezepts (PowerShell):</p>
+          <pre><code class="lang-bash" data-caption="PowerShell">$env:AD_PASSWORD = &quot;…&quot;
+runnel run workflows/export.workflow.yaml
+runnel run --param OU=OU=Sales,OU=Users workflows/export.workflow.yaml
+runnel run --param GROUP=App-Users workflows/group-members.workflow.yaml</code></pre>
+          <h2 id="adapt">Anpassen</h2><ul><li>Im Editor zeigt die Connection die Felder des Plugins; „Test connection“ meldet sich nur an und liest die Version des Servers – geschrieben wird nichts. Vertraut der Rechner der CA des Domänencontrollers nicht, nennt <code>caFile</code> sie als PEM-Datei.</li><li>„Detect fields“ an <code>ldap.input</code> liest die ersten Einträge mit allen Attributen und schlägt Typen vor, z. B. <code>datetime</code> für <code>lastLogonTimestamp</code> und <code>pwdLastSet</code>. Ohne <code>fields</code> kommen <code>dn</code> und alle Attribute als Text.</li><li>Werte aus Parametern oder Variablen gehören immer in <code>filterValues</code> und werden dort für LDAP maskiert. Direkt in <code>filter</code> könnte ein Wert wie <code>*)(cn=*</code> die Suche ändern; im Rezept findet er schlicht keine Gruppe.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/ldap">Quellen auf GitHub: <code>_src/kochbuch/ldap</code></a></p>
+          </article>
+
+          <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide · Cookbook</p>
+          <h1>Active Directory (plugin)</h1>
+          <p class="docs-lead">Exports the active users of an organizational unit page by page as a CSV file and lists the members of a group – with the <code>ldap</code> plugin and its connection type.</p>
+          <dl class="recipe-meta"><dt>Plugin</dt><dd><a href="https://github.com/runnelhq/plugin-ldap"><code>runnelhq/plugin-ldap</code></a>: connection type <code>ldap</code>, transform <code>ldap.input</code>, action <code>ldap.search</code>; also for OpenLDAP</dd><dt>Sign-in</dt><dd>Service account with read access, via LDAPS (TLS)</dd><dt>Status</dt><dd>Checked on 2026-11-25 with Runnel <code>main</code> and plugin-ldap 0.1.0: <code>runnel validate</code>; run against OpenLDAP with TLS and 1,200 users (paging), using OpenLDAP's attributes instead of <code>sAMAccountName</code>, <code>memberOf</code> and <code>objectGUID</code>. Not yet run against a real Active Directory.</dd></dl>
+          <h2 id="prereq-en">Prerequisites</h2>
+          <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Kind</th><th>Meaning</th></tr></thead><tbody><tr><td><code>plugins/ldap</code></td><td>Plugin</td><td>Unpack the archive from the <a href="https://github.com/runnelhq/plugin-ldap/releases">releases</a> into <code>plugins/</code> and trust it with <code>runnel plugins trust</code></td></tr><tr><td><code>LDAP_URL, LDAP_USER, LDAP_BASE</code></td><td>Variable</td><td>Domain controller (<code>ldaps://…</code>), service account (<code>user@domain</code>) and search base</td></tr><tr><td><code>AD_PASSWORD</code></td><td>Secret</td><td>Password of the service account – as an environment variable</td></tr></tbody></table></div>
+          <p>Secrets come from environment variables here (<code>secretStore: env</code> in <code>project.yaml</code>). For the service, set the variable for the service account.</p>
+          <h2 id="files-en">Files</h2>
+          {{snippet:../kochbuch/ldap/project.yaml|project.yaml}}
+          {{snippet:../kochbuch/ldap/connections/ad.yaml|connections/ad.yaml}}
+          {{snippet:../kochbuch/ldap/pipelines/users.pipeline.yaml|pipelines/users.pipeline.yaml}}
+          {{snippet:../kochbuch/ldap/workflows/export.workflow.yaml|workflows/export.workflow.yaml}}
+          {{snippet:../kochbuch/ldap/workflows/group-members.workflow.yaml|workflows/group-members.workflow.yaml}}
+          <p>The plugin reads page by page with <code>pageSize</code>; this way Active Directory returns more than 1,000 entries too, and only about one page is in memory. Several values of an attribute (<code>memberOf</code>) are joined with <code>; </code> in a text field, <code>objectGUID</code> comes in its usual notation. The filter selects active accounts only: bit 2 of <code>userAccountControl</code> (disabled) is not set.</p>
+          <h2 id="run-en">Running</h2><p>In the recipe folder (PowerShell):</p>
+          <pre><code class="lang-bash" data-caption="PowerShell">$env:AD_PASSWORD = &quot;…&quot;
+runnel run workflows/export.workflow.yaml
+runnel run --param OU=OU=Sales,OU=Users workflows/export.workflow.yaml
+runnel run --param GROUP=App-Users workflows/group-members.workflow.yaml</code></pre>
+          <h2 id="adapt-en">Adapting</h2><ul><li>In the editor the connection shows the plugin's fields; “Test connection” only signs in and reads the server version – nothing is written. If the computer does not trust the domain controller's CA, <code>caFile</code> names it as a PEM file.</li><li>“Detect fields” on <code>ldap.input</code> reads the first entries with all attributes and suggests types, e.g. <code>datetime</code> for <code>lastLogonTimestamp</code> and <code>pwdLastSet</code>. Without <code>fields</code>, <code>dn</code> and all attributes come as text.</li><li>Values from parameters or variables always belong in <code>filterValues</code>, where they are escaped for LDAP. Directly in <code>filter</code>, a value such as <code>*)(cn=*</code> could change the search; in the recipe it simply finds no group.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/ldap">Sources on GitHub: <code>_src/kochbuch/ldap</code></a></p>
+          </article>
+      </div>
+    </div>

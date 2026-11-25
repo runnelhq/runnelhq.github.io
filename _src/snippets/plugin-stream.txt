@@ -1,0 +1,9 @@
+→ transform.open   {"stream":1,"type":"iban.check-all","config":{"field":"iban"},"context":{…},"emitWindow":4}
+← (answer)         {"window":4}
+→ transform.batch  {"stream":1,"fields":[{"name":"id","type":"int"},{"name":"iban","type":"string"}],"rows":[[1,"DE02…"],[2,"XX"]]}
+← transform.emit   {"stream":1,"to":"main","fields":[…],"rows":[[1,"DE02…"]]}
+← transform.emit   {"stream":1,"to":"error","fields":[…,{"name":"_error","type":"string"},{"name":"_errorField","type":"string"}],"rows":[[2,"XX","invalid IBAN","iban"]]}
+← $/ack            {"stream":1,"batches":1}
+→ $/ack            {"stream":1,"batches":2}
+→ transform.end    {"stream":1}
+← transform.closed {"stream":1}
