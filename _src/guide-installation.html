@@ -41,11 +41,13 @@
 
           <h2 id="windows">Unter Windows einrichten</h2>
           <ol class="steps">
-            <li>ZIP in einen festen Ordner entpacken, z. B. <code>C:\Tools\Runnel</code>. Für den Windows-Dienst ist der Ordner wichtig: Der Dienst startet die exe, mit der er eingerichtet wurde.</li>
+            <li>ZIP entpacken – es enthält einen Ordner <code>runnel_&lt;version&gt;_windows_amd64</code> – und dessen Inhalt in einen festen Ordner kopieren, z. B. <code>C:\Tools\Runnel</code>. Für den Windows-Dienst ist der Ordner wichtig: Der Dienst startet die exe, mit der er eingerichtet wurde.</li>
             <li>PowerShell im Ordner öffnen und die Version abfragen: <code>.\runnel.exe version</code></li>
             <li>Optional den Ordner in den <code>PATH</code> aufnehmen, damit <code>runnel</code> überall aufrufbar ist.</li>
           </ol>
-<pre><code class="lang-bash" data-caption="PowerShell">Expand-Archive runnel_&lt;version&gt;_windows_amd64.zip -DestinationPath C:\Tools\Runnel
+<pre><code class="lang-bash" data-caption="PowerShell">Expand-Archive runnel_&lt;version&gt;_windows_amd64.zip -DestinationPath .
+New-Item -ItemType Directory -Force C:\Tools\Runnel | Out-Null
+Copy-Item .\runnel_&lt;version&gt;_windows_amd64\* C:\Tools\Runnel
 cd C:\Tools\Runnel
 .\runnel.exe version
 
@@ -58,7 +60,7 @@ cd C:\Tools\Runnel
 
           <h2 id="linux">Unter Linux einrichten</h2>
 <pre><code class="lang-bash" data-caption="Shell">tar -xzf runnel_&lt;version&gt;_linux_amd64.tar.gz
-sudo install -m 755 runnel /usr/local/bin/runnel
+sudo install -m 755 runnel_&lt;version&gt;_linux_amd64/runnel /usr/local/bin/runnel
 runnel version</code></pre>
           <p>Unter Linux funktionieren CLI, Editor und Trigger wie unter Windows. Den Windows-Dienst gibt es dort nicht; für den Dauerbetrieb lässt sich <code>runnel serve &lt;projektordner&gt;</code> z. B. als systemd-Dienst starten.</p>
 
@@ -78,10 +80,10 @@ gh attestation verify runnel_&lt;version&gt;_windows_amd64.zip --repo runnelhq/r
             <li><strong>Tauschen</strong> (Konsole als Administrator): Dienst stoppen, die alte Datei als <code>runnel-old.exe</code> behalten, die neue an dieselbe Stelle kopieren, Dienst starten. Welche Datei der Dienst startet, zeigt <code>runnel service status</code> unter <code>Command</code>.</li>
             <li><strong>Kontrollieren:</strong> <code>runnel version</code> zeigt die neue Version, <code>runnel service status</code> den Zustand <code>running</code>; im Log beginnt der Start mit <code>Starting runnel v…</code>. Den Editor im Browser mit Strg+F5 neu laden.</li>
           </ol>
-<pre><code class="lang-bash" data-caption="PowerShell (als Administrator)">.\runnel_0.2.0_windows_amd64\runnel.exe validate D:\flows
+<pre><code class="lang-bash" data-caption="PowerShell (als Administrator)">.\runnel_&lt;version&gt;_windows_amd64\runnel.exe validate D:\flows
 runnel service stop
 Rename-Item C:\Tools\Runnel\runnel.exe runnel-old.exe
-Copy-Item .\runnel_0.2.0_windows_amd64\runnel.exe C:\Tools\Runnel\runnel.exe
+Copy-Item .\runnel_&lt;version&gt;_windows_amd64\runnel.exe C:\Tools\Runnel\runnel.exe
 C:\Tools\Runnel\runnel.exe service start
 C:\Tools\Runnel\runnel.exe version</code></pre>
           <ul>
@@ -130,11 +132,13 @@ C:\Tools\Runnel\runnel.exe version</code></pre>
 
           <h2 id="windows-en">Setting up on Windows</h2>
           <ol class="steps">
-            <li>Unpack the ZIP into a permanent folder, e.g. <code>C:\Tools\Runnel</code>. The folder matters for the Windows service: the service starts the executable it was set up with.</li>
+            <li>Unpack the ZIP – it contains a folder <code>runnel_&lt;version&gt;_windows_amd64</code> – and copy its contents into a permanent folder, e.g. <code>C:\Tools\Runnel</code>. The folder matters for the Windows service: the service starts the executable it was set up with.</li>
             <li>Open PowerShell in the folder and check the version: <code>.\runnel.exe version</code></li>
             <li>Optionally add the folder to <code>PATH</code> so <code>runnel</code> works everywhere.</li>
           </ol>
-<pre><code class="lang-bash" data-caption="PowerShell">Expand-Archive runnel_&lt;version&gt;_windows_amd64.zip -DestinationPath C:\Tools\Runnel
+<pre><code class="lang-bash" data-caption="PowerShell">Expand-Archive runnel_&lt;version&gt;_windows_amd64.zip -DestinationPath .
+New-Item -ItemType Directory -Force C:\Tools\Runnel | Out-Null
+Copy-Item .\runnel_&lt;version&gt;_windows_amd64\* C:\Tools\Runnel
 cd C:\Tools\Runnel
 .\runnel.exe version
 
@@ -147,7 +151,7 @@ cd C:\Tools\Runnel
 
           <h2 id="linux-en">Setting up on Linux</h2>
 <pre><code class="lang-bash" data-caption="Shell">tar -xzf runnel_&lt;version&gt;_linux_amd64.tar.gz
-sudo install -m 755 runnel /usr/local/bin/runnel
+sudo install -m 755 runnel_&lt;version&gt;_linux_amd64/runnel /usr/local/bin/runnel
 runnel version</code></pre>
           <p>On Linux the CLI, editor and triggers work as on Windows. There is no Windows service; for continuous operation, start <code>runnel serve &lt;project folder&gt;</code> e.g. as a systemd service.</p>
 
@@ -167,10 +171,10 @@ gh attestation verify runnel_&lt;version&gt;_windows_amd64.zip --repo runnelhq/r
             <li><strong>Swap</strong> (console as administrator): stop the service, keep the old file as <code>runnel-old.exe</code>, copy the new one to the same place, start the service. <code>runnel service status</code> shows which file the service starts under <code>Command</code>.</li>
             <li><strong>Check:</strong> <code>runnel version</code> shows the new version, <code>runnel service status</code> the state <code>running</code>; in the log the start begins with <code>Starting runnel v…</code>. Reload the editor in the browser with Ctrl+F5.</li>
           </ol>
-<pre><code class="lang-bash" data-caption="PowerShell (as administrator)">.\runnel_0.2.0_windows_amd64\runnel.exe validate D:\flows
+<pre><code class="lang-bash" data-caption="PowerShell (as administrator)">.\runnel_&lt;version&gt;_windows_amd64\runnel.exe validate D:\flows
 runnel service stop
 Rename-Item C:\Tools\Runnel\runnel.exe runnel-old.exe
-Copy-Item .\runnel_0.2.0_windows_amd64\runnel.exe C:\Tools\Runnel\runnel.exe
+Copy-Item .\runnel_&lt;version&gt;_windows_amd64\runnel.exe C:\Tools\Runnel\runnel.exe
 C:\Tools\Runnel\runnel.exe service start
 C:\Tools\Runnel\runnel.exe version</code></pre>
           <ul>

@@ -29,23 +29,23 @@
 
           <h2 id="offiziell">Offizielle Plugins</h2>
           <div class="table-scroll"><table class="doc-table">
-            <thead><tr><th>Plugin</th><th>Typen</th><th>Stand</th></tr></thead>
+            <thead><tr><th>Plugin</th><th>Typen</th><th>Download</th></tr></thead>
             <tbody>
-              <tr><td><a href="https://github.com/runnelhq/plugin-iban"><code>iban</code></a> – IBAN und BIC prüfen, IBAN bilden; rechnet nur lokal</td><td>Actions <code>iban.validate</code>, <code>iban.validate-bic</code>, <code>iban.create</code>; Transform <code>iban.validate</code> mit Fehler-Link</td><td>v0.2.0, <a href="https://github.com/runnelhq/plugin-iban/releases">Releases</a></td></tr>
-              <tr><td><a href="https://github.com/runnelhq/plugin-ldap"><code>ldap</code></a> – Active Directory und OpenLDAP</td><td>Connection-Typ <code>ldap</code> mit „Test connection“; Actions <code>ldap.search</code>, <code>ldap.authenticate</code>, <code>ldap.add</code>, <code>ldap.modify</code>, <code>ldap.delete</code>; Eingabe <code>ldap.input</code> mit „Detect fields“</td><td>v0.1.0 in Vorbereitung; bis zum ersten Release selbst bauen (<code>make build</code>)</td></tr>
+              <tr><td><a href="https://github.com/runnelhq/plugin-iban"><code>iban</code></a> – IBAN und BIC prüfen, IBAN bilden; rechnet nur lokal</td><td>Actions <code>iban.validate</code>, <code>iban.validate-bic</code>, <code>iban.create</code>; Transform <code>iban.validate</code> mit Fehler-Link</td><td><a href="https://github.com/runnelhq/plugin-iban/releases">Releases</a></td></tr>
+              <tr><td><a href="https://github.com/runnelhq/plugin-ldap"><code>ldap</code></a> – Active Directory und OpenLDAP</td><td>Connection-Typ <code>ldap</code> mit „Test connection“; Actions <code>ldap.search</code>, <code>ldap.authenticate</code>, <code>ldap.add</code>, <code>ldap.modify</code>, <code>ldap.delete</code>; Eingabe <code>ldap.input</code> mit „Detect fields“</td><td><a href="https://github.com/runnelhq/plugin-ldap/releases">Releases</a></td></tr>
             </tbody>
           </table></div>
           <p>Beispiele: <a href="kochbuch-iban.html">IBANs prüfen</a> und <a href="kochbuch-ldap.html">Active Directory</a> im Kochbuch. Beide Plugins gibt es für Windows und Linux (x64), wie Runnel selbst.</p>
 
           <h2 id="installieren">Installieren</h2>
           <ol class="steps">
-            <li><strong>Archiv laden und prüfen:</strong> von den Releases des Plugins das Archiv für das System, z. B. <code>runnel-plugin-iban_0.2.0_windows_amd64.zip</code>, dazu <code>SHA256SUMS</code>. Die Prüfsumme vergleichen; die Herkunft prüft auf Wunsch <code>gh attestation verify &lt;archiv&gt; --repo runnelhq/plugin-iban</code>.</li>
+            <li><strong>Archiv laden und prüfen:</strong> von den Releases des Plugins das Archiv für das System, z. B. <code>runnel-plugin-iban_&lt;version&gt;_windows_amd64.zip</code>, dazu <code>SHA256SUMS</code>; <code>&lt;version&gt;</code> steht für die Version des Plugins. Die Prüfsumme vergleichen; die Herkunft prüft auf Wunsch <code>gh attestation verify &lt;archiv&gt; --repo runnelhq/plugin-iban</code>.</li>
             <li><strong>In das Projekt entpacken,</strong> sodass <code>plugins/iban/plugin.yaml</code> entsteht.</li>
             <li><strong>Freigeben</strong> mit <code>runnel plugins trust</code> (siehe unten) oder im Editor.</li>
             <li><strong>Prüfen:</strong> <code>runnel plugins</code> zeigt das Plugin als <code>trusted</code> mit seinen Typen; <code>runnel validate</code> prüft die Dateien, die sie nutzen.</li>
           </ol>
-<pre><code class="lang-bash" data-caption="PowerShell">Get-FileHash .\runnel-plugin-iban_0.2.0_windows_amd64.zip -Algorithm SHA256
-Expand-Archive .\runnel-plugin-iban_0.2.0_windows_amd64.zip -DestinationPath D:\flows\plugins
+<pre><code class="lang-bash" data-caption="PowerShell">Get-FileHash .\runnel-plugin-iban_&lt;version&gt;_windows_amd64.zip -Algorithm SHA256
+Expand-Archive .\runnel-plugin-iban_&lt;version&gt;_windows_amd64.zip -DestinationPath D:\flows\plugins
 runnel plugins trust D:\flows --plugin iban
 runnel plugins D:\flows</code></pre>
 <pre><code class="lang-text" data-caption="D:\flows\plugins">plugins\
@@ -57,10 +57,10 @@ runnel plugins D:\flows</code></pre>
     THIRD_PARTY_NOTICES</code></pre>
 
           <h2 id="freigabe">Freigeben</h2>
-<pre><code class="lang-text" data-caption="runnel plugins trust D:\flows --plugin iban">Plugin iban 0.2.0 (namespace iban)
-  folder:  plugins/iban
+<pre><code class="lang-text" data-caption="runnel plugins trust D:\flows --plugin iban">Plugin iban 0.3.0 (namespace iban)
+  folder:  D:\flows\plugins\iban
   program: bin/iban.exe
-  hash:    sha256:74ae620da2ddc62cace24286da6e9dd4a0966d61c63d9fe9c2a2f16a3c264a7f
+  hash:    sha256:9e18427e5e7af639ea431e7d855f126ad277fa383646e3769359eaeca6705154
 A plugin runs with the rights of Runnel. Trust it only if you know where it comes from.
 Trust plugin iban? [y/N] y
 Plugin iban is trusted.</code></pre>
@@ -136,23 +136,23 @@ with:
 
           <h2 id="official">Official plugins</h2>
           <div class="table-scroll"><table class="doc-table">
-            <thead><tr><th>Plugin</th><th>Types</th><th>Status</th></tr></thead>
+            <thead><tr><th>Plugin</th><th>Types</th><th>Download</th></tr></thead>
             <tbody>
-              <tr><td><a href="https://github.com/runnelhq/plugin-iban"><code>iban</code></a> – validate IBAN and BIC, build IBANs; computes locally only</td><td>Actions <code>iban.validate</code>, <code>iban.validate-bic</code>, <code>iban.create</code>; transform <code>iban.validate</code> with error link</td><td>v0.2.0, <a href="https://github.com/runnelhq/plugin-iban/releases">releases</a></td></tr>
-              <tr><td><a href="https://github.com/runnelhq/plugin-ldap"><code>ldap</code></a> – Active Directory and OpenLDAP</td><td>Connection type <code>ldap</code> with “Test connection”; actions <code>ldap.search</code>, <code>ldap.authenticate</code>, <code>ldap.add</code>, <code>ldap.modify</code>, <code>ldap.delete</code>; input <code>ldap.input</code> with “Detect fields”</td><td>v0.1.0 in preparation; build it yourself until the first release (<code>make build</code>)</td></tr>
+              <tr><td><a href="https://github.com/runnelhq/plugin-iban"><code>iban</code></a> – validate IBAN and BIC, build IBANs; computes locally only</td><td>Actions <code>iban.validate</code>, <code>iban.validate-bic</code>, <code>iban.create</code>; transform <code>iban.validate</code> with error link</td><td><a href="https://github.com/runnelhq/plugin-iban/releases">releases</a></td></tr>
+              <tr><td><a href="https://github.com/runnelhq/plugin-ldap"><code>ldap</code></a> – Active Directory and OpenLDAP</td><td>Connection type <code>ldap</code> with “Test connection”; actions <code>ldap.search</code>, <code>ldap.authenticate</code>, <code>ldap.add</code>, <code>ldap.modify</code>, <code>ldap.delete</code>; input <code>ldap.input</code> with “Detect fields”</td><td><a href="https://github.com/runnelhq/plugin-ldap/releases">releases</a></td></tr>
             </tbody>
           </table></div>
           <p>Examples: <a href="kochbuch-iban.html">Validating IBANs</a> and <a href="kochbuch-ldap.html">Active Directory</a> in the cookbook. Both plugins are available for Windows and Linux (x64), like Runnel itself.</p>
 
           <h2 id="install">Installing</h2>
           <ol class="steps">
-            <li><strong>Download and check the archive:</strong> from the plugin's releases, the archive for your system, e.g. <code>runnel-plugin-iban_0.2.0_windows_amd64.zip</code>, plus <code>SHA256SUMS</code>. Compare the checksum; optionally check the origin with <code>gh attestation verify &lt;archive&gt; --repo runnelhq/plugin-iban</code>.</li>
+            <li><strong>Download and check the archive:</strong> from the plugin's releases, the archive for your system, e.g. <code>runnel-plugin-iban_&lt;version&gt;_windows_amd64.zip</code>, plus <code>SHA256SUMS</code>; <code>&lt;version&gt;</code> stands for the plugin version. Compare the checksum; optionally check the origin with <code>gh attestation verify &lt;archive&gt; --repo runnelhq/plugin-iban</code>.</li>
             <li><strong>Unpack it into the project</strong> so that <code>plugins/iban/plugin.yaml</code> exists.</li>
             <li><strong>Trust it</strong> with <code>runnel plugins trust</code> (see below) or in the editor.</li>
             <li><strong>Check:</strong> <code>runnel plugins</code> shows the plugin as <code>trusted</code> with its types; <code>runnel validate</code> checks the files that use them.</li>
           </ol>
-<pre><code class="lang-bash" data-caption="PowerShell">Get-FileHash .\runnel-plugin-iban_0.2.0_windows_amd64.zip -Algorithm SHA256
-Expand-Archive .\runnel-plugin-iban_0.2.0_windows_amd64.zip -DestinationPath D:\flows\plugins
+<pre><code class="lang-bash" data-caption="PowerShell">Get-FileHash .\runnel-plugin-iban_&lt;version&gt;_windows_amd64.zip -Algorithm SHA256
+Expand-Archive .\runnel-plugin-iban_&lt;version&gt;_windows_amd64.zip -DestinationPath D:\flows\plugins
 runnel plugins trust D:\flows --plugin iban
 runnel plugins D:\flows</code></pre>
 <pre><code class="lang-text" data-caption="D:\flows\plugins">plugins\
@@ -164,10 +164,10 @@ runnel plugins D:\flows</code></pre>
     THIRD_PARTY_NOTICES</code></pre>
 
           <h2 id="trust">Trusting</h2>
-<pre><code class="lang-text" data-caption="runnel plugins trust D:\flows --plugin iban">Plugin iban 0.2.0 (namespace iban)
-  folder:  plugins/iban
+<pre><code class="lang-text" data-caption="runnel plugins trust D:\flows --plugin iban">Plugin iban 0.3.0 (namespace iban)
+  folder:  D:\flows\plugins\iban
   program: bin/iban.exe
-  hash:    sha256:74ae620da2ddc62cace24286da6e9dd4a0966d61c63d9fe9c2a2f16a3c264a7f
+  hash:    sha256:9e18427e5e7af639ea431e7d855f126ad277fa383646e3769359eaeca6705154
 A plugin runs with the rights of Runnel. Trust it only if you know where it comes from.
 Trust plugin iban? [y/N] y
 Plugin iban is trusted.</code></pre>

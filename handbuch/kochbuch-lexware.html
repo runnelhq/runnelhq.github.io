@@ -101,8 +101,8 @@
           <p>Secrets kommen hier aus Umgebungsvariablen (<code>secretStore: env</code> in <code>project.yaml</code>). Für den Dienst die Variable beim Dienstkonto setzen.</p>
           <h2 id="files">Dateien</h2>
           <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-263"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-263"><code class="lang-yaml"><span class="tok-c"># Recipe: Lexware Office (formerly lexoffice) with an API key from LEXWARE_API_KEY.</span>
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-265"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-265"><code class="lang-yaml"><span class="tok-c"># Recipe: Lexware Office (formerly lexoffice) with an API key from LEXWARE_API_KEY.</span>
 <span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: lexware
@@ -112,8 +112,8 @@
   <span class="tok-t">LEXWARE_URL</span>: https://api.lexware.io/v1/</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>connections/lexware.yaml</span><button class="copy-btn" type="button" data-copy-from="code-264"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-264"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+  <div class="code-head"><span>connections/lexware.yaml</span><button class="copy-btn" type="button" data-copy-from="code-266"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-266"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: lexware
 <span class="tok-t">description</span>: Lexware Office public API with an API key
@@ -126,8 +126,8 @@
     <span class="tok-t">Accept</span>: application/json</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/contacts.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-265"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-265"><code class="lang-yaml"><span class="tok-c"># Reads all contacts page by page (page from 0, up to 250 per page; the list is in</span>
+  <div class="code-head"><span>workflows/contacts.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-267"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-267"><code class="lang-yaml"><span class="tok-c"># Reads all contacts page by page (page from 0, up to 250 per page; the list is in</span>
 <span class="tok-c"># "content"). The API allows about 2 requests per second: retryAfter waits when it</span>
 <span class="tok-c"># answers 429 with Retry-After, retry repeats the whole request otherwise.</span>
 <span class="tok-c">#   runnel run workflows/contacts.workflow.yaml</span>
@@ -166,8 +166,8 @@
           <p>Die offizielle Dokumentation (developers.lexware.io) war beim Erstellen nicht erreichbar; Host, Paging und Rate-Limit stammen aus mehreren übereinstimmenden Quellen. Vor dem Einsatz bitte dort prüfen.</p>
           <h2 id="run">Ausführen</h2><p>Im Ordner des Rezepts (PowerShell):</p>
           <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-269"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-269"><code class="lang-bash">$env:LEXWARE_API_KEY = <span class="tok-s">"…"</span>
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-271"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-271"><code class="lang-bash">$env:LEXWARE_API_KEY = <span class="tok-s">"…"</span>
 runnel run workflows/contacts.workflow.yaml</code></pre>
 </div>
           <h2 id="adapt">Anpassen</h2><ul><li>Die Kontakte stehen je Seite in <code>content</code>; Seiten zählen ab <code>0</code>, bis zu 250 Einträge je Seite.</li><li>Die API erlaubt etwa 2 Anfragen pro Sekunde und antwortet darüber mit <code>429</code>. Sendet sie <code>Retry-After</code>, wartet Runnel; sonst wiederholt <code>retry</code> die Anfrage mit wachsendem Abstand.</li><li>Weitere Listen mit demselben Muster, z. B. Belege über <code>voucherlist</code>.</li></ul>
@@ -184,8 +184,8 @@ runnel run workflows/contacts.workflow.yaml</code></pre>
           <p>Secrets come from environment variables here (<code>secretStore: env</code> in <code>project.yaml</code>). For the service, set the variable for the service account.</p>
           <h2 id="files-en">Files</h2>
           <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-266"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-266"><code class="lang-yaml"><span class="tok-c"># Recipe: Lexware Office (formerly lexoffice) with an API key from LEXWARE_API_KEY.</span>
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-268"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-268"><code class="lang-yaml"><span class="tok-c"># Recipe: Lexware Office (formerly lexoffice) with an API key from LEXWARE_API_KEY.</span>
 <span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: lexware
@@ -195,8 +195,8 @@ runnel run workflows/contacts.workflow.yaml</code></pre>
   <span class="tok-t">LEXWARE_URL</span>: https://api.lexware.io/v1/</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>connections/lexware.yaml</span><button class="copy-btn" type="button" data-copy-from="code-267"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-267"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+  <div class="code-head"><span>connections/lexware.yaml</span><button class="copy-btn" type="button" data-copy-from="code-269"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-269"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: lexware
 <span class="tok-t">description</span>: Lexware Office public API with an API key
@@ -209,8 +209,8 @@ runnel run workflows/contacts.workflow.yaml</code></pre>
     <span class="tok-t">Accept</span>: application/json</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/contacts.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-268"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-268"><code class="lang-yaml"><span class="tok-c"># Reads all contacts page by page (page from 0, up to 250 per page; the list is in</span>
+  <div class="code-head"><span>workflows/contacts.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-270"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-270"><code class="lang-yaml"><span class="tok-c"># Reads all contacts page by page (page from 0, up to 250 per page; the list is in</span>
 <span class="tok-c"># "content"). The API allows about 2 requests per second: retryAfter waits when it</span>
 <span class="tok-c"># answers 429 with Retry-After, retry repeats the whole request otherwise.</span>
 <span class="tok-c">#   runnel run workflows/contacts.workflow.yaml</span>
@@ -249,8 +249,8 @@ runnel run workflows/contacts.workflow.yaml</code></pre>
           <p>The official documentation (developers.lexware.io) could not be reached when this recipe was written; host, paging and rate limit come from several matching sources. Please check there before use.</p>
           <h2 id="run-en">Running</h2><p>In the recipe folder (PowerShell):</p>
           <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-270"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-270"><code class="lang-bash">$env:LEXWARE_API_KEY = <span class="tok-s">"…"</span>
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-272"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-272"><code class="lang-bash">$env:LEXWARE_API_KEY = <span class="tok-s">"…"</span>
 runnel run workflows/contacts.workflow.yaml</code></pre>
 </div>
           <h2 id="adapt-en">Adapting</h2><ul><li>Contacts are in <code>content</code> per page; pages count from <code>0</code>, up to 250 entries per page.</li><li>The API allows about 2 requests per second and answers <code>429</code> above that. If it sends <code>Retry-After</code>, Runnel waits; otherwise <code>retry</code> repeats the request with growing delays.</li><li>Other lists follow the same pattern, e.g. vouchers via <code>voucherlist</code>.</li></ul>

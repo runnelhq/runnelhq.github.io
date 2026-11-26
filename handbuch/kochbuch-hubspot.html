@@ -101,8 +101,8 @@
           <p>Secrets kommen hier aus Umgebungsvariablen (<code>secretStore: env</code> in <code>project.yaml</code>). Für den Dienst die Variable beim Dienstkonto setzen.</p>
           <h2 id="files">Dateien</h2>
           <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-231"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-231"><code class="lang-yaml"><span class="tok-c"># Recipe: HubSpot CRM with the access token of a private app from HUBSPOT_TOKEN.</span>
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-233"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-233"><code class="lang-yaml"><span class="tok-c"># Recipe: HubSpot CRM with the access token of a private app from HUBSPOT_TOKEN.</span>
 <span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: hubspot
@@ -112,8 +112,8 @@
   <span class="tok-t">HUBSPOT_URL</span>: https://api.hubapi.com/</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>connections/hubspot.yaml</span><button class="copy-btn" type="button" data-copy-from="code-232"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-232"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+  <div class="code-head"><span>connections/hubspot.yaml</span><button class="copy-btn" type="button" data-copy-from="code-234"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-234"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: hubspot
 <span class="tok-t">description</span>: HubSpot CRM API with a private app token
@@ -124,8 +124,8 @@
   <span class="tok-t">token</span>: ${secret:HUBSPOT_TOKEN}</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/contacts.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-233"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-233"><code class="lang-yaml"><span class="tok-c"># Reads all contacts with the cursor of HubSpot (paging.next.after) and logs their e-mail.</span>
+  <div class="code-head"><span>workflows/contacts.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-235"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-235"><code class="lang-yaml"><span class="tok-c"># Reads all contacts with the cursor of HubSpot (paging.next.after) and logs their e-mail.</span>
 <span class="tok-c">#   runnel run workflows/contacts.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
@@ -161,8 +161,8 @@
   - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: report }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/create-contact.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-234"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-234"><code class="lang-yaml"><span class="tok-c"># Creates a contact and returns its id; a connector for other workflows.</span>
+  <div class="code-head"><span>workflows/create-contact.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-236"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-236"><code class="lang-yaml"><span class="tok-c"># Creates a contact and returns its id; a connector for other workflows.</span>
 <span class="tok-c">#   runnel run --param EMAIL=ada@example.com --param FIRSTNAME=Ada workflows/create-contact.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
@@ -197,8 +197,8 @@
           <p>HubSpot liefert den Cursor der nächsten Seite in <code>paging.next.after</code> und erwartet ihn als Query-Parameter <code>after</code>, daher <code>style: cursor</code>. Auf der letzten Seite fehlt <code>paging.next</code>.</p>
           <h2 id="run">Ausführen</h2><p>Im Ordner des Rezepts (PowerShell):</p>
           <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-239"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-239"><code class="lang-bash">$env:HUBSPOT_TOKEN = <span class="tok-s">"pat-…"</span>
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-241"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-241"><code class="lang-bash">$env:HUBSPOT_TOKEN = <span class="tok-s">"pat-…"</span>
 runnel run workflows/contacts.workflow.yaml
 runnel run --param EMAIL=ada@example.com --param FIRSTNAME=Ada workflows/create-contact.workflow.yaml</code></pre>
 </div>
@@ -216,8 +216,8 @@ runnel run --param EMAIL=ada@example.com --param FIRSTNAME=Ada workflows/create-
           <p>Secrets come from environment variables here (<code>secretStore: env</code> in <code>project.yaml</code>). For the service, set the variable for the service account.</p>
           <h2 id="files-en">Files</h2>
           <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-235"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-235"><code class="lang-yaml"><span class="tok-c"># Recipe: HubSpot CRM with the access token of a private app from HUBSPOT_TOKEN.</span>
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-237"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-237"><code class="lang-yaml"><span class="tok-c"># Recipe: HubSpot CRM with the access token of a private app from HUBSPOT_TOKEN.</span>
 <span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: hubspot
@@ -227,8 +227,8 @@ runnel run --param EMAIL=ada@example.com --param FIRSTNAME=Ada workflows/create-
   <span class="tok-t">HUBSPOT_URL</span>: https://api.hubapi.com/</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>connections/hubspot.yaml</span><button class="copy-btn" type="button" data-copy-from="code-236"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-236"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+  <div class="code-head"><span>connections/hubspot.yaml</span><button class="copy-btn" type="button" data-copy-from="code-238"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-238"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: hubspot
 <span class="tok-t">description</span>: HubSpot CRM API with a private app token
@@ -239,8 +239,8 @@ runnel run --param EMAIL=ada@example.com --param FIRSTNAME=Ada workflows/create-
   <span class="tok-t">token</span>: ${secret:HUBSPOT_TOKEN}</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/contacts.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-237"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-237"><code class="lang-yaml"><span class="tok-c"># Reads all contacts with the cursor of HubSpot (paging.next.after) and logs their e-mail.</span>
+  <div class="code-head"><span>workflows/contacts.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-239"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-239"><code class="lang-yaml"><span class="tok-c"># Reads all contacts with the cursor of HubSpot (paging.next.after) and logs their e-mail.</span>
 <span class="tok-c">#   runnel run workflows/contacts.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
@@ -276,8 +276,8 @@ runnel run --param EMAIL=ada@example.com --param FIRSTNAME=Ada workflows/create-
   - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: report }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/create-contact.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-238"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-238"><code class="lang-yaml"><span class="tok-c"># Creates a contact and returns its id; a connector for other workflows.</span>
+  <div class="code-head"><span>workflows/create-contact.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-240"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-240"><code class="lang-yaml"><span class="tok-c"># Creates a contact and returns its id; a connector for other workflows.</span>
 <span class="tok-c">#   runnel run --param EMAIL=ada@example.com --param FIRSTNAME=Ada workflows/create-contact.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
@@ -312,8 +312,8 @@ runnel run --param EMAIL=ada@example.com --param FIRSTNAME=Ada workflows/create-
           <p>HubSpot returns the next page's cursor in <code>paging.next.after</code> and expects it as the query parameter <code>after</code>, hence <code>style: cursor</code>. On the last page <code>paging.next</code> is missing.</p>
           <h2 id="run-en">Running</h2><p>In the recipe folder (PowerShell):</p>
           <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-240"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-240"><code class="lang-bash">$env:HUBSPOT_TOKEN = <span class="tok-s">"pat-…"</span>
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-242"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-242"><code class="lang-bash">$env:HUBSPOT_TOKEN = <span class="tok-s">"pat-…"</span>
 runnel run workflows/contacts.workflow.yaml
 runnel run --param EMAIL=ada@example.com --param FIRSTNAME=Ada workflows/create-contact.workflow.yaml</code></pre>
 </div>
