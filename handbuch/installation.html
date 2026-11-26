@@ -105,13 +105,14 @@
           </ul>
 
           <h2 id="download">Herunterladen</h2>
-          <p>Alle Versionen stehen unter <a href="https://github.com/runnelhq/runnel/releases">github.com/runnelhq/runnel/releases</a>. Bis Version 1.0 sind es Vorabversionen (z. B. <code>v0.1.0-alpha.9</code>).</p>
+          <p>Alle Versionen stehen unter <a href="https://github.com/runnelhq/runnel/releases">github.com/runnelhq/runnel/releases</a>. Bis Version 1.0 sind es Vorabversionen. In den Befehlen unten steht <code>&lt;version&gt;</code> für die Version im Dateinamen, ohne das <code>v</code> des Tags.</p>
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Datei</th><th>Inhalt</th></tr></thead>
             <tbody>
               <tr><td><code>runnel_&lt;version&gt;_windows_amd64.zip</code></td><td><code>runnel.exe</code>, <code>LICENSE</code>, <code>README.md</code>, <code>THIRD_PARTY_NOTICES.txt</code></td></tr>
               <tr><td><code>runnel_&lt;version&gt;_linux_amd64.tar.gz</code></td><td><code>runnel</code> und dieselben Begleitdateien</td></tr>
               <tr><td><code>runnel_&lt;version&gt;_&lt;os&gt;_amd64.cdx.json</code></td><td>Software-Stückliste (SBOM) im Format CycloneDX 1.6</td></tr>
+              <tr><td><code>runnel-catalog.json</code>, <code>runnel-expressions.json</code></td><td>Referenz der Bausteine und Ausdrücke dieser Version als JSON (seit E15a; Grundlage der <a href="bausteine.html">Referenz</a>)</td></tr>
               <tr><td><code>SHA256SUMS</code></td><td>Prüfsummen aller Dateien</td></tr>
             </tbody>
           </table></div>
@@ -124,7 +125,7 @@
           </ol>
 <div class="code">
   <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-205"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-205"><code class="lang-bash">Expand-Archive runnel_0.1.0-alpha.9_windows_amd64.zip -DestinationPath C:\Tools\Runnel
+<pre id="code-205"><code class="lang-bash">Expand-Archive runnel_&lt;version&gt;_windows_amd64.zip -DestinationPath C:\Tools\Runnel
 cd C:\Tools\Runnel
 .\runnel.exe version
 
@@ -139,7 +140,7 @@ cd C:\Tools\Runnel
           <h2 id="linux">Unter Linux einrichten</h2>
 <div class="code">
   <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-206"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-206"><code class="lang-bash">tar -xzf runnel_0.1.0-alpha.9_linux_amd64.tar.gz
+<pre id="code-206"><code class="lang-bash">tar -xzf runnel_&lt;version&gt;_linux_amd64.tar.gz
 sudo install -m 755 runnel /usr/local/bin/runnel
 runnel version</code></pre>
 </div>
@@ -149,11 +150,11 @@ runnel version</code></pre>
           <p>Jedes Archiv hat eine Prüfsumme in <code>SHA256SUMS</code> und eine signierte Herkunftsbestätigung (SLSA Build Provenance), die belegt, dass es aus dem Repository von GitHub Actions gebaut wurde.</p>
 <div class="code">
   <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-207"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-207"><code class="lang-bash">Get-FileHash .\runnel_0.1.0-alpha.9_windows_amd64.zip -Algorithm SHA256
+<pre id="code-207"><code class="lang-bash">Get-FileHash .\runnel_&lt;version&gt;_windows_amd64.zip -Algorithm SHA256
 <span class="tok-c"># mit der Zeile in SHA256SUMS vergleichen</span>
 
 <span class="tok-c"># Herkunft mit der GitHub CLI prüfen</span>
-gh attestation verify runnel_0.1.0-alpha.9_windows_amd64.zip --repo runnelhq/runnel</code></pre>
+gh attestation verify runnel_&lt;version&gt;_windows_amd64.zip --repo runnelhq/runnel</code></pre>
 </div>
 
           <h2 id="aktualisieren">Aktualisieren</h2>
@@ -205,13 +206,14 @@ C:\Tools\Runnel\runnel.exe version</code></pre>
           </ul>
 
           <h2 id="download-en">Download</h2>
-          <p>All versions are at <a href="https://github.com/runnelhq/runnel/releases">github.com/runnelhq/runnel/releases</a>. Until version 1.0 these are pre-releases (e.g. <code>v0.1.0-alpha.9</code>).</p>
+          <p>All versions are at <a href="https://github.com/runnelhq/runnel/releases">github.com/runnelhq/runnel/releases</a>. Until version 1.0 these are pre-releases. In the commands below, <code>&lt;version&gt;</code> stands for the version in the file name, without the <code>v</code> of the tag.</p>
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>File</th><th>Contents</th></tr></thead>
             <tbody>
               <tr><td><code>runnel_&lt;version&gt;_windows_amd64.zip</code></td><td><code>runnel.exe</code>, <code>LICENSE</code>, <code>README.md</code>, <code>THIRD_PARTY_NOTICES.txt</code></td></tr>
               <tr><td><code>runnel_&lt;version&gt;_linux_amd64.tar.gz</code></td><td><code>runnel</code> and the same accompanying files</td></tr>
               <tr><td><code>runnel_&lt;version&gt;_&lt;os&gt;_amd64.cdx.json</code></td><td>Software bill of materials (SBOM) in CycloneDX 1.6 format</td></tr>
+              <tr><td><code>runnel-catalog.json</code>, <code>runnel-expressions.json</code></td><td>Reference of the components and expressions of this version as JSON (since E15a; basis of the <a href="bausteine.html">reference</a>)</td></tr>
               <tr><td><code>SHA256SUMS</code></td><td>Checksums of all files</td></tr>
             </tbody>
           </table></div>
@@ -224,7 +226,7 @@ C:\Tools\Runnel\runnel.exe version</code></pre>
           </ol>
 <div class="code">
   <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-209"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-209"><code class="lang-bash">Expand-Archive runnel_0.1.0-alpha.9_windows_amd64.zip -DestinationPath C:\Tools\Runnel
+<pre id="code-209"><code class="lang-bash">Expand-Archive runnel_&lt;version&gt;_windows_amd64.zip -DestinationPath C:\Tools\Runnel
 cd C:\Tools\Runnel
 .\runnel.exe version
 
@@ -239,7 +241,7 @@ cd C:\Tools\Runnel
           <h2 id="linux-en">Setting up on Linux</h2>
 <div class="code">
   <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-210"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-210"><code class="lang-bash">tar -xzf runnel_0.1.0-alpha.9_linux_amd64.tar.gz
+<pre id="code-210"><code class="lang-bash">tar -xzf runnel_&lt;version&gt;_linux_amd64.tar.gz
 sudo install -m 755 runnel /usr/local/bin/runnel
 runnel version</code></pre>
 </div>
@@ -249,11 +251,11 @@ runnel version</code></pre>
           <p>Every archive has a checksum in <code>SHA256SUMS</code> and a signed provenance attestation (SLSA build provenance) proving it was built from the repository by GitHub Actions.</p>
 <div class="code">
   <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-211"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-211"><code class="lang-bash">Get-FileHash .\runnel_0.1.0-alpha.9_windows_amd64.zip -Algorithm SHA256
+<pre id="code-211"><code class="lang-bash">Get-FileHash .\runnel_&lt;version&gt;_windows_amd64.zip -Algorithm SHA256
 <span class="tok-c"># compare with the line in SHA256SUMS</span>
 
 <span class="tok-c"># verify the provenance with the GitHub CLI</span>
-gh attestation verify runnel_0.1.0-alpha.9_windows_amd64.zip --repo runnelhq/runnel</code></pre>
+gh attestation verify runnel_&lt;version&gt;_windows_amd64.zip --repo runnelhq/runnel</code></pre>
 </div>
 
           <h2 id="updating">Updating</h2>
