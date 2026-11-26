@@ -12,8 +12,10 @@ Platzhalter im Inhalt:
   {{sidebar}}                     Doku-Navigation (nur bei "docs": true)
   <pre><code class="lang-go|yaml|bash|text">…</code></pre>   wird hervorgehoben und erhält einen Kopf
 
-Bausteine der Startseite: Liegt _src/catalog.json vor (runnel catalog --json > _src/catalog.json),
-wird der Abschnitt zwischen <!-- catalog --> und <!-- /catalog --> in index.html daraus neu erzeugt.
+Referenz: _src/catalog.json und _src/expressions.json sind runnel-catalog.json und
+runnel-expressions.json eines Runnel-Releases, geholt mit tools/fetch-reference.py. Daraus entstehen
+der Abschnitt zwischen <!-- catalog --> und <!-- /catalog --> in index.html und die Platzhalter
+{{blocks:de|en}} und {{expressions:de|en}} im Handbuch.
 
 Aufruf (ohne Abhängigkeiten, Python 3.9+):  python3 tools/build.py
 """
@@ -156,12 +158,53 @@ def expand_code(content):
 L10N = {
     "de": {"field": "Feld", "type": "Typ", "desc": "Beschreibung", "required": "Pflicht", "default": "Standard",
            "example": "Beispiel", "values": "Werte", "none": "Keine Konfiguration.", "fn": "Funktion",
-           "ctx": "Name", "actions": "Actions", "transforms": "Transforms"},
+           "ctx": "Name", "actions": "Actions", "transforms": "Transforms", "connections": "Connection-Typen",
+           "eg": "z. B.", "only": "Nur mit", "fields": "Felder", "under_with": "unter <code>with:</code>",
+           "output": "Ergebnis", "output_sub": "in <code>result.output</code> des Schritts", "path": "Pfad",
+           "set": "Gesetzte Felder", "set_sub": "an jedem weitergegebenen Datensatz",
+           "placeholder": "<code>&lt;…&gt;</code> ein Name aus der Konfiguration",
+           "records": "Datensätze", "errors": "Fehler", "limits": "Grenzen",
+           "conn_sub": "unter <code>with:</code> der Connection-Datei", "group": "Abschnitt im Formular",
+           "version": "Stand der Referenz: Runnel", "version_main": "erzeugt aus <code>main</code>, noch kein Release",
+           "error_link": "Fehler-Link"},
     "en": {"field": "Field", "type": "Type", "desc": "Description", "required": "required", "default": "default",
            "example": "Example", "values": "values", "none": "No configuration.", "fn": "Function",
-           "ctx": "Name", "actions": "Actions", "transforms": "Transforms"},
+           "ctx": "Name", "actions": "Actions", "transforms": "Transforms", "connections": "Connection types",
+           "eg": "e.g.", "only": "Only with", "fields": "Fields", "under_with": "under <code>with:</code>",
+           "output": "Output", "output_sub": "in <code>result.output</code> of the step", "path": "Path",
+           "set": "Fields set", "set_sub": "on every record passed on",
+           "placeholder": "<code>&lt;…&gt;</code> a name from the configuration",
+           "records": "Records", "errors": "Errors", "limits": "Limits",
+           "conn_sub": "under <code>with:</code> of the connection file", "group": "section in the form",
+           "version": "Reference as of Runnel", "version_main": "built from <code>main</code>, not yet released",
+           "error_link": "error link"},
 }
 GROUP_DE = {"Date": "Datum", "Empty values": "Leere Werte", "Numbers and lists": "Zahlen und Listen", "Text": "Text"}
+
+# Lesbare Typen wie helpType in runnel/web/src/help.ts (Hilfe des Editors, Mockup E15c)
+HELP_FORMAT_TYPES = {"runnel-field": "field", "runnel-info-field": "field", "runnel-connection": "connection",
+                     "runnel-duration": "duration"}
+
+
+def help_type(s):
+    if s.get("format") in HELP_FORMAT_TYPES:
+        return HELP_FORMAT_TYPES[s["format"]]
+    typ = s.get("type")
+    if typ == "array":
+        item = help_type(s["items"]) if s.get("items") else "any"
+        return "list" if item == "any" else "list of " + ("lists" if item.startswith("list") else item + "s")
+    if typ == "object":
+        return "object" if s.get("properties") else "map"
+    if typ is None:
+        return "any"
+    return typ
+
+
+def show_value(v):
+    """Ein Wert, wie er in YAML steht – wie showValue im Editor."""
+    if isinstance(v, str):
+        return json.dumps(v, ensure_ascii=False) if v == "" or v.strip() != v else v
+    return json.dumps(v, ensure_ascii=False)
 
 
 def _fields(schema, prefix=""):
@@ -179,14 +222,64 @@ def _fields(schema, prefix=""):
     return out
 
 
-def _type_label(prop, t):
-    typ = prop.get("type", "any")
-    if typ == "array":
-        it = prop.get("items", {})
-        typ = ("object" if it.get("properties") else it.get("type", "any")) + "[]"
-    fmt = prop.get("format")
-    extra = f' <span class="ref-fmt">{html.escape(fmt)}</span>' if fmt else ""
-    return f"<code>{html.escape(typ)}</code>{extra}"
+def _name(n):
+    """Feldname mit Umbruchstellen nach jedem Punkt und an Wortgrenzen (schmale Bildschirme)."""
+    return re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "<wbr>", html.escape(n)).replace(".", ".<wbr>")
+
+
+def _sub(title, sub, body):
+    sub_html = f' <span>{sub}</span>' if sub else ""
+    return f'<div class="ref-sub"><h5>{title}{sub_html}</h5>{body}</div>'
+
+
+def _fields_table(schema, t, lang, conn=False):
+    rows = []
+    for name, prop, req in _fields(schema or {}):
+        bits = []
+        if req:
+            bits.append(f'<span class="ref-req">{t["required"]}</span>')
+        if "default" in prop:
+            bits.append(f'{t["default"]}: <code>{html.escape(show_value(prop["default"]))}</code>')
+        if prop.get("enum"):
+            bits.append(f'{t["values"]}: ' + ", ".join(f"<code>{html.escape(show_value(v))}</code>" for v in prop["enum"]))
+        if prop.get("examples"):
+            bits.append(f'{t["eg"]} <code>{html.escape(show_value(prop["examples"][0]))}</code>')
+        only = prop.get("x-runnel-only") or {}
+        if only:
+            bits.append(f'{t["only"]} <code>' + html.escape("; ".join(f'{k}: {", ".join(show_value(v) for v in vs)}' for k, vs in only.items())) + "</code>")
+        if conn and prop.get("x-runnel-group"):
+            bits.append(f'{t["group"]}: {html.escape(prop["x-runnel-group"])}')
+        meta_html = f'<div class="ref-meta">{" · ".join(bits)}</div>' if bits else ""
+        typ = html.escape(help_type(prop))
+        rows.append(f'<tr><td><code>{_name(name)}</code><span class="ref-type-m">{typ}</span></td><td><code class="ref-type">{typ}</code></td>'
+                    f'<td>{html.escape(prop.get("description", ""))}{meta_html}</td></tr>')
+    if not rows:
+        return f'<p class="legal-hint">{t["none"]}</p>'
+    return (f'<div class="table-scroll"><table class="doc-table ref-table ref-table--typed"><thead><tr><th>{t["field"]}</th><th>{t["type"]}</th>'
+            f'<th>{t["desc"]}</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div>')
+
+
+def _outputs(d, kind, t):
+    outs = d.get("outputs") or []
+    if not outs:
+        return ""
+    action = kind == "action"
+    rows = "".join(f'<tr><td><code>{_name(o["name"])}</code><span class="ref-type-m">{html.escape(o.get("type", "any"))}</span></td>'
+                   f'<td><code class="ref-type">{html.escape(o.get("type", "any"))}</code></td>'
+                   f'<td>{html.escape(o.get("description", ""))}</td></tr>' for o in outs)
+    table = (f'<div class="table-scroll"><table class="doc-table ref-table ref-table--typed"><thead><tr><th>{t["path"] if action else t["field"]}</th>'
+             f'<th>{t["type"]}</th><th>{t["desc"]}</th></tr></thead><tbody>{rows}</tbody></table></div>')
+    if not action and any("<" in o["name"] for o in outs):
+        table += f'<p class="ref-note">{t["placeholder"]}</p>'
+    return _sub(t["output"] if action else t["set"], t["output_sub"] if action else t["set_sub"], table)
+
+
+def _version_line(doc, t):
+    v = doc.get("version")
+    if not v:
+        return ""
+    main = f' <span>({t["version_main"]})</span>' if re.search(r"-\d+-g[0-9a-f]+$", v) else ""
+    return f'<p class="ref-version">{t["version"]} <code>{html.escape(v)}</code>{main}</p>'
 
 
 def blocks_reference(lang):
@@ -196,13 +289,17 @@ def blocks_reference(lang):
         return ""
     catalog = json.loads(path.read_text(encoding="utf-8"))
     both = dual_types(catalog)
-    parts = []
+    conns = sorted(catalog.get("connectionTypes") or [], key=lambda c: c["type"])
+    parts = [_version_line(catalog, t)]
     jump = []
     for kind, key in (("action", "actions"), ("transform", "transforms")):
         links = "".join(f'<li{" class=\"is-dual\"" if d["type"] in both else ""}><a href="#{kind[0]}-{d["type"].replace(".", "-")}-{lang}"><code>{html.escape(d["type"])}</code>'
                         + ('<span class="dual">A+T</span>' if d["type"] in both else "") + '</a></li>'
                         for d in sorted(catalog[key], key=lambda d: d["type"]))
         jump.append(f'<p class="chips-label">{t[key]}</p><ul class="ns-list ref-jump">{links}</ul>')
+    if conns:
+        links = "".join(f'<li><a href="#c-{c["type"]}-{lang}"><code>{html.escape(c["type"])}</code></a></li>' for c in conns)
+        jump.append(f'<p class="chips-label">{t["connections"]}</p><ul class="ns-list ref-jump">{links}</ul>')
     parts.append("".join(jump))
     for kind, key in (("action", "actions"), ("transform", "transforms")):
         parts.append(f'<h2 id="{key}-{lang}">{t[key]}</h2>')
@@ -216,25 +313,18 @@ def blocks_reference(lang):
             parts.append(f'<h3 class="ref-cat"><span class="tile" style="background:var(--rn-kategorie-{color})"></span>{html.escape(cat_name)}</h3>')
             for d in members:
                 anchor = f'{kind[0]}-{d["type"].replace(".", "-")}-{lang}'
-                rows = []
-                for name, prop, req in _fields(d.get("schema") or {}):
-                    bits = []
-                    if req:
-                        bits.append(f'<span class="ref-req">{t["required"]}</span>')
-                    if "default" in prop:
-                        bits.append(f'{t["default"]}: <code>{html.escape(json.dumps(prop["default"], ensure_ascii=False))}</code>')
-                    if prop.get("enum"):
-                        bits.append(f'{t["values"]}: ' + ", ".join(f"<code>{html.escape(str(v))}</code>" for v in prop["enum"]))
-                    desc = html.escape(prop.get("description", ""))
-                    meta_html = f'<div class="ref-meta">{" · ".join(bits)}</div>' if bits else ""
-                    rows.append(f'<tr><td><code>{html.escape(name)}</code></td><td>{_type_label(prop, t)}</td><td>{desc}{meta_html}</td></tr>')
-                table = (f'<div class="table-scroll"><table class="doc-table ref-table"><thead><tr><th>{t["field"]}</th><th>{t["type"]}</th>'
-                         f'<th>{t["desc"]}</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div>') if rows else f'<p class="legal-hint">{t["none"]}</p>'
-                example = ""
+                body = _sub(t["fields"], t["under_with"], _fields_table(d.get("schema"), t, lang))
+                body += _outputs(d, kind, t)
+                if kind == "transform" and d.get("records"):
+                    body += _sub(t["records"], "", f'<p>{html.escape(d["records"])}</p>')
+                if d.get("errors"):
+                    body += _sub(t["errors"], "", f'<p>{html.escape(d["errors"])}</p>')
+                if d.get("limits"):
+                    body += _sub(t["limits"], "", "<ul>" + "".join(f"<li>{html.escape(x)}</li>" for x in d["limits"]) + "</ul>")
                 if d.get("example"):
                     yaml_ex = f'- id: {d["type"].split(".")[-1]}\n  type: {d["type"]}\n  with:\n' + "".join(
                         "    " + line + "\n" for line in d["example"].rstrip("\n").split("\n"))
-                    example = code_block(yaml_ex, "yaml", t["example"])
+                    body += code_block(yaml_ex, "yaml", t["example"])
                 badges = ""
                 if d["type"] in both:
                     other = "transform" if kind == "action" else "action"
@@ -243,11 +333,17 @@ def blocks_reference(lang):
                         else ("also a transform" if other == "transform" else "also an action")
                     badges += f'<a class="ref-badge ref-badge--dual" href="#{other_anchor}">A+T · {label}</a>'
                 if d.get("recordErrors"):
-                    badges += f'<span class="ref-badge">{"Fehler-Link" if lang == "de" else "error link"}</span>'
+                    badges += f'<span class="ref-badge">{t["error_link"]}</span>'
                 if d.get("parallel"):
                     badges += '<span class="ref-badge">copies</span>'
                 parts.append(f'<section class="ref-item" id="{anchor}"><h4><code>{html.escape(d["type"])}</code> '
-                             f'<span>{html.escape(d["label"])}</span>{badges}</h4><p>{html.escape(d["description"])}</p>{table}{example}</section>')
+                             f'<span>{html.escape(d["label"])}</span>{badges}</h4><p>{html.escape(d["description"])}</p>{body}</section>')
+    if conns:
+        parts.append(f'<h2 id="connections-{lang}">{t["connections"]}</h2>')
+        for c in conns:
+            body = _sub(t["fields"], t["conn_sub"], _fields_table(c.get("schema"), t, lang, conn=True))
+            parts.append(f'<section class="ref-item" id="c-{c["type"]}-{lang}"><h4><code>{html.escape(c["type"])}</code> '
+                         f'<span>{html.escape(c.get("label", ""))}</span></h4><p>{html.escape(c.get("description", ""))}</p>{body}</section>')
     return "\n".join(parts)
 
 
@@ -264,7 +360,7 @@ def expressions_reference(lang):
     def table(rows, first):
         return (f'<div class="table-scroll"><table class="doc-table ref-table"><thead><tr><th>{first}</th><th>{t["type"]}</th>'
                 f'<th>{t["desc"]}</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div>')
-    parts = [table([row(r, r["name"]) for r in ref["roots"]], t["ctx"])]
+    parts = [_version_line(ref, t), table([row(r, r["name"]) for r in ref["roots"]], t["ctx"])]
     groups = []
     for f in ref["functions"]:
         if f.get("group") not in groups:

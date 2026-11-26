@@ -13,15 +13,18 @@ docs/actions.html       # Entwicklerdoku: Actions entwickeln (erzeugt)
 docs/transforms.html    # Entwicklerdoku: Transforms entwickeln (erzeugt)
 docs/editor.html        # Entwicklerdoku: Editor entwickeln (erzeugt)
 docs/api.html           # Entwicklerdoku: Server-API (erzeugt)
+docs/plugins.html       # Entwicklerdoku: Plugins entwickeln (erzeugt)
 handbuch/*.html         # Anwenderdoku: Installation, Betrieb, Konfiguration, Workflows, Pipelines, Trigger,
-                        # Ausdrücke, Bausteine (erzeugt)
+                        # Ausdrücke, Bausteine, Plugins, Kochbuch (erzeugt)
 _src/                   # Quellen der Unterseiten (von GitHub Pages nicht veröffentlicht)
 ├─ *.html               # Inhalt von <main> mit JSON-Kopf (Ausgabepfad, Titel, Beschreibung)
-├─ catalog.json         # `runnel catalog --json`: Bausteine der Startseite und Referenz im Handbuch
-├─ expressions.json     # `GET /api/v1/expressions` von `runnel serve`: Ausdrucks-Referenz im Handbuch
+├─ catalog.json         # runnel-catalog.json eines Releases: Bausteine der Startseite und Referenz im Handbuch
+├─ expressions.json     # runnel-expressions.json eines Releases: Ausdrucks-Referenz im Handbuch
 ├─ kochbuch/            # Rezepte des Kochbuchs als lauffähige Mini-Projekte (je Ordner ein Rezept)
 └─ snippets/            # Codebeispiele, z. B. Kopien aus runnel/internal/actions
 tools/build.py          # erzeugt die Unterseiten (Python 3.9+, keine Abhängigkeiten)
+tools/fetch-reference.py  # holt catalog.json und expressions.json aus einem Runnel-Release
+tools/kochbuch.py       # erzeugt die Rezeptseiten des Kochbuchs
 favicon.svg, favicon.ico
 assets/
 ├─ css/runnel.css       # Design Tokens – Kopie aus runnel/design/tokens/runnel.css (nicht hier ändern)
@@ -45,15 +48,31 @@ Das Skript passt relative Links an die Ordnertiefe an, setzt Codeblöcke (`{{sni
 `<pre><code class="lang-go">`) mit Hervorhebung und Kopieren-Button und erzeugt die Seitenleiste der Doku aus den
 `<h2 id="…">` jeder Sprache. Neue Doku-Seiten in `DOCS_NAV` in `tools/build.py` eintragen.
 
-Der Abschnitt „Bausteine“ der Startseite entsteht aus `_src/catalog.json`. Nach neuen Actions oder Transforms im
-Runnel-Repository:
+## Referenz der Bausteine und Ausdrücke
+
+Der Abschnitt „Bausteine“ der Startseite und die Referenzen im Handbuch entstehen aus `_src/catalog.json` und
+`_src/expressions.json`. Beide stammen aus einem Runnel-Release: Jedes Release (seit E15a) hängt
+`runnel-catalog.json` (`runnel catalog --json`: Actions, Transforms, Connection-Typen) und `runnel-expressions.json`
+(`runnel catalog --expressions --json`) an. Nach einem neuen Release:
 
 ```bash
-runnel catalog --json > _src/catalog.json
-runnel serve --port 7391 . &            # in einem beliebigen Projekt
-curl -s http://127.0.0.1:7391/api/v1/expressions > _src/expressions.json
+python3 tools/fetch-reference.py          # neuestes Release, auch Vorabversionen; oder z. B. v0.1.0
 python3 tools/build.py
 ```
+
+Das Skript lädt beide Dateien und `SHA256SUMS`, prüft die Prüfsummen und dass `version` in beiden Dateien zum Release
+passt, und schreibt erst dann. Bei einem Fehler bleiben die vorhandenen Dateien unverändert. Die Website zeigt damit
+immer den Stand eines Releases, nicht den von `main`.
+
+Hat ein Release die Dateien noch nicht (alle Releases vor E15a), nimmt `--local` sie aus einem Runnel-Programm,
+z. B. aus `main` gebaut. Den Commit dann im PR vermerken:
+
+```bash
+python3 tools/fetch-reference.py --local ../runnel/bin/runnel
+```
+
+Fehlt in den Dateien etwas, das die Website braucht, gehört das als Issue oder PR ins Runnel-Repository – nicht als
+Ergänzung von Hand in die JSON-Dateien.
 
 Die Seiten im Handbuch nutzen dafür die Platzhalter `{{blocks:de}}`/`{{blocks:en}}` und
 `{{expressions:de}}`/`{{expressions:en}}`. Die Beispiel-Dateien unter `_src/snippets/guide-*` sind mit

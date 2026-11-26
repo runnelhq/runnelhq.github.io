@@ -123,8 +123,8 @@
             <li>Optional den Ordner in den <code>PATH</code> aufnehmen, damit <code>runnel</code> überall aufrufbar ist.</li>
           </ol>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-185"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-185"><code class="lang-bash">Expand-Archive runnel_0.1.0-alpha.9_windows_amd64.zip -DestinationPath C:\Tools\Runnel
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-205"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-205"><code class="lang-bash">Expand-Archive runnel_0.1.0-alpha.9_windows_amd64.zip -DestinationPath C:\Tools\Runnel
 cd C:\Tools\Runnel
 .\runnel.exe version
 
@@ -138,8 +138,8 @@ cd C:\Tools\Runnel
 
           <h2 id="linux">Unter Linux einrichten</h2>
 <div class="code">
-  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-186"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-186"><code class="lang-bash">tar -xzf runnel_0.1.0-alpha.9_linux_amd64.tar.gz
+  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-206"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-206"><code class="lang-bash">tar -xzf runnel_0.1.0-alpha.9_linux_amd64.tar.gz
 sudo install -m 755 runnel /usr/local/bin/runnel
 runnel version</code></pre>
 </div>
@@ -148,8 +148,8 @@ runnel version</code></pre>
           <h2 id="pruefen">Herkunft prüfen</h2>
           <p>Jedes Archiv hat eine Prüfsumme in <code>SHA256SUMS</code> und eine signierte Herkunftsbestätigung (SLSA Build Provenance), die belegt, dass es aus dem Repository von GitHub Actions gebaut wurde.</p>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-187"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-187"><code class="lang-bash">Get-FileHash .\runnel_0.1.0-alpha.9_windows_amd64.zip -Algorithm SHA256
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-207"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-207"><code class="lang-bash">Get-FileHash .\runnel_0.1.0-alpha.9_windows_amd64.zip -Algorithm SHA256
 <span class="tok-c"># mit der Zeile in SHA256SUMS vergleichen</span>
 
 <span class="tok-c"># Herkunft mit der GitHub CLI prüfen</span>
@@ -165,8 +165,8 @@ gh attestation verify runnel_0.1.0-alpha.9_windows_amd64.zip --repo runnelhq/run
             <li><strong>Kontrollieren:</strong> <code>runnel version</code> zeigt die neue Version, <code>runnel service status</code> den Zustand <code>running</code>; im Log beginnt der Start mit <code>Starting runnel v…</code>. Den Editor im Browser mit Strg+F5 neu laden.</li>
           </ol>
 <div class="code">
-  <div class="code-head"><span>PowerShell (als Administrator)</span><button class="copy-btn" type="button" data-copy-from="code-188"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-188"><code class="lang-bash">.\runnel_0.2.0_windows_amd64\runnel.exe validate D:\flows
+  <div class="code-head"><span>PowerShell (als Administrator)</span><button class="copy-btn" type="button" data-copy-from="code-208"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-208"><code class="lang-bash">.\runnel_0.2.0_windows_amd64\runnel.exe validate D:\flows
 runnel service stop
 Rename-Item C:\Tools\Runnel\runnel.exe runnel-old.exe
 Copy-Item .\runnel_0.2.0_windows_amd64\runnel.exe C:\Tools\Runnel\runnel.exe
@@ -223,8 +223,8 @@ C:\Tools\Runnel\runnel.exe version</code></pre>
             <li>Optionally add the folder to <code>PATH</code> so <code>runnel</code> works everywhere.</li>
           </ol>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-189"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-189"><code class="lang-bash">Expand-Archive runnel_0.1.0-alpha.9_windows_amd64.zip -DestinationPath C:\Tools\Runnel
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-209"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-209"><code class="lang-bash">Expand-Archive runnel_0.1.0-alpha.9_windows_amd64.zip -DestinationPath C:\Tools\Runnel
 cd C:\Tools\Runnel
 .\runnel.exe version
 
@@ -238,8 +238,8 @@ cd C:\Tools\Runnel
 
           <h2 id="linux-en">Setting up on Linux</h2>
 <div class="code">
-  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-190"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-190"><code class="lang-bash">tar -xzf runnel_0.1.0-alpha.9_linux_amd64.tar.gz
+  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-210"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-210"><code class="lang-bash">tar -xzf runnel_0.1.0-alpha.9_linux_amd64.tar.gz
 sudo install -m 755 runnel /usr/local/bin/runnel
 runnel version</code></pre>
 </div>
@@ -248,8 +248,8 @@ runnel version</code></pre>
           <h2 id="verify">Verifying the origin</h2>
           <p>Every archive has a checksum in <code>SHA256SUMS</code> and a signed provenance attestation (SLSA build provenance) proving it was built from the repository by GitHub Actions.</p>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-191"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-191"><code class="lang-bash">Get-FileHash .\runnel_0.1.0-alpha.9_windows_amd64.zip -Algorithm SHA256
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-211"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-211"><code class="lang-bash">Get-FileHash .\runnel_0.1.0-alpha.9_windows_amd64.zip -Algorithm SHA256
 <span class="tok-c"># compare with the line in SHA256SUMS</span>
 
 <span class="tok-c"># verify the provenance with the GitHub CLI</span>
@@ -265,8 +265,8 @@ gh attestation verify runnel_0.1.0-alpha.9_windows_amd64.zip --repo runnelhq/run
             <li><strong>Check:</strong> <code>runnel version</code> shows the new version, <code>runnel service status</code> the state <code>running</code>; in the log the start begins with <code>Starting runnel v…</code>. Reload the editor in the browser with Ctrl+F5.</li>
           </ol>
 <div class="code">
-  <div class="code-head"><span>PowerShell (as administrator)</span><button class="copy-btn" type="button" data-copy-from="code-192"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-192"><code class="lang-bash">.\runnel_0.2.0_windows_amd64\runnel.exe validate D:\flows
+  <div class="code-head"><span>PowerShell (as administrator)</span><button class="copy-btn" type="button" data-copy-from="code-212"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-212"><code class="lang-bash">.\runnel_0.2.0_windows_amd64\runnel.exe validate D:\flows
 runnel service stop
 Rename-Item C:\Tools\Runnel\runnel.exe runnel-old.exe
 Copy-Item .\runnel_0.2.0_windows_amd64\runnel.exe C:\Tools\Runnel\runnel.exe

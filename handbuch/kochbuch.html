@@ -129,8 +129,8 @@
           <h2 id="connection">Die Connection <code>http</code></h2>
           <p>Eine Connection beschreibt eine API einmal für das ganze Projekt: Basisadresse, feste Header und Anmeldung. Workflows nennen sie mit <code>connection:</code> und geben nur noch den Pfad an.</p>
 <div class="code">
-  <div class="code-head"><span>connections/shop.yaml</span><button class="copy-btn" type="button" data-copy-from="code-291"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-291"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+  <div class="code-head"><span>connections/shop.yaml</span><button class="copy-btn" type="button" data-copy-from="code-311"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-311"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: shop
 <span class="tok-t">type</span>: http
@@ -142,8 +142,8 @@
     <span class="tok-t">Accept</span>: application/json</code></pre>
 </div>
 <div class="code">
-  <div class="code-head"><span>Action</span><button class="copy-btn" type="button" data-copy-from="code-292"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-292"><code class="lang-yaml">- <span class="tok-t">id</span>: orders
+  <div class="code-head"><span>Action</span><button class="copy-btn" type="button" data-copy-from="code-312"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-312"><code class="lang-yaml">- <span class="tok-t">id</span>: orders
   <span class="tok-t">type</span>: http.request
   <span class="tok-t">with</span>:
     <span class="tok-t">connection</span>: shop
@@ -237,8 +237,8 @@
           <h2 id="connection-en">The <code>http</code> connection</h2>
           <p>A connection describes an API once for the whole project: base address, fixed headers and sign-in. Workflows name it with <code>connection:</code> and only give the path.</p>
 <div class="code">
-  <div class="code-head"><span>connections/shop.yaml</span><button class="copy-btn" type="button" data-copy-from="code-293"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-293"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+  <div class="code-head"><span>connections/shop.yaml</span><button class="copy-btn" type="button" data-copy-from="code-313"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-313"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: shop
 <span class="tok-t">type</span>: http
@@ -250,8 +250,8 @@
     <span class="tok-t">Accept</span>: application/json</code></pre>
 </div>
 <div class="code">
-  <div class="code-head"><span>Action</span><button class="copy-btn" type="button" data-copy-from="code-294"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-294"><code class="lang-yaml">- <span class="tok-t">id</span>: orders
+  <div class="code-head"><span>Action</span><button class="copy-btn" type="button" data-copy-from="code-314"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-314"><code class="lang-yaml">- <span class="tok-t">id</span>: orders
   <span class="tok-t">type</span>: http.request
   <span class="tok-t">with</span>:
     <span class="tok-t">connection</span>: shop
