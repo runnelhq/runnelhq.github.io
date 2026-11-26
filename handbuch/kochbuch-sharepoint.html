@@ -101,8 +101,8 @@
           <p>Secrets kommen hier aus Umgebungsvariablen (<code>secretStore: env</code> in <code>project.yaml</code>). Für den Dienst die Variable beim Dienstkonto setzen.</p>
           <h2 id="files">Dateien</h2>
           <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-259"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-259"><code class="lang-yaml"><span class="tok-c"># Recipe: files from SharePoint Online over Microsoft Graph.</span>
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-279"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-279"><code class="lang-yaml"><span class="tok-c"># Recipe: files from SharePoint Online over Microsoft Graph.</span>
 <span class="tok-c"># Tenant, application (client) id and site come from here (replace with your own); the</span>
 <span class="tok-c"># client secret comes from the environment variable GRAPH_CLIENT_SECRET.</span>
 <span class="tok-t">kind</span>: Project
@@ -118,8 +118,8 @@
   <span class="tok-t">SHAREPOINT_SITE</span>: <span class="tok-s">"contoso.sharepoint.com:/sites/Finance:"</span></code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>connections/sharepoint.yaml</span><button class="copy-btn" type="button" data-copy-from="code-260"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-260"><code class="lang-yaml"><span class="tok-c"># Needs an application registered in Microsoft Entra with the application permission</span>
+  <div class="code-head"><span>connections/sharepoint.yaml</span><button class="copy-btn" type="button" data-copy-from="code-280"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-280"><code class="lang-yaml"><span class="tok-c"># Needs an application registered in Microsoft Entra with the application permission</span>
 <span class="tok-c"># Sites.Selected (access granted per site, recommended) or Files.Read.All.</span>
 <span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
@@ -135,8 +135,8 @@
   <span class="tok-t">scope</span>: https://graph.microsoft.com/.default</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/orders.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-261"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-261"><code class="lang-yaml"><span class="tok-c"># Downloads ZIP files from several SharePoint Online paths, unpacks them and reads the</span>
+  <div class="code-head"><span>workflows/orders.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-281"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-281"><code class="lang-yaml"><span class="tok-c"># Downloads ZIP files from several SharePoint Online paths, unpacks them and reads the</span>
 <span class="tok-c"># CSV files they hold: one run of file.workflow.yaml per path (forEach),</span>
 <span class="tok-c"># one after the other, since all of them append to out/sharepoint-orders.csv.</span>
 <span class="tok-c"># Needs the connection sharepoint (see there) and SHAREPOINT_SITE in project.yaml:</span>
@@ -183,8 +183,8 @@
   - { <span class="tok-t">from</span>: files, <span class="tok-t">to</span>: report }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/file.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-262"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-262"><code class="lang-yaml"><span class="tok-c"># One ZIP file from SharePoint Online, called by orders.workflow.yaml:</span>
+  <div class="code-head"><span>workflows/file.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-282"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-282"><code class="lang-yaml"><span class="tok-c"># One ZIP file from SharePoint Online, called by orders.workflow.yaml:</span>
 <span class="tok-c"># download it with http.request and saveTo (Graph answers /content with a redirect to the</span>
 <span class="tok-c"># download; the token does not go along), unpack the CSV files, read each of them.</span>
 <span class="tok-c">#   runnel run -v --param PATH=Exports/orders-north.zip workflows/file.workflow.yaml</span>
@@ -229,8 +229,8 @@
   - { <span class="tok-t">from</span>: unpack, <span class="tok-t">to</span>: read }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>pipelines/orders.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-263"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-263"><code class="lang-yaml"><span class="tok-c"># Reads one CSV file of a ZIP from SharePoint and appends its rows to</span>
+  <div class="code-head"><span>pipelines/orders.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-283"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-283"><code class="lang-yaml"><span class="tok-c"># Reads one CSV file of a ZIP from SharePoint and appends its rows to</span>
 <span class="tok-c"># out/sharepoint-orders.csv; the rows also go back to the workflow (core.to-result).</span>
 <span class="tok-t">kind</span>: Pipeline
 <span class="tok-t">apiVersion</span>: runnel/v1
@@ -260,8 +260,8 @@
           <p>Runnel holt das Token selbst und hält es bis kurz vor Ablauf im Speicher. Graph beantwortet <code>…:/content</code> mit einer Weiterleitung zum Download; zu einem anderen Host geht das Token dabei nicht mit. <code>saveTo</code> schreibt die Antwort direkt in eine Datei, ihr Pfad steht in <code>output.path</code>. Die Dateien werden nacheinander verarbeitet (<code>forEach</code> ohne <code>parallel</code>), weil alle an dieselbe CSV-Datei anhängen.</p>
           <h2 id="run">Ausführen</h2><p>Im Ordner des Rezepts (PowerShell):</p>
           <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-269"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-269"><code class="lang-bash">$env:GRAPH_CLIENT_SECRET = <span class="tok-s">"…"</span>
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-289"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-289"><code class="lang-bash">$env:GRAPH_CLIENT_SECRET = <span class="tok-s">"…"</span>
 runnel run -v workflows/orders.workflow.yaml
 runnel run -v --param 'PATHS=[<span class="tok-s">"Exports/2026/orders-north.zip"</span>]' workflows/orders.workflow.yaml</code></pre>
 </div>
@@ -279,8 +279,8 @@ runnel run -v --param 'PATHS=[<span class="tok-s">"Exports/2026/orders-north.zip
           <p>Secrets come from environment variables here (<code>secretStore: env</code> in <code>project.yaml</code>). For the service, set the variable for the service account.</p>
           <h2 id="files-en">Files</h2>
           <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-264"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-264"><code class="lang-yaml"><span class="tok-c"># Recipe: files from SharePoint Online over Microsoft Graph.</span>
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-284"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-284"><code class="lang-yaml"><span class="tok-c"># Recipe: files from SharePoint Online over Microsoft Graph.</span>
 <span class="tok-c"># Tenant, application (client) id and site come from here (replace with your own); the</span>
 <span class="tok-c"># client secret comes from the environment variable GRAPH_CLIENT_SECRET.</span>
 <span class="tok-t">kind</span>: Project
@@ -296,8 +296,8 @@ runnel run -v --param 'PATHS=[<span class="tok-s">"Exports/2026/orders-north.zip
   <span class="tok-t">SHAREPOINT_SITE</span>: <span class="tok-s">"contoso.sharepoint.com:/sites/Finance:"</span></code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>connections/sharepoint.yaml</span><button class="copy-btn" type="button" data-copy-from="code-265"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-265"><code class="lang-yaml"><span class="tok-c"># Needs an application registered in Microsoft Entra with the application permission</span>
+  <div class="code-head"><span>connections/sharepoint.yaml</span><button class="copy-btn" type="button" data-copy-from="code-285"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-285"><code class="lang-yaml"><span class="tok-c"># Needs an application registered in Microsoft Entra with the application permission</span>
 <span class="tok-c"># Sites.Selected (access granted per site, recommended) or Files.Read.All.</span>
 <span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
@@ -313,8 +313,8 @@ runnel run -v --param 'PATHS=[<span class="tok-s">"Exports/2026/orders-north.zip
   <span class="tok-t">scope</span>: https://graph.microsoft.com/.default</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/orders.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-266"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-266"><code class="lang-yaml"><span class="tok-c"># Downloads ZIP files from several SharePoint Online paths, unpacks them and reads the</span>
+  <div class="code-head"><span>workflows/orders.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-286"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-286"><code class="lang-yaml"><span class="tok-c"># Downloads ZIP files from several SharePoint Online paths, unpacks them and reads the</span>
 <span class="tok-c"># CSV files they hold: one run of file.workflow.yaml per path (forEach),</span>
 <span class="tok-c"># one after the other, since all of them append to out/sharepoint-orders.csv.</span>
 <span class="tok-c"># Needs the connection sharepoint (see there) and SHAREPOINT_SITE in project.yaml:</span>
@@ -361,8 +361,8 @@ runnel run -v --param 'PATHS=[<span class="tok-s">"Exports/2026/orders-north.zip
   - { <span class="tok-t">from</span>: files, <span class="tok-t">to</span>: report }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/file.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-267"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-267"><code class="lang-yaml"><span class="tok-c"># One ZIP file from SharePoint Online, called by orders.workflow.yaml:</span>
+  <div class="code-head"><span>workflows/file.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-287"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-287"><code class="lang-yaml"><span class="tok-c"># One ZIP file from SharePoint Online, called by orders.workflow.yaml:</span>
 <span class="tok-c"># download it with http.request and saveTo (Graph answers /content with a redirect to the</span>
 <span class="tok-c"># download; the token does not go along), unpack the CSV files, read each of them.</span>
 <span class="tok-c">#   runnel run -v --param PATH=Exports/orders-north.zip workflows/file.workflow.yaml</span>
@@ -407,8 +407,8 @@ runnel run -v --param 'PATHS=[<span class="tok-s">"Exports/2026/orders-north.zip
   - { <span class="tok-t">from</span>: unpack, <span class="tok-t">to</span>: read }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>pipelines/orders.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-268"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-268"><code class="lang-yaml"><span class="tok-c"># Reads one CSV file of a ZIP from SharePoint and appends its rows to</span>
+  <div class="code-head"><span>pipelines/orders.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-288"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-288"><code class="lang-yaml"><span class="tok-c"># Reads one CSV file of a ZIP from SharePoint and appends its rows to</span>
 <span class="tok-c"># out/sharepoint-orders.csv; the rows also go back to the workflow (core.to-result).</span>
 <span class="tok-t">kind</span>: Pipeline
 <span class="tok-t">apiVersion</span>: runnel/v1
@@ -438,8 +438,8 @@ runnel run -v --param 'PATHS=[<span class="tok-s">"Exports/2026/orders-north.zip
           <p>Runnel fetches the token itself and keeps it in memory until shortly before it expires. Graph answers <code>…:/content</code> with a redirect to the download; the token does not go along to another host. <code>saveTo</code> writes the response straight into a file, its path is in <code>output.path</code>. Files are processed one after the other (<code>forEach</code> without <code>parallel</code>) because all of them append to the same CSV file.</p>
           <h2 id="run-en">Running</h2><p>In the recipe folder (PowerShell):</p>
           <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-270"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-270"><code class="lang-bash">$env:GRAPH_CLIENT_SECRET = <span class="tok-s">"…"</span>
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-290"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-290"><code class="lang-bash">$env:GRAPH_CLIENT_SECRET = <span class="tok-s">"…"</span>
 runnel run -v workflows/orders.workflow.yaml
 runnel run -v --param 'PATHS=[<span class="tok-s">"Exports/2026/orders-north.zip"</span>]' workflows/orders.workflow.yaml</code></pre>
 </div>

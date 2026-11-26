@@ -100,15 +100,15 @@
           <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Art</th><th>Bedeutung</th></tr></thead><tbody><tr><td><code>plugins/iban</code></td><td>Plugin</td><td>Archiv von den <a href="https://github.com/runnelhq/plugin-iban/releases">Releases</a> nach <code>plugins/</code> entpacken und mit <code>runnel plugins trust</code> freigeben – siehe <a href="plugins.html#installieren">Plugins installieren</a></td></tr></tbody></table></div>
           <h2 id="files">Dateien</h2>
           <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-221"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-221"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-241"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-241"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: iban
 <span class="tok-t">description</span>: Checks the IBANs of a CSV file with the plugin iban</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>data/accounts.csv</span><button class="copy-btn" type="button" data-copy-from="code-222"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-222"><code class="lang-text">id;name;iban
+  <div class="code-head"><span>data/accounts.csv</span><button class="copy-btn" type="button" data-copy-from="code-242"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-242"><code class="lang-text">id;name;iban
 1;Müller GmbH;DE89 3704 0044 0532 0130 00
 2;Huber KG;AT61 1904 3002 3457 3201
 3;Tippfehler AG;DE89 3704 0044 0532 0130 01
@@ -116,8 +116,8 @@
 5;Kurz &amp; Co;DE8937040044053201300</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>pipelines/accounts.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-223"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-223"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
+  <div class="code-head"><span>pipelines/accounts.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-243"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-243"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: accounts
 <span class="tok-t">description</span>: Checks every IBAN; valid ones go to accounts-ok.csv, invalid ones with the reason to accounts-rejected.csv
@@ -154,8 +154,8 @@
   - { <span class="tok-t">from</span>: check, <span class="tok-t">to</span>: rejected, <span class="tok-t">type</span>: error }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/check.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-224"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-224"><code class="lang-yaml"><span class="tok-c"># Creates the output folder, checks the IBANs of data/accounts.csv and builds an IBAN.</span>
+  <div class="code-head"><span>workflows/check.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-244"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-244"><code class="lang-yaml"><span class="tok-c"># Creates the output folder, checks the IBANs of data/accounts.csv and builds an IBAN.</span>
 <span class="tok-c">#   runnel run workflows/check.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
@@ -197,8 +197,8 @@
           <p>Die Beispieldatei enthält drei gültige IBANs (DE, AT, IT) und zwei ungültige: eine mit falscher Prüfziffer und eine mit einer Stelle zu wenig. Sie landen mit <code>_error</code> („the check digits are wrong …“, „an IBAN of DE has 22 characters, not 21“) in <code>out/accounts-rejected.csv</code>. Geprüft werden Land, Länge, Aufbau und Prüfziffern – nicht, ob Bank oder Konto existieren.</p>
           <h2 id="run">Ausführen</h2><p>Im Ordner des Rezepts (PowerShell):</p>
           <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-229"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-229"><code class="lang-bash">Expand-Archive .\runnel-plugin-iban_0.2.0_windows_amd64.zip -DestinationPath .\plugins
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-249"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-249"><code class="lang-bash">Expand-Archive .\runnel-plugin-iban_0.2.0_windows_amd64.zip -DestinationPath .\plugins
 runnel plugins trust . --plugin iban
 runnel run workflows/check.workflow.yaml</code></pre>
 </div>
@@ -215,15 +215,15 @@ runnel run workflows/check.workflow.yaml</code></pre>
           <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Kind</th><th>Meaning</th></tr></thead><tbody><tr><td><code>plugins/iban</code></td><td>Plugin</td><td>Unpack the archive from the <a href="https://github.com/runnelhq/plugin-iban/releases">releases</a> into <code>plugins/</code> and trust it with <code>runnel plugins trust</code> – see <a href="plugins.html#install">Installing plugins</a></td></tr></tbody></table></div>
           <h2 id="files-en">Files</h2>
           <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-225"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-225"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-245"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-245"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: iban
 <span class="tok-t">description</span>: Checks the IBANs of a CSV file with the plugin iban</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>data/accounts.csv</span><button class="copy-btn" type="button" data-copy-from="code-226"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-226"><code class="lang-text">id;name;iban
+  <div class="code-head"><span>data/accounts.csv</span><button class="copy-btn" type="button" data-copy-from="code-246"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-246"><code class="lang-text">id;name;iban
 1;Müller GmbH;DE89 3704 0044 0532 0130 00
 2;Huber KG;AT61 1904 3002 3457 3201
 3;Tippfehler AG;DE89 3704 0044 0532 0130 01
@@ -231,8 +231,8 @@ runnel run workflows/check.workflow.yaml</code></pre>
 5;Kurz &amp; Co;DE8937040044053201300</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>pipelines/accounts.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-227"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-227"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
+  <div class="code-head"><span>pipelines/accounts.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-247"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-247"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: accounts
 <span class="tok-t">description</span>: Checks every IBAN; valid ones go to accounts-ok.csv, invalid ones with the reason to accounts-rejected.csv
@@ -269,8 +269,8 @@ runnel run workflows/check.workflow.yaml</code></pre>
   - { <span class="tok-t">from</span>: check, <span class="tok-t">to</span>: rejected, <span class="tok-t">type</span>: error }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/check.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-228"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-228"><code class="lang-yaml"><span class="tok-c"># Creates the output folder, checks the IBANs of data/accounts.csv and builds an IBAN.</span>
+  <div class="code-head"><span>workflows/check.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-248"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-248"><code class="lang-yaml"><span class="tok-c"># Creates the output folder, checks the IBANs of data/accounts.csv and builds an IBAN.</span>
 <span class="tok-c">#   runnel run workflows/check.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
@@ -312,8 +312,8 @@ runnel run workflows/check.workflow.yaml</code></pre>
           <p>The sample file has three valid IBANs (DE, AT, IT) and two invalid ones: one with a wrong check digit and one with a digit missing. They end up in <code>out/accounts-rejected.csv</code> with <code>_error</code> (“the check digits are wrong …”, “an IBAN of DE has 22 characters, not 21”). Country, length, structure and check digits are checked – not whether bank or account exist.</p>
           <h2 id="run-en">Running</h2><p>In the recipe folder (PowerShell):</p>
           <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-230"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-230"><code class="lang-bash">Expand-Archive .\runnel-plugin-iban_0.2.0_windows_amd64.zip -DestinationPath .\plugins
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-250"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-250"><code class="lang-bash">Expand-Archive .\runnel-plugin-iban_0.2.0_windows_amd64.zip -DestinationPath .\plugins
 runnel plugins trust . --plugin iban
 runnel run workflows/check.workflow.yaml</code></pre>
 </div>

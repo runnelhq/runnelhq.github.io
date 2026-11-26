@@ -12,8 +12,10 @@ Platzhalter im Inhalt:
   {{sidebar}}                     Doku-Navigation (nur bei "docs": true)
   <pre><code class="lang-go|yaml|bash|text">…</code></pre>   wird hervorgehoben und erhält einen Kopf
 
-Bausteine der Startseite: Liegt _src/catalog.json vor (runnel catalog --json > _src/catalog.json),
-wird der Abschnitt zwischen <!-- catalog --> und <!-- /catalog --> in index.html daraus neu erzeugt.
+Referenz: _src/catalog.json und _src/expressions.json sind runnel-catalog.json und
+runnel-expressions.json eines Runnel-Releases, geholt mit tools/fetch-reference.py. Daraus entstehen
+der Abschnitt zwischen <!-- catalog --> und <!-- /catalog --> in index.html und die Platzhalter
+{{blocks:de|en}} und {{expressions:de|en}} im Handbuch.
 
 Aufruf (ohne Abhängigkeiten, Python 3.9+):  python3 tools/build.py
 """

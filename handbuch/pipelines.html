@@ -100,8 +100,8 @@
           <h2 id="beispiel">Beispiel</h2>
           <p>Liest eine CSV-Datei im deutschen Format, wandelt Kundennummer und Umsatz in Zahlen um, behält aktive Kunden, benennt die Felder für ein CRM um und schreibt das Ergebnis. Zeilen mit ungültigen Werten gehen über den Fehler-Link in eine eigene Datei, statt die Pipeline anzuhalten.</p>
           <div class="code">
-  <div class="code-head"><span>pipelines/customers.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-295"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-295"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
+  <div class="code-head"><span>pipelines/customers.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-315"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-315"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: customers
 <span class="tok-t">parameters</span>:
@@ -151,8 +151,8 @@
   - { <span class="tok-t">from</span>: map, <span class="tok-t">to</span>: write }</code></pre>
 </div>
 <div class="code">
-  <div class="code-head"><span>Ausgabe von runnel run</span><button class="copy-btn" type="button" data-copy-from="code-297"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-297"><code class="lang-bash">INFO  [types] read 4, written 3, errors 1 in 0s
+  <div class="code-head"><span>Ausgabe von runnel run</span><button class="copy-btn" type="button" data-copy-from="code-317"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-317"><code class="lang-bash">INFO  [types] read 4, written 3, errors 1 in 0s
 INFO  [active] kept 2 of 3 records, dropped 1
 INFO  [rejected] wrote 1 row to out/customers-rejected.csv
 INFO  [write] wrote 2 rows to out/customers-crm.csv
@@ -240,8 +240,8 @@ INFO  pipeline <span class="tok-s">"customers"</span> succeeded in 1ms</code></p
           <h2 id="example">Example</h2>
           <p>Reads a CSV file in German format, converts customer number and revenue into numbers, keeps active customers, renames the fields for a CRM and writes the result. Rows with invalid values go over the error link into a separate file instead of stopping the pipeline.</p>
           <div class="code">
-  <div class="code-head"><span>pipelines/customers.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-296"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-296"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
+  <div class="code-head"><span>pipelines/customers.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-316"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-316"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: customers
 <span class="tok-t">parameters</span>:
@@ -291,8 +291,8 @@ INFO  pipeline <span class="tok-s">"customers"</span> succeeded in 1ms</code></p
   - { <span class="tok-t">from</span>: map, <span class="tok-t">to</span>: write }</code></pre>
 </div>
 <div class="code">
-  <div class="code-head"><span>Output of runnel run</span><button class="copy-btn" type="button" data-copy-from="code-298"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-298"><code class="lang-bash">INFO  [types] read 4, written 3, errors 1 in 0s
+  <div class="code-head"><span>Output of runnel run</span><button class="copy-btn" type="button" data-copy-from="code-318"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-318"><code class="lang-bash">INFO  [types] read 4, written 3, errors 1 in 0s
 INFO  [active] kept 2 of 3 records, dropped 1
 INFO  [rejected] wrote 1 row to out/customers-rejected.csv
 INFO  [write] wrote 2 rows to out/customers-crm.csv

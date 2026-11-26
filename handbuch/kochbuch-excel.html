@@ -100,16 +100,16 @@
           <p>Keine Konten oder Schlüssel nötig.</p>
           <h2 id="files">Dateien</h2>
           <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-193"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-193"><code class="lang-yaml"><span class="tok-c"># Recipe: read orders from an Excel workbook, write a CSV file and a formatted workbook.</span>
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-213"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-213"><code class="lang-yaml"><span class="tok-c"># Recipe: read orders from an Excel workbook, write a CSV file and a formatted workbook.</span>
 <span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: excel
 <span class="tok-t">description</span>: Orders from Excel to CSV and back to Excel</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>pipelines/orders.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-194"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-194"><code class="lang-yaml"><span class="tok-c"># Reads orders from data/orders.xlsx and writes them to a CSV file and a new workbook.</span>
+  <div class="code-head"><span>pipelines/orders.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-214"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-214"><code class="lang-yaml"><span class="tok-c"># Reads orders from data/orders.xlsx and writes them to a CSV file and a new workbook.</span>
 <span class="tok-c"># - "read": sheet "Bestellungen", the table starts in A3 (a title is above it);</span>
 <span class="tok-c">#   emptyRows: stop ends it before the sum below. Numbers, dates and true/false come</span>
 <span class="tok-c">#   typed from Excel; fields: chooses the columns and checks their types.</span>
@@ -177,8 +177,8 @@
   - { <span class="tok-t">from</span>: read, <span class="tok-t">to</span>: rejected, <span class="tok-t">type</span>: error }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/export.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-195"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-195"><code class="lang-yaml"><span class="tok-c"># Creates the output folder and runs the pipeline; csv.output and the other outputs</span>
+  <div class="code-head"><span>workflows/export.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-215"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-215"><code class="lang-yaml"><span class="tok-c"># Creates the output folder and runs the pipeline; csv.output and the other outputs</span>
 <span class="tok-c"># do not create missing folders. The counts of the pipeline are the outputs.</span>
 <span class="tok-c">#   runnel run workflows/export.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
@@ -209,8 +209,8 @@
           <p>Die Beispielmappe <code>data/orders.xlsx</code> hat über der Tabelle einen Titel und darunter eine Summenzeile; Bestellung 1004 enthält <code>#N/A</code> im Betrag und landet über den Fehler-Link in <code>out/excel-rejected.csv</code>. Der Workflow legt den Ordner <code>out</code> an, weil die Ausgaben fehlende Ordner nicht erzeugen.</p>
           <h2 id="run">Ausführen</h2><p>Im Ordner des Rezepts (PowerShell):</p>
           <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-199"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-199"><code class="lang-bash">runnel run workflows/export.workflow.yaml</code></pre>
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-219"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-219"><code class="lang-bash">runnel run workflows/export.workflow.yaml</code></pre>
 </div>
           <h2 id="adapt">Anpassen</h2><ul><li><code>sheet</code> und <code>range</code> an die eigene Mappe anpassen: <code>range: A3</code> heißt, die Tabelle beginnt mit der Kopfzeile in A3; <code>emptyRows: stop</code> endet an der ersten leeren Zeile, etwa vor einer Summenzeile.</li><li>Zahlen, Daten und Wahrheitswerte kommen aus Excel bereits typisiert; <code>fields</code> wählt nur die Spalten und prüft die Typen. Spalten mit anderem Namen holt <code>from</code>.</li><li>Beim Schreiben bleibt eine Zahl eine Zahl: <code>format</code> nimmt ein Runnel-Muster wie <code>#.##0,00</code>, <code>excelFormat</code> einen eigenen Excel-Code wie <code>#,##0.00 "€"</code>. Mit <code>ifExists: sheet</code> ersetzt Runnel nur ein Blatt einer vorhandenen Mappe.</li></ul>
           <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/excel">Quellen auf GitHub: <code>_src/kochbuch/excel</code></a></p>
@@ -225,16 +225,16 @@
           <p>No accounts or keys needed.</p>
           <h2 id="files-en">Files</h2>
           <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-196"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-196"><code class="lang-yaml"><span class="tok-c"># Recipe: read orders from an Excel workbook, write a CSV file and a formatted workbook.</span>
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-216"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-216"><code class="lang-yaml"><span class="tok-c"># Recipe: read orders from an Excel workbook, write a CSV file and a formatted workbook.</span>
 <span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: excel
 <span class="tok-t">description</span>: Orders from Excel to CSV and back to Excel</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>pipelines/orders.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-197"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-197"><code class="lang-yaml"><span class="tok-c"># Reads orders from data/orders.xlsx and writes them to a CSV file and a new workbook.</span>
+  <div class="code-head"><span>pipelines/orders.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-217"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-217"><code class="lang-yaml"><span class="tok-c"># Reads orders from data/orders.xlsx and writes them to a CSV file and a new workbook.</span>
 <span class="tok-c"># - "read": sheet "Bestellungen", the table starts in A3 (a title is above it);</span>
 <span class="tok-c">#   emptyRows: stop ends it before the sum below. Numbers, dates and true/false come</span>
 <span class="tok-c">#   typed from Excel; fields: chooses the columns and checks their types.</span>
@@ -302,8 +302,8 @@
   - { <span class="tok-t">from</span>: read, <span class="tok-t">to</span>: rejected, <span class="tok-t">type</span>: error }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/export.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-198"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-198"><code class="lang-yaml"><span class="tok-c"># Creates the output folder and runs the pipeline; csv.output and the other outputs</span>
+  <div class="code-head"><span>workflows/export.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-218"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-218"><code class="lang-yaml"><span class="tok-c"># Creates the output folder and runs the pipeline; csv.output and the other outputs</span>
 <span class="tok-c"># do not create missing folders. The counts of the pipeline are the outputs.</span>
 <span class="tok-c">#   runnel run workflows/export.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
@@ -334,8 +334,8 @@
           <p>The sample workbook <code>data/orders.xlsx</code> has a title above the table and a sum row below it; order 1004 contains <code>#N/A</code> as amount and goes over the error link into <code>out/excel-rejected.csv</code>. The workflow creates the folder <code>out</code> because the outputs don't create missing folders.</p>
           <h2 id="run-en">Running</h2><p>In the recipe folder (PowerShell):</p>
           <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-200"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-200"><code class="lang-bash">runnel run workflows/export.workflow.yaml</code></pre>
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-220"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-220"><code class="lang-bash">runnel run workflows/export.workflow.yaml</code></pre>
 </div>
           <h2 id="adapt-en">Adapting</h2><ul><li>Adapt <code>sheet</code> and <code>range</code> to your workbook: <code>range: A3</code> means the table starts with its header in A3; <code>emptyRows: stop</code> ends at the first empty row, e.g. before a sum row.</li><li>Numbers, dates and booleans already come typed from Excel; <code>fields</code> only picks the columns and checks their types. Columns with another name are taken with <code>from</code>.</li><li>When writing, a number stays a number: <code>format</code> takes a Runnel pattern such as <code>#.##0,00</code>, <code>excelFormat</code> a custom Excel code such as <code>#,##0.00 "€"</code>. With <code>ifExists: sheet</code> Runnel replaces just one sheet of an existing workbook.</li></ul>
           <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/excel">Sources on GitHub: <code>_src/kochbuch/excel</code></a></p>
