@@ -3,7 +3,7 @@
    (Workflow, Pipeline, Action, Transform, Link, Runner, Editor …) bleiben unübersetzt. */
 window.RUNNEL_I18N = {
   en: {
-    "hero.pill": "Pre-release v0.1.0-alpha.11 · Open source (MIT)",
+    "hero.pill": "Pre-release · Open source (MIT)",
     "f5.text": "Design visually in the browser-based editor, run headless in CI and Task Scheduler – with the same YAML files.",
     "f6.title": "Schedules and HTTP",
     "f6.text": "Triggers start workflows on a schedule, at intervals, for new files in a folder or via HTTP – over HTTPS on the network, with a response from the workflow.",
