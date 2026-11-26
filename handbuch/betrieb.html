@@ -115,16 +115,16 @@
 
           <h2 id="pruefen">Prüfen</h2>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-189"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-189"><code class="lang-bash">runnel validate D:\flows
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-191"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-191"><code class="lang-bash">runnel validate D:\flows
 runnel validate --env prod --strict D:\flows\workflows\import.workflow.yaml</code></pre>
 </div>
           <p>Ordner werden rekursiv durchsucht. Geprüft werden Syntax und Felder, Links und Zyklen, unerreichbare Actions, Variablen gegen jedes Environment (oder nur gegen <code>--env</code>), Ausdrücke, Action- und Transform-Typen mit ihrer Konfiguration sowie Trigger und Connections. Meldungen erscheinen als <code>datei:zeile:spalte: error|warning: text</code>, oft mit Vorschlag („did you mean …?“). Bei Fehlern ist der Exit-Code 1, mit <code>--strict</code> auch bei Warnungen – passend als Schritt in einer CI.</p>
 
           <h2 id="ausfuehren">Ausführen</h2>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-190"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-190"><code class="lang-bash">runnel run D:\flows\workflows\import.workflow.yaml
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-192"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-192"><code class="lang-bash">runnel run D:\flows\workflows\import.workflow.yaml
 runnel run --env prod --param DAYS=3 --param MODE=full D:\flows\workflows\import.workflow.yaml
 runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
 </div>
@@ -155,8 +155,8 @@ runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
 
           <h2 id="editor">Editor und Server</h2>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-191"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-191"><code class="lang-bash">runnel serve D:\flows
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-193"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-193"><code class="lang-bash">runnel serve D:\flows
 <span class="tok-c"># Editor: http://127.0.0.1:7300</span></code></pre>
 </div>
           <p>Der Editor zeigt Workflows und Pipelines als Canvas und als YAML, prüft beim Tippen, startet Läufe und zeigt sie live. Ein Schritt lässt sich aus der Palette direkt auf einen Link ziehen, um ihn zwischen zwei Schritte einzufügen. Der Tab „Runs“ zeigt die Run-Historie mit Filtern; „Open on canvas“ zeigt einen früheren Lauf mit Status und Log auf dem Canvas. Er arbeitet auf denselben Dateien wie die CLI – Änderungen aus Git oder einem Texteditor erkennt er beim Speichern (Konfliktdialog). Solange <code>serve</code> läuft, starten auch die Trigger des Projekts.</p>
@@ -175,8 +175,8 @@ runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
           <h2 id="dienst">Windows-Dienst</h2>
           <p>Für den Dauerbetrieb bedient ein Dienst das Projekt wie <code>runnel serve</code> und führt seine Trigger auch ohne angemeldeten Benutzer aus. Einrichten, Starten, Stoppen und Entfernen brauchen eine Konsole „als Administrator“.</p>
 <div class="code">
-  <div class="code-head"><span>PowerShell (als Administrator)</span><button class="copy-btn" type="button" data-copy-from="code-192"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-192"><code class="lang-bash">runnel service install D:\flows
+  <div class="code-head"><span>PowerShell (als Administrator)</span><button class="copy-btn" type="button" data-copy-from="code-194"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-194"><code class="lang-bash">runnel service install D:\flows
 runnel service start
 runnel service status
 runnel service stop
@@ -206,8 +206,8 @@ runnel service uninstall</code></pre>
           <h2 id="netz">HTTP-Trigger im Netz</h2>
           <p>HTTP-Trigger lauschen standardmäßig nur lokal. Aus dem Netz erreichbar sind sie nur über HTTPS:</p>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-193"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-193"><code class="lang-bash">runnel serve --triggers 0.0.0.0:7301 --triggers-tls auto D:\flows
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-195"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-195"><code class="lang-bash">runnel serve --triggers 0.0.0.0:7301 --triggers-tls auto D:\flows
 runnel serve --triggers 0.0.0.0:7301 --triggers-cert C:\certs\runnel.crt --triggers-key C:\certs\runnel.key D:\flows</code></pre>
 </div>
           <ul>
@@ -228,8 +228,8 @@ runnel serve --triggers 0.0.0.0:7301 --triggers-cert C:\certs\runnel.crt --trigg
           <h3 id="historie">Run-Historie</h3>
           <p>Jeder beendete Lauf bleibt mit Status je Action bzw. Transform und Log in der Run-Historie – egal ob er aus dem Editor, von einem Trigger, vom Dienst oder mit <code>runnel run</code> aus der Aufgabenplanung kam. Sie übersteht Neustarts und Updates. Einen Datenbank-Server braucht es dafür nicht: Die Historie ist eine SQLite-Datei, die die exe selbst schreibt.</p>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-194"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-194"><code class="lang-bash">runnel runs D:\flows
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-196"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-196"><code class="lang-bash">runnel runs D:\flows
 runnel runs D:\flows --status failed --limit 50
 runnel runs D:\flows --path workflows/import.workflow.yaml --trigger cron:nightly
 runnel runs D:\flows 01M8A0J23JPQ51SMYGQSCD41PR</code></pre>
@@ -268,16 +268,16 @@ runnel runs D:\flows 01M8A0J23JPQ51SMYGQSCD41PR</code></pre>
 
           <h2 id="validate">Validating</h2>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-195"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-195"><code class="lang-bash">runnel validate D:\flows
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-197"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-197"><code class="lang-bash">runnel validate D:\flows
 runnel validate --env prod --strict D:\flows\workflows\import.workflow.yaml</code></pre>
 </div>
           <p>Folders are searched recursively. Checked are syntax and fields, links and cycles, unreachable actions, variables against every environment (or only <code>--env</code>), expressions, action and transform types with their configuration, as well as triggers and connections. Messages appear as <code>file:line:column: error|warning: text</code>, often with a suggestion (“did you mean …?”). On errors the exit code is 1, with <code>--strict</code> also on warnings – suitable as a CI step.</p>
 
           <h2 id="run">Running</h2>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-196"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-196"><code class="lang-bash">runnel run D:\flows\workflows\import.workflow.yaml
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-198"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-198"><code class="lang-bash">runnel run D:\flows\workflows\import.workflow.yaml
 runnel run --env prod --param DAYS=3 --param MODE=full D:\flows\workflows\import.workflow.yaml
 runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
 </div>
@@ -308,8 +308,8 @@ runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
 
           <h2 id="editor-en">Editor and server</h2>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-197"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-197"><code class="lang-bash">runnel serve D:\flows
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-199"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-199"><code class="lang-bash">runnel serve D:\flows
 <span class="tok-c"># editor: http://127.0.0.1:7300</span></code></pre>
 </div>
           <p>The editor shows workflows and pipelines as a canvas and as YAML, checks while you type, starts runs and shows them live. A step can be dragged from the palette straight onto a link to insert it between two steps. The “Runs” tab shows the run history with filters; “Open on canvas” shows an earlier run with status and log on the canvas. It works on the same files as the CLI – changes from Git or a text editor are detected when saving (conflict dialog). While <code>serve</code> runs, the project's triggers start too.</p>
@@ -328,8 +328,8 @@ runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
           <h2 id="service">Windows service</h2>
           <p>For continuous operation, a service serves the project like <code>runnel serve</code> and runs its triggers even without a logged-on user. Installing, starting, stopping and removing require a console “as administrator”.</p>
 <div class="code">
-  <div class="code-head"><span>PowerShell (as administrator)</span><button class="copy-btn" type="button" data-copy-from="code-198"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-198"><code class="lang-bash">runnel service install D:\flows
+  <div class="code-head"><span>PowerShell (as administrator)</span><button class="copy-btn" type="button" data-copy-from="code-200"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-200"><code class="lang-bash">runnel service install D:\flows
 runnel service start
 runnel service status
 runnel service stop
@@ -359,8 +359,8 @@ runnel service uninstall</code></pre>
           <h2 id="network">HTTP triggers on the network</h2>
           <p>HTTP triggers listen locally by default. They are reachable from the network over HTTPS only:</p>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-199"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-199"><code class="lang-bash">runnel serve --triggers 0.0.0.0:7301 --triggers-tls auto D:\flows
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-201"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-201"><code class="lang-bash">runnel serve --triggers 0.0.0.0:7301 --triggers-tls auto D:\flows
 runnel serve --triggers 0.0.0.0:7301 --triggers-cert C:\certs\runnel.crt --triggers-key C:\certs\runnel.key D:\flows</code></pre>
 </div>
           <ul>
@@ -381,8 +381,8 @@ runnel serve --triggers 0.0.0.0:7301 --triggers-cert C:\certs\runnel.crt --trigg
           <h3 id="history-en">Run history</h3>
           <p>Every finished run stays in the run history with the status of each action or transform and its log – whether it came from the editor, a trigger, the service or <code>runnel run</code> in Task Scheduler. It survives restarts and updates. No database server is needed: the history is an SQLite file written by the executable itself.</p>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-200"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-200"><code class="lang-bash">runnel runs D:\flows
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-202"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-202"><code class="lang-bash">runnel runs D:\flows
 runnel runs D:\flows --status failed --limit 50
 runnel runs D:\flows --path workflows/import.workflow.yaml --trigger cron:nightly
 runnel runs D:\flows 01M8A0J23JPQ51SMYGQSCD41PR</code></pre>

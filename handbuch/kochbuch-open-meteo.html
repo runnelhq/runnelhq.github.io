@@ -100,8 +100,8 @@
           <p>Keine Konten oder Schlüssel nötig.</p>
           <h2 id="files">Dateien</h2>
           <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-271"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-271"><code class="lang-yaml"><span class="tok-c"># Recipe: current weather from Open-Meteo (no sign-in needed).</span>
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-273"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-273"><code class="lang-yaml"><span class="tok-c"># Recipe: current weather from Open-Meteo (no sign-in needed).</span>
 <span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: open-meteo
@@ -110,8 +110,8 @@
   <span class="tok-t">OPEN_METEO_URL</span>: https://api.open-meteo.com/v1/</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>connections/open-meteo.yaml</span><button class="copy-btn" type="button" data-copy-from="code-272"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-272"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+  <div class="code-head"><span>connections/open-meteo.yaml</span><button class="copy-btn" type="button" data-copy-from="code-274"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-274"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: open-meteo
 <span class="tok-t">description</span>: Open-Meteo weather API, free without sign-in for non-commercial use
@@ -120,8 +120,8 @@
   <span class="tok-t">baseUrl</span>: ${OPEN_METEO_URL}</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/weather.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-273"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-273"><code class="lang-yaml"><span class="tok-c"># Reads the current temperature and wind speed for a place.</span>
+  <div class="code-head"><span>workflows/weather.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-275"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-275"><code class="lang-yaml"><span class="tok-c"># Reads the current temperature and wind speed for a place.</span>
 <span class="tok-c">#   runnel run workflows/weather.workflow.yaml</span>
 <span class="tok-c">#   runnel run --param LAT=48.14 --param LON=11.58 --param PLACE=München workflows/weather.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
@@ -165,8 +165,8 @@
 </div>
           <h2 id="run">Ausführen</h2><p>Im Ordner des Rezepts (PowerShell):</p>
           <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-277"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-277"><code class="lang-bash">runnel run workflows/weather.workflow.yaml
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-279"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-279"><code class="lang-bash">runnel run workflows/weather.workflow.yaml
 runnel run --param LAT=48.14 --param LON=11.58 --param PLACE=München workflows/weather.workflow.yaml</code></pre>
 </div>
           <h2 id="adapt">Anpassen</h2><ul><li><code>LAT</code>, <code>LON</code>, <code>PLACE</code> als Parameter oder Standardwerte setzen.</li><li>Weitere Werte unter <code>current</code> abfragen, z. B. <code>relative_humidity_2m</code>; sie stehen dann unter <code>body.current</code>.</li><li>Für kommerzielle Nutzung die Bedingungen von Open-Meteo beachten.</li></ul>
@@ -182,8 +182,8 @@ runnel run --param LAT=48.14 --param LON=11.58 --param PLACE=München workflows/
           <p>No accounts or keys needed.</p>
           <h2 id="files-en">Files</h2>
           <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-274"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-274"><code class="lang-yaml"><span class="tok-c"># Recipe: current weather from Open-Meteo (no sign-in needed).</span>
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-276"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-276"><code class="lang-yaml"><span class="tok-c"># Recipe: current weather from Open-Meteo (no sign-in needed).</span>
 <span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: open-meteo
@@ -192,8 +192,8 @@ runnel run --param LAT=48.14 --param LON=11.58 --param PLACE=München workflows/
   <span class="tok-t">OPEN_METEO_URL</span>: https://api.open-meteo.com/v1/</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>connections/open-meteo.yaml</span><button class="copy-btn" type="button" data-copy-from="code-275"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-275"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+  <div class="code-head"><span>connections/open-meteo.yaml</span><button class="copy-btn" type="button" data-copy-from="code-277"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-277"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: open-meteo
 <span class="tok-t">description</span>: Open-Meteo weather API, free without sign-in for non-commercial use
@@ -202,8 +202,8 @@ runnel run --param LAT=48.14 --param LON=11.58 --param PLACE=München workflows/
   <span class="tok-t">baseUrl</span>: ${OPEN_METEO_URL}</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/weather.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-276"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-276"><code class="lang-yaml"><span class="tok-c"># Reads the current temperature and wind speed for a place.</span>
+  <div class="code-head"><span>workflows/weather.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-278"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-278"><code class="lang-yaml"><span class="tok-c"># Reads the current temperature and wind speed for a place.</span>
 <span class="tok-c">#   runnel run workflows/weather.workflow.yaml</span>
 <span class="tok-c">#   runnel run --param LAT=48.14 --param LON=11.58 --param PLACE=München workflows/weather.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
@@ -247,8 +247,8 @@ runnel run --param LAT=48.14 --param LON=11.58 --param PLACE=München workflows/
 </div>
           <h2 id="run-en">Running</h2><p>In the recipe folder (PowerShell):</p>
           <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-278"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-278"><code class="lang-bash">runnel run workflows/weather.workflow.yaml
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-280"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-280"><code class="lang-bash">runnel run workflows/weather.workflow.yaml
 runnel run --param LAT=48.14 --param LON=11.58 --param PLACE=München workflows/weather.workflow.yaml</code></pre>
 </div>
           <h2 id="adapt-en">Adapting</h2><ul><li>Set <code>LAT</code>, <code>LON</code>, <code>PLACE</code> as parameters or defaults.</li><li>Request more values under <code>current</code>, e.g. <code>relative_humidity_2m</code>; they appear under <code>body.current</code>.</li><li>For commercial use, observe Open-Meteo's terms.</li></ul>

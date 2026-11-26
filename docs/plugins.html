@@ -96,7 +96,7 @@
           <p class="docs-eyebrow">Entwicklerdoku · Erweitern</p>
           <h1>Plugins entwickeln</h1>
           <p class="docs-lead">Ein Plugin erweitert Runnel um Actions, Transforms und Connection-Typen, ohne Runnel selbst zu ändern. Es ist ein eigenes Programm in beliebiger Sprache, das Runnel als Kindprozess startet und über JSON-RPC auf stdin/stdout anspricht.</p>
-          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/PLUGINS.md"><code>docs/dev/PLUGINS.md</code></a> (verbindliche Beschreibung des Protokolls) · <a href="https://github.com/runnelhq/sdk-go">README von <code>sdk-go</code></a> · Grundlagen: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0019-plugin-protokoll.md">ADR 0019</a> (Protokoll), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a> (Namen, Nachtrag 2026-11-24). Stand: Runnel <code>main</code> vom 25.11.2026, <code>sdk-go</code> v0.2.0.</p>
+          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/PLUGINS.md"><code>docs/dev/PLUGINS.md</code></a> (verbindliche Beschreibung des Protokolls) · <a href="https://github.com/runnelhq/sdk-go">README von <code>sdk-go</code></a> · Grundlagen: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0019-plugin-protokoll.md">ADR 0019</a> (Protokoll), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a> (Namen, Nachtrag 2026-11-24). Stand: Runnel <code>main</code> vom 25.11.2026, <code>sdk-go</code> v0.3.0.</p>
 
           <div class="callout">
             <strong>Plugin oder eingebauter Baustein?</strong>
@@ -136,8 +136,8 @@
 }</code></pre>
 </div>
 <div class="code">
-  <div class="code-head"><span>plugins/hello/plugin.yaml</span><button class="copy-btn" type="button" data-copy-from="code-41"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-41"><code class="lang-yaml"><span class="tok-t">kind</span>: Plugin
+  <div class="code-head"><span>plugins/hello/plugin.yaml</span><button class="copy-btn" type="button" data-copy-from="code-43"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-43"><code class="lang-yaml"><span class="tok-t">kind</span>: Plugin
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: hello                 <span class="tok-c"># wie der Ordner</span>
 <span class="tok-t">version</span>: 1.0.0              <span class="tok-c"># SemVer, wie im Programm</span>
@@ -148,8 +148,8 @@
   <span class="tok-t">linux</span>: bin/hello</code></pre>
 </div>
 <div class="code">
-  <div class="code-head"><span>Bauen, freigeben, ausführen</span><button class="copy-btn" type="button" data-copy-from="code-42"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-42"><code class="lang-bash">go build -o D:/flows/plugins/hello/bin/hello.exe .   <span class="tok-c"># GOOS=windows für Windows</span>
+  <div class="code-head"><span>Bauen, freigeben, ausführen</span><button class="copy-btn" type="button" data-copy-from="code-44"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-44"><code class="lang-bash">go build -o D:/flows/plugins/hello/bin/hello.exe .   <span class="tok-c"># GOOS=windows für Windows</span>
 runnel plugins trust D:/flows --plugin hello
 runnel plugins D:/flows
 runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
@@ -215,6 +215,36 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
             <li><code>RecordErrors: true</code> erlaubt einen Fehler-Link, <code>Parallel: true</code> erlaubt <code>copies</code>. Ein <code>error</code> oder <code>panic</code> aus <code>Run</code> beendet den Strom mit Meldung.</li>
           </ul>
 
+          <h3>Referenz: Ergebnis, Fehler, Grenzen</h3>
+          <p>Seit <code>sdk-go</code> v0.3.0 beschreiben Actions und Transforms optional, was sie liefern, wann sie scheitern und welche Grenzen gelten – wie die eingebauten Bausteine. Runnel übernimmt das in den Katalog des Projekts (<code>GET /api/v1/catalog</code>) und zeigt es in der Hilfe des Editors; <code>runnel catalog</code> und die <a href="../handbuch/bausteine.html">Referenz der Website</a> kennen nur eingebaute Bausteine.</p>
+          <div class="code">
+  <div class="code-head"><span>Reference</span><button class="copy-btn" type="button" data-copy-from="code-35"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-35"><code class="lang-go">runnel.AddAction(p, runnel.Action[greetConfig]{
+	Type: <span class="tok-s">"hello.greet"</span>, Label: <span class="tok-s">"Greet"</span>, Description: <span class="tok-s">"Returns a greeting for a name"</span>,
+	Reference: runnel.Reference{
+		Outputs: []runnel.OutputField{
+			{Name: <span class="tok-s">"output.message"</span>, Type: <span class="tok-s">"string"</span>, Description: <span class="tok-s">"The greeting, e.g. Hello, World!"</span>},
+			{Name: <span class="tok-s">"output.length"</span>, Type: <span class="tok-s">"integer"</span>, Description: <span class="tok-s">"Number of bytes of the greeting"</span>},
+		},
+		Errors: <span class="tok-s">"Fails when name is empty."</span>,
+	},
+	Run: …,
+})
+
+<span class="tok-c">// optional: same rules as the contract tests of Runnel</span>
+<span class="tok-k">func</span> TestReference(t *testing.T) { runneltest.CheckReference(t, newPlugin()) }</code></pre>
+</div>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Feld</th><th>Inhalt</th></tr></thead>
+            <tbody>
+              <tr><td><code>Outputs</code></td><td>Actions: Teile von <code>result.output</code> mit Pfad (<code>output.valid</code>, <code>output[].dn</code>) und Typ (<code>string</code>, <code>integer</code>, <code>number</code>, <code>boolean</code>, <code>datetime</code>, <code>list</code>, <code>object</code>, <code>any</code>). Transforms: gesetzte Felder; ein Name aus der Konfiguration als <code>&lt;feld&gt;</code></td></tr>
+              <tr><td><code>Records</code></td><td>nur Transforms: welche Datensätze über welche Links weitergehen</td></tr>
+              <tr><td><code>Errors</code></td><td>wann der Baustein scheitert; bei Transforms, was auf den Fehler-Link geht</td></tr>
+              <tr><td><code>Limits</code></td><td>Grenzen für Größe, Anzahl und Zeit mit Standardwerten</td></tr>
+            </tbody>
+          </table></div>
+          <p>Texte englisch, <code>Records</code>, <code>Errors</code> und <code>Limits</code> als Sätze mit Punkt. <code>runneltest.CheckReference</code> prüft sie mit den Regeln der Vertragstests von Runnel. Runnel vor E15b ignoriert die Angaben; <code>plugin-iban</code> ab v0.3.0 und <code>plugin-ldap</code> beschreiben alle Bausteine so.</p>
+
           <h3>Connection-Typen</h3>
           <p><code>runnel.AddConnectionType</code> bietet einen eigenen Typ an, z. B. <code>ldap</code>. Der Name ist der Namensraum oder beginnt mit <code>&lt;namensraum&gt;-</code>. Mit <code>Test</code> bietet der Editor „Test connection“ an; dabei soll nichts geschrieben oder gesendet werden außer der Anmeldung. Secrets kommen im Klartext an; Runnel maskiert sie in allem, was zurückkommt – trotzdem nicht loggen.</p>
 
@@ -241,8 +271,8 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
           <h2 id="protokoll">3. Protokoll</h2>
           <p>JSON-RPC 2.0, <strong>eine Nachricht je Zeile</strong> (UTF-8, <code>\n</code>, ein <code>\r</code> davor ist erlaubt), höchstens 16 MiB je Nachricht. stdin: Host → Plugin; stdout: Plugin → Host, <strong>nur</strong> Protokoll; stderr: Log des Plugins, je Zeile ein Eintrag (<code>DEBUG</code>, <code>INFO</code>, <code>WARN</code>, <code>ERROR</code> am Anfang setzen die Stufe). Das Plugin läuft im Projektordner mit der Umgebung von Runnel und <code>RUNNEL_PLUGIN=1</code>.</p>
           <div class="code">
-  <div class="code-head"><span>Ablauf einer Action</span><button class="copy-btn" type="button" data-copy-from="code-35"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-35"><code class="lang-bash">→ {<span class="tok-s">"jsonrpc"</span>:<span class="tok-s">"2.0"</span>,<span class="tok-s">"id"</span>:1,<span class="tok-s">"method"</span>:<span class="tok-s">"initialize"</span>,<span class="tok-s">"params"</span>:{<span class="tok-s">"protocolVersion"</span>:1,<span class="tok-s">"encodings"</span>:[<span class="tok-s">"json"</span>],<span class="tok-s">"runnel"</span>:{<span class="tok-s">"version"</span>:<span class="tok-s">"0.9.0"</span>}}}
+  <div class="code-head"><span>Ablauf einer Action</span><button class="copy-btn" type="button" data-copy-from="code-36"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-36"><code class="lang-bash">→ {<span class="tok-s">"jsonrpc"</span>:<span class="tok-s">"2.0"</span>,<span class="tok-s">"id"</span>:1,<span class="tok-s">"method"</span>:<span class="tok-s">"initialize"</span>,<span class="tok-s">"params"</span>:{<span class="tok-s">"protocolVersion"</span>:1,<span class="tok-s">"encodings"</span>:[<span class="tok-s">"json"</span>],<span class="tok-s">"runnel"</span>:{<span class="tok-s">"version"</span>:<span class="tok-s">"0.9.0"</span>}}}
 ← {<span class="tok-s">"jsonrpc"</span>:<span class="tok-s">"2.0"</span>,<span class="tok-s">"id"</span>:1,<span class="tok-s">"result"</span>:{<span class="tok-s">"protocolVersion"</span>:1,<span class="tok-s">"encoding"</span>:<span class="tok-s">"json"</span>,<span class="tok-s">"name"</span>:<span class="tok-s">"iban"</span>,<span class="tok-s">"version"</span>:<span class="tok-s">"1.0.0"</span>,<span class="tok-s">"concurrency"</span>:4}}
 → {<span class="tok-s">"jsonrpc"</span>:<span class="tok-s">"2.0"</span>,<span class="tok-s">"id"</span>:2,<span class="tok-s">"method"</span>:<span class="tok-s">"describe"</span>,<span class="tok-s">"params"</span>:{}}
 ← {<span class="tok-s">"jsonrpc"</span>:<span class="tok-s">"2.0"</span>,<span class="tok-s">"id"</span>:2,<span class="tok-s">"result"</span>:{<span class="tok-s">"actions"</span>:[{<span class="tok-s">"type"</span>:<span class="tok-s">"iban.check"</span>,<span class="tok-s">"label"</span>:<span class="tok-s">"Check IBAN"</span>,<span class="tok-s">"description"</span>:<span class="tok-s">"Checks an IBAN"</span>,<span class="tok-s">"schema"</span>:{<span class="tok-s">"type"</span>:<span class="tok-s">"object"</span>,<span class="tok-s">"properties"</span>:{<span class="tok-s">"iban"</span>:{<span class="tok-s">"type"</span>:<span class="tok-s">"string"</span>}},<span class="tok-s">"required"</span>:[<span class="tok-s">"iban"</span>]}}]}}
@@ -271,8 +301,8 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
 
           <h3>Transforms als Strom</h3>
           <div class="code">
-  <div class="code-head"><span>Strom eines Transforms</span><button class="copy-btn" type="button" data-copy-from="code-36"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-36"><code class="lang-bash">→ transform.open   {<span class="tok-s">"stream"</span>:1,<span class="tok-s">"type"</span>:<span class="tok-s">"iban.check-all"</span>,<span class="tok-s">"config"</span>:{<span class="tok-s">"field"</span>:<span class="tok-s">"iban"</span>},<span class="tok-s">"context"</span>:{…},<span class="tok-s">"emitWindow"</span>:4}
+  <div class="code-head"><span>Strom eines Transforms</span><button class="copy-btn" type="button" data-copy-from="code-37"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-37"><code class="lang-bash">→ transform.open   {<span class="tok-s">"stream"</span>:1,<span class="tok-s">"type"</span>:<span class="tok-s">"iban.check-all"</span>,<span class="tok-s">"config"</span>:{<span class="tok-s">"field"</span>:<span class="tok-s">"iban"</span>},<span class="tok-s">"context"</span>:{…},<span class="tok-s">"emitWindow"</span>:4}
 ← (answer)         {<span class="tok-s">"window"</span>:4}
 → transform.batch  {<span class="tok-s">"stream"</span>:1,<span class="tok-s">"fields"</span>:[{<span class="tok-s">"name"</span>:<span class="tok-s">"id"</span>,<span class="tok-s">"type"</span>:<span class="tok-s">"int"</span>},{<span class="tok-s">"name"</span>:<span class="tok-s">"iban"</span>,<span class="tok-s">"type"</span>:<span class="tok-s">"string"</span>}],<span class="tok-s">"rows"</span>:[[1,<span class="tok-s">"DE02…"</span>],[2,<span class="tok-s">"XX"</span>]]}
 ← transform.emit   {<span class="tok-s">"stream"</span>:1,<span class="tok-s">"to"</span>:<span class="tok-s">"main"</span>,<span class="tok-s">"fields"</span>:[…],<span class="tok-s">"rows"</span>:[[1,<span class="tok-s">"DE02…"</span>]]}
@@ -306,7 +336,7 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
           <p class="docs-eyebrow">Developer docs · Extending</p>
           <h1>Developing plugins</h1>
           <p class="docs-lead">A plugin adds actions, transforms and connection types to Runnel without changing Runnel itself. It is a program of its own in any language, which Runnel starts as a child process and talks to via JSON-RPC over stdin/stdout.</p>
-          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/PLUGINS.md"><code>docs/dev/PLUGINS.md</code></a> (the binding protocol description) · <a href="https://github.com/runnelhq/sdk-go">README of <code>sdk-go</code></a> · Background: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0019-plugin-protokoll.md">ADR 0019</a> (protocol), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a> (names, addendum 2026-11-24). As of Runnel <code>main</code> on 2026-11-25, <code>sdk-go</code> v0.2.0.</p>
+          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/PLUGINS.md"><code>docs/dev/PLUGINS.md</code></a> (the binding protocol description) · <a href="https://github.com/runnelhq/sdk-go">README of <code>sdk-go</code></a> · Background: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0019-plugin-protokoll.md">ADR 0019</a> (protocol), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a> (names, addendum 2026-11-24). As of Runnel <code>main</code> on 2026-11-25, <code>sdk-go</code> v0.3.0.</p>
 
           <div class="callout">
             <strong>Plugin or built-in component?</strong>
@@ -316,8 +346,8 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
           <h2 id="sdk-en">1. A plugin in Go</h2>
           <p>With the <a href="https://github.com/runnelhq/sdk-go">Go SDK</a> (module <code>github.com/runnelhq/sdk-go</code>, package <code>runnel</code>) a plugin describes its components as Go structs; the SDK handles protocol, schema, concurrency, cancellation and logging. It has no dependencies besides the standard library and is MIT licensed.</p>
           <div class="code">
-  <div class="code-head"><span>main.go</span><button class="copy-btn" type="button" data-copy-from="code-37"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-37"><code class="lang-go"><span class="tok-k">package</span> main
+  <div class="code-head"><span>main.go</span><button class="copy-btn" type="button" data-copy-from="code-38"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-38"><code class="lang-go"><span class="tok-k">package</span> main
 
 <span class="tok-k">import</span> (
 	<span class="tok-s">"context"</span>
@@ -346,8 +376,8 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
 }</code></pre>
 </div>
 <div class="code">
-  <div class="code-head"><span>plugins/hello/plugin.yaml</span><button class="copy-btn" type="button" data-copy-from="code-43"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-43"><code class="lang-yaml"><span class="tok-t">kind</span>: Plugin
+  <div class="code-head"><span>plugins/hello/plugin.yaml</span><button class="copy-btn" type="button" data-copy-from="code-45"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-45"><code class="lang-yaml"><span class="tok-t">kind</span>: Plugin
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: hello                 <span class="tok-c"># like the folder</span>
 <span class="tok-t">version</span>: 1.0.0              <span class="tok-c"># SemVer, as in the program</span>
@@ -358,8 +388,8 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
   <span class="tok-t">linux</span>: bin/hello</code></pre>
 </div>
 <div class="code">
-  <div class="code-head"><span>Build, trust, run</span><button class="copy-btn" type="button" data-copy-from="code-44"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-44"><code class="lang-bash">go build -o D:/flows/plugins/hello/bin/hello.exe .   <span class="tok-c"># GOOS=windows for Windows</span>
+  <div class="code-head"><span>Build, trust, run</span><button class="copy-btn" type="button" data-copy-from="code-46"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-46"><code class="lang-bash">go build -o D:/flows/plugins/hello/bin/hello.exe .   <span class="tok-c"># GOOS=windows for Windows</span>
 runnel plugins trust D:/flows --plugin hello
 runnel plugins D:/flows
 runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
@@ -385,8 +415,8 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
           <h3>Transforms</h3>
           <p>A transform reads batches with <code>Next</code> and writes records with <code>Emit</code>; the SDK keeps the credits in both directions. The same type name may be an action too. From <a href="https://github.com/runnelhq/sdk-go/tree/main/examples/hello"><code>examples/hello</code></a>:</p>
           <div class="code">
-  <div class="code-head"><span>Transform hello.greet</span><button class="copy-btn" type="button" data-copy-from="code-38"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-38"><code class="lang-go"><span class="tok-c">// greetRecords adds the greeting to every record; records without a name go to the error</span>
+  <div class="code-head"><span>Transform hello.greet</span><button class="copy-btn" type="button" data-copy-from="code-39"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-39"><code class="lang-go"><span class="tok-c">// greetRecords adds the greeting to every record; records without a name go to the error</span>
 <span class="tok-c">// link with _error and _errorField.</span>
 <span class="tok-k">func</span> greetRecords(ctx context.Context, s *runnel.Stream, c greetFieldConfig) error {
 	c.defaults()
@@ -425,6 +455,36 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
             <li><code>RecordErrors: true</code> allows an error link, <code>Parallel: true</code> allows <code>copies</code>. An <code>error</code> or <code>panic</code> from <code>Run</code> ends the stream with a message.</li>
           </ul>
 
+          <h3>Reference: output, errors, limits</h3>
+          <p>Since <code>sdk-go</code> v0.3.0, actions and transforms can describe what they return, when they fail and which limits apply – like the built-in components. Runnel takes this into the project catalog (<code>GET /api/v1/catalog</code>) and shows it in the editor's help; <code>runnel catalog</code> and the <a href="../handbuch/bausteine.html">website reference</a> know built-in components only.</p>
+          <div class="code">
+  <div class="code-head"><span>Reference</span><button class="copy-btn" type="button" data-copy-from="code-40"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-40"><code class="lang-go">runnel.AddAction(p, runnel.Action[greetConfig]{
+	Type: <span class="tok-s">"hello.greet"</span>, Label: <span class="tok-s">"Greet"</span>, Description: <span class="tok-s">"Returns a greeting for a name"</span>,
+	Reference: runnel.Reference{
+		Outputs: []runnel.OutputField{
+			{Name: <span class="tok-s">"output.message"</span>, Type: <span class="tok-s">"string"</span>, Description: <span class="tok-s">"The greeting, e.g. Hello, World!"</span>},
+			{Name: <span class="tok-s">"output.length"</span>, Type: <span class="tok-s">"integer"</span>, Description: <span class="tok-s">"Number of bytes of the greeting"</span>},
+		},
+		Errors: <span class="tok-s">"Fails when name is empty."</span>,
+	},
+	Run: …,
+})
+
+<span class="tok-c">// optional: same rules as the contract tests of Runnel</span>
+<span class="tok-k">func</span> TestReference(t *testing.T) { runneltest.CheckReference(t, newPlugin()) }</code></pre>
+</div>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Field</th><th>Content</th></tr></thead>
+            <tbody>
+              <tr><td><code>Outputs</code></td><td>Actions: parts of <code>result.output</code> with path (<code>output.valid</code>, <code>output[].dn</code>) and type (<code>string</code>, <code>integer</code>, <code>number</code>, <code>boolean</code>, <code>datetime</code>, <code>list</code>, <code>object</code>, <code>any</code>). Transforms: fields they set; a name from the configuration as <code>&lt;field&gt;</code></td></tr>
+              <tr><td><code>Records</code></td><td>Transforms only: which records go on over which links</td></tr>
+              <tr><td><code>Errors</code></td><td>When the component fails; for transforms, what goes to the error link</td></tr>
+              <tr><td><code>Limits</code></td><td>Limits on size, count and time with defaults</td></tr>
+            </tbody>
+          </table></div>
+          <p>Texts in English, <code>Records</code>, <code>Errors</code> and <code>Limits</code> as sentences with a full stop. <code>runneltest.CheckReference</code> checks them with the rules of Runnel's contract tests. Runnel before E15b ignores them; <code>plugin-iban</code> from v0.3.0 and <code>plugin-ldap</code> describe all their components this way.</p>
+
           <h3>Connection types</h3>
           <p><code>runnel.AddConnectionType</code> offers a type of its own, e.g. <code>ldap</code>. The name is the namespace or starts with <code>&lt;namespace&gt;-</code>. With <code>Test</code>, the editor offers “Test connection”; nothing should be written or sent besides signing in. Secrets arrive in plain text; Runnel masks them in everything that comes back – still, do not log them.</p>
 
@@ -451,8 +511,8 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
           <h2 id="protocol">3. Protocol</h2>
           <p>JSON-RPC 2.0, <strong>one message per line</strong> (UTF-8, <code>\n</code>, a preceding <code>\r</code> is allowed), at most 16 MiB per message. stdin: host → plugin; stdout: plugin → host, protocol <strong>only</strong>; stderr: the plugin's log, one entry per line (<code>DEBUG</code>, <code>INFO</code>, <code>WARN</code>, <code>ERROR</code> at the start set the level). The plugin runs in the project folder with Runnel's environment and <code>RUNNEL_PLUGIN=1</code>.</p>
           <div class="code">
-  <div class="code-head"><span>Flow of an action</span><button class="copy-btn" type="button" data-copy-from="code-39"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-39"><code class="lang-bash">→ {<span class="tok-s">"jsonrpc"</span>:<span class="tok-s">"2.0"</span>,<span class="tok-s">"id"</span>:1,<span class="tok-s">"method"</span>:<span class="tok-s">"initialize"</span>,<span class="tok-s">"params"</span>:{<span class="tok-s">"protocolVersion"</span>:1,<span class="tok-s">"encodings"</span>:[<span class="tok-s">"json"</span>],<span class="tok-s">"runnel"</span>:{<span class="tok-s">"version"</span>:<span class="tok-s">"0.9.0"</span>}}}
+  <div class="code-head"><span>Flow of an action</span><button class="copy-btn" type="button" data-copy-from="code-41"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-41"><code class="lang-bash">→ {<span class="tok-s">"jsonrpc"</span>:<span class="tok-s">"2.0"</span>,<span class="tok-s">"id"</span>:1,<span class="tok-s">"method"</span>:<span class="tok-s">"initialize"</span>,<span class="tok-s">"params"</span>:{<span class="tok-s">"protocolVersion"</span>:1,<span class="tok-s">"encodings"</span>:[<span class="tok-s">"json"</span>],<span class="tok-s">"runnel"</span>:{<span class="tok-s">"version"</span>:<span class="tok-s">"0.9.0"</span>}}}
 ← {<span class="tok-s">"jsonrpc"</span>:<span class="tok-s">"2.0"</span>,<span class="tok-s">"id"</span>:1,<span class="tok-s">"result"</span>:{<span class="tok-s">"protocolVersion"</span>:1,<span class="tok-s">"encoding"</span>:<span class="tok-s">"json"</span>,<span class="tok-s">"name"</span>:<span class="tok-s">"iban"</span>,<span class="tok-s">"version"</span>:<span class="tok-s">"1.0.0"</span>,<span class="tok-s">"concurrency"</span>:4}}
 → {<span class="tok-s">"jsonrpc"</span>:<span class="tok-s">"2.0"</span>,<span class="tok-s">"id"</span>:2,<span class="tok-s">"method"</span>:<span class="tok-s">"describe"</span>,<span class="tok-s">"params"</span>:{}}
 ← {<span class="tok-s">"jsonrpc"</span>:<span class="tok-s">"2.0"</span>,<span class="tok-s">"id"</span>:2,<span class="tok-s">"result"</span>:{<span class="tok-s">"actions"</span>:[{<span class="tok-s">"type"</span>:<span class="tok-s">"iban.check"</span>,<span class="tok-s">"label"</span>:<span class="tok-s">"Check IBAN"</span>,<span class="tok-s">"description"</span>:<span class="tok-s">"Checks an IBAN"</span>,<span class="tok-s">"schema"</span>:{<span class="tok-s">"type"</span>:<span class="tok-s">"object"</span>,<span class="tok-s">"properties"</span>:{<span class="tok-s">"iban"</span>:{<span class="tok-s">"type"</span>:<span class="tok-s">"string"</span>}},<span class="tok-s">"required"</span>:[<span class="tok-s">"iban"</span>]}}]}}
@@ -481,8 +541,8 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
 
           <h3>Transforms as a stream</h3>
           <div class="code">
-  <div class="code-head"><span>Stream of a transform</span><button class="copy-btn" type="button" data-copy-from="code-40"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-40"><code class="lang-bash">→ transform.open   {<span class="tok-s">"stream"</span>:1,<span class="tok-s">"type"</span>:<span class="tok-s">"iban.check-all"</span>,<span class="tok-s">"config"</span>:{<span class="tok-s">"field"</span>:<span class="tok-s">"iban"</span>},<span class="tok-s">"context"</span>:{…},<span class="tok-s">"emitWindow"</span>:4}
+  <div class="code-head"><span>Stream of a transform</span><button class="copy-btn" type="button" data-copy-from="code-42"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-42"><code class="lang-bash">→ transform.open   {<span class="tok-s">"stream"</span>:1,<span class="tok-s">"type"</span>:<span class="tok-s">"iban.check-all"</span>,<span class="tok-s">"config"</span>:{<span class="tok-s">"field"</span>:<span class="tok-s">"iban"</span>},<span class="tok-s">"context"</span>:{…},<span class="tok-s">"emitWindow"</span>:4}
 ← (answer)         {<span class="tok-s">"window"</span>:4}
 → transform.batch  {<span class="tok-s">"stream"</span>:1,<span class="tok-s">"fields"</span>:[{<span class="tok-s">"name"</span>:<span class="tok-s">"id"</span>,<span class="tok-s">"type"</span>:<span class="tok-s">"int"</span>},{<span class="tok-s">"name"</span>:<span class="tok-s">"iban"</span>,<span class="tok-s">"type"</span>:<span class="tok-s">"string"</span>}],<span class="tok-s">"rows"</span>:[[1,<span class="tok-s">"DE02…"</span>],[2,<span class="tok-s">"XX"</span>]]}
 ← transform.emit   {<span class="tok-s">"stream"</span>:1,<span class="tok-s">"to"</span>:<span class="tok-s">"main"</span>,<span class="tok-s">"fields"</span>:[…],<span class="tok-s">"rows"</span>:[[1,<span class="tok-s">"DE02…"</span>]]}

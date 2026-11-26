@@ -17,7 +17,7 @@
           <p class="docs-eyebrow">Entwicklerdoku · Erweitern</p>
           <h1>Plugins entwickeln</h1>
           <p class="docs-lead">Ein Plugin erweitert Runnel um Actions, Transforms und Connection-Typen, ohne Runnel selbst zu ändern. Es ist ein eigenes Programm in beliebiger Sprache, das Runnel als Kindprozess startet und über JSON-RPC auf stdin/stdout anspricht.</p>
-          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/PLUGINS.md"><code>docs/dev/PLUGINS.md</code></a> (verbindliche Beschreibung des Protokolls) · <a href="https://github.com/runnelhq/sdk-go">README von <code>sdk-go</code></a> · Grundlagen: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0019-plugin-protokoll.md">ADR 0019</a> (Protokoll), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a> (Namen, Nachtrag 2026-11-24). Stand: Runnel <code>main</code> vom 25.11.2026, <code>sdk-go</code> v0.2.0.</p>
+          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/PLUGINS.md"><code>docs/dev/PLUGINS.md</code></a> (verbindliche Beschreibung des Protokolls) · <a href="https://github.com/runnelhq/sdk-go">README von <code>sdk-go</code></a> · Grundlagen: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0019-plugin-protokoll.md">ADR 0019</a> (Protokoll), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a> (Namen, Nachtrag 2026-11-24). Stand: Runnel <code>main</code> vom 25.11.2026, <code>sdk-go</code> v0.3.0.</p>
 
           <div class="callout">
             <strong>Plugin oder eingebauter Baustein?</strong>
@@ -67,6 +67,20 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
             <li><strong><code>Init</code></strong> (optional) prüft die Konfiguration und nennt die Felder des Ausgangs – so kennen <code>runnel validate</code> und der Editor die Felder hinter dem Transform. <strong><code>DetectFields</code></strong> (optional) liest für „Detect fields“ die ersten Records einer Eingabe.</li>
             <li><code>RecordErrors: true</code> erlaubt einen Fehler-Link, <code>Parallel: true</code> erlaubt <code>copies</code>. Ein <code>error</code> oder <code>panic</code> aus <code>Run</code> beendet den Strom mit Meldung.</li>
           </ul>
+
+          <h3>Referenz: Ergebnis, Fehler, Grenzen</h3>
+          <p>Seit <code>sdk-go</code> v0.3.0 beschreiben Actions und Transforms optional, was sie liefern, wann sie scheitern und welche Grenzen gelten – wie die eingebauten Bausteine. Runnel übernimmt das in den Katalog des Projekts (<code>GET /api/v1/catalog</code>) und zeigt es in der Hilfe des Editors; <code>runnel catalog</code> und die <a href="../handbuch/bausteine.html">Referenz der Website</a> kennen nur eingebaute Bausteine.</p>
+          {{snippet:plugin-reference.go|Reference}}
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Feld</th><th>Inhalt</th></tr></thead>
+            <tbody>
+              <tr><td><code>Outputs</code></td><td>Actions: Teile von <code>result.output</code> mit Pfad (<code>output.valid</code>, <code>output[].dn</code>) und Typ (<code>string</code>, <code>integer</code>, <code>number</code>, <code>boolean</code>, <code>datetime</code>, <code>list</code>, <code>object</code>, <code>any</code>). Transforms: gesetzte Felder; ein Name aus der Konfiguration als <code>&lt;feld&gt;</code></td></tr>
+              <tr><td><code>Records</code></td><td>nur Transforms: welche Datensätze über welche Links weitergehen</td></tr>
+              <tr><td><code>Errors</code></td><td>wann der Baustein scheitert; bei Transforms, was auf den Fehler-Link geht</td></tr>
+              <tr><td><code>Limits</code></td><td>Grenzen für Größe, Anzahl und Zeit mit Standardwerten</td></tr>
+            </tbody>
+          </table></div>
+          <p>Texte englisch, <code>Records</code>, <code>Errors</code> und <code>Limits</code> als Sätze mit Punkt. <code>runneltest.CheckReference</code> prüft sie mit den Regeln der Vertragstests von Runnel. Runnel vor E15b ignoriert die Angaben; <code>plugin-iban</code> ab v0.3.0 und <code>plugin-ldap</code> beschreiben alle Bausteine so.</p>
 
           <h3>Connection-Typen</h3>
           <p><code>runnel.AddConnectionType</code> bietet einen eigenen Typ an, z. B. <code>ldap</code>. Der Name ist der Namensraum oder beginnt mit <code>&lt;namensraum&gt;-</code>. Mit <code>Test</code> bietet der Editor „Test connection“ an; dabei soll nichts geschrieben oder gesendet werden außer der Anmeldung. Secrets kommen im Klartext an; Runnel maskiert sie in allem, was zurückkommt – trotzdem nicht loggen.</p>
@@ -138,7 +152,7 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
           <p class="docs-eyebrow">Developer docs · Extending</p>
           <h1>Developing plugins</h1>
           <p class="docs-lead">A plugin adds actions, transforms and connection types to Runnel without changing Runnel itself. It is a program of its own in any language, which Runnel starts as a child process and talks to via JSON-RPC over stdin/stdout.</p>
-          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/PLUGINS.md"><code>docs/dev/PLUGINS.md</code></a> (the binding protocol description) · <a href="https://github.com/runnelhq/sdk-go">README of <code>sdk-go</code></a> · Background: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0019-plugin-protokoll.md">ADR 0019</a> (protocol), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a> (names, addendum 2026-11-24). As of Runnel <code>main</code> on 2026-11-25, <code>sdk-go</code> v0.2.0.</p>
+          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/PLUGINS.md"><code>docs/dev/PLUGINS.md</code></a> (the binding protocol description) · <a href="https://github.com/runnelhq/sdk-go">README of <code>sdk-go</code></a> · Background: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0019-plugin-protokoll.md">ADR 0019</a> (protocol), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a> (names, addendum 2026-11-24). As of Runnel <code>main</code> on 2026-11-25, <code>sdk-go</code> v0.3.0.</p>
 
           <div class="callout">
             <strong>Plugin or built-in component?</strong>
@@ -188,6 +202,20 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
             <li><strong><code>Init</code></strong> (optional) checks the configuration and names the output fields – so <code>runnel validate</code> and the editor know the fields behind the transform. <strong><code>DetectFields</code></strong> (optional) reads the first records of an input for “Detect fields”.</li>
             <li><code>RecordErrors: true</code> allows an error link, <code>Parallel: true</code> allows <code>copies</code>. An <code>error</code> or <code>panic</code> from <code>Run</code> ends the stream with a message.</li>
           </ul>
+
+          <h3>Reference: output, errors, limits</h3>
+          <p>Since <code>sdk-go</code> v0.3.0, actions and transforms can describe what they return, when they fail and which limits apply – like the built-in components. Runnel takes this into the project catalog (<code>GET /api/v1/catalog</code>) and shows it in the editor's help; <code>runnel catalog</code> and the <a href="../handbuch/bausteine.html">website reference</a> know built-in components only.</p>
+          {{snippet:plugin-reference.go|Reference}}
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Field</th><th>Content</th></tr></thead>
+            <tbody>
+              <tr><td><code>Outputs</code></td><td>Actions: parts of <code>result.output</code> with path (<code>output.valid</code>, <code>output[].dn</code>) and type (<code>string</code>, <code>integer</code>, <code>number</code>, <code>boolean</code>, <code>datetime</code>, <code>list</code>, <code>object</code>, <code>any</code>). Transforms: fields they set; a name from the configuration as <code>&lt;field&gt;</code></td></tr>
+              <tr><td><code>Records</code></td><td>Transforms only: which records go on over which links</td></tr>
+              <tr><td><code>Errors</code></td><td>When the component fails; for transforms, what goes to the error link</td></tr>
+              <tr><td><code>Limits</code></td><td>Limits on size, count and time with defaults</td></tr>
+            </tbody>
+          </table></div>
+          <p>Texts in English, <code>Records</code>, <code>Errors</code> and <code>Limits</code> as sentences with a full stop. <code>runneltest.CheckReference</code> checks them with the rules of Runnel's contract tests. Runnel before E15b ignores them; <code>plugin-iban</code> from v0.3.0 and <code>plugin-ldap</code> describe all their components this way.</p>
 
           <h3>Connection types</h3>
           <p><code>runnel.AddConnectionType</code> offers a type of its own, e.g. <code>ldap</code>. The name is the namespace or starts with <code>&lt;namespace&gt;-</code>. With <code>Test</code>, the editor offers “Test connection”; nothing should be written or sent besides signing in. Secrets arrive in plain text; Runnel masks them in everything that comes back – still, do not log them.</p>

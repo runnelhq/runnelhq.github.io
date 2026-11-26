@@ -99,8 +99,8 @@
 
           <h2 id="schreibweise">Schreibweise</h2>
 <div class="code">
-  <div class="code-head"><span>Beispiele</span><button class="copy-btn" type="button" data-copy-from="code-55"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-55"><code class="lang-yaml"><span class="tok-t">message</span>: <span class="tok-s">"Import vom {{ formatDate(addDays(today(), -1), 'dd.MM.yyyy') }}"</span>
+  <div class="code-head"><span>Beispiele</span><button class="copy-btn" type="button" data-copy-from="code-57"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-57"><code class="lang-yaml"><span class="tok-t">message</span>: <span class="tok-s">"Import vom {{ formatDate(addDays(today(), -1), 'dd.MM.yyyy') }}"</span>
 <span class="tok-t">when</span>: <span class="tok-s">"{{ results.load.output.errors &gt; 0 }}"</span>
 <span class="tok-t">condition</span>: <span class="tok-s">"{{ record.umsatz &gt; 0 &amp;&amp; record.ort != '' }}"</span>
 <span class="tok-t">value</span>: <span class="tok-s">"{{ upper(trim(record.name)) }}"</span>
@@ -139,8 +139,8 @@
 
           <h2 id="syntax">Syntax</h2>
 <div class="code">
-  <div class="code-head"><span>Examples</span><button class="copy-btn" type="button" data-copy-from="code-56"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-56"><code class="lang-yaml"><span class="tok-t">message</span>: <span class="tok-s">"Import of {{ formatDate(addDays(today(), -1), 'yyyy-MM-dd') }}"</span>
+  <div class="code-head"><span>Examples</span><button class="copy-btn" type="button" data-copy-from="code-58"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-58"><code class="lang-yaml"><span class="tok-t">message</span>: <span class="tok-s">"Import of {{ formatDate(addDays(today(), -1), 'yyyy-MM-dd') }}"</span>
 <span class="tok-t">when</span>: <span class="tok-s">"{{ results.load.output.errors &gt; 0 }}"</span>
 <span class="tok-t">condition</span>: <span class="tok-s">"{{ record.amount &gt; 0 &amp;&amp; record.city != '' }}"</span>
 <span class="tok-t">value</span>: <span class="tok-s">"{{ upper(trim(record.name)) }}"</span>
