@@ -3,8 +3,8 @@
   "section": "guide",
   "title": {"de": "Bausteine (Referenz)", "en": "Components (reference)"},
   "description": {
-    "de": "Referenz aller Actions und Transforms von Runnel mit Feldern, Standardwerten, erlaubten Werten und Beispielen – erzeugt aus runnel catalog.",
-    "en": "Reference of all Runnel actions and transforms with fields, defaults, allowed values and examples – generated from runnel catalog."
+    "de": "Referenz aller Actions, Transforms und Connection-Typen von Runnel: Felder, Ergebnis, Datensätze, Fehler, Grenzen und Beispiele – erzeugt aus runnel catalog.",
+    "en": "Reference of all Runnel actions, transforms and connection types: fields, output, records, errors, limits and examples – generated from runnel catalog."
   },
   "nav": "handbuch/",
   "main_class": "docs-page"
@@ -17,8 +17,8 @@
         <article class="prose" data-lang-block="de" lang="de">
           <p class="docs-eyebrow">Handbuch · Referenz</p>
           <h1>Bausteine</h1>
-          <p class="docs-lead">Alle Actions (für Workflows) und Transforms (für Pipelines) mit ihren Feldern unter <code>with:</code>. Die Seite ist aus <code>runnel catalog --json</code> erzeugt; Beschreibungen und Beispiele stammen aus dem Programm und sind daher englisch.</p>
-          <p class="docs-source">Dieselben Angaben zeigt <code>runnel catalog &lt;typ&gt;</code> in der Konsole und der Editor im Eigenschaftsdialog. Derselbe Name kann als Action und als Transform vorkommen (z. B. <code>core.log</code>) – dann mit unterschiedlichen Feldern. Solche Bausteine tragen das Kennzeichen <span class="dual">A+T</span>; es verlinkt auf die jeweils andere Art.</p>
+          <p class="docs-lead">Alle Actions (für Workflows), Transforms (für Pipelines) und Connection-Typen: Felder unter <code>with:</code>, Ergebnis bzw. gesetzte Felder, was mit den Datensätzen geschieht, Fehler und Grenzen. Die Seite ist aus <code>runnel-catalog.json</code> des Releases erzeugt (<code>runnel catalog --json</code>); Beschreibungen und Beispiele stammen aus dem Programm und sind daher englisch.</p>
+          <p class="docs-source">Dieselben Angaben zeigt <code>runnel catalog &lt;typ&gt;</code> in der Konsole und der Editor in der Hilfe zum Baustein („?“ oder F1). Derselbe Name kann als Action und als Transform vorkommen (z. B. <code>core.log</code>) – dann mit unterschiedlichen Feldern. Solche Bausteine tragen das Kennzeichen <span class="dual">A+T</span>; es verlinkt auf die jeweils andere Art.</p>
           {{blocks:de}}
         </article>
 
@@ -26,8 +26,8 @@
         <article class="prose" data-lang-block="en" lang="en">
           <p class="docs-eyebrow">User guide · Reference</p>
           <h1>Components</h1>
-          <p class="docs-lead">All actions (for workflows) and transforms (for pipelines) with their fields under <code>with:</code>. This page is generated from <code>runnel catalog --json</code>; descriptions and examples come from the program.</p>
-          <p class="docs-source"><code>runnel catalog &lt;type&gt;</code> shows the same information in the console, and the editor in its properties panel. The same name can exist as an action and as a transform (e.g. <code>core.log</code>) – then with different fields. Such components are marked <span class="dual">A+T</span>; the mark links to the other kind.</p>
+          <p class="docs-lead">All actions (for workflows), transforms (for pipelines) and connection types: fields under <code>with:</code>, output or fields set, what happens to the records, errors and limits. This page is generated from the release's <code>runnel-catalog.json</code> (<code>runnel catalog --json</code>); descriptions and examples come from the program.</p>
+          <p class="docs-source"><code>runnel catalog &lt;type&gt;</code> shows the same information in the console, and the editor in the help for a component (“?” or F1). The same name can exist as an action and as a transform (e.g. <code>core.log</code>) – then with different fields. Such components are marked <span class="dual">A+T</span>; the mark links to the other kind.</p>
           {{blocks:en}}
         </article>
       </div>

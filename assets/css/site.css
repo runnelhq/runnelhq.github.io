@@ -590,12 +590,32 @@ a.docs-card:hover { border-color: var(--ring); box-shadow: var(--rn-shadow-sm); 
 .ref-item h4 code { font-size: 15px; color: var(--primary); background: none; border: 0; padding: 0; }
 .ref-item h4 span { color: var(--muted-foreground); font-weight: 500; }
 .ref-item > p { color: var(--muted-foreground); font-size: 15px; }
+.ref-sub { margin-top: 18px !important; }
+.ref-sub h5 { margin: 0 0 8px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--foreground); }
+.ref-sub h5 span { font-size: 13px; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--muted-foreground); }
+.ref-sub > p, .ref-sub li { font-size: 15px; }
+.ref-sub ul { margin: 0; }
+.ref-note { margin-top: 6px !important; font-size: 13px; color: var(--muted-foreground); }
+.ref-type { white-space: nowrap; font-size: 12.5px; color: var(--muted-foreground); }
+.ref-version { font-size: 14px; color: var(--muted-foreground); }
+.ref-version span { white-space: nowrap; }
 .ref-table td:first-child { white-space: nowrap; }
 .ref-table td:first-child code { white-space: nowrap; }
 .ref-meta { margin-top: 4px; font-size: 13px; color: var(--muted-foreground); }
 .ref-req { font-weight: 600; color: var(--foreground); }
 .ref-fmt { display: inline-block; margin-top: 2px; font: 500 11px/1.4 var(--rn-font-mono); color: var(--muted-foreground); }
 .doc-table.ref-table { min-width: 560px; font-size: 14px; }
+.ref-type-m { display: none; }
+.ref-table td:not(:first-child), .prose .ref-table .ref-meta code { overflow-wrap: anywhere; white-space: normal; }
+@media (max-width: 760px) {
+  .doc-table.ref-table { min-width: 0; font-size: 13.5px; }
+  .ref-table td, .prose .ref-table td code { white-space: normal; overflow-wrap: anywhere; }
+  .prose .ref-table td:first-child code { white-space: normal; overflow-wrap: normal; word-break: normal; }
+  .ref-table th, .ref-table td { padding-left: 8px; padding-right: 8px; }
+  .ref-table--typed th:nth-child(2), .ref-table--typed td:nth-child(2) { display: none; }
+  .ref-type-m { display: block; margin-top: 4px; font: 500 12px/1.4 var(--rn-font-mono); color: var(--muted-foreground); }
+  .ref-table--typed td:first-child { width: 38%; }
+}
 .prose h3 { margin-top: 32px; font-size: 19px; }
 .prose dl.terms { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 20px; }
 .prose dl.terms dt { font-weight: 600; }
