@@ -1,0 +1,8 @@
+kind: Project
+apiVersion: runnel/v1
+name: testdaten
+description: Generates test data and pseudonymizes customer data with the plugin faker
+variables:
+  # Key of the pseudonyms: whoever knows it can trace replacements back by trying inputs.
+  # Set it as an environment variable, never in the project.
+  PSEUDONYM_SEED: ${env:PSEUDONYM_SEED}

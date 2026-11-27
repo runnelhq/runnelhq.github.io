@@ -60,6 +60,7 @@ GUIDE_NAV = [
     ("handbuch/kochbuch-xml.html", "XML-Austausch", "XML exchange", None),
     ("handbuch/kochbuch-iban.html", "IBANs prüfen (Plugin)", "Validating IBANs (plugin)", None),
     ("handbuch/kochbuch-ldap.html", "Active Directory (Plugin)", "Active Directory (plugin)", None),
+    ("handbuch/kochbuch-testdaten.html", "Testdaten (Plugin)", "Test data (plugin)", None),
 ]
 SECTIONS = {
     "docs": (DOCS_NAV, "Entwicklerdoku", "Developer docs"),

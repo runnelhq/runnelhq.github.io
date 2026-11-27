@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="de" data-theme="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kochbuch: Testdaten (Plugin) – Runnel</title>
+  <meta name="description" content="Erzeugt 1.000 Testkunden mit Namen, Adressen, IBAN und Geburtsdatum und pseudonymisiert echte Kundendaten: Gleiche Kundennummern bekommen dieselbe Ersatznummer, auch über Tabellen und Läufe hinweg. Mit dem Plugin faker.">
+  <meta name="title-en" content="Cookbook: Test data (plugin) – Runnel">
+  <meta name="description-en" content="Generates 1,000 test customers with names, addresses, IBAN and birth date and pseudonymizes real customer data: equal customer numbers get the same replacement, across tables and runs too. With the faker plugin.">
+  <meta name="theme-color" content="#0A6DA6">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="../assets/img/runnel-icon-180.png">
+  <link rel="preload" href="../assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/runnel.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+
+<!-- Erzeugt von tools/build.py aus _src/guide-kochbuch-testdaten.html – nicht von Hand bearbeiten. -->
+<!-- Wiederverwendbare Symbole -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></g></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7 10.5l5 5 5-5"/><path d="M5 20h14"/></g></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="logo" viewBox="0 0 204 64"><rect width="64" height="64" rx="15" fill="#0A6DA6"/><circle cx="14.5" cy="22" r="6.5" fill="#FFFFFF"/><path d="M25 22C33.5 22 30.5 42 37.5 42" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/><circle cx="48.5" cy="42" r="5.25" fill="none" stroke="#7CC5EB" stroke-width="4.75"/><path transform="translate(80 43.25) scale(0.020134)" fill="currentColor" d="M138 0V-1118H390V-931H402Q432 -1028 507 -1080.5Q582 -1133 678 -1133Q700 -1133 727 -1131Q754 -1129 773 -1126V-887Q757 -892 721 -896Q685 -900 650 -900Q578 -900 520.5 -869Q463 -838 430.5 -783.5Q398 -729 398 -658V0Z M1293 14Q1178 14 1091.5 -35Q1005 -84 957.5 -178.5Q910 -273 910 -407V-1118H1170V-447Q1170 -335 1228.5 -271Q1287 -207 1389 -207Q1458 -207 1512 -237Q1566 -267 1596.5 -325Q1627 -383 1627 -463V-1118H1888V0H1641L1638 -276H1658Q1611 -130 1519 -58Q1427 14 1293 14Z M2383.1 -655V0H2123.1V-1118H2369.1L2373.1 -842H2352.1Q2399.1 -987 2490.1 -1059.5Q2581.1 -1132 2718.1 -1132Q2833.1 -1132 2919.1 -1083Q3005.1 -1034 3052.6 -940Q3100.1 -846 3100.1 -711V0H2840.1V-671Q2840.1 -783 2782.1 -847Q2724.1 -911 2622.1 -911Q2553.1 -911 2499.1 -881Q2445.1 -851 2414.1 -793.5Q2383.1 -736 2383.1 -655Z M3595.1 -655V0H3335.1V-1118H3581.1L3585.1 -842H3564.1Q3611.1 -987 3702.1 -1059.5Q3793.1 -1132 3930.1 -1132Q4045.1 -1132 4131.1 -1083Q4217.1 -1034 4264.6 -940Q4312.1 -846 4312.1 -711V0H4052.1V-671Q4052.1 -783 3994.1 -847Q3936.1 -911 3834.1 -911Q3765.1 -911 3711.1 -881Q3657.1 -851 3626.1 -793.5Q3595.1 -736 3595.1 -655Z M5041.2 23Q4872.2 23 4750.7 -48Q4629.2 -119 4563.7 -248Q4498.2 -377 4498.2 -552Q4498.2 -725 4562.7 -855Q4627.2 -985 4745.7 -1058.5Q4864.2 -1132 5024.2 -1132Q5126.2 -1132 5218.7 -1099Q5311.2 -1066 5382.7 -997Q5454.2 -928 5494.7 -821.5Q5535.2 -715 5535.2 -568V-486H4621.2V-663H5406.2L5284.2 -611Q5284.2 -705 5255.2 -776.5Q5226.2 -848 5168.7 -888Q5111.2 -928 5025.2 -928Q4939.2 -928 4879.2 -887.5Q4819.2 -847 4787.7 -779.5Q4756.2 -712 4756.2 -629V-507Q4756.2 -401 4792.2 -328Q4828.2 -255 4893.2 -218Q4958.2 -181 5044.2 -181Q5101.2 -181 5147.7 -197.5Q5194.2 -214 5228.2 -246.5Q5262.2 -279 5279.2 -326L5518.2 -277Q5491.2 -187 5426.2 -119.5Q5361.2 -52 5263.7 -14.5Q5166.2 23 5041.2 23Z M5977.2 -1490V0H5717.2V-1490Z"/></symbol>
+  <!-- Strömungslinien (Gestaltungselement aus dem Corporate Design) -->
+  <symbol id="flow" viewBox="0 0 640 640" preserveAspectRatio="xMaxYMin meet">
+    <g fill="none" stroke-linecap="round">
+      <path d="M120 -40 C 340 -40 300 300 520 300 S 700 260 760 260" stroke="#0A6DA6" stroke-width="28" opacity=".55"/>
+      <path d="M60 120 C 280 120 240 460 460 460 S 660 420 760 420" stroke="#1688C6" stroke-width="18" opacity=".45"/>
+      <path d="M200 300 C 360 300 340 620 500 620 S 680 600 760 600" stroke="#3FA6DD" stroke-width="10" opacity=".35"/>
+    </g>
+    <circle cx="520" cy="300" r="34" fill="none" stroke="#7CC5EB" stroke-width="22"/>
+  </symbol>
+</svg>
+
+<a class="sr-only" href="#main" data-i18n="a11y.skip">Zum Inhalt springen</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html#top" aria-label="Runnel">
+      <svg viewBox="0 0 204 64" aria-hidden="true"><use href="#logo"/></svg>
+    </a>
+    <nav class="nav" aria-label="Hauptnavigation" data-i18n-attr="aria-label:nav.label">
+      <a href="../index.html#features" data-i18n="nav.features">Funktionen</a>
+      <a href="../index.html#model" data-i18n="nav.model">Modell</a>
+      <a href="../index.html#plugins" data-i18n="nav.plugins">Plugins</a>
+      <a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a>
+      <a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a>
+      <a href="../handbuch/" aria-current="page" data-i18n="nav.guide">Handbuch</a>
+      <a href="../docs/" data-i18n="nav.docs">Doku</a>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Sprache" data-i18n-attr="aria-label:lang.label">
+        <button type="button" data-lang="de" aria-pressed="true" lang="de" title="Deutsch">DE</button>
+        <button type="button" data-lang="en" aria-pressed="false" lang="en" title="English">EN</button>
+      </div>
+      <a class="icon-btn gh-link" href="https://github.com/runnelhq/runnel" aria-label="GitHub"><svg aria-hidden="true"><use href="#i-github"/></svg></a>
+      <a class="btn btn--primary btn--sm" href="https://github.com/runnelhq/runnel/releases" data-i18n="cta.download">Herunterladen</a>
+      <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Menü öffnen" data-i18n-attr="aria-label:nav.open">
+        <svg aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-nav" id="mobile-nav" data-open="false">
+    <div class="wrap">
+      <ul>
+        <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+        <li><a href="../index.html#model" data-i18n="nav.model">Modell</a></li>
+        <li><a href="../index.html#plugins" data-i18n="nav.plugins">Plugins</a></li>
+        <li><a href="../index.html#modes" data-i18n="nav.modes">Betrieb</a></li>
+        <li><a href="../index.html#compare" data-i18n="nav.compare">Vergleich</a></li>
+        <li><a href="../handbuch/" aria-current="page" data-i18n="nav.guide">Handbuch</a></li>
+        <li><a href="../docs/" data-i18n="nav.docs">Doku</a></li>
+      </ul>
+      <div class="mobile-ctas">
+        <a class="btn btn--primary" href="https://github.com/runnelhq/runnel/releases"><svg aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="cta.download">Herunterladen</span></a>
+        <a class="btn btn--outline" href="https://github.com/runnelhq/runnel"><svg aria-hidden="true"><use href="#i-github"/></svg>GitHub</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="docs-page">
+<div class="wrap docs-layout">
+      <details class="docs-side docs-side--mobile"><summary><span data-lang-block="de">Inhalt</span><span data-lang-block="en" hidden>Contents</span></summary><p class="docs-side-title"><span data-lang-block="de">Handbuch</span><span data-lang-block="en" hidden>User guide</span></p><ul class="docs-nav"><li><a href="../handbuch/"><span data-lang-block="de">Überblick</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../handbuch/installation.html"><span data-lang-block="de">Installation</span><span data-lang-block="en" hidden>Installation</span></a></li><li><a href="../handbuch/betrieb.html"><span data-lang-block="de">Betrieb</span><span data-lang-block="en" hidden>Operation</span></a></li><li><a href="../handbuch/projekt.html"><span data-lang-block="de">Projekt und Konfiguration</span><span data-lang-block="en" hidden>Project and configuration</span></a></li><li><a href="../handbuch/workflows.html"><span data-lang-block="de">Workflows</span><span data-lang-block="en" hidden>Workflows</span></a></li><li><a href="../handbuch/pipelines.html"><span data-lang-block="de">Pipelines</span><span data-lang-block="en" hidden>Pipelines</span></a></li><li><a href="../handbuch/trigger.html"><span data-lang-block="de">Trigger</span><span data-lang-block="en" hidden>Triggers</span></a></li><li><a href="../handbuch/plugins.html"><span data-lang-block="de">Plugins</span><span data-lang-block="en" hidden>Plugins</span></a></li><li><a href="../handbuch/ausdruecke.html"><span data-lang-block="de">Ausdrücke</span><span data-lang-block="en" hidden>Expressions</span></a></li><li><a href="../handbuch/bausteine.html"><span data-lang-block="de">Bausteine (Referenz)</span><span data-lang-block="en" hidden>Components (reference)</span></a></li><li class="docs-nav-group"><span data-lang-block="de">Kochbuch</span><span data-lang-block="en" hidden>Cookbook</span></li><li><a href="../handbuch/kochbuch.html"><span data-lang-block="de">Grundlagen</span><span data-lang-block="en" hidden>Basics</span></a></li><li><a href="../handbuch/kochbuch-open-meteo.html"><span data-lang-block="de">Wetter (Open-Meteo)</span><span data-lang-block="en" hidden>Weather (Open-Meteo)</span></a></li><li><a href="../handbuch/kochbuch-teams.html"><span data-lang-block="de">Microsoft Teams</span><span data-lang-block="en" hidden>Microsoft Teams</span></a></li><li><a href="../handbuch/kochbuch-github.html"><span data-lang-block="de">GitHub</span><span data-lang-block="en" hidden>GitHub</span></a></li><li><a href="../handbuch/kochbuch-hubspot.html"><span data-lang-block="de">HubSpot</span><span data-lang-block="en" hidden>HubSpot</span></a></li><li><a href="../handbuch/kochbuch-lexware.html"><span data-lang-block="de">Lexware Office</span><span data-lang-block="en" hidden>Lexware Office</span></a></li><li><a href="../handbuch/kochbuch-sharepoint.html"><span data-lang-block="de">SharePoint (Microsoft Graph)</span><span data-lang-block="en" hidden>SharePoint (Microsoft Graph)</span></a></li><li><a href="../handbuch/kochbuch-excel.html"><span data-lang-block="de">Excel lesen und schreiben</span><span data-lang-block="en" hidden>Reading and writing Excel</span></a></li><li><a href="../handbuch/kochbuch-xml.html"><span data-lang-block="de">XML-Austausch</span><span data-lang-block="en" hidden>XML exchange</span></a></li><li><a href="../handbuch/kochbuch-iban.html"><span data-lang-block="de">IBANs prüfen (Plugin)</span><span data-lang-block="en" hidden>Validating IBANs (plugin)</span></a></li><li><a href="../handbuch/kochbuch-ldap.html"><span data-lang-block="de">Active Directory (Plugin)</span><span data-lang-block="en" hidden>Active Directory (plugin)</span></a></li><li><a href="../handbuch/kochbuch-testdaten.html" aria-current="page"><span data-lang-block="de">Testdaten (Plugin)</span><span data-lang-block="en" hidden>Test data (plugin)</span></a></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#prereq">Voraussetzungen</a></li><li><a href="#files">Dateien</a></li><li><a href="#run">Ausführen</a></li><li><a href="#adapt">Anpassen</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#prereq-en">Prerequisites</a></li><li><a href="#files-en">Files</a></li><li><a href="#run-en">Running</a></li><li><a href="#adapt-en">Adapting</a></li></ul></details>
+<aside class="docs-side docs-side--desktop" aria-label="Dokumentation"><p class="docs-side-title"><span data-lang-block="de">Handbuch</span><span data-lang-block="en" hidden>User guide</span></p><ul class="docs-nav"><li><a href="../handbuch/"><span data-lang-block="de">Überblick</span><span data-lang-block="en" hidden>Overview</span></a></li><li><a href="../handbuch/installation.html"><span data-lang-block="de">Installation</span><span data-lang-block="en" hidden>Installation</span></a></li><li><a href="../handbuch/betrieb.html"><span data-lang-block="de">Betrieb</span><span data-lang-block="en" hidden>Operation</span></a></li><li><a href="../handbuch/projekt.html"><span data-lang-block="de">Projekt und Konfiguration</span><span data-lang-block="en" hidden>Project and configuration</span></a></li><li><a href="../handbuch/workflows.html"><span data-lang-block="de">Workflows</span><span data-lang-block="en" hidden>Workflows</span></a></li><li><a href="../handbuch/pipelines.html"><span data-lang-block="de">Pipelines</span><span data-lang-block="en" hidden>Pipelines</span></a></li><li><a href="../handbuch/trigger.html"><span data-lang-block="de">Trigger</span><span data-lang-block="en" hidden>Triggers</span></a></li><li><a href="../handbuch/plugins.html"><span data-lang-block="de">Plugins</span><span data-lang-block="en" hidden>Plugins</span></a></li><li><a href="../handbuch/ausdruecke.html"><span data-lang-block="de">Ausdrücke</span><span data-lang-block="en" hidden>Expressions</span></a></li><li><a href="../handbuch/bausteine.html"><span data-lang-block="de">Bausteine (Referenz)</span><span data-lang-block="en" hidden>Components (reference)</span></a></li><li class="docs-nav-group"><span data-lang-block="de">Kochbuch</span><span data-lang-block="en" hidden>Cookbook</span></li><li><a href="../handbuch/kochbuch.html"><span data-lang-block="de">Grundlagen</span><span data-lang-block="en" hidden>Basics</span></a></li><li><a href="../handbuch/kochbuch-open-meteo.html"><span data-lang-block="de">Wetter (Open-Meteo)</span><span data-lang-block="en" hidden>Weather (Open-Meteo)</span></a></li><li><a href="../handbuch/kochbuch-teams.html"><span data-lang-block="de">Microsoft Teams</span><span data-lang-block="en" hidden>Microsoft Teams</span></a></li><li><a href="../handbuch/kochbuch-github.html"><span data-lang-block="de">GitHub</span><span data-lang-block="en" hidden>GitHub</span></a></li><li><a href="../handbuch/kochbuch-hubspot.html"><span data-lang-block="de">HubSpot</span><span data-lang-block="en" hidden>HubSpot</span></a></li><li><a href="../handbuch/kochbuch-lexware.html"><span data-lang-block="de">Lexware Office</span><span data-lang-block="en" hidden>Lexware Office</span></a></li><li><a href="../handbuch/kochbuch-sharepoint.html"><span data-lang-block="de">SharePoint (Microsoft Graph)</span><span data-lang-block="en" hidden>SharePoint (Microsoft Graph)</span></a></li><li><a href="../handbuch/kochbuch-excel.html"><span data-lang-block="de">Excel lesen und schreiben</span><span data-lang-block="en" hidden>Reading and writing Excel</span></a></li><li><a href="../handbuch/kochbuch-xml.html"><span data-lang-block="de">XML-Austausch</span><span data-lang-block="en" hidden>XML exchange</span></a></li><li><a href="../handbuch/kochbuch-iban.html"><span data-lang-block="de">IBANs prüfen (Plugin)</span><span data-lang-block="en" hidden>Validating IBANs (plugin)</span></a></li><li><a href="../handbuch/kochbuch-ldap.html"><span data-lang-block="de">Active Directory (Plugin)</span><span data-lang-block="en" hidden>Active Directory (plugin)</span></a></li><li><a href="../handbuch/kochbuch-testdaten.html" aria-current="page"><span data-lang-block="de">Testdaten (Plugin)</span><span data-lang-block="en" hidden>Test data (plugin)</span></a></li></ul><p class="docs-side-title"><span data-lang-block="de">Auf dieser Seite</span><span data-lang-block="en" hidden>On this page</span></p><ul class="docs-toc" data-lang-block="de"><li><a href="#prereq">Voraussetzungen</a></li><li><a href="#files">Dateien</a></li><li><a href="#run">Ausführen</a></li><li><a href="#adapt">Anpassen</a></li></ul><ul class="docs-toc" data-lang-block="en" hidden><li><a href="#prereq-en">Prerequisites</a></li><li><a href="#files-en">Files</a></li><li><a href="#run-en">Running</a></li><li><a href="#adapt-en">Adapting</a></li></ul></aside>
+
+      <div class="docs-content">
+          <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch · Kochbuch</p>
+          <h1>Testdaten (Plugin)</h1>
+          <p class="docs-lead">Erzeugt 1.000 Testkunden mit Namen, Adressen, IBAN und Geburtsdatum und pseudonymisiert echte Kundendaten: Gleiche Kundennummern bekommen dieselbe Ersatznummer, auch über Tabellen und Läufe hinweg. Mit dem Plugin <code>faker</code>.</p>
+          <dl class="recipe-meta"><dt>Plugin</dt><dd><a href="https://github.com/runnelhq/plugin-faker"><code>runnelhq/plugin-faker</code></a>: Eingabe <code>faker.rows</code>, Transform <code>faker.fill</code>, Action <code>faker.value</code>; gebaut mit dem Rust-SDK</dd><dt>Anmeldung</dt><dd>keine – rechnet nur lokal</dd><dt>Stand</dt><dd>Geprüft am 27.11.2026 mit den Releases Runnel <code>v0.1.0-alpha.13</code> und plugin-faker 0.2.0: <code>runnel validate</code> und vollständig ausgeführt; zwei Läufe mit demselben <code>PSEUDONYM_SEED</code> ergeben dieselben Dateien.</dd></dl>
+          <h2 id="prereq">Voraussetzungen</h2>
+          <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Art</th><th>Bedeutung</th></tr></thead><tbody><tr><td><code>plugins/faker</code></td><td>Plugin</td><td>Archiv von den <a href="https://github.com/runnelhq/plugin-faker/releases">Releases</a> nach <code>plugins/</code> entpacken und mit <code>runnel plugins trust</code> freigeben – siehe <a href="plugins.html#installieren">Plugins installieren</a></td></tr><tr><td><code>PSEUDONYM_SEED</code></td><td>Variable</td><td>Schlüssel der Pseudonyme, eine ganze Zahl – als Umgebungsvariable, nie im Projekt</td></tr></tbody></table></div>
+          <h2 id="files">Dateien</h2>
+          <div class="code">
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-315"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-315"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: testdaten
+<span class="tok-t">description</span>: Generates test data and pseudonymizes customer data with the plugin faker
+<span class="tok-t">variables</span>:
+  <span class="tok-c"># Key of the pseudonyms: whoever knows it can trace replacements back by trying inputs.</span>
+  <span class="tok-c"># Set it as an environment variable, never in the project.</span>
+  <span class="tok-t">PSEUDONYM_SEED</span>: ${env:PSEUDONYM_SEED}</code></pre>
+</div>
+          <div class="code">
+  <div class="code-head"><span>data/customers.csv</span><button class="copy-btn" type="button" data-copy-from="code-316"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-316"><code class="lang-text">customerNo;firstName;lastName;email;city;revenue
+4711;Anna;Müller;anna.mueller@firma-a.de;Köln;1250,00
+4712;Jens;Schmidt;j.schmidt@firma-b.de;Bonn;980,50
+4713;Eva;Weber;eva.weber@firma-c.de;Köln;
+4711;Anna;Müller;anna.mueller@firma-a.de;Köln;310,00</code></pre>
+</div>
+          <div class="code">
+  <div class="code-head"><span>pipelines/customers.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-317"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-317"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: customers
+<span class="tok-t">description</span>: Generates 1,000 test customers; the same seed gives the same data on every system
+<span class="tok-t">parameters</span>:
+  - <span class="tok-t">name</span>: COUNT
+    <span class="tok-t">type</span>: int
+    <span class="tok-t">default</span>: <span class="tok-s">"1000"</span>
+<span class="tok-t">transforms</span>:
+  - <span class="tok-t">id</span>: fake
+    <span class="tok-t">type</span>: faker.rows
+    <span class="tok-t">with</span>:
+      <span class="tok-t">count</span>: ${COUNT}
+      <span class="tok-t">locale</span>: de
+      <span class="tok-t">seed</span>: 42
+      <span class="tok-t">fields</span>:
+        - { <span class="tok-t">name</span>: customerNo, <span class="tok-t">kind</span>: pattern, <span class="tok-t">pattern</span>: <span class="tok-s">"KD-#####"</span> }
+        - { <span class="tok-t">name</span>: salutation, <span class="tok-t">kind</span>: salutation }
+        - { <span class="tok-t">name</span>: firstName, <span class="tok-t">kind</span>: firstName }
+        - { <span class="tok-t">name</span>: lastName, <span class="tok-t">kind</span>: lastName }
+        - { <span class="tok-t">name</span>: email, <span class="tok-t">kind</span>: email, <span class="tok-t">from</span>: <span class="tok-s">"firstName, lastName"</span> }
+        - { <span class="tok-t">name</span>: street, <span class="tok-t">kind</span>: street }
+        - { <span class="tok-t">name</span>: houseNumber, <span class="tok-t">kind</span>: houseNumber }
+        - { <span class="tok-t">name</span>: postcode, <span class="tok-t">kind</span>: postcode }
+        - { <span class="tok-t">name</span>: city, <span class="tok-t">kind</span>: city }
+        - { <span class="tok-t">name</span>: birthDate, <span class="tok-t">kind</span>: birthDate, <span class="tok-t">minAge</span>: 18, <span class="tok-t">maxAge</span>: 90 }
+        - { <span class="tok-t">name</span>: iban, <span class="tok-t">kind</span>: iban }
+        - { <span class="tok-t">name</span>: segment, <span class="tok-t">kind</span>: pick, <span class="tok-t">values</span>: [A, B, C], <span class="tok-t">weights</span>: [1, 3, 6] }
+        - { <span class="tok-t">name</span>: phone, <span class="tok-t">kind</span>: phone, <span class="tok-t">nullRate</span>: 0.2 }
+  - <span class="tok-t">id</span>: write
+    <span class="tok-t">type</span>: csv.output
+    <span class="tok-t">with</span>:
+      <span class="tok-t">path</span>: out/test-customers.csv
+      <span class="tok-t">delimiter</span>: <span class="tok-s">";"</span>
+<span class="tok-t">links</span>:
+  - { <span class="tok-t">from</span>: fake, <span class="tok-t">to</span>: write }</code></pre>
+</div>
+          <div class="code">
+  <div class="code-head"><span>pipelines/pseudonymize.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-318"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-318"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: pseudonymize
+<span class="tok-t">description</span>: Replaces names, e-mail and customer number of real data; the same input gives the same replacement
+<span class="tok-t">transforms</span>:
+  - <span class="tok-t">id</span>: read
+    <span class="tok-t">type</span>: csv.input
+    <span class="tok-t">with</span>:
+      <span class="tok-t">path</span>: data/customers.csv
+      <span class="tok-t">delimiter</span>: <span class="tok-s">";"</span>
+      <span class="tok-t">fields</span>:
+        - { <span class="tok-t">name</span>: customerNo }
+        - { <span class="tok-t">name</span>: firstName }
+        - { <span class="tok-t">name</span>: lastName }
+        - { <span class="tok-t">name</span>: email }
+        - { <span class="tok-t">name</span>: city }
+        - { <span class="tok-t">name</span>: revenue }                     <span class="tok-c"># passed on unchanged</span>
+  - <span class="tok-t">id</span>: pseudo
+    <span class="tok-t">type</span>: faker.fill
+    <span class="tok-t">with</span>:
+      <span class="tok-t">consistent</span>: true
+      <span class="tok-t">seed</span>: ${PSEUDONYM_SEED}
+      <span class="tok-t">fields</span>:
+        - { <span class="tok-t">name</span>: customerNo, <span class="tok-t">kind</span>: pattern, <span class="tok-t">pattern</span>: <span class="tok-s">"KD-#####"</span> }
+        - { <span class="tok-t">name</span>: firstName, <span class="tok-t">kind</span>: firstName }
+        - { <span class="tok-t">name</span>: lastName, <span class="tok-t">kind</span>: lastName }
+        - { <span class="tok-t">name</span>: email, <span class="tok-t">kind</span>: email, <span class="tok-t">from</span>: <span class="tok-s">"firstName, lastName"</span> }
+  - <span class="tok-t">id</span>: write
+    <span class="tok-t">type</span>: csv.output
+    <span class="tok-t">with</span>:
+      <span class="tok-t">path</span>: out/customers-pseudonymized.csv
+      <span class="tok-t">delimiter</span>: <span class="tok-s">";"</span>
+<span class="tok-t">links</span>:
+  - { <span class="tok-t">from</span>: read, <span class="tok-t">to</span>: pseudo }
+  - { <span class="tok-t">from</span>: pseudo, <span class="tok-t">to</span>: write }</code></pre>
+</div>
+          <div class="code">
+  <div class="code-head"><span>workflows/generate.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-319"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-319"><code class="lang-yaml"><span class="tok-c"># Creates the output folder, generates test customers and pseudonymizes data/customers.csv.</span>
+<span class="tok-c">#   $env:PSEUDONYM_SEED = "…"</span>
+<span class="tok-c">#   runnel run workflows/generate.workflow.yaml</span>
+<span class="tok-t">kind</span>: Workflow
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: generate
+<span class="tok-t">outputs</span>:
+  - <span class="tok-t">name</span>: GENERATED
+    <span class="tok-t">type</span>: int
+    <span class="tok-t">value</span>: <span class="tok-s">"{{ results.customers.output.transforms.write.written }}"</span>
+  - <span class="tok-t">name</span>: PSEUDONYMIZED
+    <span class="tok-t">type</span>: int
+    <span class="tok-t">value</span>: <span class="tok-s">"{{ results.pseudonymize.output.transforms.write.written }}"</span>
+<span class="tok-t">actions</span>:
+  - <span class="tok-t">id</span>: start
+    <span class="tok-t">type</span>: core.start
+  - <span class="tok-t">id</span>: folder
+    <span class="tok-t">type</span>: file.mkdir
+    <span class="tok-t">with</span>:
+      <span class="tok-t">path</span>: out
+  - <span class="tok-t">id</span>: customers
+    <span class="tok-t">type</span>: core.run-pipeline
+    <span class="tok-t">with</span>:
+      <span class="tok-t">pipeline</span>: pipelines/customers.pipeline.yaml
+  - <span class="tok-t">id</span>: pseudonymize
+    <span class="tok-t">type</span>: core.run-pipeline
+    <span class="tok-t">with</span>:
+      <span class="tok-t">pipeline</span>: pipelines/pseudonymize.pipeline.yaml
+<span class="tok-t">links</span>:
+  - { <span class="tok-t">from</span>: start, <span class="tok-t">to</span>: folder }
+  - { <span class="tok-t">from</span>: folder, <span class="tok-t">to</span>: customers }
+  - { <span class="tok-t">from</span>: customers, <span class="tok-t">to</span>: pseudonymize }</code></pre>
+</div>
+          <p>Mit <code>consistent: true</code> hängt der Ersatz nur vom Eingabewert, dem Namen des Feldes und <code>seed</code> ab: Kundennummer 4711 wird in jeder Zeile und in jeder Tabelle mit gleichem Feldnamen zu derselben Nummer. Wer den Seed kennt, kann Ersatzwerte durch Ausprobieren zurückführen – deshalb kommt er aus einer Umgebungsvariablen. Pseudonymisieren ersetzt nur die genannten Felder; Ort und Umsatz bleiben, die Daten sind also nicht anonym. <code>runnel validate</code> warnt bei <code>seed: ${PSEUDONYM_SEED}</code> „without seed, consistent uses seed 0“, weil die Prüfung den Wert der Variablen nicht kennt; im Lauf gilt der gesetzte Seed.</p>
+          <h2 id="run">Ausführen</h2><p>Im Ordner des Rezepts (PowerShell):</p>
+          <div class="code">
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-325"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-325"><code class="lang-bash">Expand-Archive .\runnel-plugin-faker_&lt;version&gt;_windows_amd64.zip -DestinationPath .\plugins
+runnel plugins trust . --plugin faker
+$env:PSEUDONYM_SEED = <span class="tok-s">"…"</span>   <span class="tok-c"># eine ganze Zahl</span>
+runnel run workflows/generate.workflow.yaml
+runnel run --param COUNT=100000 pipelines/customers.pipeline.yaml</code></pre>
+</div>
+          <h2 id="adapt">Anpassen</h2><ul><li>Felder wählt <code>kind</code>: Personen (<code>firstName</code>, <code>salutation</code> passend zum Vornamen), Adressen mit echten Städten und passender Postleitzahl, <code>iban</code>, <code>bic</code> und <code>vatId</code> mit gültiger Prüfziffer, Zahlen und Daten mit <code>min</code>/<code>max</code>, <code>pick</code> mit Gewichten und <code>pattern</code> wie <code>KD-#####</code>. <code>nullRate</code> erzeugt leere Werte, um Wege für fehlende Daten zu testen.</li><li><code>seed</code> macht Testdaten wiederholbar: gleiche Konfiguration, gleiche Daten auf jedem System. Ein neues Feld ändert die anderen nicht. <code>locale: en</code> erzeugt englische Daten.</li><li>Für einen einzelnen Wert im Workflow, etwa für einen Test: Action <code>faker.value</code> mit <code>kind: iban</code>; das Ergebnis steht in <code>results.&lt;id&gt;.output</code>.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/testdaten">Quellen auf GitHub: <code>_src/kochbuch/testdaten</code></a></p>
+          </article>
+
+          <article class="prose" data-lang-block="en" hidden lang="en">
+          <p class="docs-eyebrow">User guide · Cookbook</p>
+          <h1>Test data (plugin)</h1>
+          <p class="docs-lead">Generates 1,000 test customers with names, addresses, IBAN and birth date and pseudonymizes real customer data: equal customer numbers get the same replacement, across tables and runs too. With the <code>faker</code> plugin.</p>
+          <dl class="recipe-meta"><dt>Plugin</dt><dd><a href="https://github.com/runnelhq/plugin-faker"><code>runnelhq/plugin-faker</code></a>: input <code>faker.rows</code>, transform <code>faker.fill</code>, action <code>faker.value</code>; built with the Rust SDK</dd><dt>Sign-in</dt><dd>none – computes locally only</dd><dt>Status</dt><dd>Checked on 2026-11-27 with the releases Runnel <code>v0.1.0-alpha.13</code> and plugin-faker 0.2.0: <code>runnel validate</code> and run completely; two runs with the same <code>PSEUDONYM_SEED</code> give the same files.</dd></dl>
+          <h2 id="prereq-en">Prerequisites</h2>
+          <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Kind</th><th>Meaning</th></tr></thead><tbody><tr><td><code>plugins/faker</code></td><td>Plugin</td><td>Unpack the archive from the <a href="https://github.com/runnelhq/plugin-faker/releases">releases</a> into <code>plugins/</code> and trust it with <code>runnel plugins trust</code> – see <a href="plugins.html#install">Installing plugins</a></td></tr><tr><td><code>PSEUDONYM_SEED</code></td><td>Variable</td><td>Key of the pseudonyms, a whole number – as an environment variable, never in the project</td></tr></tbody></table></div>
+          <h2 id="files-en">Files</h2>
+          <div class="code">
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-320"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-320"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: testdaten
+<span class="tok-t">description</span>: Generates test data and pseudonymizes customer data with the plugin faker
+<span class="tok-t">variables</span>:
+  <span class="tok-c"># Key of the pseudonyms: whoever knows it can trace replacements back by trying inputs.</span>
+  <span class="tok-c"># Set it as an environment variable, never in the project.</span>
+  <span class="tok-t">PSEUDONYM_SEED</span>: ${env:PSEUDONYM_SEED}</code></pre>
+</div>
+          <div class="code">
+  <div class="code-head"><span>data/customers.csv</span><button class="copy-btn" type="button" data-copy-from="code-321"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-321"><code class="lang-text">customerNo;firstName;lastName;email;city;revenue
+4711;Anna;Müller;anna.mueller@firma-a.de;Köln;1250,00
+4712;Jens;Schmidt;j.schmidt@firma-b.de;Bonn;980,50
+4713;Eva;Weber;eva.weber@firma-c.de;Köln;
+4711;Anna;Müller;anna.mueller@firma-a.de;Köln;310,00</code></pre>
+</div>
+          <div class="code">
+  <div class="code-head"><span>pipelines/customers.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-322"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-322"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: customers
+<span class="tok-t">description</span>: Generates 1,000 test customers; the same seed gives the same data on every system
+<span class="tok-t">parameters</span>:
+  - <span class="tok-t">name</span>: COUNT
+    <span class="tok-t">type</span>: int
+    <span class="tok-t">default</span>: <span class="tok-s">"1000"</span>
+<span class="tok-t">transforms</span>:
+  - <span class="tok-t">id</span>: fake
+    <span class="tok-t">type</span>: faker.rows
+    <span class="tok-t">with</span>:
+      <span class="tok-t">count</span>: ${COUNT}
+      <span class="tok-t">locale</span>: de
+      <span class="tok-t">seed</span>: 42
+      <span class="tok-t">fields</span>:
+        - { <span class="tok-t">name</span>: customerNo, <span class="tok-t">kind</span>: pattern, <span class="tok-t">pattern</span>: <span class="tok-s">"KD-#####"</span> }
+        - { <span class="tok-t">name</span>: salutation, <span class="tok-t">kind</span>: salutation }
+        - { <span class="tok-t">name</span>: firstName, <span class="tok-t">kind</span>: firstName }
+        - { <span class="tok-t">name</span>: lastName, <span class="tok-t">kind</span>: lastName }
+        - { <span class="tok-t">name</span>: email, <span class="tok-t">kind</span>: email, <span class="tok-t">from</span>: <span class="tok-s">"firstName, lastName"</span> }
+        - { <span class="tok-t">name</span>: street, <span class="tok-t">kind</span>: street }
+        - { <span class="tok-t">name</span>: houseNumber, <span class="tok-t">kind</span>: houseNumber }
+        - { <span class="tok-t">name</span>: postcode, <span class="tok-t">kind</span>: postcode }
+        - { <span class="tok-t">name</span>: city, <span class="tok-t">kind</span>: city }
+        - { <span class="tok-t">name</span>: birthDate, <span class="tok-t">kind</span>: birthDate, <span class="tok-t">minAge</span>: 18, <span class="tok-t">maxAge</span>: 90 }
+        - { <span class="tok-t">name</span>: iban, <span class="tok-t">kind</span>: iban }
+        - { <span class="tok-t">name</span>: segment, <span class="tok-t">kind</span>: pick, <span class="tok-t">values</span>: [A, B, C], <span class="tok-t">weights</span>: [1, 3, 6] }
+        - { <span class="tok-t">name</span>: phone, <span class="tok-t">kind</span>: phone, <span class="tok-t">nullRate</span>: 0.2 }
+  - <span class="tok-t">id</span>: write
+    <span class="tok-t">type</span>: csv.output
+    <span class="tok-t">with</span>:
+      <span class="tok-t">path</span>: out/test-customers.csv
+      <span class="tok-t">delimiter</span>: <span class="tok-s">";"</span>
+<span class="tok-t">links</span>:
+  - { <span class="tok-t">from</span>: fake, <span class="tok-t">to</span>: write }</code></pre>
+</div>
+          <div class="code">
+  <div class="code-head"><span>pipelines/pseudonymize.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-323"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-323"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: pseudonymize
+<span class="tok-t">description</span>: Replaces names, e-mail and customer number of real data; the same input gives the same replacement
+<span class="tok-t">transforms</span>:
+  - <span class="tok-t">id</span>: read
+    <span class="tok-t">type</span>: csv.input
+    <span class="tok-t">with</span>:
+      <span class="tok-t">path</span>: data/customers.csv
+      <span class="tok-t">delimiter</span>: <span class="tok-s">";"</span>
+      <span class="tok-t">fields</span>:
+        - { <span class="tok-t">name</span>: customerNo }
+        - { <span class="tok-t">name</span>: firstName }
+        - { <span class="tok-t">name</span>: lastName }
+        - { <span class="tok-t">name</span>: email }
+        - { <span class="tok-t">name</span>: city }
+        - { <span class="tok-t">name</span>: revenue }                     <span class="tok-c"># passed on unchanged</span>
+  - <span class="tok-t">id</span>: pseudo
+    <span class="tok-t">type</span>: faker.fill
+    <span class="tok-t">with</span>:
+      <span class="tok-t">consistent</span>: true
+      <span class="tok-t">seed</span>: ${PSEUDONYM_SEED}
+      <span class="tok-t">fields</span>:
+        - { <span class="tok-t">name</span>: customerNo, <span class="tok-t">kind</span>: pattern, <span class="tok-t">pattern</span>: <span class="tok-s">"KD-#####"</span> }
+        - { <span class="tok-t">name</span>: firstName, <span class="tok-t">kind</span>: firstName }
+        - { <span class="tok-t">name</span>: lastName, <span class="tok-t">kind</span>: lastName }
+        - { <span class="tok-t">name</span>: email, <span class="tok-t">kind</span>: email, <span class="tok-t">from</span>: <span class="tok-s">"firstName, lastName"</span> }
+  - <span class="tok-t">id</span>: write
+    <span class="tok-t">type</span>: csv.output
+    <span class="tok-t">with</span>:
+      <span class="tok-t">path</span>: out/customers-pseudonymized.csv
+      <span class="tok-t">delimiter</span>: <span class="tok-s">";"</span>
+<span class="tok-t">links</span>:
+  - { <span class="tok-t">from</span>: read, <span class="tok-t">to</span>: pseudo }
+  - { <span class="tok-t">from</span>: pseudo, <span class="tok-t">to</span>: write }</code></pre>
+</div>
+          <div class="code">
+  <div class="code-head"><span>workflows/generate.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-324"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-324"><code class="lang-yaml"><span class="tok-c"># Creates the output folder, generates test customers and pseudonymizes data/customers.csv.</span>
+<span class="tok-c">#   $env:PSEUDONYM_SEED = "…"</span>
+<span class="tok-c">#   runnel run workflows/generate.workflow.yaml</span>
+<span class="tok-t">kind</span>: Workflow
+<span class="tok-t">apiVersion</span>: runnel/v1
+<span class="tok-t">name</span>: generate
+<span class="tok-t">outputs</span>:
+  - <span class="tok-t">name</span>: GENERATED
+    <span class="tok-t">type</span>: int
+    <span class="tok-t">value</span>: <span class="tok-s">"{{ results.customers.output.transforms.write.written }}"</span>
+  - <span class="tok-t">name</span>: PSEUDONYMIZED
+    <span class="tok-t">type</span>: int
+    <span class="tok-t">value</span>: <span class="tok-s">"{{ results.pseudonymize.output.transforms.write.written }}"</span>
+<span class="tok-t">actions</span>:
+  - <span class="tok-t">id</span>: start
+    <span class="tok-t">type</span>: core.start
+  - <span class="tok-t">id</span>: folder
+    <span class="tok-t">type</span>: file.mkdir
+    <span class="tok-t">with</span>:
+      <span class="tok-t">path</span>: out
+  - <span class="tok-t">id</span>: customers
+    <span class="tok-t">type</span>: core.run-pipeline
+    <span class="tok-t">with</span>:
+      <span class="tok-t">pipeline</span>: pipelines/customers.pipeline.yaml
+  - <span class="tok-t">id</span>: pseudonymize
+    <span class="tok-t">type</span>: core.run-pipeline
+    <span class="tok-t">with</span>:
+      <span class="tok-t">pipeline</span>: pipelines/pseudonymize.pipeline.yaml
+<span class="tok-t">links</span>:
+  - { <span class="tok-t">from</span>: start, <span class="tok-t">to</span>: folder }
+  - { <span class="tok-t">from</span>: folder, <span class="tok-t">to</span>: customers }
+  - { <span class="tok-t">from</span>: customers, <span class="tok-t">to</span>: pseudonymize }</code></pre>
+</div>
+          <p>With <code>consistent: true</code> the replacement depends only on the input value, the field name and <code>seed</code>: customer number 4711 becomes the same number in every row and in every table with the same field name. Whoever knows the seed can trace replacements back by trying values – so it comes from an environment variable. Pseudonymizing replaces only the fields named; city and revenue stay, so the data is not anonymous. <code>runnel validate</code> warns “without seed, consistent uses seed 0” for <code>seed: ${PSEUDONYM_SEED}</code> because the check does not know the variable's value; the run uses the seed set.</p>
+          <h2 id="run-en">Running</h2><p>In the recipe folder (PowerShell):</p>
+          <div class="code">
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-326"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-326"><code class="lang-bash">Expand-Archive .\runnel-plugin-faker_&lt;version&gt;_windows_amd64.zip -DestinationPath .\plugins
+runnel plugins trust . --plugin faker
+$env:PSEUDONYM_SEED = <span class="tok-s">"…"</span>   <span class="tok-c"># eine ganze Zahl</span>
+runnel run workflows/generate.workflow.yaml
+runnel run --param COUNT=100000 pipelines/customers.pipeline.yaml</code></pre>
+</div>
+          <h2 id="adapt-en">Adapting</h2><ul><li><code>kind</code> chooses the fields: people (<code>firstName</code>, <code>salutation</code> matching the first name), addresses with real cities and matching postcodes, <code>iban</code>, <code>bic</code> and <code>vatId</code> with valid check digits, numbers and dates with <code>min</code>/<code>max</code>, <code>pick</code> with weights and <code>pattern</code> such as <code>KD-#####</code>. <code>nullRate</code> produces empty values to test paths for missing data.</li><li><code>seed</code> makes test data repeatable: same configuration, same data on every system. A new field does not change the others. <code>locale: en</code> produces English data.</li><li>For a single value in a workflow, e.g. for a test: action <code>faker.value</code> with <code>kind: iban</code>; the result is in <code>results.&lt;id&gt;.output</code>.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/testdaten">Sources on GitHub: <code>_src/kochbuch/testdaten</code></a></p>
+          </article>
+      </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <svg viewBox="0 0 204 64" role="img" aria-label="Runnel"><use href="#logo"/></svg>
+        <p data-i18n="footer.claim">Leicht. Lokal. Im Fluss. Workflows und Datenintegration für Windows.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.product">Produkt</h4>
+        <ul>
+          <li><a href="../index.html#features" data-i18n="nav.features">Funktionen</a></li>
+          <li><a href="../handbuch/" data-i18n="footer.guide">Handbuch</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/releases" data-i18n="footer.releases">Releases</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.docs">Dokumentation</h4>
+        <ul>
+          <li><a href="../docs/" data-i18n="footer.devdocs">Entwicklerdoku</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md" data-i18n="footer.concept">Konzept</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/docs/adr" data-i18n="footer.adr">Entscheidungen (ADR)</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/tree/main/design" data-i18n="footer.design">Corporate Design</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.project">Projekt</h4>
+        <ul>
+          <li><a href="https://github.com/runnelhq/runnel">GitHub</a></li>
+          <li><a href="https://github.com/runnelhq/runnel/issues" data-i18n="footer.issues">Fehler melden</a></li>
+          <li><a href="../impressum.html" data-i18n="footer.imprint">Impressum</a></li>
+          <li><a href="../datenschutz.html" data-i18n="footer.privacy">Datenschutz</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n="footer.copy">© 2026 The Runnel authors · MIT-Lizenz</span>
+      <span data-i18n="footer.local">Mit KI entwickelt (Vibe Coding) · Diese Seite lädt keine externen Schriften oder Tracker.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/site.js"></script>
+</body>
+</html>

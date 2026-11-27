@@ -18,7 +18,7 @@
           <p class="docs-eyebrow">Handbuch</p>
           <h1>Runnel benutzen</h1>
           <p class="docs-lead">Dieses Handbuch richtet sich an alle, die Runnel installieren, Workflows und Pipelines bauen und betreiben. Es beschreibt den Stand der Vorabversion – einige Funktionen kommen erst noch, sie sind entsprechend markiert.</p>
-          <p class="docs-source">Stand: Runnel <code>v0.1.0-alpha.13</code> vom 27.11.2026; Plugins nach <a href="https://github.com/runnelhq/sdk-go">sdk-go</a> v0.3.0, <a href="https://github.com/runnelhq/plugin-iban">plugin-iban</a> v0.3.0 und <a href="https://github.com/runnelhq/plugin-ldap">plugin-ldap</a> v0.1.0. Grundlage sind <a href="https://github.com/runnelhq/runnel#verwendung">README</a>, <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md">Konzept</a> und die Beispiele unter <a href="https://github.com/runnelhq/runnel/tree/main/examples"><code>examples/</code></a>. Die Referenzen zu Bausteinen und Ausdrücken sind direkt aus dem Programm erzeugt.</p>
+          <p class="docs-source">Stand: Runnel <code>v0.1.0-alpha.13</code> vom 27.11.2026; Plugins nach <a href="https://github.com/runnelhq/sdk-go">sdk-go</a> v0.3.0, <a href="https://github.com/runnelhq/plugin-iban">plugin-iban</a> v0.3.0, <a href="https://github.com/runnelhq/plugin-ldap">plugin-ldap</a> v0.1.0, <a href="https://github.com/runnelhq/sdk-rust">sdk-rust</a> v0.2.0 und <a href="https://github.com/runnelhq/plugin-faker">plugin-faker</a> v0.2.0. Grundlage sind <a href="https://github.com/runnelhq/runnel#verwendung">README</a>, <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md">Konzept</a> und die Beispiele unter <a href="https://github.com/runnelhq/runnel/tree/main/examples"><code>examples/</code></a>. Die Referenzen zu Bausteinen und Ausdrücken sind direkt aus dem Programm erzeugt.</p>
 
           <div class="callout">
             <strong>Vorabversion</strong>
@@ -82,7 +82,7 @@ runnel run D:\flows\workflows\hello.workflow.yaml
             <a class="docs-card" href="pipelines.html"><strong>Pipelines</strong><span>Transforms, Datensätze, Typen, Fehler-Links, Parallelität.</span></a>
             <a class="docs-card" href="trigger.html"><strong>Trigger</strong><span>Zeitplan, Intervall, Ordner-Überwachung, HTTP.</span></a>
             <a class="docs-card" href="ausdruecke.html"><strong>Ausdrücke</strong><span>Kontext und alle Funktionen von <code>{{ … }}</code>.</span></a>
-            <a class="docs-card" href="plugins.html"><strong>Plugins</strong><span>Installieren, freigeben, nutzen; offizielle Plugins für IBAN und LDAP.</span></a>
+            <a class="docs-card" href="plugins.html"><strong>Plugins</strong><span>Installieren, freigeben, nutzen; offizielle Plugins für IBAN, LDAP und Testdaten.</span></a>
             <a class="docs-card" href="bausteine.html"><strong>Bausteine</strong><span>Alle Actions und Transforms mit Feldern und Beispielen.</span></a>
             <a class="docs-card" href="kochbuch.html"><strong>Kochbuch</strong><span>Rezepte für APIs wie Teams, GitHub, HubSpot, SharePoint und für Excel und XML.</span></a>
           </div>
@@ -93,7 +93,7 @@ runnel run D:\flows\workflows\hello.workflow.yaml
           <p class="docs-eyebrow">User guide</p>
           <h1>Using Runnel</h1>
           <p class="docs-lead">This guide is for everyone who installs Runnel, builds workflows and pipelines and runs them. It describes the pre-release – some features are still to come and are marked as such.</p>
-          <p class="docs-source">As of Runnel <code>v0.1.0-alpha.13</code> on 2026-11-27; plugins as of <a href="https://github.com/runnelhq/sdk-go">sdk-go</a> v0.3.0, <a href="https://github.com/runnelhq/plugin-iban">plugin-iban</a> v0.3.0 and <a href="https://github.com/runnelhq/plugin-ldap">plugin-ldap</a> v0.1.0. Based on the <a href="https://github.com/runnelhq/runnel#verwendung">README</a>, the <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md">concept</a> (German) and the examples under <a href="https://github.com/runnelhq/runnel/tree/main/examples"><code>examples/</code></a>. The component and expression references are generated directly from the program.</p>
+          <p class="docs-source">As of Runnel <code>v0.1.0-alpha.13</code> on 2026-11-27; plugins as of <a href="https://github.com/runnelhq/sdk-go">sdk-go</a> v0.3.0, <a href="https://github.com/runnelhq/plugin-iban">plugin-iban</a> v0.3.0, <a href="https://github.com/runnelhq/plugin-ldap">plugin-ldap</a> v0.1.0, <a href="https://github.com/runnelhq/sdk-rust">sdk-rust</a> v0.2.0 and <a href="https://github.com/runnelhq/plugin-faker">plugin-faker</a> v0.2.0. Based on the <a href="https://github.com/runnelhq/runnel#verwendung">README</a>, the <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md">concept</a> (German) and the examples under <a href="https://github.com/runnelhq/runnel/tree/main/examples"><code>examples/</code></a>. The component and expression references are generated directly from the program.</p>
 
           <div class="callout">
             <strong>Pre-release</strong>
@@ -157,7 +157,7 @@ runnel run D:\flows\workflows\hello.workflow.yaml
             <a class="docs-card" href="pipelines.html"><strong>Pipelines</strong><span>Transforms, records, types, error links, parallelism.</span></a>
             <a class="docs-card" href="trigger.html"><strong>Triggers</strong><span>Schedule, interval, folder watching, HTTP.</span></a>
             <a class="docs-card" href="ausdruecke.html"><strong>Expressions</strong><span>Context and every function of <code>{{ … }}</code>.</span></a>
-            <a class="docs-card" href="plugins.html"><strong>Plugins</strong><span>Install, trust, use; official plugins for IBAN and LDAP.</span></a>
+            <a class="docs-card" href="plugins.html"><strong>Plugins</strong><span>Install, trust, use; official plugins for IBAN, LDAP and test data.</span></a>
             <a class="docs-card" href="bausteine.html"><strong>Components</strong><span>All actions and transforms with fields and examples.</span></a>
             <a class="docs-card" href="kochbuch.html"><strong>Cookbook</strong><span>Recipes for APIs such as Teams, GitHub, HubSpot, SharePoint and for Excel and XML.</span></a>
           </div>
