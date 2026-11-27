@@ -10,7 +10,7 @@ parameters:
     required: true
 outputs:
   - name: COUNT
-    type: integer
+    type: int
     value: "{{ results.fetch.output.count }}"
 actions:
   - id: start

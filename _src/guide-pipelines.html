@@ -42,7 +42,7 @@ INFO  pipeline "customers" succeeded in 1ms</code></pre>
               <tr><td><code>layout</code></td><td>Positionen im Editor</td></tr>
             </tbody>
           </table></div>
-          <p>Pipelines sind azyklisch: Datensätze fließen nur vorwärts. Hat ein Transform mehrere ausgehende Daten-Links, bekommt bei <code>distribution: copy</code> (Standard) jeder Link jeden Datensatz, bei <code>distribute</code> werden sie reihum verteilt.</p>
+          <p>Pipelines sind azyklisch: Datensätze fließen nur vorwärts. Hat ein Transform mehrere ausgehende Daten-Links, bekommt bei <code>distribution: copy</code> (Standard) jeder Link jeden Datensatz, bei <code>distribution: roundRobin</code> werden sie reihum verteilt.</p>
 
           <h2 id="datensaetze">Datensätze und Typen</h2>
           <p>Ein Datensatz ist eine geordnete Liste von Feldern (Name → Wert). Pipelines sind schemalos mit optionalen Typen: Ohne Felddefinition liest z. B. <code>csv.input</code> alles als Text; <code>core.convert</code> oder die <code>fields</code> eines Eingabe-Transforms legen Typen fest.</p>
@@ -129,7 +129,7 @@ INFO  pipeline "customers" succeeded in 1ms</code></pre>
               <tr><td><code>layout</code></td><td>Positions in the editor</td></tr>
             </tbody>
           </table></div>
-          <p>Pipelines are acyclic: records only flow forward. If a transform has several outgoing data links, with <code>distribution: copy</code> (default) every link gets every record; with <code>distribute</code> they are handed out in turn.</p>
+          <p>Pipelines are acyclic: records only flow forward. If a transform has several outgoing data links, with <code>distribution: copy</code> (default) every link gets every record; with <code>distribution: roundRobin</code> they are handed out in turn.</p>
 
           <h2 id="records">Records and types</h2>
           <p>A record is an ordered list of fields (name → value). Pipelines are schemaless with optional types: without a field definition, <code>csv.input</code> for example reads everything as text; <code>core.convert</code> or the <code>fields</code> of an input transform set types.</p>

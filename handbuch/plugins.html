@@ -123,15 +123,15 @@
             <li><strong>Prüfen:</strong> <code>runnel plugins</code> zeigt das Plugin als <code>trusted</code> mit seinen Typen; <code>runnel validate</code> prüft die Dateien, die sie nutzen.</li>
           </ol>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-321"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-321"><code class="lang-bash">Get-FileHash .\runnel-plugin-iban_&lt;version&gt;_windows_amd64.zip -Algorithm SHA256
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-327"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-327"><code class="lang-bash">Get-FileHash .\runnel-plugin-iban_&lt;version&gt;_windows_amd64.zip -Algorithm SHA256
 Expand-Archive .\runnel-plugin-iban_&lt;version&gt;_windows_amd64.zip -DestinationPath D:\flows\plugins
 runnel plugins trust D:\flows --plugin iban
 runnel plugins D:\flows</code></pre>
 </div>
 <div class="code">
-  <div class="code-head"><span>D:\flows\plugins</span><button class="copy-btn" type="button" data-copy-from="code-322"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-322"><code class="lang-text">plugins\
+  <div class="code-head"><span>D:\flows\plugins</span><button class="copy-btn" type="button" data-copy-from="code-328"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-328"><code class="lang-text">plugins\
   iban\
     plugin.yaml           # Name, Version, Namensraum, Programm je Betriebssystem
     README.md             # Anleitung, im Editor lesbar
@@ -142,8 +142,8 @@ runnel plugins D:\flows</code></pre>
 
           <h2 id="freigabe">Freigeben</h2>
 <div class="code">
-  <div class="code-head"><span>runnel plugins trust D:\flows --plugin iban</span><button class="copy-btn" type="button" data-copy-from="code-323"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-323"><code class="lang-text">Plugin iban 0.3.0 (namespace iban)
+  <div class="code-head"><span>runnel plugins trust D:\flows --plugin iban</span><button class="copy-btn" type="button" data-copy-from="code-329"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-329"><code class="lang-text">Plugin iban 0.3.0 (namespace iban)
   folder:  D:\flows\plugins\iban
   program: bin/iban.exe
   hash:    sha256:9e18427e5e7af639ea431e7d855f126ad277fa383646e3769359eaeca6705154
@@ -161,8 +161,8 @@ Plugin iban is trusted.</code></pre>
           <h2 id="nutzen">Nutzen</h2>
           <p>Die Typen eines freigegebenen Plugins stehen in Workflows, Pipelines und Connections bereit wie eingebaute; Runnel prüft die Felder gegen das Schema des Plugins und löst Variablen, Ausdrücke und Connections vorher auf.</p>
 <div class="code">
-  <div class="code-head"><span>Action, Transform und Connection eines Plugins</span><button class="copy-btn" type="button" data-copy-from="code-324"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-324"><code class="lang-yaml"><span class="tok-c"># Workflow: Ergebnis unter results.check.output</span>
+  <div class="code-head"><span>Action, Transform und Connection eines Plugins</span><button class="copy-btn" type="button" data-copy-from="code-330"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-330"><code class="lang-yaml"><span class="tok-c"># Workflow: Ergebnis unter results.check.output</span>
 - <span class="tok-t">id</span>: check
   <span class="tok-t">type</span>: iban.validate
   <span class="tok-t">with</span>:
@@ -242,15 +242,15 @@ Plugin iban is trusted.</code></pre>
             <li><strong>Check:</strong> <code>runnel plugins</code> shows the plugin as <code>trusted</code> with its types; <code>runnel validate</code> checks the files that use them.</li>
           </ol>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-325"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-325"><code class="lang-bash">Get-FileHash .\runnel-plugin-iban_&lt;version&gt;_windows_amd64.zip -Algorithm SHA256
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-331"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-331"><code class="lang-bash">Get-FileHash .\runnel-plugin-iban_&lt;version&gt;_windows_amd64.zip -Algorithm SHA256
 Expand-Archive .\runnel-plugin-iban_&lt;version&gt;_windows_amd64.zip -DestinationPath D:\flows\plugins
 runnel plugins trust D:\flows --plugin iban
 runnel plugins D:\flows</code></pre>
 </div>
 <div class="code">
-  <div class="code-head"><span>D:\flows\plugins</span><button class="copy-btn" type="button" data-copy-from="code-326"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-326"><code class="lang-text">plugins\
+  <div class="code-head"><span>D:\flows\plugins</span><button class="copy-btn" type="button" data-copy-from="code-332"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-332"><code class="lang-text">plugins\
   iban\
     plugin.yaml           # name, version, namespace, program per operating system
     README.md             # guide, readable in the editor
@@ -261,8 +261,8 @@ runnel plugins D:\flows</code></pre>
 
           <h2 id="trust">Trusting</h2>
 <div class="code">
-  <div class="code-head"><span>runnel plugins trust D:\flows --plugin iban</span><button class="copy-btn" type="button" data-copy-from="code-327"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-327"><code class="lang-text">Plugin iban 0.3.0 (namespace iban)
+  <div class="code-head"><span>runnel plugins trust D:\flows --plugin iban</span><button class="copy-btn" type="button" data-copy-from="code-333"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-333"><code class="lang-text">Plugin iban 0.3.0 (namespace iban)
   folder:  D:\flows\plugins\iban
   program: bin/iban.exe
   hash:    sha256:9e18427e5e7af639ea431e7d855f126ad277fa383646e3769359eaeca6705154
@@ -280,8 +280,8 @@ Plugin iban is trusted.</code></pre>
           <h2 id="use">Using</h2>
           <p>The types of a trusted plugin are available in workflows, pipelines and connections like built-in ones; Runnel checks the fields against the plugin's schema and resolves variables, expressions and connections beforehand.</p>
 <div class="code">
-  <div class="code-head"><span>Action, transform and connection of a plugin</span><button class="copy-btn" type="button" data-copy-from="code-328"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-328"><code class="lang-yaml"><span class="tok-c"># Workflow: result under results.check.output</span>
+  <div class="code-head"><span>Action, transform and connection of a plugin</span><button class="copy-btn" type="button" data-copy-from="code-334"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-334"><code class="lang-yaml"><span class="tok-c"># Workflow: result under results.check.output</span>
 - <span class="tok-t">id</span>: check
   <span class="tok-t">type</span>: iban.validate
   <span class="tok-t">with</span>:

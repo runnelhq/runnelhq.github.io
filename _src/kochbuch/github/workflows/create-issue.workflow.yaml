@@ -12,7 +12,7 @@ parameters:
     default: Created by Runnel
 outputs:
   - name: NUMBER
-    type: integer
+    type: int
     value: "{{ results.create.output.body.number }}"
   - name: URL
     value: "{{ results.create.output.body.html_url }}"

@@ -96,7 +96,7 @@
           <p class="docs-eyebrow">Handbuch</p>
           <h1>Runnel benutzen</h1>
           <p class="docs-lead">Dieses Handbuch richtet sich an alle, die Runnel installieren, Workflows und Pipelines bauen und betreiben. Es beschreibt den Stand der Vorabversion – einige Funktionen kommen erst noch, sie sind entsprechend markiert.</p>
-          <p class="docs-source">Stand: Runnel <code>v0.1.0-alpha.12</code> vom 26.11.2026; Plugins nach <a href="https://github.com/runnelhq/sdk-go">sdk-go</a> v0.3.0, <a href="https://github.com/runnelhq/plugin-iban">plugin-iban</a> v0.3.0 und <a href="https://github.com/runnelhq/plugin-ldap">plugin-ldap</a> v0.1.0. Grundlage sind <a href="https://github.com/runnelhq/runnel#verwendung">README</a>, <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md">Konzept</a> und die Beispiele unter <a href="https://github.com/runnelhq/runnel/tree/main/examples"><code>examples/</code></a>. Die Referenzen zu Bausteinen und Ausdrücken sind direkt aus dem Programm erzeugt.</p>
+          <p class="docs-source">Stand: Runnel <code>v0.1.0-alpha.13</code> vom 27.11.2026; Plugins nach <a href="https://github.com/runnelhq/sdk-go">sdk-go</a> v0.3.0, <a href="https://github.com/runnelhq/plugin-iban">plugin-iban</a> v0.3.0 und <a href="https://github.com/runnelhq/plugin-ldap">plugin-ldap</a> v0.1.0. Grundlage sind <a href="https://github.com/runnelhq/runnel#verwendung">README</a>, <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md">Konzept</a> und die Beispiele unter <a href="https://github.com/runnelhq/runnel/tree/main/examples"><code>examples/</code></a>. Die Referenzen zu Bausteinen und Ausdrücken sind direkt aus dem Programm erzeugt.</p>
 
           <div class="callout">
             <strong>Vorabversion</strong>
@@ -120,8 +120,8 @@
 
           <h2 id="aufbau">Aufbau eines Projekts</h2>
 <div class="code">
-  <div class="code-head"><span>D:\flows</span><button class="copy-btn" type="button" data-copy-from="code-203"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-203"><code class="lang-bash">D:\flows\
+  <div class="code-head"><span>D:\flows</span><button class="copy-btn" type="button" data-copy-from="code-209"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-209"><code class="lang-bash">D:\flows\
   project.yaml                 <span class="tok-c"># Name, Standard-Environment, gemeinsame Variablen</span>
   environments\
     dev.yaml                   <span class="tok-c"># Variablen je Umgebung</span>
@@ -142,19 +142,20 @@
           <h2 id="erste-schritte">Erste Schritte</h2>
           <ol class="steps">
             <li><strong>Herunterladen</strong> und entpacken – siehe <a href="installation.html">Installation</a>.</li>
-            <li><strong>Beispiele holen:</strong> das Repository als ZIP laden (<em>Code → Download ZIP</em>) und den Ordner <code>examples</code> neben die <code>runnel.exe</code> legen.</li>
-            <li><strong>Prüfen:</strong> <code>.\runnel.exe validate examples\hello</code> – meldet Fehler mit Datei, Zeile und Spalte.</li>
-            <li><strong>Ausführen:</strong> <code>.\runnel.exe run examples\hello\workflows\hello.workflow.yaml</code></li>
-            <li><strong>Im Editor öffnen:</strong> <code>.\runnel.exe serve examples\hello</code>, dann <code>http://127.0.0.1:7300</code> im Browser.</li>
+            <li><strong>Projekt anlegen:</strong> <code>runnel init D:\flows</code> legt <code>project.yaml</code>, die Ordner, ein Environment <code>dev</code>, einen kleinen Beispiel-Workflow und eine <code>.gitignore</code> an. Ohne Terminal geht es auch im Editor: <code>runnel serve</code> in einem leeren Ordner starten, dann „Create project“.</li>
+            <li><strong>Prüfen:</strong> <code>runnel validate D:\flows</code> – meldet Fehler mit Datei, Zeile und Spalte.</li>
+            <li><strong>Ausführen:</strong> <code>runnel run D:\flows\workflows\hello.workflow.yaml</code></li>
+            <li><strong>Im Editor öffnen:</strong> <code>runnel serve D:\flows</code>, dann <code>http://127.0.0.1:7300</code> im Browser.</li>
           </ol>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-204"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-204"><code class="lang-bash">.\runnel.exe run --env prod examples\hello\workflows\hello.workflow.yaml
-11:16:43.537 INFO  workflow <span class="tok-s">"hello"</span> started (environment prod), run 01M841YQWHHS7NSWGNB9VHSAS7
-11:16:43.537 INFO  [greet] Hello, Production! (production on SRV01, files in \\fileserver\exchange\runnel-hello)
-11:16:44.538 INFO  output MESSAGE = <span class="tok-s">"Hello, Production!"</span>
-11:16:44.538 INFO  workflow <span class="tok-s">"hello"</span> succeeded in 1s</code></pre>
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-210"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-210"><code class="lang-bash">runnel init D:\flows
+runnel run D:\flows\workflows\hello.workflow.yaml
+08:36:50.489 INFO  workflow <span class="tok-s">"hello"</span> started (environment dev), run 01M8E2CVNJGXKVM005PBYA30TK
+08:36:50.490 INFO  [greet] Hello, World! (development)
+08:36:50.490 INFO  workflow <span class="tok-s">"hello"</span> succeeded in 0s</code></pre>
 </div>
+          <p><strong>Mehr Beispiele</strong> stehen im Repository unter <a href="https://github.com/runnelhq/runnel/tree/main/examples"><code>examples/</code></a> (als ZIP über <em>Code → Download ZIP</em>), fertige Anbindungen im <a href="kochbuch.html">Kochbuch</a>.</p>
 
           <h2 id="kapitel">Kapitel</h2>
           <div class="docs-cards">
@@ -176,7 +177,7 @@
           <p class="docs-eyebrow">User guide</p>
           <h1>Using Runnel</h1>
           <p class="docs-lead">This guide is for everyone who installs Runnel, builds workflows and pipelines and runs them. It describes the pre-release – some features are still to come and are marked as such.</p>
-          <p class="docs-source">As of Runnel <code>v0.1.0-alpha.12</code> on 2026-11-26; plugins as of <a href="https://github.com/runnelhq/sdk-go">sdk-go</a> v0.3.0, <a href="https://github.com/runnelhq/plugin-iban">plugin-iban</a> v0.3.0 and <a href="https://github.com/runnelhq/plugin-ldap">plugin-ldap</a> v0.1.0. Based on the <a href="https://github.com/runnelhq/runnel#verwendung">README</a>, the <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md">concept</a> (German) and the examples under <a href="https://github.com/runnelhq/runnel/tree/main/examples"><code>examples/</code></a>. The component and expression references are generated directly from the program.</p>
+          <p class="docs-source">As of Runnel <code>v0.1.0-alpha.13</code> on 2026-11-27; plugins as of <a href="https://github.com/runnelhq/sdk-go">sdk-go</a> v0.3.0, <a href="https://github.com/runnelhq/plugin-iban">plugin-iban</a> v0.3.0 and <a href="https://github.com/runnelhq/plugin-ldap">plugin-ldap</a> v0.1.0. Based on the <a href="https://github.com/runnelhq/runnel#verwendung">README</a>, the <a href="https://github.com/runnelhq/runnel/blob/main/docs/KONZEPT.md">concept</a> (German) and the examples under <a href="https://github.com/runnelhq/runnel/tree/main/examples"><code>examples/</code></a>. The component and expression references are generated directly from the program.</p>
 
           <div class="callout">
             <strong>Pre-release</strong>
@@ -200,8 +201,8 @@
 
           <h2 id="layout">Project layout</h2>
 <div class="code">
-  <div class="code-head"><span>D:\flows</span><button class="copy-btn" type="button" data-copy-from="code-205"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-205"><code class="lang-bash">D:\flows\
+  <div class="code-head"><span>D:\flows</span><button class="copy-btn" type="button" data-copy-from="code-211"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-211"><code class="lang-bash">D:\flows\
   project.yaml                 <span class="tok-c"># name, default environment, shared variables</span>
   environments\
     dev.yaml                   <span class="tok-c"># variables per environment</span>
@@ -222,19 +223,20 @@
           <h2 id="first-steps">First steps</h2>
           <ol class="steps">
             <li><strong>Download</strong> and unpack – see <a href="installation.html">Installation</a>.</li>
-            <li><strong>Get the examples:</strong> download the repository as a ZIP (<em>Code → Download ZIP</em>) and put the <code>examples</code> folder next to <code>runnel.exe</code>.</li>
-            <li><strong>Validate:</strong> <code>.\runnel.exe validate examples\hello</code> – reports errors with file, line and column.</li>
-            <li><strong>Run:</strong> <code>.\runnel.exe run examples\hello\workflows\hello.workflow.yaml</code></li>
-            <li><strong>Open in the editor:</strong> <code>.\runnel.exe serve examples\hello</code>, then <code>http://127.0.0.1:7300</code> in the browser.</li>
+            <li><strong>Create a project:</strong> <code>runnel init D:\flows</code> creates <code>project.yaml</code>, the folders, an environment <code>dev</code>, a small example workflow and a <code>.gitignore</code>. It also works without a terminal in the editor: start <code>runnel serve</code> in an empty folder, then “Create project”.</li>
+            <li><strong>Validate:</strong> <code>runnel validate D:\flows</code> – reports errors with file, line and column.</li>
+            <li><strong>Run:</strong> <code>runnel run D:\flows\workflows\hello.workflow.yaml</code></li>
+            <li><strong>Open in the editor:</strong> <code>runnel serve D:\flows</code>, then <code>http://127.0.0.1:7300</code> in the browser.</li>
           </ol>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-206"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-206"><code class="lang-bash">.\runnel.exe run --env prod examples\hello\workflows\hello.workflow.yaml
-11:16:43.537 INFO  workflow <span class="tok-s">"hello"</span> started (environment prod), run 01M841YQWHHS7NSWGNB9VHSAS7
-11:16:43.537 INFO  [greet] Hello, Production! (production on SRV01, files in \\fileserver\exchange\runnel-hello)
-11:16:44.538 INFO  output MESSAGE = <span class="tok-s">"Hello, Production!"</span>
-11:16:44.538 INFO  workflow <span class="tok-s">"hello"</span> succeeded in 1s</code></pre>
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-212"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-212"><code class="lang-bash">runnel init D:\flows
+runnel run D:\flows\workflows\hello.workflow.yaml
+08:36:50.489 INFO  workflow <span class="tok-s">"hello"</span> started (environment dev), run 01M8E2CVNJGXKVM005PBYA30TK
+08:36:50.490 INFO  [greet] Hello, World! (development)
+08:36:50.490 INFO  workflow <span class="tok-s">"hello"</span> succeeded in 0s</code></pre>
 </div>
+          <p><strong>More examples</strong> are in the repository under <a href="https://github.com/runnelhq/runnel/tree/main/examples"><code>examples/</code></a> (as a ZIP via <em>Code → Download ZIP</em>), ready-made integrations in the <a href="kochbuch.html">cookbook</a>.</p>
 
           <h2 id="chapters">Chapters</h2>
           <div class="docs-cards">

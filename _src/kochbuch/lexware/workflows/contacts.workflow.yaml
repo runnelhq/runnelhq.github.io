@@ -7,7 +7,7 @@ apiVersion: runnel/v1
 name: contacts
 outputs:
   - name: COUNT
-    type: integer
+    type: int
     value: "{{ results.fetch.output.count }}"
 actions:
   - id: start

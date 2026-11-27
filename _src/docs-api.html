@@ -17,7 +17,7 @@
           <p class="docs-eyebrow">Entwicklerdoku · Server</p>
           <h1>Server-API</h1>
           <p class="docs-lead">Die API von <code>runnel serve</code> ist die einzige Schnittstelle des Editors zum Server – und ebenso für Skripte nutzbar. Außerhalb von <code>/api/v1</code> liefert der Server den eingebetteten <a href="editor.html">Editor</a> aus.</p>
-          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/API.md"><code>docs/dev/API.md</code></a> (Stand S71) – mit allen Feldern und den Endpunkten zum Bearbeiten, Kopieren, Felder ermitteln und zur Datenvorschau. Grundlagen: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0016-live-events-sse.md">ADR 0016</a> (Live-Ereignisse), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0018-http-trigger.md">ADR 0018</a> (HTTP-Trigger).</p>
+          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/API.md"><code>docs/dev/API.md</code></a> (Stand <code>v0.1.0-alpha.13</code>) – mit allen Feldern und den Endpunkten zum Bearbeiten, Kopieren, Felder ermitteln und zur Datenvorschau. Grundlagen: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0016-live-events-sse.md">ADR 0016</a> (Live-Ereignisse), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0018-http-trigger.md">ADR 0018</a> (HTTP-Trigger).</p>
 <pre><code class="lang-bash" data-caption="Server starten">runnel serve examples/hello     # Projekt im Ordner oder darüber, Port 7300
 runnel serve --port 0 .          # freier Port; die Ausgabe nennt die Adresse</code></pre>
 
@@ -27,41 +27,44 @@ runnel serve --port 0 .          # freier Port; die Ausgabe nennt die Adresse</c
               <tr><th scope="row">Adresse</th><td>nur <code>127.0.0.1</code>; HTTP-Trigger haben einen eigenen Listener</td></tr>
               <tr><th scope="row">Präfix</th><td>alle Endpunkte unter <code>/api/v1</code></td></tr>
               <tr><th scope="row">Format</th><td>JSON (UTF-8, eingerückt); Dateiinhalte als Rohdaten</td></tr>
-              <tr><th scope="row">Fehler</th><td>Statuscode und <code>{"error": "…"}</code> mit englischer, verständlicher Meldung</td></tr>
+              <tr><th scope="row">Fehler</th><td>Statuscode und <code>{"error": "…"}</code> mit englischer, verständlicher Meldung; manche mit festem <code>code</code>, z. B. <code>no_project</code></td></tr>
               <tr><th scope="row">Schutz</th><td>Anfragen müssen an <code>localhost</code>, <code>127.0.0.1</code> oder <code>[::1]</code> gerichtet sein (Schutz vor DNS-Rebinding); ein <code>Origin</code>-Header muss zum Server passen (Schutz vor fremden Webseiten). Sonst <code>403</code></td></tr>
               <tr><th scope="row">Pfade</th><td>relativ zum Projektordner, Trenner <code>/</code>; versteckte Einträge, <code>..</code>, <code>\</code>, <code>:</code> und unter Windows reservierte Namen (<code>CON</code>, <code>NUL</code> …) werden mit <code>400</code> abgelehnt</td></tr>
             </tbody>
           </table></div>
 
           <h2 id="endpunkte">Endpunkte</h2>
+          <p><strong>Öffentlich und intern</strong> (<a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0029-stabilitaet-versionen.md">ADR 0029</a>): Öffentliche Endpunkte – <code>/version</code>, <code>/health</code>, <code>/catalog</code>, <code>/expressions</code> und die Läufe unter <code>/runs</code> – ändern sich ab <code>v1.0.0</code> nur additiv; Leser ignorieren unbekannte Schlüssel. Interne Endpunkte dienen dem eingebetteten Editor, der immer zur Version des Servers passt, und dürfen sich in jeder Version ändern – Skripte sollten sie nicht nutzen. „Öffentlich“ heißt zugesagt, nicht im Netz erreichbar: Für beide gelten dieselben Prüfungen von Host und Origin.</p>
           <div class="table-scroll"><table class="doc-table">
-            <thead><tr><th>Methode</th><th>Pfad</th><th>Ergebnis</th></tr></thead>
+            <thead><tr><th>Methode</th><th>Pfad</th><th>API</th><th>Ergebnis</th></tr></thead>
             <tbody>
-              <tr><td>GET</td><td><code>/version</code></td><td>Version, Commit, Datum, Go-Version, OS, Architektur – wie <code>runnel version --json</code></td></tr>
-              <tr><td>GET</td><td><code>/projects/current</code></td><td>Name, Ordner, Environments und Standard-Environment</td></tr>
-              <tr><td>GET</td><td><code>/projects/current/tree</code></td><td>Dateibaum mit Art je Datei (<code>workflow</code>, <code>pipeline</code>, <code>project</code>, <code>environment</code>, <code>trigger</code>, <code>document</code>, <code>image</code>, <code>other</code>)</td></tr>
-              <tr><td>GET · PUT · DELETE</td><td><code>/files/{path}</code></td><td>Datei lesen (mit <code>ETag</code>), speichern (max. 10 MiB) oder löschen – mit Konfliktschutz</td></tr>
-              <tr><td>POST · DELETE</td><td><code>/folders</code></td><td>Ordner anlegen bzw. leeren Ordner löschen</td></tr>
-              <tr><td>POST</td><td><code>/rename</code></td><td>Datei oder Ordner umbenennen oder verschieben, Verweise auf Wunsch mit ändern</td></tr>
-              <tr><td>GET</td><td><code>/references/{path}</code></td><td>Stellen, die auf eine Datei verweisen (Trigger-Ziele, Aufrufe mit festem Pfad)</td></tr>
-              <tr><td>GET</td><td><code>/variables</code></td><td>Variablen des Projekts mit Werten je Ebene und Fundstellen</td></tr>
-              <tr><td>GET</td><td><code>/schemas/{kind}</code></td><td>JSON Schema einer Dateiart (<code>project</code>, <code>environment</code>, <code>trigger</code>, <code>connection</code>) – wie <code>runnel schema</code></td></tr>
-              <tr><td>GET</td><td><code>/connections</code></td><td>Connections des Projekts mit Name, Typ und Datei – für die Auswahl von <code>connection:</code></td></tr>
-              <tr><td>POST</td><td><code>/connections/{name}/test</code></td><td>Connection für ein Environment testen; Antwort <code>{ok, message, environment, durationMs}</code>, Meldungen ohne Secrets</td></tr>
-              <tr><td>GET</td><td><code>/secrets</code></td><td>Secrets des Projekts mit Fundstellen und Stand je Environment (<code>set</code>, <code>missing</code>, <code>unavailable</code>) – ohne Werte</td></tr>
-              <tr><td>POST</td><td><code>/forms/edit</code></td><td>Connection, Trigger, Environment oder <code>project.yaml</code> für das Formular lesen und ein Feld setzen (nicht speichern)</td></tr>
-              <tr><td>GET</td><td><code>/catalog</code></td><td>Descriptors aller Actions und Transforms – wie <code>runnel catalog --json</code></td></tr>
-              <tr><td>GET</td><td><code>/expressions</code></td><td>Referenz für den Ausdruckseditor: Kontext, Funktionen, Variablen</td></tr>
-              <tr><td>POST</td><td><code>/validate</code></td><td>Workflow, Pipeline oder Projektdatei prüfen – gespeichert oder mit ungespeichertem <code>content</code>, genau wie <code>runnel validate</code></td></tr>
-              <tr><td>POST</td><td><code>/workflows/edit</code>, <code>/pipelines/edit</code></td><td>Änderung vom Canvas zeilengenau auf den Text anwenden (nicht speichern)</td></tr>
-              <tr><td>POST</td><td><code>/copy</code></td><td>Actions oder Transforms als YAML-Text für die Zwischenablage</td></tr>
-              <tr><td>POST</td><td><code>/pipelines/fields</code></td><td>Felder eines Eingabe-Transforms ermitteln</td></tr>
-              <tr><td>POST</td><td><code>/preview</code></td><td>Datenvorschau einer Pipeline bis zu einem Transform</td></tr>
-              <tr><td>POST · GET</td><td><code>/runs</code>, <code>/runs/{id}</code></td><td>Lauf starten; Läufe aus Speicher und Run-Historie auflisten (mit Filtern) bzw. mit Status je Action und Log lesen</td></tr>
-              <tr><td>POST</td><td><code>/runs/{id}/cancel</code></td><td>Lauf abbrechen (<code>202</code>; bereits beendet <code>409</code>)</td></tr>
-              <tr><td>GET</td><td><code>/events</code></td><td>Live-Ereignisse als Server-Sent Events</td></tr>
-              <tr><td>GET</td><td><code>/triggers</code></td><td>Trigger des Projekts mit Zeitplan, nächstem Zeitpunkt und letztem Ergebnis</td></tr>
-              <tr><td>GET · POST</td><td><code>/plugins</code>, <code>/plugins/{name}/trust</code>, <code>…/untrust</code>, <code>…/reload</code></td><td>Plugins mit Stand, Typen und Verwendung; freigeben, Freigabe zurücknehmen, neu starten</td></tr>
+              <tr><td>GET</td><td><code>/version</code></td><td><strong>öffentlich</strong></td><td>Version, Commit, Datum, Go-Version, OS, Architektur – wie <code>runnel version --json</code></td></tr>
+              <tr><td>GET</td><td><code>/health</code></td><td><strong>öffentlich</strong></td><td>Zustand für Monitoring wie <code>runnel health</code>: <code>200</code> bei <code>ok</code> und <code>degraded</code>, <code>503</code> bei <code>fail</code> – siehe <a href="#zustand">Zustand</a></td></tr>
+              <tr><td>GET · POST</td><td><code>/project</code></td><td>intern</td><td>Ob der Ordner des Servers ein Projekt hat; Projekt anlegen wie <code>runnel init</code> (Startseite „No project here“ des Editors)</td></tr>
+              <tr><td>GET</td><td><code>/projects/current</code></td><td>intern</td><td>Name, Ordner, Environments und Standard-Environment</td></tr>
+              <tr><td>GET</td><td><code>/projects/current/tree</code></td><td>intern</td><td>Dateibaum mit Art je Datei (<code>workflow</code>, <code>pipeline</code>, <code>project</code>, <code>environment</code>, <code>trigger</code>, <code>document</code>, <code>image</code>, <code>other</code>)</td></tr>
+              <tr><td>GET · PUT · DELETE</td><td><code>/files/{path}</code></td><td>intern</td><td>Datei lesen (mit <code>ETag</code>), speichern (max. 10 MiB) oder löschen – mit Konfliktschutz</td></tr>
+              <tr><td>POST · DELETE</td><td><code>/folders</code></td><td>intern</td><td>Ordner anlegen bzw. leeren Ordner löschen</td></tr>
+              <tr><td>POST</td><td><code>/rename</code></td><td>intern</td><td>Datei oder Ordner umbenennen oder verschieben, Verweise auf Wunsch mit ändern</td></tr>
+              <tr><td>GET</td><td><code>/references/{path}</code></td><td>intern</td><td>Stellen, die auf eine Datei verweisen (Trigger-Ziele, Aufrufe mit festem Pfad)</td></tr>
+              <tr><td>GET</td><td><code>/variables</code></td><td>intern</td><td>Variablen des Projekts mit Werten je Ebene und Fundstellen</td></tr>
+              <tr><td>GET</td><td><code>/schemas/{kind}</code></td><td>intern</td><td>JSON Schema einer Dateiart (<code>project</code>, <code>environment</code>, <code>trigger</code>, <code>connection</code>) – wie <code>runnel schema</code></td></tr>
+              <tr><td>GET</td><td><code>/connections</code></td><td>intern</td><td>Connections des Projekts mit Name, Typ und Datei – für die Auswahl von <code>connection:</code></td></tr>
+              <tr><td>POST</td><td><code>/connections/{name}/test</code></td><td>intern</td><td>Connection für ein Environment testen; Antwort <code>{ok, message, environment, durationMs}</code>, Meldungen ohne Secrets</td></tr>
+              <tr><td>GET</td><td><code>/secrets</code></td><td>intern</td><td>Secrets des Projekts mit Fundstellen und Stand je Environment (<code>set</code>, <code>missing</code>, <code>unavailable</code>) – ohne Werte</td></tr>
+              <tr><td>POST</td><td><code>/forms/edit</code></td><td>intern</td><td>Connection, Trigger, Environment oder <code>project.yaml</code> für das Formular lesen und ein Feld setzen (nicht speichern)</td></tr>
+              <tr><td>GET</td><td><code>/catalog</code></td><td><strong>öffentlich</strong></td><td>Descriptors aller Actions und Transforms – wie <code>runnel catalog --json</code></td></tr>
+              <tr><td>GET</td><td><code>/expressions</code></td><td><strong>öffentlich</strong></td><td>Referenz für den Ausdruckseditor: Kontext, Funktionen, Variablen</td></tr>
+              <tr><td>POST</td><td><code>/validate</code></td><td>intern</td><td>Workflow, Pipeline oder Projektdatei prüfen – gespeichert oder mit ungespeichertem <code>content</code>, genau wie <code>runnel validate</code></td></tr>
+              <tr><td>POST</td><td><code>/workflows/edit</code>, <code>/pipelines/edit</code></td><td>intern</td><td>Änderung vom Canvas zeilengenau auf den Text anwenden (nicht speichern)</td></tr>
+              <tr><td>POST</td><td><code>/copy</code></td><td>intern</td><td>Actions oder Transforms als YAML-Text für die Zwischenablage</td></tr>
+              <tr><td>POST</td><td><code>/pipelines/fields</code></td><td>intern</td><td>Felder eines Eingabe-Transforms ermitteln</td></tr>
+              <tr><td>POST</td><td><code>/preview</code></td><td>intern</td><td>Datenvorschau einer Pipeline bis zu einem Transform</td></tr>
+              <tr><td>POST · GET</td><td><code>/runs</code>, <code>/runs/{id}</code></td><td><strong>öffentlich</strong></td><td>Lauf starten; Läufe aus Speicher und Run-Historie auflisten (mit Filtern) bzw. mit Status je Action und Log lesen</td></tr>
+              <tr><td>POST</td><td><code>/runs/{id}/cancel</code></td><td><strong>öffentlich</strong></td><td>Lauf abbrechen (<code>202</code>; bereits beendet <code>409</code>)</td></tr>
+              <tr><td>GET</td><td><code>/events</code></td><td>intern</td><td>Live-Ereignisse als Server-Sent Events</td></tr>
+              <tr><td>GET</td><td><code>/triggers</code></td><td>intern</td><td>Trigger des Projekts mit Zeitplan, nächstem Zeitpunkt und letztem Ergebnis</td></tr>
+              <tr><td>GET · POST</td><td><code>/plugins</code>, <code>/plugins/{name}/trust</code>, <code>…/untrust</code>, <code>…/reload</code></td><td>intern</td><td>Plugins mit Stand, Typen und Verwendung; freigeben, Freigabe zurücknehmen, neu starten</td></tr>
             </tbody>
           </table></div>
 
@@ -94,6 +97,28 @@ runnel serve --port 0 .          # freier Port; die Ausgabe nennt die Adresse</c
           {{snippet:api-run.json|Run}}
           <p><code>status</code> ist <code>running</code>, <code>succeeded</code>, <code>failed</code> oder <code>cancelled</code>; <code>trigger</code> nennt, was den Lauf gestartet hat (<code>cron:&lt;name&gt;</code>, <code>interval:…</code>, <code>file:…</code>, <code>http:…</code>). <code>trigger</code> ist zusätzlich <code>cli</code> für <code>runnel run</code> und <code>editor</code> für Läufe aus dem Editor oder mit <code>POST /runs</code>. <code>GET /runs/{id}</code> ergänzt den Status je Action und das Log (höchstens 5.000 Zeilen).</p>
           <p><strong>Run-Historie:</strong> <code>GET /runs</code> liefert laufende und kürzlich beendete Läufe aus dem Speicher und alle älteren aus der <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0026-run-historie.md">Run-Historie</a> (SQLite-Datei je Projekt im Datenordner), neueste zuerst. Filter: <code>status</code>, <code>path</code>, <code>trigger</code>; Seiten mit <code>before=&lt;lauf-id&gt;</code> und <code>limit</code> (Standard 200, höchstens 1.000, sonst <code>400</code>). <code>GET /projects/current</code> nennt unter <code>history</code> die Aufbewahrung (<code>keepDays</code>, <code>maxRuns</code>).</p>
+
+          <h2 id="zustand">Zustand (<code>/health</code>)</h2>
+<pre><code class="lang-bash" data-caption="GET /api/v1/health (gekürzt)">{
+  "status": "ok",
+  "version": "v0.1.0-alpha.13",
+  "uptimeSeconds": 1,
+  "startedAt": "2026-11-27T08:37:22.477Z",
+  "project": { "name": "flows", "dir": "D:\\flows" },
+  "checks": [
+    { "name": "scheduler", "status": "ok", "message": "running, 0 of 0 triggers active" },
+    { "name": "triggers", "status": "ok", "message": "all trigger files loaded" },
+    { "name": "runs", "status": "ok", "message": "0 running" },
+    { "name": "history", "status": "ok", "message": "writable, 0 MB" },
+    { "name": "disk", "status": "ok", "message": "57568 MB free of 258019 MB in …" }
+  ],
+  "scheduler": { "running": true, "triggers": 0, "active": 0, "problems": [] },
+  "runs": { "running": 0, "onErrorQueue": 0 },
+  "history": { "enabled": true, "writable": true, "sizeBytes": 86528, "path": "…" },
+  "disk": { "freeBytes": 60365111296, "totalBytes": 270553174016, "path": "…" }
+}</code></pre>
+          <p><code>status</code> ist <code>ok</code> oder <code>degraded</code> (<code>200</code>) bzw. <code>fail</code> (<code>503</code>), <code>checks</code> nennt je Prüfung den Grund. Alles kommt aus dem Speicher, ohne Abfrage der Datenbank. Der Endpunkt ist nur lokal erreichbar wie die übrige API, ohne Token, und nicht am Listener der HTTP-Trigger. <code>runnel health</code> zeigt dasselbe lesbar und mit Exit-Code – siehe <a href="../handbuch/betrieb.html#zustand">Betrieb</a>.</p>
+          <p><strong>Ohne Projekt:</strong> Findet <code>runnel serve</code> keine <code>project.yaml</code>, startet der Server trotzdem. Bis ein Projekt angelegt ist, antworten nur <code>/version</code>, <code>/health</code> (<code>degraded</code>), <code>/project</code> und der Editor; alle übrigen Endpunkte antworten <code>409</code> mit <code>{"code": "no_project"}</code>.</p>
 
           <h2 id="events">Live-Ereignisse (<code>/events</code>)</h2>
           {{snippet:api-event.txt|Beispiel}}
@@ -135,7 +160,7 @@ runnel serve --port 0 .          # freier Port; die Ausgabe nennt die Adresse</c
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Antwort</th><th>Bedeutung</th></tr></thead>
             <tbody>
-              <tr><td><code>202</code> + <code>{"runId", "status"}</code></td><td><code>response: accepted</code>: Lauf gestartet</td></tr>
+              <tr><td><code>202</code> + <code>{"runId"}</code></td><td><code>response: accepted</code>: Lauf gestartet</td></tr>
               <tr><td>Antwort von <code>http.response</code></td><td><code>response: run</code>: die erste Antwort des Laufs; ohne <code>http.response</code> <code>200</code> mit den <code>outputs</code> bzw. <code>500</code></td></tr>
               <tr><td><code>504</code></td><td><code>response: run</code>: keine Antwort innerhalb von <code>timeout</code>; der Lauf läuft weiter</td></tr>
               <tr><td><code>400</code> / <code>401</code> / <code>403</code></td><td>Parameter fehlt oder passt nicht / Token fehlt oder falsch / Anfrage aus einer Webseite</td></tr>
@@ -150,7 +175,7 @@ runnel serve --port 0 .          # freier Port; die Ausgabe nennt die Adresse</c
           <p class="docs-eyebrow">Developer docs · Server</p>
           <h1>Server API</h1>
           <p class="docs-lead">The API of <code>runnel serve</code> is the editor's only interface to the server – and just as usable from scripts. Outside <code>/api/v1</code> the server delivers the embedded <a href="editor.html">editor</a>.</p>
-          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/API.md"><code>docs/dev/API.md</code></a> (as of S71) – with every field and the endpoints for editing, copying, field detection and data preview. Background: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0016-live-events-sse.md">ADR 0016</a> (live events), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0018-http-trigger.md">ADR 0018</a> (HTTP triggers).</p>
+          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/API.md"><code>docs/dev/API.md</code></a> (as of <code>v0.1.0-alpha.13</code>) – with every field and the endpoints for editing, copying, field detection and data preview. Background: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0016-live-events-sse.md">ADR 0016</a> (live events), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0018-http-trigger.md">ADR 0018</a> (HTTP triggers).</p>
 <pre><code class="lang-bash" data-caption="Start the server">runnel serve examples/hello     # project in the folder or above, port 7300
 runnel serve --port 0 .          # free port; the output names the address</code></pre>
 
@@ -160,41 +185,44 @@ runnel serve --port 0 .          # free port; the output names the address</code
               <tr><th scope="row">Address</th><td><code>127.0.0.1</code> only; HTTP triggers have their own listener</td></tr>
               <tr><th scope="row">Prefix</th><td>all endpoints under <code>/api/v1</code></td></tr>
               <tr><th scope="row">Format</th><td>JSON (UTF-8, indented); file contents as raw data</td></tr>
-              <tr><th scope="row">Errors</th><td>Status code and <code>{"error": "…"}</code> with an understandable English message</td></tr>
+              <tr><th scope="row">Errors</th><td>Status code and <code>{"error": "…"}</code> with an understandable English message; some with a fixed <code>code</code>, e.g. <code>no_project</code></td></tr>
               <tr><th scope="row">Protection</th><td>Requests must target <code>localhost</code>, <code>127.0.0.1</code> or <code>[::1]</code> (DNS rebinding protection); an <code>Origin</code> header must match the server (protection against other web pages). Otherwise <code>403</code></td></tr>
               <tr><th scope="row">Paths</th><td>relative to the project folder, separator <code>/</code>; hidden entries, <code>..</code>, <code>\</code>, <code>:</code> and names reserved on Windows (<code>CON</code>, <code>NUL</code> …) are rejected with <code>400</code></td></tr>
             </tbody>
           </table></div>
 
           <h2 id="endpoints">Endpoints</h2>
+          <p><strong>Public and internal</strong> (<a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0029-stabilitaet-versionen.md">ADR 0029</a>, German): public endpoints – <code>/version</code>, <code>/health</code>, <code>/catalog</code>, <code>/expressions</code> and the runs under <code>/runs</code> – change only additively from <code>v1.0.0</code>; readers ignore unknown keys. Internal endpoints serve the embedded editor, which always matches the server's version, and may change in any version – scripts should not use them. “Public” means promised, not reachable on the network: the same host and origin checks apply to both.</p>
           <div class="table-scroll"><table class="doc-table">
-            <thead><tr><th>Method</th><th>Path</th><th>Result</th></tr></thead>
+            <thead><tr><th>Method</th><th>Path</th><th>API</th><th>Result</th></tr></thead>
             <tbody>
-              <tr><td>GET</td><td><code>/version</code></td><td>Version, commit, date, Go version, OS, architecture – like <code>runnel version --json</code></td></tr>
-              <tr><td>GET</td><td><code>/projects/current</code></td><td>Name, folder, environments and default environment</td></tr>
-              <tr><td>GET</td><td><code>/projects/current/tree</code></td><td>File tree with a kind per file (<code>workflow</code>, <code>pipeline</code>, <code>project</code>, <code>environment</code>, <code>trigger</code>, <code>document</code>, <code>image</code>, <code>other</code>)</td></tr>
-              <tr><td>GET · PUT · DELETE</td><td><code>/files/{path}</code></td><td>Read a file (with <code>ETag</code>), save it (max. 10 MiB) or delete it – with conflict protection</td></tr>
-              <tr><td>POST · DELETE</td><td><code>/folders</code></td><td>Create a folder or delete an empty one</td></tr>
-              <tr><td>POST</td><td><code>/rename</code></td><td>Rename or move a file or folder, optionally updating references</td></tr>
-              <tr><td>GET</td><td><code>/references/{path}</code></td><td>Places that refer to a file (trigger targets, calls with a fixed path)</td></tr>
-              <tr><td>GET</td><td><code>/variables</code></td><td>Project variables with values per level and usages</td></tr>
-              <tr><td>GET</td><td><code>/schemas/{kind}</code></td><td>JSON Schema of a file kind (<code>project</code>, <code>environment</code>, <code>trigger</code>, <code>connection</code>) – like <code>runnel schema</code></td></tr>
-              <tr><td>GET</td><td><code>/connections</code></td><td>Project connections with name, type and file – for choosing <code>connection:</code></td></tr>
-              <tr><td>POST</td><td><code>/connections/{name}/test</code></td><td>Test a connection for an environment; response <code>{ok, message, environment, durationMs}</code>, messages without secrets</td></tr>
-              <tr><td>GET</td><td><code>/secrets</code></td><td>Project secrets with usages and state per environment (<code>set</code>, <code>missing</code>, <code>unavailable</code>) – without values</td></tr>
-              <tr><td>POST</td><td><code>/forms/edit</code></td><td>Read a connection, trigger, environment or <code>project.yaml</code> for the form and set a field (without saving)</td></tr>
-              <tr><td>GET</td><td><code>/catalog</code></td><td>Descriptors of all actions and transforms – like <code>runnel catalog --json</code></td></tr>
-              <tr><td>GET</td><td><code>/expressions</code></td><td>Reference for the expression editor: context, functions, variables</td></tr>
-              <tr><td>POST</td><td><code>/validate</code></td><td>Check a workflow, pipeline or project file – saved or with unsaved <code>content</code>, exactly like <code>runnel validate</code></td></tr>
-              <tr><td>POST</td><td><code>/workflows/edit</code>, <code>/pipelines/edit</code></td><td>Apply a canvas change to the text line by line (without saving)</td></tr>
-              <tr><td>POST</td><td><code>/copy</code></td><td>Actions or transforms as YAML text for the clipboard</td></tr>
-              <tr><td>POST</td><td><code>/pipelines/fields</code></td><td>Detect the fields of an input transform</td></tr>
-              <tr><td>POST</td><td><code>/preview</code></td><td>Data preview of a pipeline up to a transform</td></tr>
-              <tr><td>POST · GET</td><td><code>/runs</code>, <code>/runs/{id}</code></td><td>Start a run; list runs from memory and run history (with filters) or read one with status per action and log</td></tr>
-              <tr><td>POST</td><td><code>/runs/{id}/cancel</code></td><td>Cancel a run (<code>202</code>; already finished <code>409</code>)</td></tr>
-              <tr><td>GET</td><td><code>/events</code></td><td>Live events as server-sent events</td></tr>
-              <tr><td>GET</td><td><code>/triggers</code></td><td>Project triggers with schedule, next time and last result</td></tr>
-              <tr><td>GET · POST</td><td><code>/plugins</code>, <code>/plugins/{name}/trust</code>, <code>…/untrust</code>, <code>…/reload</code></td><td>Plugins with state, types and usage; trust, withdraw approval, restart</td></tr>
+              <tr><td>GET</td><td><code>/version</code></td><td><strong>public</strong></td><td>Version, commit, date, Go version, OS, architecture – like <code>runnel version --json</code></td></tr>
+              <tr><td>GET</td><td><code>/health</code></td><td><strong>public</strong></td><td>Health for monitoring like <code>runnel health</code>: <code>200</code> for <code>ok</code> and <code>degraded</code>, <code>503</code> for <code>fail</code> – see <a href="#health">Health</a></td></tr>
+              <tr><td>GET · POST</td><td><code>/project</code></td><td>internal</td><td>Whether the server's folder has a project; create one like <code>runnel init</code> (the editor's “No project here” page)</td></tr>
+              <tr><td>GET</td><td><code>/projects/current</code></td><td>internal</td><td>Name, folder, environments and default environment</td></tr>
+              <tr><td>GET</td><td><code>/projects/current/tree</code></td><td>internal</td><td>File tree with a kind per file (<code>workflow</code>, <code>pipeline</code>, <code>project</code>, <code>environment</code>, <code>trigger</code>, <code>document</code>, <code>image</code>, <code>other</code>)</td></tr>
+              <tr><td>GET · PUT · DELETE</td><td><code>/files/{path}</code></td><td>internal</td><td>Read a file (with <code>ETag</code>), save it (max. 10 MiB) or delete it – with conflict protection</td></tr>
+              <tr><td>POST · DELETE</td><td><code>/folders</code></td><td>internal</td><td>Create a folder or delete an empty one</td></tr>
+              <tr><td>POST</td><td><code>/rename</code></td><td>internal</td><td>Rename or move a file or folder, optionally updating references</td></tr>
+              <tr><td>GET</td><td><code>/references/{path}</code></td><td>internal</td><td>Places that refer to a file (trigger targets, calls with a fixed path)</td></tr>
+              <tr><td>GET</td><td><code>/variables</code></td><td>internal</td><td>Project variables with values per level and usages</td></tr>
+              <tr><td>GET</td><td><code>/schemas/{kind}</code></td><td>internal</td><td>JSON Schema of a file kind (<code>project</code>, <code>environment</code>, <code>trigger</code>, <code>connection</code>) – like <code>runnel schema</code></td></tr>
+              <tr><td>GET</td><td><code>/connections</code></td><td>internal</td><td>Project connections with name, type and file – for choosing <code>connection:</code></td></tr>
+              <tr><td>POST</td><td><code>/connections/{name}/test</code></td><td>internal</td><td>Test a connection for an environment; response <code>{ok, message, environment, durationMs}</code>, messages without secrets</td></tr>
+              <tr><td>GET</td><td><code>/secrets</code></td><td>internal</td><td>Project secrets with usages and state per environment (<code>set</code>, <code>missing</code>, <code>unavailable</code>) – without values</td></tr>
+              <tr><td>POST</td><td><code>/forms/edit</code></td><td>internal</td><td>Read a connection, trigger, environment or <code>project.yaml</code> for the form and set a field (without saving)</td></tr>
+              <tr><td>GET</td><td><code>/catalog</code></td><td><strong>public</strong></td><td>Descriptors of all actions and transforms – like <code>runnel catalog --json</code></td></tr>
+              <tr><td>GET</td><td><code>/expressions</code></td><td><strong>public</strong></td><td>Reference for the expression editor: context, functions, variables</td></tr>
+              <tr><td>POST</td><td><code>/validate</code></td><td>internal</td><td>Check a workflow, pipeline or project file – saved or with unsaved <code>content</code>, exactly like <code>runnel validate</code></td></tr>
+              <tr><td>POST</td><td><code>/workflows/edit</code>, <code>/pipelines/edit</code></td><td>internal</td><td>Apply a canvas change to the text line by line (without saving)</td></tr>
+              <tr><td>POST</td><td><code>/copy</code></td><td>internal</td><td>Actions or transforms as YAML text for the clipboard</td></tr>
+              <tr><td>POST</td><td><code>/pipelines/fields</code></td><td>internal</td><td>Detect the fields of an input transform</td></tr>
+              <tr><td>POST</td><td><code>/preview</code></td><td>internal</td><td>Data preview of a pipeline up to a transform</td></tr>
+              <tr><td>POST · GET</td><td><code>/runs</code>, <code>/runs/{id}</code></td><td><strong>public</strong></td><td>Start a run; list runs from memory and run history (with filters) or read one with status per action and log</td></tr>
+              <tr><td>POST</td><td><code>/runs/{id}/cancel</code></td><td><strong>public</strong></td><td>Cancel a run (<code>202</code>; already finished <code>409</code>)</td></tr>
+              <tr><td>GET</td><td><code>/events</code></td><td>internal</td><td>Live events as server-sent events</td></tr>
+              <tr><td>GET</td><td><code>/triggers</code></td><td>internal</td><td>Project triggers with schedule, next time and last result</td></tr>
+              <tr><td>GET · POST</td><td><code>/plugins</code>, <code>/plugins/{name}/trust</code>, <code>…/untrust</code>, <code>…/reload</code></td><td>internal</td><td>Plugins with state, types and usage; trust, withdraw approval, restart</td></tr>
             </tbody>
           </table></div>
 
@@ -227,6 +255,28 @@ runnel serve --port 0 .          # free port; the output names the address</code
           {{snippet:api-run.json|Run}}
           <p><code>status</code> is <code>running</code>, <code>succeeded</code>, <code>failed</code> or <code>cancelled</code>; <code>trigger</code> names what started the run (<code>cron:&lt;name&gt;</code>, <code>interval:…</code>, <code>file:…</code>, <code>http:…</code>). <code>trigger</code> can also be <code>cli</code> for <code>runnel run</code> and <code>editor</code> for runs from the editor or via <code>POST /runs</code>. <code>GET /runs/{id}</code> adds the status per action and the log (at most 5,000 lines).</p>
           <p><strong>Run history:</strong> <code>GET /runs</code> returns running and recently finished runs from memory and all older ones from the <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0026-run-historie.md">run history</a> (one SQLite file per project in the data folder), newest first. Filters: <code>status</code>, <code>path</code>, <code>trigger</code>; pages with <code>before=&lt;run id&gt;</code> and <code>limit</code> (default 200, at most 1,000, else <code>400</code>). <code>GET /projects/current</code> names the retention under <code>history</code> (<code>keepDays</code>, <code>maxRuns</code>).</p>
+
+          <h2 id="health">Health (<code>/health</code>)</h2>
+<pre><code class="lang-bash" data-caption="GET /api/v1/health (shortened)">{
+  "status": "ok",
+  "version": "v0.1.0-alpha.13",
+  "uptimeSeconds": 1,
+  "startedAt": "2026-11-27T08:37:22.477Z",
+  "project": { "name": "flows", "dir": "D:\\flows" },
+  "checks": [
+    { "name": "scheduler", "status": "ok", "message": "running, 0 of 0 triggers active" },
+    { "name": "triggers", "status": "ok", "message": "all trigger files loaded" },
+    { "name": "runs", "status": "ok", "message": "0 running" },
+    { "name": "history", "status": "ok", "message": "writable, 0 MB" },
+    { "name": "disk", "status": "ok", "message": "57568 MB free of 258019 MB in …" }
+  ],
+  "scheduler": { "running": true, "triggers": 0, "active": 0, "problems": [] },
+  "runs": { "running": 0, "onErrorQueue": 0 },
+  "history": { "enabled": true, "writable": true, "sizeBytes": 86528, "path": "…" },
+  "disk": { "freeBytes": 60365111296, "totalBytes": 270553174016, "path": "…" }
+}</code></pre>
+          <p><code>status</code> is <code>ok</code> or <code>degraded</code> (<code>200</code>) or <code>fail</code> (<code>503</code>); <code>checks</code> gives the reason per check. Everything comes from memory, without database queries. The endpoint is local only like the rest of the API, without a token, and not on the HTTP trigger listener. <code>runnel health</code> shows the same in readable form with an exit code – see <a href="../handbuch/betrieb.html#health">Operation</a>.</p>
+          <p><strong>Without a project:</strong> if <code>runnel serve</code> finds no <code>project.yaml</code>, the server starts anyway. Until a project is created, only <code>/version</code>, <code>/health</code> (<code>degraded</code>), <code>/project</code> and the editor answer; all other endpoints answer <code>409</code> with <code>{"code": "no_project"}</code>.</p>
 
           <h2 id="events-en">Live events (<code>/events</code>)</h2>
           {{snippet:api-event.txt|Example}}
@@ -268,7 +318,7 @@ runnel serve --port 0 .          # free port; the output names the address</code
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Response</th><th>Meaning</th></tr></thead>
             <tbody>
-              <tr><td><code>202</code> + <code>{"runId", "status"}</code></td><td><code>response: accepted</code>: run started</td></tr>
+              <tr><td><code>202</code> + <code>{"runId"}</code></td><td><code>response: accepted</code>: run started</td></tr>
               <tr><td>Response of <code>http.response</code></td><td><code>response: run</code>: the run's first response; without <code>http.response</code> <code>200</code> with the <code>outputs</code> or <code>500</code></td></tr>
               <tr><td><code>504</code></td><td><code>response: run</code>: no response within <code>timeout</code>; the run keeps going</td></tr>
               <tr><td><code>400</code> / <code>401</code> / <code>403</code></td><td>Parameter missing or invalid / token missing or wrong / request from a web page</td></tr>

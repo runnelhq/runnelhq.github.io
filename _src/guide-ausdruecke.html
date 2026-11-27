@@ -32,6 +32,8 @@ name: "{{ request?.body?.name ?? 'unknown' }}"</code></pre>
             <li>Ein Vergleich mit einem leeren Wert ist falsch – <code>isEmpty()</code> und <code>coalesce()</code> helfen.</li>
             <li><code>${…}</code> wird vorher eingesetzt und ist im Ausdruck Text. Für typisierte Parameter <code>params.NAME</code> verwenden.</li>
             <li>Syntax und Namen prüft <code>runnel validate</code> schon vor dem Lauf; der Editor schlägt Namen und Funktionen beim Tippen vor.</li>
+            <li>Erlaubt sind <strong>nur die Funktionen der Referenz unten</strong> – weitere Funktionen von expr sind abgeschaltet, damit sich der Umfang nicht mit einem Update ändert. Ein anderer Aufruf ist ein Fehler mit Vorschlägen, z. B. <code>unknown function "date" (similar: parseDate, formatDate, …)</code>. Operatoren wie <code>in</code>, <code>matches</code>, <code>contains</code>, <code>startsWith</code>, <code>??</code>, <code>?:</code> und <code>|</code> gehören zur Sprache und bleiben.</li>
+            <li><strong>Listen mit Bedingung</strong> wie <code>filter</code>, <code>map</code>, <code>any</code> oder <code>sortBy</code> nehmen einen Ausdruck je Element: <code>.feld</code> bzw. <code>#</code> ist das Element, z. B. <code>{{ count(results.files.output, .size &gt; 0) }}</code>.</li>
           </ul>
           <p>In <strong>Pipelines</strong> steht der aktuelle Datensatz als <code>record</code> bereit, z. B. <code>record.umsatz</code> in <code>core.filter</code> oder <code>core.calculate</code>; dazu <code>params</code> und <code>run</code>.</p>
 
@@ -58,6 +60,8 @@ name: "{{ request?.body?.name ?? 'unknown' }}"</code></pre>
             <li>A comparison with an empty value is false – <code>isEmpty()</code> and <code>coalesce()</code> help.</li>
             <li><code>${…}</code> is substituted first and is text inside the expression. Use <code>params.NAME</code> for typed parameters.</li>
             <li><code>runnel validate</code> checks syntax and names before the run; the editor suggests names and functions while you type.</li>
+            <li><strong>Only the functions of the reference below</strong> are allowed – other expr functions are switched off so the scope does not change with an update. Any other call is an error with suggestions, e.g. <code>unknown function "date" (similar: parseDate, formatDate, …)</code>. Operators such as <code>in</code>, <code>matches</code>, <code>contains</code>, <code>startsWith</code>, <code>??</code>, <code>?:</code> and <code>|</code> are part of the language and stay.</li>
+            <li><strong>Lists with a condition</strong> such as <code>filter</code>, <code>map</code>, <code>any</code> or <code>sortBy</code> take an expression per element: <code>.field</code> or <code>#</code> is the element, e.g. <code>{{ count(results.files.output, .size &gt; 0) }}</code>.</li>
           </ul>
           <p>In <strong>pipelines</strong> the current record is available as <code>record</code>, e.g. <code>record.amount</code> in <code>core.filter</code> or <code>core.calculate</code>; plus <code>params</code> and <code>run</code>.</p>
 

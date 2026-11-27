@@ -22,12 +22,15 @@
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Befehl</th><th>Zweck</th></tr></thead>
             <tbody>
+              <tr><td><code>runnel init [ordner]</code></td><td>neues Projekt mit Beispiel-Workflow anlegen</td></tr>
               <tr><td><code>runnel validate &lt;pfad…&gt;</code></td><td>Workflows, Pipelines, Trigger und Projektdateien prüfen</td></tr>
               <tr><td><code>runnel run &lt;datei&gt;</code></td><td>einen Workflow oder eine Pipeline einmal ausführen</td></tr>
               <tr><td><code>runnel serve [projektordner]</code></td><td>Editor im Browser und Trigger starten</td></tr>
               <tr><td><code>runnel triggers [projektordner]</code></td><td>Trigger mit Zeitplan und nächstem Zeitpunkt auflisten</td></tr>
               <tr><td><code>runnel runs [projektordner] [lauf-id]</code></td><td>Läufe aus der <a href="#historie">Run-Historie</a> auflisten oder einen mit Log zeigen</td></tr>
               <tr><td><code>runnel plugins [trust|untrust] [projektordner]</code></td><td><a href="plugins.html">Plugins</a> anzeigen und freigeben</td></tr>
+              <tr><td><code>runnel secret set|list|delete|missing</code></td><td>Secrets im <a href="projekt.html#secret-store">lokalen Store</a> pflegen</td></tr>
+              <tr><td><code>runnel health</code></td><td><a href="#zustand">Zustand</a> des laufenden Servers oder Dienstes, für Monitoring</td></tr>
               <tr><td><code>runnel service …</code></td><td>Windows-Dienst einrichten und steuern</td></tr>
               <tr><td><code>runnel catalog [typ]</code></td><td>Bausteine nachschlagen, mit <code>--json</code> als JSON Schema</td></tr>
               <tr><td><code>runnel schema &lt;art&gt;</code></td><td>JSON Schema einer Dateiart: <code>project</code>, <code>environment</code>, <code>connection</code>, <code>trigger</code>, <code>plugin</code></td></tr>
@@ -37,17 +40,17 @@
 
           <h2 id="pruefen">Prüfen</h2>
 <pre><code class="lang-bash" data-caption="PowerShell">runnel validate D:\flows
-runnel validate --env prod --strict D:\flows\workflows\import.workflow.yaml</code></pre>
-          <p>Ordner werden rekursiv durchsucht. Geprüft werden Syntax und Felder, Links und Zyklen, unerreichbare Actions, Variablen gegen jedes Environment (oder nur gegen <code>--env</code>), Ausdrücke, Action- und Transform-Typen mit ihrer Konfiguration sowie Trigger und Connections. Meldungen erscheinen als <code>datei:zeile:spalte: error|warning: text</code>, oft mit Vorschlag („did you mean …?“). Bei Fehlern ist der Exit-Code 1, mit <code>--strict</code> auch bei Warnungen – passend als Schritt in einer CI.</p>
+runnel validate --environment prod --strict D:\flows\workflows\import.workflow.yaml</code></pre>
+          <p>Ordner werden rekursiv durchsucht. Geprüft werden Syntax und Felder, Links und Zyklen, unerreichbare Actions, Variablen gegen jedes Environment (oder nur gegen <code>--environment</code>), Ausdrücke, Action- und Transform-Typen mit ihrer Konfiguration sowie Trigger und Connections. Meldungen erscheinen als <code>datei:zeile:spalte: error|warning: text</code>, oft mit Vorschlag („did you mean …?“). Bei Fehlern ist der Exit-Code 1, mit <code>--strict</code> auch bei Warnungen; 2, wenn der Aufruf falsch war oder nichts zu prüfen gefunden wurde – passend als Schritt in einer CI.</p>
 
           <h2 id="ausfuehren">Ausführen</h2>
 <pre><code class="lang-bash" data-caption="PowerShell">runnel run D:\flows\workflows\import.workflow.yaml
-runnel run --env prod --param DAYS=3 --param MODE=full D:\flows\workflows\import.workflow.yaml
+runnel run --environment prod --param DAYS=3 --param MODE=full D:\flows\workflows\import.workflow.yaml
 runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Option</th><th>Bedeutung</th></tr></thead>
             <tbody>
-              <tr><td><code>--env &lt;name&gt;</code></td><td>Environment des Projekts; ohne Angabe das <code>defaultEnvironment</code></td></tr>
+              <tr><td><code>--environment &lt;name&gt;</code></td><td>Environment des Projekts; ohne Angabe das <code>defaultEnvironment</code></td></tr>
               <tr><td><code>--param KEY=VALUE</code></td><td>Parameter setzen, mehrfach möglich</td></tr>
               <tr><td><code>-v</code></td><td>zusätzlich Debug-Meldungen und jeden Start und jedes Ende einer Action bzw. eines Transforms (wie <code>--log-level debug</code>)</td></tr>
               <tr><td><code>--log-level &lt;stufe&gt;</code></td><td><code>debug</code>, <code>info</code> (Standard), <code>warn</code> oder <code>error</code></td></tr>
@@ -67,7 +70,7 @@ runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
           </table></div>
 
           <h3>In der Windows-Aufgabenplanung</h3>
-          <p>Für einfache Zeitpläne ohne laufenden Server genügt die Aufgabenplanung: Programm <code>C:\Tools\Runnel\runnel.exe</code>, Argumente <code>run --env prod D:\flows\workflows\import.workflow.yaml</code>. Die Aufgabe zeigt als Ergebnis den Exit-Code (<code>0</code> bzw. <code>0x1</code> bei Fehler). Alternativ übernehmen <a href="trigger.html">Trigger</a> die Zeitpläne, solange der Server oder Dienst läuft.</p>
+          <p>Für einfache Zeitpläne ohne laufenden Server genügt die Aufgabenplanung: Programm <code>C:\Tools\Runnel\runnel.exe</code>, Argumente <code>run --environment prod D:\flows\workflows\import.workflow.yaml</code>. Die Aufgabe zeigt als Ergebnis den Exit-Code (<code>0</code> bzw. <code>0x1</code> bei Fehler). Alternativ übernehmen <a href="trigger.html">Trigger</a> die Zeitpläne, solange der Server oder Dienst läuft.</p>
 
           <h2 id="editor">Editor und Server</h2>
 <pre><code class="lang-bash" data-caption="PowerShell">runnel serve D:\flows
@@ -109,6 +112,7 @@ runnel service uninstall</code></pre>
             <li><strong>Wiederherstellung:</strong> Nach einem Fehler startet Windows den Dienst nach 10 s, 1 min und 5 min neu.</li>
             <li><strong>Stoppen:</strong> Keine neuen Läufe mehr; laufende bekommen <code>--stop-timeout</code>, danach werden sie abgebrochen.</li>
             <li><strong>Log:</strong> vollständig in <code>%ProgramData%\runnel\logs\&lt;name&gt;.log</code> (mit Rotation), Start, Stopp, Warnungen und Fehler zusätzlich in der Ereignisanzeige.</li>
+            <li><strong>Secrets</strong> aus dem lokalen Store liest der Dienst aus seinem eigenen Store: <code>runnel secret set NAME D:\flows --service</code> als Administrator (siehe <a href="projekt.html#secret-store">Secret-Store</a>).</li>
             <li><strong>Plugins</strong> braucht der Dienst eigens freigegeben: <code>runnel plugins trust --service</code> als Administrator (siehe <a href="plugins.html#freigabe">Plugins</a>).</li>
             <li>Der Dienst startet die <code>runnel.exe</code>, mit der er eingerichtet wurde. Nach dem Verschieben der exe neu einrichten.</li>
           </ul>
@@ -123,6 +127,21 @@ runnel serve --triggers 0.0.0.0:7301 --triggers-cert C:\certs\runnel.crt --trigg
             <li>Reines HTTP im Netz nur mit <code>--triggers-insecure</code> – mit Warnung, denn Tokens und Daten gingen im Klartext.</li>
           </ul>
           <p>Details zu Pfaden, Token und Antworten: <a href="trigger.html#http">Trigger – HTTP</a>.</p>
+
+          <h2 id="zustand">Zustand und Überwachung</h2>
+<pre><code class="lang-bash" data-caption="PowerShell">runnel health                        # Server auf 127.0.0.1:7300
+runnel health --service-name runnel  # Port des installierten Dienstes
+runnel health --json</code></pre>
+          <p><code>runnel health</code> fragt den laufenden Server bzw. Dienst auf diesem Rechner nach seinem Zustand (<code>GET /api/v1/health</code>, nur lokal): Scheduler, Trigger-Dateien, letzter fehlgeschlagener Lauf, Run-Historie, freier Platz im Datenordner und Listener der HTTP-Trigger mit dem Ablauf seines Zertifikats. Die Exit-Codes passen zu Monitoring-Werkzeugen wie PRTG, Zabbix oder Checkmk:</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Exit-Code</th><th>Zustand</th></tr></thead>
+            <tbody>
+              <tr><td><code>0</code></td><td><code>ok</code></td></tr>
+              <tr><td><code>1</code></td><td><code>degraded</code> – z. B. Trigger-Datei mit Fehlern, letzter Lauf eines aktiven Triggers fehlgeschlagen, weniger als 1 GiB bzw. 5 % frei, Listener nicht offen, Zertifikat endet in weniger als 14 Tagen</td></tr>
+              <tr><td><code>2</code></td><td><code>fail</code> – Scheduler läuft nicht oder die Run-Historie ist nicht schreibbar</td></tr>
+              <tr><td><code>3</code></td><td>nicht erreichbar oder falscher Aufruf</td></tr>
+            </tbody>
+          </table></div>
 
           <h2 id="logs">Logs und Läufe</h2>
           <ul>
@@ -157,12 +176,15 @@ runnel runs D:\flows 01M8A0J23JPQ51SMYGQSCD41PR</code></pre>
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
             <tbody>
+              <tr><td><code>runnel init [folder]</code></td><td>Create a new project with an example workflow</td></tr>
               <tr><td><code>runnel validate &lt;path…&gt;</code></td><td>Check workflows, pipelines, triggers and project files</td></tr>
               <tr><td><code>runnel run &lt;file&gt;</code></td><td>Run a workflow or a pipeline once</td></tr>
               <tr><td><code>runnel serve [project folder]</code></td><td>Start the browser-based editor and the triggers</td></tr>
               <tr><td><code>runnel triggers [project folder]</code></td><td>List triggers with schedule and next time</td></tr>
               <tr><td><code>runnel runs [project folder] [run id]</code></td><td>List runs from the <a href="#history-en">run history</a> or show one with its log</td></tr>
               <tr><td><code>runnel plugins [trust|untrust] [project folder]</code></td><td>List and trust <a href="plugins.html">plugins</a></td></tr>
+              <tr><td><code>runnel secret set|list|delete|missing</code></td><td>Maintain secrets in the <a href="projekt.html#secret-store-en">local store</a></td></tr>
+              <tr><td><code>runnel health</code></td><td><a href="#health">Health</a> of the running server or service, for monitoring</td></tr>
               <tr><td><code>runnel service …</code></td><td>Set up and control the Windows service</td></tr>
               <tr><td><code>runnel catalog [type]</code></td><td>Look up components, with <code>--json</code> as JSON Schema</td></tr>
               <tr><td><code>runnel schema &lt;kind&gt;</code></td><td>JSON Schema of a file kind: <code>project</code>, <code>environment</code>, <code>connection</code>, <code>trigger</code>, <code>plugin</code></td></tr>
@@ -172,17 +194,17 @@ runnel runs D:\flows 01M8A0J23JPQ51SMYGQSCD41PR</code></pre>
 
           <h2 id="validate">Validating</h2>
 <pre><code class="lang-bash" data-caption="PowerShell">runnel validate D:\flows
-runnel validate --env prod --strict D:\flows\workflows\import.workflow.yaml</code></pre>
-          <p>Folders are searched recursively. Checked are syntax and fields, links and cycles, unreachable actions, variables against every environment (or only <code>--env</code>), expressions, action and transform types with their configuration, as well as triggers and connections. Messages appear as <code>file:line:column: error|warning: text</code>, often with a suggestion (“did you mean …?”). On errors the exit code is 1, with <code>--strict</code> also on warnings – suitable as a CI step.</p>
+runnel validate --environment prod --strict D:\flows\workflows\import.workflow.yaml</code></pre>
+          <p>Folders are searched recursively. Checked are syntax and fields, links and cycles, unreachable actions, variables against every environment (or only <code>--environment</code>), expressions, action and transform types with their configuration, as well as triggers and connections. Messages appear as <code>file:line:column: error|warning: text</code>, often with a suggestion (“did you mean …?”). On errors the exit code is 1, with <code>--strict</code> also on warnings; 2 if the call was wrong or nothing was found to check – suitable as a CI step.</p>
 
           <h2 id="run">Running</h2>
 <pre><code class="lang-bash" data-caption="PowerShell">runnel run D:\flows\workflows\import.workflow.yaml
-runnel run --env prod --param DAYS=3 --param MODE=full D:\flows\workflows\import.workflow.yaml
+runnel run --environment prod --param DAYS=3 --param MODE=full D:\flows\workflows\import.workflow.yaml
 runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Option</th><th>Meaning</th></tr></thead>
             <tbody>
-              <tr><td><code>--env &lt;name&gt;</code></td><td>Environment of the project; without it the <code>defaultEnvironment</code></td></tr>
+              <tr><td><code>--environment &lt;name&gt;</code></td><td>Environment of the project; without it the <code>defaultEnvironment</code></td></tr>
               <tr><td><code>--param KEY=VALUE</code></td><td>Set a parameter, repeatable</td></tr>
               <tr><td><code>-v</code></td><td>Also debug messages and every start and end of an action or transform (like <code>--log-level debug</code>)</td></tr>
               <tr><td><code>--log-level &lt;level&gt;</code></td><td><code>debug</code>, <code>info</code> (default), <code>warn</code> or <code>error</code></td></tr>
@@ -202,7 +224,7 @@ runnel run -v D:\flows\pipelines\customers.pipeline.yaml</code></pre>
           </table></div>
 
           <h3>In Windows Task Scheduler</h3>
-          <p>For simple schedules without a running server, Task Scheduler is enough: program <code>C:\Tools\Runnel\runnel.exe</code>, arguments <code>run --env prod D:\flows\workflows\import.workflow.yaml</code>. The task shows the exit code as its result (<code>0</code>, or <code>0x1</code> on failure). Alternatively, <a href="trigger.html">triggers</a> handle schedules while the server or service is running.</p>
+          <p>For simple schedules without a running server, Task Scheduler is enough: program <code>C:\Tools\Runnel\runnel.exe</code>, arguments <code>run --environment prod D:\flows\workflows\import.workflow.yaml</code>. The task shows the exit code as its result (<code>0</code>, or <code>0x1</code> on failure). Alternatively, <a href="trigger.html">triggers</a> handle schedules while the server or service is running.</p>
 
           <h2 id="editor-en">Editor and server</h2>
 <pre><code class="lang-bash" data-caption="PowerShell">runnel serve D:\flows
@@ -244,6 +266,7 @@ runnel service uninstall</code></pre>
             <li><strong>Recovery:</strong> after a failure, Windows restarts the service after 10 s, 1 min and 5 min.</li>
             <li><strong>Stopping:</strong> no new runs; running ones get <code>--stop-timeout</code>, then they are cancelled.</li>
             <li><strong>Log:</strong> in full in <code>%ProgramData%\runnel\logs\&lt;name&gt;.log</code> (rotated); start, stop, warnings and errors also in the Event Log.</li>
+            <li><strong>Secrets</strong> from the local store are read by the service from its own store: <code>runnel secret set NAME D:\flows --service</code> as administrator (see <a href="projekt.html#secret-store-en">secret store</a>).</li>
             <li><strong>Plugins</strong> must be trusted for the service separately: <code>runnel plugins trust --service</code> as administrator (see <a href="plugins.html#trust">Plugins</a>).</li>
             <li>The service starts the <code>runnel.exe</code> it was set up with. After moving the executable, set it up again.</li>
           </ul>
@@ -258,6 +281,21 @@ runnel serve --triggers 0.0.0.0:7301 --triggers-cert C:\certs\runnel.crt --trigg
             <li>Plain HTTP on the network only with <code>--triggers-insecure</code> – with a warning, since tokens and data would travel in plain text.</li>
           </ul>
           <p>Details on paths, tokens and responses: <a href="trigger.html#http-en">Triggers – HTTP</a>.</p>
+
+          <h2 id="health">Health and monitoring</h2>
+<pre><code class="lang-bash" data-caption="PowerShell">runnel health                        # server on 127.0.0.1:7300
+runnel health --service-name runnel  # port of the installed service
+runnel health --json</code></pre>
+          <p><code>runnel health</code> asks the running server or service on this computer for its state (<code>GET /api/v1/health</code>, local only): scheduler, trigger files, last failed run, run history, free space in the data folder and the HTTP trigger listener with the expiry of its certificate. The exit codes suit monitoring tools such as PRTG, Zabbix or Checkmk:</p>
+          <div class="table-scroll"><table class="doc-table">
+            <thead><tr><th>Exit code</th><th>State</th></tr></thead>
+            <tbody>
+              <tr><td><code>0</code></td><td><code>ok</code></td></tr>
+              <tr><td><code>1</code></td><td><code>degraded</code> – e.g. a trigger file with errors, the last run of an active trigger failed, less than 1 GiB or 5 % free, listener not open, certificate ends in less than 14 days</td></tr>
+              <tr><td><code>2</code></td><td><code>fail</code> – the scheduler is not running or the run history cannot be written</td></tr>
+              <tr><td><code>3</code></td><td>Not reachable or wrong call</td></tr>
+            </tbody>
+          </table></div>
 
           <h2 id="logs-en">Logs and runs</h2>
           <ul>

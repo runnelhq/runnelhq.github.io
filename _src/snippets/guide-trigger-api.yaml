@@ -8,4 +8,4 @@ with:
   path: /hooks/import/{DAY}
   auth: { token: "${secret:env/IMPORT_TOKEN}" }
   response: accepted
-  maxConcurrent: 2
+  maxConcurrentRuns: 2

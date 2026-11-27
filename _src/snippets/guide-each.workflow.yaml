@@ -13,7 +13,7 @@ actions:
     type: core.run-pipeline
     forEach: "{{ results.list.output }}"
     parallel: 2
-    stopOnError: false
+    continueOnEntryError: true
     with:
       pipeline: pipelines/customers.pipeline.yaml
       params:

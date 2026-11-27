@@ -62,7 +62,7 @@ nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.wor
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Feld</th><th>Bedeutung</th></tr></thead>
             <tbody>
-              <tr><td><code>path</code></td><td>Ordner, relativ zum Projekt oder absolut, auch <code>\\server\freigabe\eingang</code>; Unterordner werden nicht durchsucht</td></tr>
+              <tr><td><code>folder</code></td><td>Ordner, relativ zum Projekt oder absolut, auch <code>\\server\freigabe\eingang</code>; Unterordner werden nicht durchsucht</td></tr>
               <tr><td><code>pattern</code></td><td>Dateiname mit Platzhaltern, Groß-/Kleinschreibung egal; Standard <code>*</code></td></tr>
               <tr><td><code>interval</code></td><td>Abstand der Abfragen, Standard <code>10s</code></td></tr>
               <tr><td><code>param</code></td><td>Parameter des Ziels, der den Pfad bekommt</td></tr>
@@ -86,7 +86,7 @@ nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.wor
               <tr><td><code>auth</code></td><td><code>{ token: ${secret:…} }</code> oder <code>${env:…}</code> – Aufrufer senden <code>Authorization: Bearer &lt;token&gt;</code>; <code>auth: none</code> muss ausdrücklich stehen</td></tr>
               <tr><td><code>response</code></td><td><code>accepted</code>: sofort <code>202</code> mit der Lauf-ID · <code>run</code>: der Aufrufer wartet auf die Antwort des Laufs</td></tr>
               <tr><td><code>timeout</code></td><td>bei <code>run</code>: so lange wartet der Aufrufer höchstens (Standard <code>30s</code>), danach <code>504</code></td></tr>
-              <tr><td><code>maxConcurrent</code></td><td>laufende Läufe dieses Triggers, darüber <code>429</code></td></tr>
+              <tr><td><code>maxConcurrentRuns</code></td><td>laufende Läufe dieses Triggers, Standard 4, darüber <code>429</code>; <code>0</code> (ohne Grenze) nur ausdrücklich</td></tr>
               <tr><td><code>history</code></td><td><code>all</code>, <code>errors</code> oder <code>none</code> – welche Läufe in der Historie bleiben; Standard <code>all</code>, bei <code>response: run</code> <code>errors</code></td></tr>
             </tbody>
           </table></div>
@@ -149,7 +149,7 @@ nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.wor
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
             <tbody>
-              <tr><td><code>path</code></td><td>Folder, relative to the project or absolute, also <code>\\server\share\inbox</code>; subfolders are not searched</td></tr>
+              <tr><td><code>folder</code></td><td>Folder, relative to the project or absolute, also <code>\\server\share\inbox</code>; subfolders are not searched</td></tr>
               <tr><td><code>pattern</code></td><td>File name with wildcards, case-insensitive; default <code>*</code></td></tr>
               <tr><td><code>interval</code></td><td>Time between checks, default <code>10s</code></td></tr>
               <tr><td><code>param</code></td><td>Parameter of the target that receives the path</td></tr>
@@ -173,7 +173,7 @@ nightly     cron      0 2 * * 1-5 (Europe/Berlin)   workflows/nightly-import.wor
               <tr><td><code>auth</code></td><td><code>{ token: ${secret:…} }</code> or <code>${env:…}</code> – callers send <code>Authorization: Bearer &lt;token&gt;</code>; <code>auth: none</code> must be stated explicitly</td></tr>
               <tr><td><code>response</code></td><td><code>accepted</code>: immediately <code>202</code> with the run ID · <code>run</code>: the caller waits for the run's response</td></tr>
               <tr><td><code>timeout</code></td><td>With <code>run</code>: longest wait for the caller (default <code>30s</code>), then <code>504</code></td></tr>
-              <tr><td><code>maxConcurrent</code></td><td>Running runs of this trigger, beyond that <code>429</code></td></tr>
+              <tr><td><code>maxConcurrentRuns</code></td><td>Running runs of this trigger, default 4, beyond that <code>429</code>; <code>0</code> (no limit) only explicitly</td></tr>
               <tr><td><code>history</code></td><td><code>all</code>, <code>errors</code> or <code>none</code> – which runs stay in the history; default <code>all</code>, with <code>response: run</code> <code>errors</code></td></tr>
             </tbody>
           </table></div>

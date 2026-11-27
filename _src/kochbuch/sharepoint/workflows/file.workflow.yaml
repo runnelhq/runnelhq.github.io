@@ -11,8 +11,8 @@ parameters:
     required: true
 outputs:
   - name: ROWS
-    type: integer
-    value: "{{ sum(map(results.read.output.items, len(.output.rows))) }}"
+    type: int
+    value: "{{ sum(map(results.read.output.items, len(.output.records))) }}"
 actions:
   - id: start
     type: core.start

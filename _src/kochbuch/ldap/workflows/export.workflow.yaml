@@ -9,7 +9,7 @@ parameters:
     default: OU=Users
 outputs:
   - name: USERS
-    type: integer
+    type: int
     value: "{{ results.users.output.transforms.write.written }}"
 actions:
   - id: start

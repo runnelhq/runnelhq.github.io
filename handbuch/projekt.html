@@ -100,8 +100,8 @@
           <h2 id="projekt">Projekt (<code>project.yaml</code>)</h2>
           <p>Runnel findet das Projekt über <code>project.yaml</code> im Ordner der Datei oder einem übergeordneten Ordner – wie Git den Ordner <code>.git</code>.</p>
 <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-329"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-329"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-335"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-335"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: flows
 <span class="tok-t">description</span>: Datenflüsse der Buchhaltung
@@ -112,11 +112,10 @@
   <span class="tok-t">ARCHIVE</span>: ${BASE}\archive
 <span class="tok-t">settings</span>:
   <span class="tok-t">maxConcurrentRuns</span>: 4
+  <span class="tok-t">defaultJoin</span>: all
   <span class="tok-t">history</span>:
     <span class="tok-t">keepDays</span>: 90
-    <span class="tok-t">cli</span>: errors
-<span class="tok-t">workflow</span>:
-  <span class="tok-t">defaultJoin</span>: all</code></pre>
+    <span class="tok-t">cli</span>: errors</code></pre>
 </div>
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Feld</th><th>Bedeutung</th></tr></thead>
@@ -128,16 +127,16 @@
               <tr><td><code>settings.maxConcurrentRuns</code></td><td>höchstens so viele Läufe des Projekts gleichzeitig auf dem Server; <code>0</code> = keine Grenze</td></tr>
               <tr><td><code>settings.history.keepDays</code>, <code>maxRuns</code></td><td>wie lange beendete Läufe in der <a href="betrieb.html#historie">Run-Historie</a> bleiben: Standard 30 Tage und höchstens 10.000 Läufe</td></tr>
               <tr><td><code>settings.history.cli</code></td><td>welche Läufe von <code>runnel run</code> bleiben: <code>all</code> (Standard), <code>errors</code> oder <code>none</code></td></tr>
-              <tr><td><code>workflow.defaultJoin</code></td><td>Standard für Actions mit mehreren eingehenden Links: <code>all</code>, <code>first</code> oder <code>each</code> – siehe <a href="workflows.html#join">Join</a></td></tr>
+              <tr><td><code>settings.defaultJoin</code></td><td>Standard für Actions mit mehreren eingehenden Links: <code>all</code>, <code>first</code> oder <code>each</code> – siehe <a href="workflows.html#join">Join</a></td></tr>
             </tbody>
           </table></div>
 
           <h2 id="environments">Environments</h2>
           <p>Im Editor öffnen <code>project.yaml</code> und Environments als Formular mit einer Tabelle der Variablen; daneben steht jeweils der Wert aus <code>project.yaml</code>.</p>
-          <p>Ein Environment überschreibt Variablen für eine Umgebung. Der Name muss dem Dateinamen entsprechen. Gewählt wird es mit <code>--env</code>, im Editor beim Start oder im Trigger; sonst gilt <code>defaultEnvironment</code>.</p>
+          <p>Ein Environment überschreibt Variablen für eine Umgebung. Der Name muss dem Dateinamen entsprechen. Gewählt wird es mit <code>--environment</code>, im Editor beim Start oder im Trigger; sonst gilt <code>defaultEnvironment</code>.</p>
 <div class="code">
-  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-330"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-330"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-336"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-336"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: prod
 <span class="tok-t">description</span>: Produktivserver
@@ -175,11 +174,11 @@
           <h2 id="parameter">Parameter</h2>
           <p>Parameter sind die Eingaben eines Workflows oder einer Pipeline. Sie haben einen Typ und optional erlaubte Werte; Standardwerte und übergebene Werte werden geprüft.</p>
 <div class="code">
-  <div class="code-head"><span>Parameter</span><button class="copy-btn" type="button" data-copy-from="code-331"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-331"><code class="lang-yaml"><span class="tok-t">parameters</span>:
+  <div class="code-head"><span>Parameter</span><button class="copy-btn" type="button" data-copy-from="code-337"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-337"><code class="lang-yaml"><span class="tok-t">parameters</span>:
   - <span class="tok-t">name</span>: DAYS
     <span class="tok-t">description</span>: Wie viele Tage zurück
-    <span class="tok-t">type</span>: integer
+    <span class="tok-t">type</span>: int
     <span class="tok-t">default</span>: <span class="tok-s">"1"</span>
   - <span class="tok-t">name</span>: MODE
     <span class="tok-t">enum</span>: [full, delta]
@@ -191,7 +190,7 @@
             <thead><tr><th>Feld</th><th>Bedeutung</th></tr></thead>
             <tbody>
               <tr><td><code>name</code></td><td>Buchstaben, Ziffern und <code>_</code>, nicht mit einer Ziffer beginnend</td></tr>
-              <tr><td><code>type</code></td><td><code>string</code> (Standard), <code>integer</code>, <code>number</code>, <code>boolean</code>, <code>json</code></td></tr>
+              <tr><td><code>type</code></td><td><code>string</code> (Standard), <code>int</code>, <code>decimal</code>, <code>float</code>, <code>bool</code>, <code>date</code>, <code>datetime</code>, <code>json</code> – dieselben Typen wie bei Feldern in Pipelines</td></tr>
               <tr><td><code>enum</code></td><td>erlaubte Werte</td></tr>
               <tr><td><code>default</code></td><td>Standardwert, auch als Ausdruck, z. B. <code>"{{ formatDate(today(), 'yyyy-MM-dd') }}"</code></td></tr>
               <tr><td><code>required</code></td><td>muss beim Start übergeben werden</td></tr>
@@ -207,13 +206,13 @@
             <tbody>
               <tr><td><code>env</code></td><td>aus einer Umgebungsvariablen des Rechners bzw. Dienstkontos – für den Betrieb</td></tr>
               <tr><td><code>inline</code></td><td>im Klartext unter <code>secrets:</code> im Environment oder in <code>project.yaml</code> – nur für Entwicklung und einfache APIs; <code>validate</code> warnt</td></tr>
-              <tr><td><code>local</code></td><td>lokaler, verschlüsselter Store – <span class="soon">geplant</span></td></tr>
+              <tr><td><code>local</code></td><td>lokaler, verschlüsselter Store je Projekt außerhalb des Projektordners, gepflegt mit <code>runnel secret</code> – Standard, wenn kein <code>secretStore</code> gesetzt ist</td></tr>
             </tbody>
           </table></div>
           <p>Die Standardquelle legt <code>secretStore:</code> im Environment fest, sonst in <code>project.yaml</code>. So schreibt der Workflow überall <code>${secret:ERP_PASSWORD}</code>, und nur das Environment entscheidet, woher der Wert kommt:</p>
 <div class="code">
-  <div class="code-head"><span>environments/dev.yaml</span><button class="copy-btn" type="button" data-copy-from="code-332"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-332"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+  <div class="code-head"><span>environments/dev.yaml</span><button class="copy-btn" type="button" data-copy-from="code-338"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-338"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: dev
 <span class="tok-t">secretStore</span>: inline
@@ -221,18 +220,35 @@
   <span class="tok-t">ERP_PASSWORD</span>: entwicklung123</code></pre>
 </div>
 <div class="code">
-  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-333"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-333"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-339"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-339"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: prod
 <span class="tok-t">secretStore</span>: env          <span class="tok-c"># liest die Umgebungsvariable ERP_PASSWORD</span></code></pre>
 </div>
 
+          <h3 id="secret-store">Lokaler Secret-Store</h3>
+          <p>Ohne <code>secretStore</code> liest <code>${secret:NAME}</code> aus dem lokalen Store; <code>${secret:local/NAME}</code> nennt ihn ausdrücklich. Die Werte liegen nie im Projekt, sondern verschlüsselt (AES-256-GCM, an Projekt und Namen gebunden) beim Benutzer in <code>%LOCALAPPDATA%\runnel\secrets</code>. Unter Windows schützt DPAPI den Schlüssel, ohne weiteres Zutun; auf anderen Systemen braucht der Store <code>RUNNEL_MASTER_KEY</code> (32 Zufallsbytes in Base64, z. B. aus <code>openssl rand -base64 32</code>).</p>
+<div class="code">
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-340"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-340"><code class="lang-bash">runnel secret set ERP_PASSWORD D:\flows        <span class="tok-c"># fragt den Wert verdeckt ab</span>
+runnel secret set SFTP_KEY D:\flows --from-file id_ed25519
+runnel secret list D:\flows                    <span class="tok-c"># nur Namen, nie Werte</span>
+runnel secret missing D:\flows                 <span class="tok-c"># was das Projekt nutzt, aber fehlt</span>
+runnel secret delete ERP_PASSWORD D:\flows</code></pre>
+</div>
+          <ul>
+            <li><code>runnel secret missing</code> zeigt je Environment Quelle, Stand und Fundstelle und endet mit Exit-Code 1, wenn etwas fehlt – passend als Prüfung vor dem Start.</li>
+            <li><strong>Windows-Dienst:</strong> Er hat einen eigenen Store in <code>%ProgramData%\runnel\secrets</code> (DPAPI des Rechners, nur für Administratoren und SYSTEM); <code>runnel secret set … --service</code> in einer Konsole „als Administrator“. <code>runnel service install</code> gibt dem Dienstkonto Lesezugriff.</li>
+            <li>Ein Secret ist eine Datei, z. B. ein privater Schlüssel: <code>--from-file</code>; Binärdateien wie PFX mit <code>--base64</code>.</li>
+            <li>Im Editor zeigen Secret-Felder je Environment, ob das Secret gesetzt ist; setzen lässt es sich dort noch nicht.</li>
+          </ul>
+
           <h2 id="connections">Connections</h2>
           <p>Eine Connection beschreibt den Zugang zu einer Datenbank, einer HTTP-API oder einem Mailserver einmal für das ganze Projekt. Bausteine nennen sie mit <code>connection: &lt;name&gt;</code>; <code>validate</code> prüft, ob es sie gibt und ob der Typ passt. Unterschiede zwischen Environments kommen über Variablen.</p>
 <div class="code">
-  <div class="code-head"><span>connections/erp.yaml</span><button class="copy-btn" type="button" data-copy-from="code-334"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-334"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+  <div class="code-head"><span>connections/erp.yaml</span><button class="copy-btn" type="button" data-copy-from="code-341"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-341"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: erp                       <span class="tok-c"># = Dateiname</span>
 <span class="tok-t">description</span>: ERP-Datenbank, nur lesen
@@ -261,7 +277,7 @@
               <tr><td><code>user</code>, <code>password</code></td><td>SQL-Server-Anmeldung; ohne <code>user</code> das Windows-Konto, unter dem Runnel läuft (nur Windows)</td></tr>
               <tr><td><code>encrypt</code></td><td><code>true</code> (Standard), <code>strict</code> (TDS 8) oder <code>false</code> (nur die Anmeldung)</td></tr>
               <tr><td><code>trustServerCertificate</code></td><td>jedes Zertifikat akzeptieren, z. B. selbst signiert; <code>validate</code> warnt</td></tr>
-              <tr><td><code>connectTimeout</code></td><td>längste Zeit für den Verbindungsaufbau, Standard <code>30s</code></td></tr>
+              <tr><td><code>timeout</code></td><td>längste Zeit für den Verbindungsaufbau, Standard <code>30s</code></td></tr>
             </tbody>
           </table></div>
           <h3>PostgreSQL (<code>postgres</code>)</h3>
@@ -271,7 +287,7 @@
               <tr><td><code>port</code></td><td>Standard 5432</td></tr>
               <tr><td><code>password</code></td><td>als <code>${secret:NAME}</code></td></tr>
               <tr><td><code>sslMode</code></td><td><code>verify-full</code> (Standard), <code>verify-ca</code>, <code>require</code> oder <code>disable</code></td></tr>
-              <tr><td><code>connectTimeout</code></td><td>Standard <code>30s</code></td></tr>
+              <tr><td><code>timeout</code></td><td>Standard <code>30s</code></td></tr>
             </tbody>
           </table></div>
           <h3>HTTP-API (<code>http</code>)</h3>
@@ -288,7 +304,7 @@
             <tbody>
               <tr><td><code>host</code> <span class="ref-req">Pflicht</span></td><td>Mailserver</td></tr>
               <tr><td><code>port</code>, <code>tls</code></td><td><code>starttls</code> (Standard, Port 587), <code>tls</code> (Port 465) oder <code>none</code> (nur für ein Relay im vertrauenswürdigen Netz); das Zertifikat wird immer geprüft</td></tr>
-              <tr><td><code>auth</code></td><td><code>password</code> (<code>user</code>, <code>password</code>), <code>oauth2</code> (Microsoft Entra: <code>tenant</code>, <code>clientId</code>, <code>clientSecret</code>; z. B. Office 365) oder <code>none</code></td></tr>
+              <tr><td><code>auth</code></td><td><code>basic</code> (<code>user</code>, <code>password</code>), <code>oauth2</code> (Microsoft Entra: <code>tenant</code>, <code>clientId</code>, <code>clientSecret</code>; z. B. Office 365) oder <code>none</code></td></tr>
               <tr><td><code>from</code></td><td>Absender, wenn <code>mail.send</code> keinen nennt</td></tr>
               <tr><td><code>timeout</code></td><td>Verbinden und Senden einer Mail, Standard <code>1m</code></td></tr>
             </tbody>
@@ -305,8 +321,8 @@
           <h2 id="project">Project (<code>project.yaml</code>)</h2>
           <p>Runnel finds the project via <code>project.yaml</code> in the file's folder or a parent folder – like Git finds <code>.git</code>.</p>
 <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-335"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-335"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-342"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-342"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: flows
 <span class="tok-t">description</span>: Accounting data flows
@@ -317,11 +333,10 @@
   <span class="tok-t">ARCHIVE</span>: ${BASE}\archive
 <span class="tok-t">settings</span>:
   <span class="tok-t">maxConcurrentRuns</span>: 4
+  <span class="tok-t">defaultJoin</span>: all
   <span class="tok-t">history</span>:
     <span class="tok-t">keepDays</span>: 90
-    <span class="tok-t">cli</span>: errors
-<span class="tok-t">workflow</span>:
-  <span class="tok-t">defaultJoin</span>: all</code></pre>
+    <span class="tok-t">cli</span>: errors</code></pre>
 </div>
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
@@ -333,16 +348,16 @@
               <tr><td><code>settings.maxConcurrentRuns</code></td><td>At most this many runs of the project at once on the server; <code>0</code> = no limit</td></tr>
               <tr><td><code>settings.history.keepDays</code>, <code>maxRuns</code></td><td>How long finished runs stay in the <a href="betrieb.html#history-en">run history</a>: default 30 days and at most 10,000 runs</td></tr>
               <tr><td><code>settings.history.cli</code></td><td>Which runs of <code>runnel run</code> are kept: <code>all</code> (default), <code>errors</code> or <code>none</code></td></tr>
-              <tr><td><code>workflow.defaultJoin</code></td><td>Default for actions with several incoming links: <code>all</code>, <code>first</code> or <code>each</code> – see <a href="workflows.html#join-en">Join</a></td></tr>
+              <tr><td><code>settings.defaultJoin</code></td><td>Default for actions with several incoming links: <code>all</code>, <code>first</code> or <code>each</code> – see <a href="workflows.html#join-en">Join</a></td></tr>
             </tbody>
           </table></div>
 
           <h2 id="environments-en">Environments</h2>
           <p>In the editor, <code>project.yaml</code> and environments open as a form with a table of variables, each next to its value from <code>project.yaml</code>.</p>
-          <p>An environment overrides variables for one environment. Its name must match the file name. It is chosen with <code>--env</code>, in the editor when starting or in the trigger; otherwise <code>defaultEnvironment</code> applies.</p>
+          <p>An environment overrides variables for one environment. Its name must match the file name. It is chosen with <code>--environment</code>, in the editor when starting or in the trigger; otherwise <code>defaultEnvironment</code> applies.</p>
 <div class="code">
-  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-336"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-336"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-343"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-343"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: prod
 <span class="tok-t">description</span>: Production server
@@ -380,11 +395,11 @@
           <h2 id="parameters">Parameters</h2>
           <p>Parameters are the inputs of a workflow or pipeline. They have a type and optionally allowed values; defaults and passed values are checked.</p>
 <div class="code">
-  <div class="code-head"><span>Parameters</span><button class="copy-btn" type="button" data-copy-from="code-337"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-337"><code class="lang-yaml"><span class="tok-t">parameters</span>:
+  <div class="code-head"><span>Parameters</span><button class="copy-btn" type="button" data-copy-from="code-344"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-344"><code class="lang-yaml"><span class="tok-t">parameters</span>:
   - <span class="tok-t">name</span>: DAYS
     <span class="tok-t">description</span>: How many days back
-    <span class="tok-t">type</span>: integer
+    <span class="tok-t">type</span>: int
     <span class="tok-t">default</span>: <span class="tok-s">"1"</span>
   - <span class="tok-t">name</span>: MODE
     <span class="tok-t">enum</span>: [full, delta]
@@ -396,7 +411,7 @@
             <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
             <tbody>
               <tr><td><code>name</code></td><td>Letters, digits and <code>_</code>, not starting with a digit</td></tr>
-              <tr><td><code>type</code></td><td><code>string</code> (default), <code>integer</code>, <code>number</code>, <code>boolean</code>, <code>json</code></td></tr>
+              <tr><td><code>type</code></td><td><code>string</code> (default), <code>int</code>, <code>decimal</code>, <code>float</code>, <code>bool</code>, <code>date</code>, <code>datetime</code>, <code>json</code> – the same types as for fields in pipelines</td></tr>
               <tr><td><code>enum</code></td><td>Allowed values</td></tr>
               <tr><td><code>default</code></td><td>Default value, also as an expression, e.g. <code>"{{ formatDate(today(), 'yyyy-MM-dd') }}"</code></td></tr>
               <tr><td><code>required</code></td><td>Must be passed at start</td></tr>
@@ -412,13 +427,13 @@
             <tbody>
               <tr><td><code>env</code></td><td>An environment variable of the machine or service account – for operation</td></tr>
               <tr><td><code>inline</code></td><td>Plain text under <code>secrets:</code> in the environment or <code>project.yaml</code> – only for development and simple APIs; <code>validate</code> warns</td></tr>
-              <tr><td><code>local</code></td><td>Local encrypted store – <span class="soon">planned</span></td></tr>
+              <tr><td><code>local</code></td><td>Local encrypted store per project outside the project folder, maintained with <code>runnel secret</code> – the default if no <code>secretStore</code> is set</td></tr>
             </tbody>
           </table></div>
           <p>The default source is set by <code>secretStore:</code> in the environment, otherwise in <code>project.yaml</code>. The workflow always writes <code>${secret:ERP_PASSWORD}</code>, and only the environment decides where the value comes from:</p>
 <div class="code">
-  <div class="code-head"><span>environments/dev.yaml</span><button class="copy-btn" type="button" data-copy-from="code-338"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-338"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+  <div class="code-head"><span>environments/dev.yaml</span><button class="copy-btn" type="button" data-copy-from="code-345"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-345"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: dev
 <span class="tok-t">secretStore</span>: inline
@@ -426,18 +441,35 @@
   <span class="tok-t">ERP_PASSWORD</span>: development123</code></pre>
 </div>
 <div class="code">
-  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-339"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-339"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
+  <div class="code-head"><span>environments/prod.yaml</span><button class="copy-btn" type="button" data-copy-from="code-346"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-346"><code class="lang-yaml"><span class="tok-t">kind</span>: Environment
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: prod
 <span class="tok-t">secretStore</span>: env          <span class="tok-c"># reads the environment variable ERP_PASSWORD</span></code></pre>
 </div>
 
+          <h3 id="secret-store-en">Local secret store</h3>
+          <p>Without <code>secretStore</code>, <code>${secret:NAME}</code> reads from the local store; <code>${secret:local/NAME}</code> names it explicitly. The values never lie in the project but encrypted (AES-256-GCM, bound to project and name) with the user in <code>%LOCALAPPDATA%\runnel\secrets</code>. On Windows, DPAPI protects the key without further setup; on other systems the store needs <code>RUNNEL_MASTER_KEY</code> (32 random bytes in base64, e.g. from <code>openssl rand -base64 32</code>).</p>
+<div class="code">
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-347"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-347"><code class="lang-bash">runnel secret set ERP_PASSWORD D:\flows        <span class="tok-c"># asks for the value without echo</span>
+runnel secret set SFTP_KEY D:\flows --from-file id_ed25519
+runnel secret list D:\flows                    <span class="tok-c"># names only, never values</span>
+runnel secret missing D:\flows                 <span class="tok-c"># what the project uses but is missing</span>
+runnel secret delete ERP_PASSWORD D:\flows</code></pre>
+</div>
+          <ul>
+            <li><code>runnel secret missing</code> shows source, state and location per environment and exits with code 1 if something is missing – a good check before starting.</li>
+            <li><strong>Windows service:</strong> it has its own store in <code>%ProgramData%\runnel\secrets</code> (machine DPAPI, administrators and SYSTEM only); <code>runnel secret set … --service</code> in a console “as administrator”. <code>runnel service install</code> gives the service account read access.</li>
+            <li>A secret that is a file, e.g. a private key: <code>--from-file</code>; binary files such as PFX with <code>--base64</code>.</li>
+            <li>In the editor, secret fields show per environment whether the secret is set; it cannot be set there yet.</li>
+          </ul>
+
           <h2 id="connections-en">Connections</h2>
           <p>A connection describes access to a database, an HTTP API or a mail server once for the whole project. Components name it with <code>connection: &lt;name&gt;</code>; <code>validate</code> checks that it exists and the type fits. Differences between environments come from variables.</p>
 <div class="code">
-  <div class="code-head"><span>connections/erp.yaml</span><button class="copy-btn" type="button" data-copy-from="code-340"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-340"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+  <div class="code-head"><span>connections/erp.yaml</span><button class="copy-btn" type="button" data-copy-from="code-348"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-348"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: erp                       <span class="tok-c"># = file name</span>
 <span class="tok-t">description</span>: ERP database, read only
@@ -466,7 +498,7 @@
               <tr><td><code>user</code>, <code>password</code></td><td>SQL Server login; without <code>user</code> the Windows account Runnel runs as (Windows only)</td></tr>
               <tr><td><code>encrypt</code></td><td><code>true</code> (default), <code>strict</code> (TDS 8) or <code>false</code> (login only)</td></tr>
               <tr><td><code>trustServerCertificate</code></td><td>Accept any certificate, e.g. self-signed; <code>validate</code> warns</td></tr>
-              <tr><td><code>connectTimeout</code></td><td>Longest time to connect, default <code>30s</code></td></tr>
+              <tr><td><code>timeout</code></td><td>Longest time to connect, default <code>30s</code></td></tr>
             </tbody>
           </table></div>
           <h3>PostgreSQL (<code>postgres</code>)</h3>
@@ -476,7 +508,7 @@
               <tr><td><code>port</code></td><td>Default 5432</td></tr>
               <tr><td><code>password</code></td><td>As <code>${secret:NAME}</code></td></tr>
               <tr><td><code>sslMode</code></td><td><code>verify-full</code> (default), <code>verify-ca</code>, <code>require</code> or <code>disable</code></td></tr>
-              <tr><td><code>connectTimeout</code></td><td>Default <code>30s</code></td></tr>
+              <tr><td><code>timeout</code></td><td>Default <code>30s</code></td></tr>
             </tbody>
           </table></div>
           <h3>HTTP API (<code>http</code>)</h3>
@@ -493,7 +525,7 @@
             <tbody>
               <tr><td><code>host</code> <span class="ref-req">required</span></td><td>Mail server</td></tr>
               <tr><td><code>port</code>, <code>tls</code></td><td><code>starttls</code> (default, port 587), <code>tls</code> (port 465) or <code>none</code> (only for a relay in a trusted network); the certificate is always checked</td></tr>
-              <tr><td><code>auth</code></td><td><code>password</code> (<code>user</code>, <code>password</code>), <code>oauth2</code> (Microsoft Entra: <code>tenant</code>, <code>clientId</code>, <code>clientSecret</code>; e.g. Office 365) or <code>none</code></td></tr>
+              <tr><td><code>auth</code></td><td><code>basic</code> (<code>user</code>, <code>password</code>), <code>oauth2</code> (Microsoft Entra: <code>tenant</code>, <code>clientId</code>, <code>clientSecret</code>; e.g. Office 365) or <code>none</code></td></tr>
               <tr><td><code>from</code></td><td>Sender if <code>mail.send</code> names none</td></tr>
               <tr><td><code>timeout</code></td><td>Connecting and sending one mail, default <code>1m</code></td></tr>
             </tbody>

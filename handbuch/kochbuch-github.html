@@ -95,14 +95,14 @@
           <p class="docs-eyebrow">Handbuch · Kochbuch</p>
           <h1>GitHub</h1>
           <p class="docs-lead">Liest alle offenen Issues eines Repositorys Seite für Seite und legt bei Bedarf ein neues Issue an – etwa wenn ein nächtlicher Import scheitert.</p>
-          <dl class="recipe-meta"><dt>API</dt><dd><a href="https://docs.github.com/en/rest">GitHub REST API</a>, Version <code>2022-11-28</code></dd><dt>Anmeldung</dt><dd>Personal Access Token als <code>bearer</code></dd><dt>Stand</dt><dd>Runnel-seitig geprüft am 23.11.2026: <code>runnel validate</code> und Ausführung gegen einen Testserver, der die API nachbildet. Gegen die echte API noch nicht ausgeführt – Endpunkte und Felder nach der Dokumentation des Anbieters (Stand 11/2026).</dd></dl>
+          <dl class="recipe-meta"><dt>API</dt><dd><a href="https://docs.github.com/en/rest">GitHub REST API</a>, Version <code>2022-11-28</code></dd><dt>Anmeldung</dt><dd>Personal Access Token als <code>bearer</code></dd><dt>Stand</dt><dd>Runnel-seitig geprüft am 27.11.2026 mit Runnel <code>v0.1.0-alpha.13</code>: <code>runnel validate</code> und Ausführung gegen einen Testserver, der die API nachbildet. Gegen die echte API noch nicht ausgeführt – Endpunkte und Felder nach der Dokumentation des Anbieters (Stand 11/2026).</dd></dl>
           <h2 id="prereq">Voraussetzungen</h2>
           <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Art</th><th>Bedeutung</th></tr></thead><tbody><tr><td><code>GITHUB_TOKEN</code></td><td>Secret</td><td>Fine-grained Personal Access Token mit Lesezugriff auf Issues (zum Anlegen: Schreibzugriff)</td></tr></tbody></table></div>
-          <p>Secrets kommen hier aus Umgebungsvariablen (<code>secretStore: env</code> in <code>project.yaml</code>). Für den Dienst die Variable beim Dienstkonto setzen.</p>
+          <p>Secrets kommen hier aus Umgebungsvariablen (<code>secretStore: env</code> in <code>project.yaml</code>); für den Dienst die Variable beim Dienstkonto setzen. Ohne diese Zeile liest Runnel sie aus dem <a href="projekt.html#secret-store">lokalen Secret-Store</a>: <code>runnel secret set NAME</code>.</p>
           <h2 id="files">Dateien</h2>
           <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-223"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-223"><code class="lang-yaml"><span class="tok-c"># Recipe: GitHub REST API with a personal access token from GITHUB_TOKEN.</span>
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-229"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-229"><code class="lang-yaml"><span class="tok-c"># Recipe: GitHub REST API with a personal access token from GITHUB_TOKEN.</span>
 <span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: github
@@ -112,8 +112,8 @@
   <span class="tok-t">GITHUB_URL</span>: https://api.github.com/</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>connections/github.yaml</span><button class="copy-btn" type="button" data-copy-from="code-224"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-224"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+  <div class="code-head"><span>connections/github.yaml</span><button class="copy-btn" type="button" data-copy-from="code-230"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-230"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: github
 <span class="tok-t">description</span>: GitHub REST API with a token
@@ -127,8 +127,8 @@
     <span class="tok-t">X-GitHub-Api-Version</span>: <span class="tok-s">"2022-11-28"</span></code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/open-issues.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-225"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-225"><code class="lang-yaml"><span class="tok-c"># Reads all open issues of a repository, page by page (GitHub names the next page in</span>
+  <div class="code-head"><span>workflows/open-issues.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-231"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-231"><code class="lang-yaml"><span class="tok-c"># Reads all open issues of a repository, page by page (GitHub names the next page in</span>
 <span class="tok-c"># the header Link), and logs them.</span>
 <span class="tok-c">#   runnel run --param REPO=owner/name workflows/open-issues.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
@@ -140,7 +140,7 @@
     <span class="tok-t">required</span>: true
 <span class="tok-t">outputs</span>:
   - <span class="tok-t">name</span>: COUNT
-    <span class="tok-t">type</span>: integer
+    <span class="tok-t">type</span>: int
     <span class="tok-t">value</span>: <span class="tok-s">"{{ results.fetch.output.count }}"</span>
 <span class="tok-t">actions</span>:
   - <span class="tok-t">id</span>: start
@@ -167,8 +167,8 @@
   - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: report, <span class="tok-t">when</span>: <span class="tok-s">"{{ results.fetch.output.count &gt; 0 }}"</span> }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/create-issue.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-226"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-226"><code class="lang-yaml"><span class="tok-c"># Creates an issue; other workflows call it with core.run-workflow.</span>
+  <div class="code-head"><span>workflows/create-issue.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-232"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-232"><code class="lang-yaml"><span class="tok-c"># Creates an issue; other workflows call it with core.run-workflow.</span>
 <span class="tok-c">#   runnel run --param REPO=owner/name --param TITLE="Import failed" workflows/create-issue.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
@@ -182,7 +182,7 @@
     <span class="tok-t">default</span>: Created by Runnel
 <span class="tok-t">outputs</span>:
   - <span class="tok-t">name</span>: NUMBER
-    <span class="tok-t">type</span>: integer
+    <span class="tok-t">type</span>: int
     <span class="tok-t">value</span>: <span class="tok-s">"{{ results.create.output.body.number }}"</span>
   - <span class="tok-t">name</span>: URL
     <span class="tok-t">value</span>: <span class="tok-s">"{{ results.create.output.body.html_url }}"</span>
@@ -204,8 +204,8 @@
           <p>GitHub nennt die nächste Seite im Header <code>Link</code>, daher <code>style: link</code>. Ohne Token funktionieren öffentliche Repositories mit deutlich weniger Anfragen pro Stunde – dafür <code>auth</code> und <code>token</code> in der Connection weglassen.</p>
           <h2 id="run">Ausführen</h2><p>Im Ordner des Rezepts (PowerShell):</p>
           <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-231"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-231"><code class="lang-bash">$env:GITHUB_TOKEN = <span class="tok-s">"github_pat_…"</span>
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-237"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-237"><code class="lang-bash">$env:GITHUB_TOKEN = <span class="tok-s">"github_pat_…"</span>
 runnel run --param REPO=owner/name workflows/open-issues.workflow.yaml
 runnel run --param REPO=owner/name --param TITLE=<span class="tok-s">"Import failed"</span> workflows/create-issue.workflow.yaml</code></pre>
 </div>
@@ -217,14 +217,14 @@ runnel run --param REPO=owner/name --param TITLE=<span class="tok-s">"Import fai
           <p class="docs-eyebrow">User guide · Cookbook</p>
           <h1>GitHub</h1>
           <p class="docs-lead">Reads all open issues of a repository page by page and creates a new issue when needed – e.g. when a nightly import fails.</p>
-          <dl class="recipe-meta"><dt>API</dt><dd><a href="https://docs.github.com/en/rest">GitHub REST API</a>, version <code>2022-11-28</code></dd><dt>Sign-in</dt><dd>Personal access token as <code>bearer</code></dd><dt>Status</dt><dd>Checked on the Runnel side on 2026-11-23: <code>runnel validate</code> and runs against a test server that mimics the API. Not yet run against the real API – endpoints and fields per the provider's documentation (as of 11/2026).</dd></dl>
+          <dl class="recipe-meta"><dt>API</dt><dd><a href="https://docs.github.com/en/rest">GitHub REST API</a>, version <code>2022-11-28</code></dd><dt>Sign-in</dt><dd>Personal access token as <code>bearer</code></dd><dt>Status</dt><dd>Checked on the Runnel side on 2026-11-27 with Runnel <code>v0.1.0-alpha.13</code>: <code>runnel validate</code> and runs against a test server that mimics the API. Not yet run against the real API – endpoints and fields per the provider's documentation (as of 11/2026).</dd></dl>
           <h2 id="prereq-en">Prerequisites</h2>
           <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Kind</th><th>Meaning</th></tr></thead><tbody><tr><td><code>GITHUB_TOKEN</code></td><td>Secret</td><td>Fine-grained personal access token with read access to issues (to create: write access)</td></tr></tbody></table></div>
-          <p>Secrets come from environment variables here (<code>secretStore: env</code> in <code>project.yaml</code>). For the service, set the variable for the service account.</p>
+          <p>Secrets come from environment variables here (<code>secretStore: env</code> in <code>project.yaml</code>); for the service, set the variable for the service account. Without this line Runnel reads them from the <a href="projekt.html#secret-store-en">local secret store</a>: <code>runnel secret set NAME</code>.</p>
           <h2 id="files-en">Files</h2>
           <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-227"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-227"><code class="lang-yaml"><span class="tok-c"># Recipe: GitHub REST API with a personal access token from GITHUB_TOKEN.</span>
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-233"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-233"><code class="lang-yaml"><span class="tok-c"># Recipe: GitHub REST API with a personal access token from GITHUB_TOKEN.</span>
 <span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: github
@@ -234,8 +234,8 @@ runnel run --param REPO=owner/name --param TITLE=<span class="tok-s">"Import fai
   <span class="tok-t">GITHUB_URL</span>: https://api.github.com/</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>connections/github.yaml</span><button class="copy-btn" type="button" data-copy-from="code-228"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-228"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+  <div class="code-head"><span>connections/github.yaml</span><button class="copy-btn" type="button" data-copy-from="code-234"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-234"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: github
 <span class="tok-t">description</span>: GitHub REST API with a token
@@ -249,8 +249,8 @@ runnel run --param REPO=owner/name --param TITLE=<span class="tok-s">"Import fai
     <span class="tok-t">X-GitHub-Api-Version</span>: <span class="tok-s">"2022-11-28"</span></code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/open-issues.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-229"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-229"><code class="lang-yaml"><span class="tok-c"># Reads all open issues of a repository, page by page (GitHub names the next page in</span>
+  <div class="code-head"><span>workflows/open-issues.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-235"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-235"><code class="lang-yaml"><span class="tok-c"># Reads all open issues of a repository, page by page (GitHub names the next page in</span>
 <span class="tok-c"># the header Link), and logs them.</span>
 <span class="tok-c">#   runnel run --param REPO=owner/name workflows/open-issues.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
@@ -262,7 +262,7 @@ runnel run --param REPO=owner/name --param TITLE=<span class="tok-s">"Import fai
     <span class="tok-t">required</span>: true
 <span class="tok-t">outputs</span>:
   - <span class="tok-t">name</span>: COUNT
-    <span class="tok-t">type</span>: integer
+    <span class="tok-t">type</span>: int
     <span class="tok-t">value</span>: <span class="tok-s">"{{ results.fetch.output.count }}"</span>
 <span class="tok-t">actions</span>:
   - <span class="tok-t">id</span>: start
@@ -289,8 +289,8 @@ runnel run --param REPO=owner/name --param TITLE=<span class="tok-s">"Import fai
   - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: report, <span class="tok-t">when</span>: <span class="tok-s">"{{ results.fetch.output.count &gt; 0 }}"</span> }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/create-issue.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-230"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-230"><code class="lang-yaml"><span class="tok-c"># Creates an issue; other workflows call it with core.run-workflow.</span>
+  <div class="code-head"><span>workflows/create-issue.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-236"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-236"><code class="lang-yaml"><span class="tok-c"># Creates an issue; other workflows call it with core.run-workflow.</span>
 <span class="tok-c">#   runnel run --param REPO=owner/name --param TITLE="Import failed" workflows/create-issue.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
@@ -304,7 +304,7 @@ runnel run --param REPO=owner/name --param TITLE=<span class="tok-s">"Import fai
     <span class="tok-t">default</span>: Created by Runnel
 <span class="tok-t">outputs</span>:
   - <span class="tok-t">name</span>: NUMBER
-    <span class="tok-t">type</span>: integer
+    <span class="tok-t">type</span>: int
     <span class="tok-t">value</span>: <span class="tok-s">"{{ results.create.output.body.number }}"</span>
   - <span class="tok-t">name</span>: URL
     <span class="tok-t">value</span>: <span class="tok-s">"{{ results.create.output.body.html_url }}"</span>
@@ -326,8 +326,8 @@ runnel run --param REPO=owner/name --param TITLE=<span class="tok-s">"Import fai
           <p>GitHub names the next page in the <code>Link</code> header, hence <code>style: link</code>. Public repositories work without a token at far fewer requests per hour – then omit <code>auth</code> and <code>token</code> in the connection.</p>
           <h2 id="run-en">Running</h2><p>In the recipe folder (PowerShell):</p>
           <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-232"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-232"><code class="lang-bash">$env:GITHUB_TOKEN = <span class="tok-s">"github_pat_…"</span>
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-238"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-238"><code class="lang-bash">$env:GITHUB_TOKEN = <span class="tok-s">"github_pat_…"</span>
 runnel run --param REPO=owner/name workflows/open-issues.workflow.yaml
 runnel run --param REPO=owner/name --param TITLE=<span class="tok-s">"Import failed"</span> workflows/create-issue.workflow.yaml</code></pre>
 </div>

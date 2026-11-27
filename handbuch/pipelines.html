@@ -100,8 +100,8 @@
           <h2 id="beispiel">Beispiel</h2>
           <p>Liest eine CSV-Datei im deutschen Format, wandelt Kundennummer und Umsatz in Zahlen um, behält aktive Kunden, benennt die Felder für ein CRM um und schreibt das Ergebnis. Zeilen mit ungültigen Werten gehen über den Fehler-Link in eine eigene Datei, statt die Pipeline anzuhalten.</p>
           <div class="code">
-  <div class="code-head"><span>pipelines/customers.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-317"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-317"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
+  <div class="code-head"><span>pipelines/customers.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-323"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-323"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: customers
 <span class="tok-t">parameters</span>:
@@ -151,8 +151,8 @@
   - { <span class="tok-t">from</span>: map, <span class="tok-t">to</span>: write }</code></pre>
 </div>
 <div class="code">
-  <div class="code-head"><span>Ausgabe von runnel run</span><button class="copy-btn" type="button" data-copy-from="code-319"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-319"><code class="lang-bash">INFO  [types] read 4, written 3, errors 1 in 0s
+  <div class="code-head"><span>Ausgabe von runnel run</span><button class="copy-btn" type="button" data-copy-from="code-325"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-325"><code class="lang-bash">INFO  [types] read 4, written 3, errors 1 in 0s
 INFO  [active] kept 2 of 3 records, dropped 1
 INFO  [rejected] wrote 1 row to out/customers-rejected.csv
 INFO  [write] wrote 2 rows to out/customers-crm.csv
@@ -173,7 +173,7 @@ INFO  pipeline <span class="tok-s">"customers"</span> succeeded in 1ms</code></p
               <tr><td><code>layout</code></td><td>Positionen im Editor</td></tr>
             </tbody>
           </table></div>
-          <p>Pipelines sind azyklisch: Datensätze fließen nur vorwärts. Hat ein Transform mehrere ausgehende Daten-Links, bekommt bei <code>distribution: copy</code> (Standard) jeder Link jeden Datensatz, bei <code>distribute</code> werden sie reihum verteilt.</p>
+          <p>Pipelines sind azyklisch: Datensätze fließen nur vorwärts. Hat ein Transform mehrere ausgehende Daten-Links, bekommt bei <code>distribution: copy</code> (Standard) jeder Link jeden Datensatz, bei <code>distribution: roundRobin</code> werden sie reihum verteilt.</p>
 
           <h2 id="datensaetze">Datensätze und Typen</h2>
           <p>Ein Datensatz ist eine geordnete Liste von Feldern (Name → Wert). Pipelines sind schemalos mit optionalen Typen: Ohne Felddefinition liest z. B. <code>csv.input</code> alles als Text; <code>core.convert</code> oder die <code>fields</code> eines Eingabe-Transforms legen Typen fest.</p>
@@ -240,8 +240,8 @@ INFO  pipeline <span class="tok-s">"customers"</span> succeeded in 1ms</code></p
           <h2 id="example">Example</h2>
           <p>Reads a CSV file in German format, converts customer number and revenue into numbers, keeps active customers, renames the fields for a CRM and writes the result. Rows with invalid values go over the error link into a separate file instead of stopping the pipeline.</p>
           <div class="code">
-  <div class="code-head"><span>pipelines/customers.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-318"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-318"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
+  <div class="code-head"><span>pipelines/customers.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-324"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-324"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: customers
 <span class="tok-t">parameters</span>:
@@ -291,8 +291,8 @@ INFO  pipeline <span class="tok-s">"customers"</span> succeeded in 1ms</code></p
   - { <span class="tok-t">from</span>: map, <span class="tok-t">to</span>: write }</code></pre>
 </div>
 <div class="code">
-  <div class="code-head"><span>Output of runnel run</span><button class="copy-btn" type="button" data-copy-from="code-320"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-320"><code class="lang-bash">INFO  [types] read 4, written 3, errors 1 in 0s
+  <div class="code-head"><span>Output of runnel run</span><button class="copy-btn" type="button" data-copy-from="code-326"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-326"><code class="lang-bash">INFO  [types] read 4, written 3, errors 1 in 0s
 INFO  [active] kept 2 of 3 records, dropped 1
 INFO  [rejected] wrote 1 row to out/customers-rejected.csv
 INFO  [write] wrote 2 rows to out/customers-crm.csv
@@ -313,7 +313,7 @@ INFO  pipeline <span class="tok-s">"customers"</span> succeeded in 1ms</code></p
               <tr><td><code>layout</code></td><td>Positions in the editor</td></tr>
             </tbody>
           </table></div>
-          <p>Pipelines are acyclic: records only flow forward. If a transform has several outgoing data links, with <code>distribution: copy</code> (default) every link gets every record; with <code>distribute</code> they are handed out in turn.</p>
+          <p>Pipelines are acyclic: records only flow forward. If a transform has several outgoing data links, with <code>distribution: copy</code> (default) every link gets every record; with <code>distribution: roundRobin</code> they are handed out in turn.</p>
 
           <h2 id="records">Records and types</h2>
           <p>A record is an ordered list of fields (name → value). Pipelines are schemaless with optional types: without a field definition, <code>csv.input</code> for example reads everything as text; <code>core.convert</code> or the <code>fields</code> of an input transform set types.</p>

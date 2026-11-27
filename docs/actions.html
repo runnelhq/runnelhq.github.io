@@ -252,9 +252,9 @@
           <p class="legal-hint">Optionen mit Komma trennen (<code>schema:"required,example=30s"</code>), Werte dürfen daher kein Komma enthalten. Backslashes in Tags verdoppeln (<code>example=C:\\in</code>), sonst ist das ganze Tag ungültig.</p>
           <ul>
             <li><strong>Namen der Parameter</strong> nach <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0025-einheitliche-parameter.md">ADR 0025</a>: gleiche Sache, gleicher Name – <code>ifExists</code>, <code>ifMissing</code>, <code>format</code>, <code>as</code>, <code>from</code>, <code>maxRows</code>/<code>maxRecords</code>, Größen als Text (<code>10MB</code>), <code>timeout</code> als Dauer, Ausgabe <code>path</code>. Abweichungen im PR begründen.</li>
-            <li><strong>Typen:</strong> <code>string</code>, <code>bool</code>, Ganz- und Kommazahlen, Slices, <code>map[string]T</code>, verschachtelte Structs, <code>any</code>. Felder, die <code>${…}</code> oder <code>{{ … }}</code> enthalten dürfen, als <code>string</code> anlegen – auch Zahlen und Zeitangaben.</li>
+            <li><strong>Typen:</strong> <code>string</code>, <code>bool</code>, Ganz- und Kommazahlen, Slices, <code>map[string]T</code>, verschachtelte Structs, <code>any</code>. <strong>Zahlenfelder</strong> als <code>int</code> (bzw. <code>*int</code>, wenn <code>0</code> etwas anderes heißt als „nicht gesetzt“): <code>DecodeConfig</code> nimmt eine Zahl, eine Zahl als Text und <code>${…}</code>/<code>{{ … }}</code> an, andere Texte sind ein Fehler mit dem Namen des Felds. Übrige Felder, die <code>${…}</code> oder <code>{{ … }}</code> enthalten dürfen, als <code>string</code> anlegen – auch Zeitangaben.</li>
             <li><strong><code>DecodeConfig</code></strong> verwenden – es lehnt unbekannte Felder ab, sodass Tippfehler im Workflow gemeldet werden, und prüft Pflichtfelder. Der Vertragstest prüft das.</li>
-            <li><strong><code>New</code> prüft nur die Struktur:</strong> Pflichtfelder, Typen, unbekannte Felder. Werte wie Dauern, Zahlen in Textform, leere Texte oder Pfade werden erst in <code>Execute</code> geprüft.</li>
+            <li><strong><code>New</code> prüft nur die Struktur:</strong> Pflichtfelder, Typen, unbekannte Felder. Werte wie Dauern, leere Texte oder Pfade werden erst in <code>Execute</code> geprüft (in <code>New</code> nur, wenn sie kein <code>${…}</code>/<code>{{ … }}</code> enthalten). Eine Zahl in einem Textfeld liest <code>action.ParseWholeNumber</code> nach derselben Regel.</li>
             <li><strong>Zeitangaben</strong> als <code>string</code> übernehmen und in <code>Execute</code> mit <code>model.Duration(s).Value()</code> umwandeln.</li>
             <li><strong>Actions ohne Konfiguration</strong> lassen <code>Config</code> weg und lehnen jedes Feld ab (<code>len(with) &gt; 0</code> → Fehler); Vorlage: <code>core/dummy.go</code>.</li>
             <li><strong>Kategorie</strong> (<code>Category</code>): eine der Konstanten <code>action.Category…</code> – die Gruppe in der Palette.</li>
@@ -299,10 +299,27 @@
 }</code></pre>
 </div>
 
+          <h3 id="abkuendigen">Felder umbenennen oder abkündigen</h3>
+          <p>Ab <code>v1.0.0</code> darf kein Feld umbenannt oder entfernt werden (<a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0029-stabilitaet-versionen.md">ADR 0029</a>). Ein besserer Name kommt als neues Feld; das alte bleibt bis zur nächsten Major-Version gültig und wird in der Definition abgekündigt:</p>
+          <div class="code">
+  <div class="code-head"><span>Deprecated</span><button class="copy-btn" type="button" data-copy-from="code-6"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-6"><code class="lang-go">	Config: transfer{}, <span class="tok-c">// contains only IfExists, no longer Overwrite</span>
+	Deprecated: []action.Deprecated{{
+		Field: <span class="tok-s">"overwrite"</span>, RenamedTo: <span class="tok-s">"ifExists"</span>, Use: <span class="tok-s">"ifExists: replace"</span>, RemovedIn: <span class="tok-s">"2.0"</span>,
+		Schema:  &amp;schema.Schema{Type: <span class="tok-s">"boolean"</span>, Description: <span class="tok-s">"Replace files that exist in the target"</span>},
+		Convert: <span class="tok-k">func</span>(old any) (any, error) { … <span class="tok-k">true</span> → <span class="tok-s">"replace"</span>, <span class="tok-k">false</span> → <span class="tok-s">"fail"</span> … },
+	}},</code></pre>
+</div>
+          <ul>
+            <li><code>Field</code>: altes Feld (<code>fields[].rename</code> in jedem Eintrag einer Liste, <code>auth.user</code> in einer Zuordnung); <code>RenamedTo</code>: neues Feld, leer für ein nur abgekündigtes; <code>Convert</code> wandelt den alten Wert um; <code>Use</code> ist der Ersatz in der Warnung; <code>RemovedIn</code> die Major-Version ohne das Feld.</li>
+            <li><code>Register</code> erledigt den Rest: <code>New</code> sieht nur den neuen Namen, beide Felder zusammen sind ein Fehler, <code>validate</code>, Editor und <code>runnel run</code> warnen mit Position (<code>field "overwrite" is deprecated: use ifExists: replace (removed in 2.0)</code>), im Schema steht das alte Feld mit <code>"deprecated": true</code> und <code>"x-runnel-replacement"</code>.</li>
+            <li>Zum selben PR gehören Tests (alt mit Warnung, beide zusammen, <code>Convert</code>) und ein Eintrag im <code>CHANGELOG</code> unter „Abgekündigt“. Beispiele nutzen immer den neuen Namen. Den Vertragstest der Golden-Dateien (<code>TestContractGoldens</code>) halten sie so grün: nichts geht verloren, kein Feld wird Pflicht.</li>
+          </ul>
+
           <h2 id="ausfuehren">5. Ausführen (<code>Execute</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>Beispiel: file.copy</span><button class="copy-btn" type="button" data-copy-from="code-6"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-6"><code class="lang-go"><span class="tok-k">func</span> (a *copyAction) Execute(ctx context.Context, ec *action.ExecContext) (action.Result, error) {
+  <div class="code-head"><span>Beispiel: file.copy</span><button class="copy-btn" type="button" data-copy-from="code-7"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-7"><code class="lang-go"><span class="tok-k">func</span> (a *copyAction) Execute(ctx context.Context, ec *action.ExecContext) (action.Result, error) {
 	ec.Logf(slog.LevelDebug, <span class="tok-s">"copying %s to %s"</span>, a.Source, a.Target)
 	…
 	<span class="tok-k">if</span> err := ctx.Err(); err != <span class="tok-k">nil</span> {
@@ -340,8 +357,8 @@
 
           <h2 id="tests">7. Tests</h2>
           <div class="code">
-  <div class="code-head"><span>Beispiel: file.copy</span><button class="copy-btn" type="button" data-copy-from="code-7"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-7"><code class="lang-go"><span class="tok-k">func</span> TestCopy(t *testing.T) {
+  <div class="code-head"><span>Beispiel: file.copy</span><button class="copy-btn" type="button" data-copy-from="code-8"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-8"><code class="lang-go"><span class="tok-k">func</span> TestCopy(t *testing.T) {
 	dir := t.TempDir()                       <span class="tok-c">// nie echte Pfade</span>
 	…
 	a := actiontest.New(t, copyDefinition, <span class="tok-k">map</span>[string]any{<span class="tok-s">"source"</span>: src, <span class="tok-s">"target"</span>: dst})
@@ -382,7 +399,7 @@
 
           <h2 id="checkliste">9. Checkliste für den PR</h2>
           <ul class="checklist">
-            <li>Namen der Parameter nach ADR 0025 (gleiche Sache, gleicher Name)</li>
+            <li>Namen der Parameter nach ADR 0025 (gleiche Sache, gleicher Name); umbenannte Felder über <code>Deprecated</code> (ADR 0029)</li>
             <li>Typname im passenden, reservierten Namensraum; bei neuem Namensraum: <code>namespaces.go</code>, <code>register.go</code>, <code>actions.go</code></li>
             <li>Eine Datei je Action, Tests daneben, Eintrag in <code>register.go</code></li>
             <li><code>Category</code>, <code>Label</code>, <code>Description</code>, <code>Config</code> gesetzt; jedes Feld mit <code>doc</code>, Pflichtfelder mit <code>required</code> und <code>example</code></li>
@@ -398,8 +415,8 @@
           <h2 id="vorlage">Vorlage: <code>core.wait</code></h2>
           <p>Die vollständige Action aus dem Repository – kurz genug zum Kopieren und zeigt alle Regeln: Kategorie, Bezeichnung und Beispiel in der Definition, Pflichtfeld über <code>schema:"required"</code>, leeren Wert und Dauer erst in <code>Execute</code> prüfen, Abbruch über <code>ctx.Done()</code>.</p>
           <div class="code">
-  <div class="code-head"><span>internal/actions/core/wait.go</span><button class="copy-btn" type="button" data-copy-from="code-8"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-8"><code class="lang-go"><span class="tok-k">package</span> core
+  <div class="code-head"><span>internal/actions/core/wait.go</span><button class="copy-btn" type="button" data-copy-from="code-9"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-9"><code class="lang-go"><span class="tok-k">package</span> core
 
 <span class="tok-k">import</span> (
 	<span class="tok-s">"context"</span>
@@ -454,8 +471,8 @@
 }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>internal/actions/core/wait_test.go</span><button class="copy-btn" type="button" data-copy-from="code-9"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-9"><code class="lang-go"><span class="tok-k">package</span> core
+  <div class="code-head"><span>internal/actions/core/wait_test.go</span><button class="copy-btn" type="button" data-copy-from="code-10"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-10"><code class="lang-go"><span class="tok-k">package</span> core
 
 <span class="tok-k">import</span> (
 	<span class="tok-s">"context"</span>
@@ -544,16 +561,16 @@
           <h2 id="files">3. Files and registration</h2>
           <p>One package per namespace, one file per action, tests right next to it:</p>
           <div class="code">
-  <div class="code-head"><span>Layout</span><button class="copy-btn" type="button" data-copy-from="code-10"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-10"><code class="lang-bash">internal/actions/&lt;namespace&gt;/
+  <div class="code-head"><span>Layout</span><button class="copy-btn" type="button" data-copy-from="code-11"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-11"><code class="lang-bash">internal/actions/&lt;namespace&gt;/
   register.go          <span class="tok-c"># add one line per action</span>
   &lt;name&gt;.go            <span class="tok-c"># the action</span>
   &lt;name&gt;_test.go       <span class="tok-c"># its tests</span></code></pre>
 </div>
           <p>Registration has two levels. <code>register.go</code> lists the actions of the namespace – so a new action only touches its own package and the definitions stay unexported. <code>actions.go</code> lists the namespaces and provides <code>Builtin()</code> for CLI, server and MCP; the engine knows no concrete actions.</p>
           <div class="code">
-  <div class="code-head"><span>internal/actions/core/register.go</span><button class="copy-btn" type="button" data-copy-from="code-11"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-11"><code class="lang-go"><span class="tok-c">// Package core contains the basic workflow actions of the namespace "core":</span>
+  <div class="code-head"><span>internal/actions/core/register.go</span><button class="copy-btn" type="button" data-copy-from="code-12"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-12"><code class="lang-go"><span class="tok-c">// Package core contains the basic workflow actions of the namespace "core":</span>
 <span class="tok-c">// core.start, core.success, core.abort, core.log, core.wait, core.check, core.dummy,</span>
 <span class="tok-c">// core.run-workflow</span>
 <span class="tok-c">// and core.run-pipeline.</span>
@@ -578,8 +595,8 @@
 }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>internal/actions/actions.go (excerpt)</span><button class="copy-btn" type="button" data-copy-from="code-12"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-12"><code class="lang-go"><span class="tok-c">// namespaces lists the Register functions of all built-in namespaces.</span>
+  <div class="code-head"><span>internal/actions/actions.go (excerpt)</span><button class="copy-btn" type="button" data-copy-from="code-13"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-13"><code class="lang-go"><span class="tok-c">// namespaces lists the Register functions of all built-in namespaces.</span>
 <span class="tok-c">// A new namespace is added here and nowhere else.</span>
 <span class="tok-k">var</span> namespaces = []<span class="tok-k">func</span>(*action.Registry){
 	archive.Register,
@@ -605,8 +622,8 @@
 
           <h2 id="configuration">4. Definition and configuration</h2>
           <div class="code">
-  <div class="code-head"><span>Example: file.copy</span><button class="copy-btn" type="button" data-copy-from="code-13"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-13"><code class="lang-go"><span class="tok-c">// file.copy copies files; it ends early when the run is cancelled.</span>
+  <div class="code-head"><span>Example: file.copy</span><button class="copy-btn" type="button" data-copy-from="code-14"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-14"><code class="lang-go"><span class="tok-c">// file.copy copies files; it ends early when the run is cancelled.</span>
 <span class="tok-k">var</span> copyDefinition = action.Definition{
 	Type:        <span class="tok-s">"file.copy"</span>,
 	Category:    action.CategoryFiles,
@@ -661,9 +678,9 @@
           <p class="legal-hint">Separate options with commas (<code>schema:"required,example=30s"</code>), so values must not contain a comma. Double backslashes in tags (<code>example=C:\\in</code>), otherwise the whole tag is invalid.</p>
           <ul>
             <li><strong>Parameter names</strong> per <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0025-einheitliche-parameter.md">ADR 0025</a>: same thing, same name – <code>ifExists</code>, <code>ifMissing</code>, <code>format</code>, <code>as</code>, <code>from</code>, <code>maxRows</code>/<code>maxRecords</code>, sizes as text (<code>10MB</code>), <code>timeout</code> as a duration, output <code>path</code>. Explain deviations in the PR.</li>
-            <li><strong>Types:</strong> <code>string</code>, <code>bool</code>, integers and floats, slices, <code>map[string]T</code>, nested structs, <code>any</code>. Fields that may contain <code>${…}</code> or <code>{{ … }}</code> are declared as <code>string</code> – numbers and durations too.</li>
+            <li><strong>Types:</strong> <code>string</code>, <code>bool</code>, integers and floats, slices, <code>map[string]T</code>, nested structs, <code>any</code>. <strong>Number fields</strong> as <code>int</code> (or <code>*int</code> if <code>0</code> means something other than “not set”): <code>DecodeConfig</code> accepts a number, a number as text and <code>${…}</code>/<code>{{ … }}</code>; other texts are an error naming the field. Other fields that may contain <code>${…}</code> or <code>{{ … }}</code> are declared as <code>string</code> – durations too.</li>
             <li>Use <strong><code>DecodeConfig</code></strong> – it rejects unknown fields so typos in workflows are reported, and checks required fields. The contract test checks this.</li>
-            <li><strong><code>New</code> only checks the structure:</strong> required fields, types, unknown fields. Values such as durations, numbers as text, empty strings or paths are checked in <code>Execute</code>.</li>
+            <li><strong><code>New</code> only checks the structure:</strong> required fields, types, unknown fields. Values such as durations, empty strings or paths are checked in <code>Execute</code> (in <code>New</code> only if they contain no <code>${…}</code>/<code>{{ … }}</code>). A number in a text field is read by <code>action.ParseWholeNumber</code> with the same rule.</li>
             <li>Take <strong>durations</strong> as a <code>string</code> and convert them in <code>Execute</code> with <code>model.Duration(s).Value()</code>.</li>
             <li><strong>Actions without configuration</strong> omit <code>Config</code> and reject every field (<code>len(with) &gt; 0</code> → error); template: <code>core/dummy.go</code>.</li>
             <li><strong>Category</strong> (<code>Category</code>): one of the <code>action.Category…</code> constants – the group in the palette.</li>
@@ -672,8 +689,8 @@
             <li><strong>Example</strong> (<code>Example</code>): the <code>with:</code> values in YAML for the “Help” section in the editor; checked by the contract test.</li>
           </ul>
           <div class="code">
-  <div class="code-head"><span>internal/actions/core/dummy.go – action without configuration</span><button class="copy-btn" type="button" data-copy-from="code-14"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-14"><code class="lang-go"><span class="tok-k">package</span> core
+  <div class="code-head"><span>internal/actions/core/dummy.go – action without configuration</span><button class="copy-btn" type="button" data-copy-from="code-15"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-15"><code class="lang-go"><span class="tok-k">package</span> core
 
 <span class="tok-k">import</span> (
 	<span class="tok-s">"context"</span>
@@ -708,10 +725,27 @@
 }</code></pre>
 </div>
 
+          <h3 id="deprecating">Renaming or deprecating fields</h3>
+          <p>From <code>v1.0.0</code> no field may be renamed or removed (<a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0029-stabilitaet-versionen.md">ADR 0029</a>, German). A better name comes as a new field; the old one stays valid until the next major version and is deprecated in the definition:</p>
+          <div class="code">
+  <div class="code-head"><span>Deprecated</span><button class="copy-btn" type="button" data-copy-from="code-16"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-16"><code class="lang-go">	Config: transfer{}, <span class="tok-c">// contains only IfExists, no longer Overwrite</span>
+	Deprecated: []action.Deprecated{{
+		Field: <span class="tok-s">"overwrite"</span>, RenamedTo: <span class="tok-s">"ifExists"</span>, Use: <span class="tok-s">"ifExists: replace"</span>, RemovedIn: <span class="tok-s">"2.0"</span>,
+		Schema:  &amp;schema.Schema{Type: <span class="tok-s">"boolean"</span>, Description: <span class="tok-s">"Replace files that exist in the target"</span>},
+		Convert: <span class="tok-k">func</span>(old any) (any, error) { … <span class="tok-k">true</span> → <span class="tok-s">"replace"</span>, <span class="tok-k">false</span> → <span class="tok-s">"fail"</span> … },
+	}},</code></pre>
+</div>
+          <ul>
+            <li><code>Field</code>: the old field (<code>fields[].rename</code> in every entry of a list, <code>auth.user</code> in a mapping); <code>RenamedTo</code>: the new field, empty for one that is only deprecated; <code>Convert</code> converts the old value; <code>Use</code> is the replacement in the warning; <code>RemovedIn</code> the major version without the field.</li>
+            <li><code>Register</code> does the rest: <code>New</code> sees only the new name, both fields together are an error, <code>validate</code>, editor and <code>runnel run</code> warn with position (<code>field "overwrite" is deprecated: use ifExists: replace (removed in 2.0)</code>), and the schema lists the old field with <code>"deprecated": true</code> and <code>"x-runnel-replacement"</code>.</li>
+            <li>The same PR includes tests (old with warning, both together, <code>Convert</code>) and a <code>CHANGELOG</code> entry under “Deprecated”. Examples always use the new name. That keeps the contract test of the golden files (<code>TestContractGoldens</code>) green: nothing is lost, no field becomes required.</li>
+          </ul>
+
           <h2 id="execute">5. Executing (<code>Execute</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>Example: file.copy</span><button class="copy-btn" type="button" data-copy-from="code-15"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-15"><code class="lang-go"><span class="tok-k">func</span> (a *copyAction) Execute(ctx context.Context, ec *action.ExecContext) (action.Result, error) {
+  <div class="code-head"><span>Example: file.copy</span><button class="copy-btn" type="button" data-copy-from="code-17"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-17"><code class="lang-go"><span class="tok-k">func</span> (a *copyAction) Execute(ctx context.Context, ec *action.ExecContext) (action.Result, error) {
 	ec.Logf(slog.LevelDebug, <span class="tok-s">"copying %s to %s"</span>, a.Source, a.Target)
 	…
 	<span class="tok-k">if</span> err := ctx.Err(); err != <span class="tok-k">nil</span> {
@@ -749,8 +783,8 @@
 
           <h2 id="tests-en">7. Tests</h2>
           <div class="code">
-  <div class="code-head"><span>Example: file.copy</span><button class="copy-btn" type="button" data-copy-from="code-16"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-16"><code class="lang-go"><span class="tok-k">func</span> TestCopy(t *testing.T) {
+  <div class="code-head"><span>Example: file.copy</span><button class="copy-btn" type="button" data-copy-from="code-18"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-18"><code class="lang-go"><span class="tok-k">func</span> TestCopy(t *testing.T) {
 	dir := t.TempDir()                       <span class="tok-c">// never real paths</span>
 	…
 	a := actiontest.New(t, copyDefinition, <span class="tok-k">map</span>[string]any{<span class="tok-s">"source"</span>: src, <span class="tok-s">"target"</span>: dst})
@@ -791,7 +825,7 @@
 
           <h2 id="checklist">9. Pull request checklist</h2>
           <ul class="checklist">
-            <li>Parameter names per ADR 0025 (same thing, same name)</li>
+            <li>Parameter names per ADR 0025 (same thing, same name); renamed fields via <code>Deprecated</code> (ADR 0029)</li>
             <li>Type name in the matching reserved namespace; for a new namespace: <code>namespaces.go</code>, <code>register.go</code>, <code>actions.go</code></li>
             <li>One file per action, tests next to it, entry in <code>register.go</code></li>
             <li><code>Category</code>, <code>Label</code>, <code>Description</code>, <code>Config</code> set; every field with <code>doc</code>, required fields with <code>required</code> and <code>example</code></li>
@@ -807,8 +841,8 @@
           <h2 id="template">Template: <code>core.wait</code></h2>
           <p>The complete action from the repository – short enough to copy, and it shows every rule: category, label and example in the definition, required field via <code>schema:"required"</code>, empty value and duration checked only in <code>Execute</code>, cancellation via <code>ctx.Done()</code>.</p>
           <div class="code">
-  <div class="code-head"><span>internal/actions/core/wait.go</span><button class="copy-btn" type="button" data-copy-from="code-17"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-17"><code class="lang-go"><span class="tok-k">package</span> core
+  <div class="code-head"><span>internal/actions/core/wait.go</span><button class="copy-btn" type="button" data-copy-from="code-19"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-19"><code class="lang-go"><span class="tok-k">package</span> core
 
 <span class="tok-k">import</span> (
 	<span class="tok-s">"context"</span>
@@ -863,8 +897,8 @@
 }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>internal/actions/core/wait_test.go</span><button class="copy-btn" type="button" data-copy-from="code-18"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-18"><code class="lang-go"><span class="tok-k">package</span> core
+  <div class="code-head"><span>internal/actions/core/wait_test.go</span><button class="copy-btn" type="button" data-copy-from="code-20"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-20"><code class="lang-go"><span class="tok-k">package</span> core
 
 <span class="tok-k">import</span> (
 	<span class="tok-s">"context"</span>
