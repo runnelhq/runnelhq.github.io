@@ -1,0 +1,35 @@
+kind: Pipeline
+apiVersion: runnel/v1
+name: pseudonymize
+description: Replaces names, e-mail and customer number of real data; the same input gives the same replacement
+transforms:
+  - id: read
+    type: csv.input
+    with:
+      path: data/customers.csv
+      delimiter: ";"
+      fields:
+        - { name: customerNo }
+        - { name: firstName }
+        - { name: lastName }
+        - { name: email }
+        - { name: city }
+        - { name: revenue }                     # passed on unchanged
+  - id: pseudo
+    type: faker.fill
+    with:
+      consistent: true
+      seed: ${PSEUDONYM_SEED}
+      fields:
+        - { name: customerNo, kind: pattern, pattern: "KD-#####" }
+        - { name: firstName, kind: firstName }
+        - { name: lastName, kind: lastName }
+        - { name: email, kind: email, from: "firstName, lastName" }
+  - id: write
+    type: csv.output
+    with:
+      path: out/customers-pseudonymized.csv
+      delimiter: ";"
+links:
+  - { from: read, to: pseudo }
+  - { from: pseudo, to: write }

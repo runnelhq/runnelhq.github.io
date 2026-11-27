@@ -17,7 +17,7 @@
           <p class="docs-eyebrow">Entwicklerdoku · Erweitern</p>
           <h1>Plugins entwickeln</h1>
           <p class="docs-lead">Ein Plugin erweitert Runnel um Actions, Transforms und Connection-Typen, ohne Runnel selbst zu ändern. Es ist ein eigenes Programm in beliebiger Sprache, das Runnel als Kindprozess startet und über JSON-RPC auf stdin/stdout anspricht.</p>
-          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/PLUGINS.md"><code>docs/dev/PLUGINS.md</code></a> (verbindliche Beschreibung des Protokolls) · <a href="https://github.com/runnelhq/sdk-go">README von <code>sdk-go</code></a> · Grundlagen: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0019-plugin-protokoll.md">ADR 0019</a> (Protokoll), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a> (Namen, Nachtrag 2026-11-24). Stand: Runnel <code>main</code> vom 25.11.2026, <code>sdk-go</code> v0.3.0.</p>
+          <p class="docs-source">Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/PLUGINS.md"><code>docs/dev/PLUGINS.md</code></a> (verbindliche Beschreibung des Protokolls) · <a href="https://github.com/runnelhq/sdk-go">README von <code>sdk-go</code></a> und <a href="https://github.com/runnelhq/sdk-rust"><code>sdk-rust</code></a> · Grundlagen: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0019-plugin-protokoll.md">ADR 0019</a> (Protokoll), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a> (Namen, Nachtrag 2026-11-24). Stand: Runnel <code>main</code> vom 25.11.2026, <code>sdk-go</code> v0.3.0, <code>sdk-rust</code> v0.2.0.</p>
 
           <div class="callout">
             <strong>Plugin oder eingebauter Baustein?</strong>
@@ -92,7 +92,25 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
             <li>Von Hand: das Programm mit <code>RUNNEL_PLUGIN=1</code> starten und die Zeilen des Protokolls eintippen.</li>
           </ul>
 
-          <h2 id="ablage">2. Ablage und Freigabe</h2>
+          <h2 id="rust">2. Ein Plugin in Rust</h2>
+          <p>Das <a href="https://github.com/runnelhq/sdk-rust">Rust-SDK</a> (Crate <code>runnel-plugin</code>, dazu <code>runnel-plugin-derive</code> für <code>#[derive(Config)]</code>) folgt dem Go-SDK in Umfang und Verhalten; beide beantworten dieselben Transkripte des Protokolls. Es braucht Rust ab 1.87 (Edition 2024) und im Plugin nur <code>serde</code> und <code>serde_json</code>. Auf crates.io ist es noch nicht; eingebunden wird es über das Git-Tag:</p>
+<pre><code class="lang-text" data-caption="Cargo.toml">[dependencies]
+runnel-plugin = { git = "https://github.com/runnelhq/sdk-rust", tag = "v0.2.0" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"</code></pre>
+          {{snippet:plugin-hello.rs|src/main.rs}}
+<pre><code class="lang-bash" data-caption="Bauen, freigeben, ausführen">cargo build --release
+copy target\release\hello.exe D:\flows\plugins\hello\bin\
+runnel plugins trust D:/flows --plugin hello
+runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
+          <ul>
+            <li><strong>Konfiguration:</strong> Das Schema entsteht mit <code>#[derive(Config)]</code> aus dem Struct – mit denselben Regeln wie im Go-SDK. Doc-Kommentare (<code>///</code>) werden zur Beschreibung, <code>#[runnel(required, example = "…", values = "a|b", format = "runnel-secret", connection = "ldap")]</code> entspricht den Tags in Go. Das Struct braucht <code>#[serde(default)]</code> und <code>Default</code>, weil Runnel optionale Felder weglässt.</li>
+            <li><strong>Bausteine:</strong> <code>p.action(Action::new(…))</code>, <code>p.transform(…)</code> mit <code>Stream::next</code> und <code>Stream::emit</code> (Kredite wie im Go-SDK), <code>Transform::init</code> und <code>detect_fields</code>, Connection-Typen mit Test; <code>.reference(Reference::new().output(…).errors(…).limit(…))</code> beschreibt Ergebnis, Fehler und Grenzen.</li>
+            <li><strong>Testen:</strong> <code>testing::Client</code> ohne Runnel, <code>testing::Project</code> gegen Runnel (<code>RUNNEL_BIN</code>), <code>testing::check_references</code> für die Referenz.</li>
+            <li><strong>Vorbild:</strong> <a href="https://github.com/runnelhq/plugin-faker"><code>plugin-faker</code></a> – Eingabe und Transform mit <code>init</code>, eigener Zufallsgenerator für wiederholbare Daten, Release für Windows und Linux.</li>
+          </ul>
+
+          <h2 id="ablage">3. Ablage und Freigabe</h2>
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Feld in <code>plugin.yaml</code></th><th>Regel</th></tr></thead>
             <tbody>
@@ -105,7 +123,7 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
           </table></div>
           <p><code>runnel schema plugin</code> gibt das JSON Schema der Datei aus. Runnel startet ein Plugin erst nach <code>runnel plugins trust</code>: Die Freigabe gilt dem SHA-256 über alle Dateien des Plugin-Ordners (höchstens 1 GB und 10.000 Dateien, keine Verknüpfungen); jede Änderung hebt sie auf. Für Anwender beschrieben im <a href="../handbuch/plugins.html#freigabe">Handbuch</a>.</p>
 
-          <h2 id="protokoll">3. Protokoll</h2>
+          <h2 id="protokoll">4. Protokoll</h2>
           <p>JSON-RPC 2.0, <strong>eine Nachricht je Zeile</strong> (UTF-8, <code>\n</code>, ein <code>\r</code> davor ist erlaubt), höchstens 16 MiB je Nachricht. stdin: Host → Plugin; stdout: Plugin → Host, <strong>nur</strong> Protokoll; stderr: Log des Plugins, je Zeile ein Eintrag (<code>DEBUG</code>, <code>INFO</code>, <code>WARN</code>, <code>ERROR</code> am Anfang setzen die Stufe). Das Plugin läuft im Projektordner mit der Umgebung von Runnel und <code>RUNNEL_PLUGIN=1</code>.</p>
           {{snippet:plugin-protocol.txt|Ablauf einer Action}}
           <div class="table-scroll"><table class="doc-table">
@@ -130,15 +148,15 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
           {{snippet:plugin-stream.txt|Strom eines Transforms}}
           <p>Nur <code>transform.open</code> ist eine Anfrage mit Antwort, alles andere sind Notifications. <strong>Kredite:</strong> Der Host schickt höchstens <code>window</code> Batches, bevor das Plugin mit <code>$/ack</code> neue freigibt; das Plugin schickt höchstens <code>emitWindow</code> <code>emit</code>, bevor der Host neue freigibt. So bleibt der Speicher auf beiden Seiten begrenzt, und ein langsamer Transform dahinter bremst das Plugin. Alle Transforms eines Plugins in einer Pipeline teilen einen Prozess; <code>stream</code> ordnet die Nachrichten zu. Durchsatz mit dem SDK: etwa 360.000 Records/s (500.000 Records mit 5 Feldern, 4 Kerne).</p>
 
-          <h2 id="veroeffentlichen">4. Veröffentlichen</h2>
+          <h2 id="veroeffentlichen">5. Veröffentlichen</h2>
           <ul>
             <li><strong>Offizielle Plugins</strong> liegen in <code>runnelhq/plugin-&lt;name&gt;</code>, SDKs in <code>runnelhq/sdk-&lt;sprache&gt;</code>. <strong>Eigene Plugins:</strong> Repository <code>runnel-plugin-&lt;name&gt;</code> in der eigenen Organisation, Namensraum mit Präfix der Firma (z. B. <code>contoso-sap</code>); GitHub-Topic <code>runnel-plugin</code>.</li>
             <li><strong>Release-Archiv:</strong> <code>runnel-plugin-&lt;name&gt;_&lt;version&gt;_&lt;os&gt;_&lt;arch&gt;.zip</code> mit dem fertigen Ordner <code>&lt;name&gt;/</code> (<code>plugin.yaml</code>, Programme, <code>LICENSE</code>, <code>THIRD_PARTY_NOTICES</code>) und <code>SHA256SUMS</code>. Die offiziellen Plugins legen je Archiv eine SBOM (CycloneDX) bei und belegen die Herkunft mit GitHub-Attestations.</li>
             <li><strong>Versionen:</strong> SemVer-Tags, unabhängig von Runnel; die Version in <code>plugin.yaml</code> passt zum Tag.</li>
-            <li><strong>Vorbilder:</strong> <a href="https://github.com/runnelhq/plugin-iban"><code>plugin-iban</code></a> (Actions und Transform mit Fehler-Link, <code>Init</code>) und <a href="https://github.com/runnelhq/plugin-ldap"><code>plugin-ldap</code></a> (Connection-Typ mit Test, Eingabe mit „Detect fields“, Tests gegen einen echten Server). Beide zeigen auch Makefile, Lizenzprüfung und Release-Workflow.</li>
+            <li><strong>Vorbilder:</strong> <a href="https://github.com/runnelhq/plugin-iban"><code>plugin-iban</code></a> (Actions und Transform mit Fehler-Link, <code>Init</code>) und <a href="https://github.com/runnelhq/plugin-ldap"><code>plugin-ldap</code></a> (Connection-Typ mit Test, Eingabe mit „Detect fields“, Tests gegen einen echten Server), in Rust <a href="https://github.com/runnelhq/plugin-faker"><code>plugin-faker</code></a>. Beide zeigen auch Makefile, Lizenzprüfung und Release-Workflow.</li>
           </ul>
 
-          <h2 id="sicherheit">5. Sicherheit</h2>
+          <h2 id="sicherheit">6. Sicherheit</h2>
           <ul>
             <li>Ein Plugin läuft mit den Rechten von Runnel, beim Dienst mit dessen Konto – deshalb die Freigabe je Rechner und Projekt.</li>
             <li>Kein Port: Das Plugin ist nur über stdin/stdout erreichbar. Die Umgebung enthält keine Tokens der HTTP-Trigger.</li>
@@ -152,7 +170,7 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
           <p class="docs-eyebrow">Developer docs · Extending</p>
           <h1>Developing plugins</h1>
           <p class="docs-lead">A plugin adds actions, transforms and connection types to Runnel without changing Runnel itself. It is a program of its own in any language, which Runnel starts as a child process and talks to via JSON-RPC over stdin/stdout.</p>
-          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/PLUGINS.md"><code>docs/dev/PLUGINS.md</code></a> (the binding protocol description) · <a href="https://github.com/runnelhq/sdk-go">README of <code>sdk-go</code></a> · Background: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0019-plugin-protokoll.md">ADR 0019</a> (protocol), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a> (names, addendum 2026-11-24). As of Runnel <code>main</code> on 2026-11-25, <code>sdk-go</code> v0.3.0.</p>
+          <p class="docs-source">Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/docs/dev/PLUGINS.md"><code>docs/dev/PLUGINS.md</code></a> (the binding protocol description) · <a href="https://github.com/runnelhq/sdk-go">README of <code>sdk-go</code></a> and <a href="https://github.com/runnelhq/sdk-rust"><code>sdk-rust</code></a> · Background: <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0019-plugin-protokoll.md">ADR 0019</a> (protocol), <a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0013-typnamen-namensraeume.md">ADR 0013</a> (names, addendum 2026-11-24). As of Runnel <code>main</code> on 2026-11-25, <code>sdk-go</code> v0.3.0, <code>sdk-rust</code> v0.2.0.</p>
 
           <div class="callout">
             <strong>Plugin or built-in component?</strong>
@@ -227,7 +245,25 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
             <li>By hand: start the program with <code>RUNNEL_PLUGIN=1</code> and type the protocol lines.</li>
           </ul>
 
-          <h2 id="layout">2. Layout and trust</h2>
+          <h2 id="rust-en">2. A plugin in Rust</h2>
+          <p>The <a href="https://github.com/runnelhq/sdk-rust">Rust SDK</a> (crate <code>runnel-plugin</code>, plus <code>runnel-plugin-derive</code> for <code>#[derive(Config)]</code>) follows the Go SDK in scope and behaviour; both answer the same protocol transcripts. It needs Rust 1.87 or later (edition 2024) and only <code>serde</code> and <code>serde_json</code> in the plugin. It is not on crates.io yet; include it via the Git tag:</p>
+<pre><code class="lang-text" data-caption="Cargo.toml">[dependencies]
+runnel-plugin = { git = "https://github.com/runnelhq/sdk-rust", tag = "v0.2.0" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"</code></pre>
+          {{snippet:plugin-hello.rs|src/main.rs}}
+<pre><code class="lang-bash" data-caption="Build, trust, run">cargo build --release
+copy target\release\hello.exe D:\flows\plugins\hello\bin\
+runnel plugins trust D:/flows --plugin hello
+runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
+          <ul>
+            <li><strong>Configuration:</strong> <code>#[derive(Config)]</code> builds the schema from the struct – with the same rules as the Go SDK. Doc comments (<code>///</code>) become the description; <code>#[runnel(required, example = "…", values = "a|b", format = "runnel-secret", connection = "ldap")]</code> matches the Go tags. The struct needs <code>#[serde(default)]</code> and <code>Default</code> because Runnel omits optional fields.</li>
+            <li><strong>Components:</strong> <code>p.action(Action::new(…))</code>, <code>p.transform(…)</code> with <code>Stream::next</code> and <code>Stream::emit</code> (credits as in the Go SDK), <code>Transform::init</code> and <code>detect_fields</code>, connection types with a test; <code>.reference(Reference::new().output(…).errors(…).limit(…))</code> describes output, errors and limits.</li>
+            <li><strong>Testing:</strong> <code>testing::Client</code> without Runnel, <code>testing::Project</code> against Runnel (<code>RUNNEL_BIN</code>), <code>testing::check_references</code> for the reference.</li>
+            <li><strong>Model:</strong> <a href="https://github.com/runnelhq/plugin-faker"><code>plugin-faker</code></a> – an input and a transform with <code>init</code>, its own random generator for repeatable data, release for Windows and Linux.</li>
+          </ul>
+
+          <h2 id="layout">3. Layout and trust</h2>
           <div class="table-scroll"><table class="doc-table">
             <thead><tr><th>Field in <code>plugin.yaml</code></th><th>Rule</th></tr></thead>
             <tbody>
@@ -240,7 +276,7 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
           </table></div>
           <p><code>runnel schema plugin</code> prints the file's JSON Schema. Runnel starts a plugin only after <code>runnel plugins trust</code>: the approval applies to the SHA-256 over all files of the plugin folder (at most 1 GB and 10,000 files, no links); any change voids it. Described for users in the <a href="../handbuch/plugins.html#trust">user guide</a>.</p>
 
-          <h2 id="protocol">3. Protocol</h2>
+          <h2 id="protocol">4. Protocol</h2>
           <p>JSON-RPC 2.0, <strong>one message per line</strong> (UTF-8, <code>\n</code>, a preceding <code>\r</code> is allowed), at most 16 MiB per message. stdin: host → plugin; stdout: plugin → host, protocol <strong>only</strong>; stderr: the plugin's log, one entry per line (<code>DEBUG</code>, <code>INFO</code>, <code>WARN</code>, <code>ERROR</code> at the start set the level). The plugin runs in the project folder with Runnel's environment and <code>RUNNEL_PLUGIN=1</code>.</p>
           {{snippet:plugin-protocol.txt|Flow of an action}}
           <div class="table-scroll"><table class="doc-table">
@@ -265,15 +301,15 @@ runnel run D:/flows/workflows/greet.workflow.yaml</code></pre>
           {{snippet:plugin-stream.txt|Stream of a transform}}
           <p>Only <code>transform.open</code> is a request with an answer; everything else is a notification. <strong>Credits:</strong> the host sends at most <code>window</code> batches before the plugin releases new ones with <code>$/ack</code>; the plugin sends at most <code>emitWindow</code> <code>emit</code> messages before the host releases new ones. That keeps memory bounded on both sides, and a slow transform downstream slows the plugin. All transforms of a plugin in a pipeline share one process; <code>stream</code> routes the messages. Throughput with the SDK: about 360,000 records/s (500,000 records with 5 fields, 4 cores).</p>
 
-          <h2 id="publishing">4. Publishing</h2>
+          <h2 id="publishing">5. Publishing</h2>
           <ul>
             <li><strong>Official plugins</strong> live in <code>runnelhq/plugin-&lt;name&gt;</code>, SDKs in <code>runnelhq/sdk-&lt;language&gt;</code>. <strong>Your own plugins:</strong> repository <code>runnel-plugin-&lt;name&gt;</code> in your organization, namespace with a company prefix (e.g. <code>contoso-sap</code>); GitHub topic <code>runnel-plugin</code>.</li>
             <li><strong>Release archive:</strong> <code>runnel-plugin-&lt;name&gt;_&lt;version&gt;_&lt;os&gt;_&lt;arch&gt;.zip</code> with the finished folder <code>&lt;name&gt;/</code> (<code>plugin.yaml</code>, programs, <code>LICENSE</code>, <code>THIRD_PARTY_NOTICES</code>) and <code>SHA256SUMS</code>. The official plugins add an SBOM (CycloneDX) per archive and prove their origin with GitHub attestations.</li>
             <li><strong>Versions:</strong> SemVer tags, independent of Runnel; the version in <code>plugin.yaml</code> matches the tag.</li>
-            <li><strong>Models:</strong> <a href="https://github.com/runnelhq/plugin-iban"><code>plugin-iban</code></a> (actions and a transform with error link, <code>Init</code>) and <a href="https://github.com/runnelhq/plugin-ldap"><code>plugin-ldap</code></a> (connection type with test, input with “Detect fields”, tests against a real server). Both also show Makefile, license check and release workflow.</li>
+            <li><strong>Models:</strong> <a href="https://github.com/runnelhq/plugin-iban"><code>plugin-iban</code></a> (actions and a transform with error link, <code>Init</code>) and <a href="https://github.com/runnelhq/plugin-ldap"><code>plugin-ldap</code></a> (connection type with test, input with “Detect fields”, tests against a real server), in Rust <a href="https://github.com/runnelhq/plugin-faker"><code>plugin-faker</code></a>. Both also show Makefile, license check and release workflow.</li>
           </ul>
 
-          <h2 id="security">5. Security</h2>
+          <h2 id="security">6. Security</h2>
           <ul>
             <li>A plugin runs with Runnel's rights, in the service with its account – hence the approval per machine and project.</li>
             <li>No port: the plugin is reachable only via stdin/stdout. Its environment contains no HTTP trigger tokens.</li>

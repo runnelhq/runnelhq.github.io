@@ -106,8 +106,8 @@
 
           <h2 id="aufbau">1. Aufbau</h2>
           <div class="code">
-  <div class="code-head"><span>Aufbau</span><button class="copy-btn" type="button" data-copy-from="code-51"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-51"><code class="lang-bash">internal/transforms/&lt;namensraum&gt;/
+  <div class="code-head"><span>Aufbau</span><button class="copy-btn" type="button" data-copy-from="code-57"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-57"><code class="lang-bash">internal/transforms/&lt;namensraum&gt;/
   register.go          <span class="tok-c"># eine Zeile je Transform</span>
   &lt;name&gt;.go            <span class="tok-c"># der Transform</span>
   &lt;name&gt;_test.go       <span class="tok-c"># seine Tests</span></code></pre>
@@ -123,8 +123,8 @@
 
           <h2 id="process">2. Verarbeiten (<code>Process</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>Beispiel: Text in Großbuchstaben</span><button class="copy-btn" type="button" data-copy-from="code-52"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-52"><code class="lang-go"><span class="tok-k">func</span> (t *upper) Process(ctx context.Context, in &lt;-<span class="tok-k">chan</span> transform.Batch, out *transform.Output) error {
+  <div class="code-head"><span>Beispiel: Text in Großbuchstaben</span><button class="copy-btn" type="button" data-copy-from="code-58"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-58"><code class="lang-go"><span class="tok-k">func</span> (t *upper) Process(ctx context.Context, in &lt;-<span class="tok-k">chan</span> transform.Batch, out *transform.Output) error {
 	<span class="tok-k">for</span> b := <span class="tok-k">range</span> in {                 <span class="tok-c">// bis alle eingehenden Links beendet sind</span>
 		<span class="tok-k">for</span> _, r := <span class="tok-k">range</span> b {
 			v, _ := r.Get(t.Field)
@@ -160,8 +160,8 @@
 
           <h2 id="init">3. Schema (<code>Init</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>Beispiel</span><button class="copy-btn" type="button" data-copy-from="code-53"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-53"><code class="lang-go"><span class="tok-c">// Init meldet das Schema der ausgegebenen Records und die gelesenen Felder (ADR 0007).</span>
+  <div class="code-head"><span>Beispiel</span><button class="copy-btn" type="button" data-copy-from="code-59"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-59"><code class="lang-go"><span class="tok-c">// Init meldet das Schema der ausgegebenen Records und die gelesenen Felder (ADR 0007).</span>
 <span class="tok-k">func</span> (t *upper) Init(ic *transform.InitContext) (record.Schema, error) {
 	ic.Use(t.Field, <span class="tok-s">"field"</span>)            <span class="tok-c">// Pfad innerhalb von with: – für Datei, Zeile, Spalte</span>
 	<span class="tok-k">return</span> ic.In.With(t.Field, record.String), <span class="tok-k">nil</span>
@@ -178,8 +178,8 @@
 
           <h2 id="tests">4. Tests</h2>
           <div class="code">
-  <div class="code-head"><span>Beispiel</span><button class="copy-btn" type="button" data-copy-from="code-54"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-54"><code class="lang-go"><span class="tok-k">func</span> TestUpper(t *testing.T) {
+  <div class="code-head"><span>Beispiel</span><button class="copy-btn" type="button" data-copy-from="code-60"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-60"><code class="lang-go"><span class="tok-k">func</span> TestUpper(t *testing.T) {
 	tr := transformtest.New(t, upperDefinition, <span class="tok-k">map</span>[string]any{<span class="tok-s">"field"</span>: <span class="tok-s">"name"</span>})
 	out, logs, err := transformtest.Run(context.Background(), tr, record.New(record.Field{Name: <span class="tok-s">"name"</span>, Value: <span class="tok-s">"ada"</span>}))
 	…
@@ -206,8 +206,8 @@
           <h2 id="vorlage">Vorlage: <code>core.filter</code></h2>
           <p>Ein vollständiger Transform aus dem Repository mit Ausdruck je Datensatz, Feldmeldung in <code>Init</code>, Fehler-Link über <code>out.Fail</code>, Kopien (<code>Parallel</code>) und einer Log-Zeile am Ende.</p>
           <div class="code">
-  <div class="code-head"><span>internal/transforms/core/filter.go</span><button class="copy-btn" type="button" data-copy-from="code-55"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-55"><code class="lang-go"><span class="tok-k">package</span> core
+  <div class="code-head"><span>internal/transforms/core/filter.go</span><button class="copy-btn" type="button" data-copy-from="code-61"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-61"><code class="lang-go"><span class="tok-k">package</span> core
 
 <span class="tok-k">import</span> (
 	<span class="tok-s">"context"</span>
@@ -310,8 +310,8 @@
 
           <h2 id="layout">1. Layout</h2>
           <div class="code">
-  <div class="code-head"><span>Layout</span><button class="copy-btn" type="button" data-copy-from="code-56"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-56"><code class="lang-bash">internal/transforms/&lt;namespace&gt;/
+  <div class="code-head"><span>Layout</span><button class="copy-btn" type="button" data-copy-from="code-62"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-62"><code class="lang-bash">internal/transforms/&lt;namespace&gt;/
   register.go          <span class="tok-c"># one line per transform</span>
   &lt;name&gt;.go            <span class="tok-c"># the transform</span>
   &lt;name&gt;_test.go       <span class="tok-c"># its tests</span></code></pre>
@@ -327,8 +327,8 @@
 
           <h2 id="process-en">2. Processing (<code>Process</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>Example: upper-case text</span><button class="copy-btn" type="button" data-copy-from="code-57"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-57"><code class="lang-go"><span class="tok-k">func</span> (t *upper) Process(ctx context.Context, in &lt;-<span class="tok-k">chan</span> transform.Batch, out *transform.Output) error {
+  <div class="code-head"><span>Example: upper-case text</span><button class="copy-btn" type="button" data-copy-from="code-63"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-63"><code class="lang-go"><span class="tok-k">func</span> (t *upper) Process(ctx context.Context, in &lt;-<span class="tok-k">chan</span> transform.Batch, out *transform.Output) error {
 	<span class="tok-k">for</span> b := <span class="tok-k">range</span> in {                 <span class="tok-c">// until all incoming links have ended</span>
 		<span class="tok-k">for</span> _, r := <span class="tok-k">range</span> b {
 			v, _ := r.Get(t.Field)
@@ -364,8 +364,8 @@
 
           <h2 id="init-en">3. Schema (<code>Init</code>)</h2>
           <div class="code">
-  <div class="code-head"><span>Example</span><button class="copy-btn" type="button" data-copy-from="code-58"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-58"><code class="lang-go"><span class="tok-c">// Init reports the schema of the emitted records and the fields it reads (ADR 0007).</span>
+  <div class="code-head"><span>Example</span><button class="copy-btn" type="button" data-copy-from="code-64"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-64"><code class="lang-go"><span class="tok-c">// Init reports the schema of the emitted records and the fields it reads (ADR 0007).</span>
 <span class="tok-k">func</span> (t *upper) Init(ic *transform.InitContext) (record.Schema, error) {
 	ic.Use(t.Field, <span class="tok-s">"field"</span>)            <span class="tok-c">// path within with: – for file, line, column</span>
 	<span class="tok-k">return</span> ic.In.With(t.Field, record.String), <span class="tok-k">nil</span>
@@ -382,8 +382,8 @@
 
           <h2 id="tests-en">4. Tests</h2>
           <div class="code">
-  <div class="code-head"><span>Example</span><button class="copy-btn" type="button" data-copy-from="code-59"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-59"><code class="lang-go"><span class="tok-k">func</span> TestUpper(t *testing.T) {
+  <div class="code-head"><span>Example</span><button class="copy-btn" type="button" data-copy-from="code-65"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-65"><code class="lang-go"><span class="tok-k">func</span> TestUpper(t *testing.T) {
 	tr := transformtest.New(t, upperDefinition, <span class="tok-k">map</span>[string]any{<span class="tok-s">"field"</span>: <span class="tok-s">"name"</span>})
 	out, logs, err := transformtest.Run(context.Background(), tr, record.New(record.Field{Name: <span class="tok-s">"name"</span>, Value: <span class="tok-s">"ada"</span>}))
 	…
@@ -410,8 +410,8 @@
           <h2 id="template">Template: <code>core.filter</code></h2>
           <p>A complete transform from the repository with a per-record expression, field reporting in <code>Init</code>, an error link via <code>out.Fail</code>, copies (<code>Parallel</code>) and a log line at the end.</p>
           <div class="code">
-  <div class="code-head"><span>internal/transforms/core/filter.go</span><button class="copy-btn" type="button" data-copy-from="code-60"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-60"><code class="lang-go"><span class="tok-k">package</span> core
+  <div class="code-head"><span>internal/transforms/core/filter.go</span><button class="copy-btn" type="button" data-copy-from="code-66"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-66"><code class="lang-go"><span class="tok-k">package</span> core
 
 <span class="tok-k">import</span> (
 	<span class="tok-s">"context"</span>

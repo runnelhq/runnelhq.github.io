@@ -1,0 +1,36 @@
+kind: Pipeline
+apiVersion: runnel/v1
+name: customers
+description: Generates 1,000 test customers; the same seed gives the same data on every system
+parameters:
+  - name: COUNT
+    type: int
+    default: "1000"
+transforms:
+  - id: fake
+    type: faker.rows
+    with:
+      count: ${COUNT}
+      locale: de
+      seed: 42
+      fields:
+        - { name: customerNo, kind: pattern, pattern: "KD-#####" }
+        - { name: salutation, kind: salutation }
+        - { name: firstName, kind: firstName }
+        - { name: lastName, kind: lastName }
+        - { name: email, kind: email, from: "firstName, lastName" }
+        - { name: street, kind: street }
+        - { name: houseNumber, kind: houseNumber }
+        - { name: postcode, kind: postcode }
+        - { name: city, kind: city }
+        - { name: birthDate, kind: birthDate, minAge: 18, maxAge: 90 }
+        - { name: iban, kind: iban }
+        - { name: segment, kind: pick, values: [A, B, C], weights: [1, 3, 6] }
+        - { name: phone, kind: phone, nullRate: 0.2 }
+  - id: write
+    type: csv.output
+    with:
+      path: out/test-customers.csv
+      delimiter: ";"
+links:
+  - { from: fake, to: write }

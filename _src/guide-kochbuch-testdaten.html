@@ -1,0 +1,67 @@
+<!-- {
+  "out": "handbuch/kochbuch-testdaten.html",
+  "section": "guide",
+  "title": {
+    "de": "Kochbuch: Testdaten (Plugin)",
+    "en": "Cookbook: Test data (plugin)"
+  },
+  "description": {
+    "de": "Erzeugt 1.000 Testkunden mit Namen, Adressen, IBAN und Geburtsdatum und pseudonymisiert echte Kundendaten: Gleiche Kundennummern bekommen dieselbe Ersatznummer, auch über Tabellen und Läufe hinweg. Mit dem Plugin faker.",
+    "en": "Generates 1,000 test customers with names, addresses, IBAN and birth date and pseudonymizes real customer data: equal customer numbers get the same replacement, across tables and runs too. With the faker plugin."
+  },
+  "nav": "handbuch/",
+  "main_class": "docs-page"
+} -->
+    <div class="wrap docs-layout">
+      {{sidebar}}
+
+      <div class="docs-content">
+          <article class="prose" data-lang-block="de" lang="de">
+          <p class="docs-eyebrow">Handbuch · Kochbuch</p>
+          <h1>Testdaten (Plugin)</h1>
+          <p class="docs-lead">Erzeugt 1.000 Testkunden mit Namen, Adressen, IBAN und Geburtsdatum und pseudonymisiert echte Kundendaten: Gleiche Kundennummern bekommen dieselbe Ersatznummer, auch über Tabellen und Läufe hinweg. Mit dem Plugin <code>faker</code>.</p>
+          <dl class="recipe-meta"><dt>Plugin</dt><dd><a href="https://github.com/runnelhq/plugin-faker"><code>runnelhq/plugin-faker</code></a>: Eingabe <code>faker.rows</code>, Transform <code>faker.fill</code>, Action <code>faker.value</code>; gebaut mit dem Rust-SDK</dd><dt>Anmeldung</dt><dd>keine – rechnet nur lokal</dd><dt>Stand</dt><dd>Geprüft am 27.11.2026 mit den Releases Runnel <code>v0.1.0-alpha.13</code> und plugin-faker 0.2.0: <code>runnel validate</code> und vollständig ausgeführt; zwei Läufe mit demselben <code>PSEUDONYM_SEED</code> ergeben dieselben Dateien.</dd></dl>
+          <h2 id="prereq">Voraussetzungen</h2>
+          <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Art</th><th>Bedeutung</th></tr></thead><tbody><tr><td><code>plugins/faker</code></td><td>Plugin</td><td>Archiv von den <a href="https://github.com/runnelhq/plugin-faker/releases">Releases</a> nach <code>plugins/</code> entpacken und mit <code>runnel plugins trust</code> freigeben – siehe <a href="plugins.html#installieren">Plugins installieren</a></td></tr><tr><td><code>PSEUDONYM_SEED</code></td><td>Variable</td><td>Schlüssel der Pseudonyme, eine ganze Zahl – als Umgebungsvariable, nie im Projekt</td></tr></tbody></table></div>
+          <h2 id="files">Dateien</h2>
+          {{snippet:../kochbuch/testdaten/project.yaml|project.yaml}}
+          {{snippet:../kochbuch/testdaten/data/customers.csv|data/customers.csv}}
+          {{snippet:../kochbuch/testdaten/pipelines/customers.pipeline.yaml|pipelines/customers.pipeline.yaml}}
+          {{snippet:../kochbuch/testdaten/pipelines/pseudonymize.pipeline.yaml|pipelines/pseudonymize.pipeline.yaml}}
+          {{snippet:../kochbuch/testdaten/workflows/generate.workflow.yaml|workflows/generate.workflow.yaml}}
+          <p>Mit <code>consistent: true</code> hängt der Ersatz nur vom Eingabewert, dem Namen des Feldes und <code>seed</code> ab: Kundennummer 4711 wird in jeder Zeile und in jeder Tabelle mit gleichem Feldnamen zu derselben Nummer. Wer den Seed kennt, kann Ersatzwerte durch Ausprobieren zurückführen – deshalb kommt er aus einer Umgebungsvariablen. Pseudonymisieren ersetzt nur die genannten Felder; Ort und Umsatz bleiben, die Daten sind also nicht anonym. <code>runnel validate</code> warnt bei <code>seed: ${PSEUDONYM_SEED}</code> „without seed, consistent uses seed 0“, weil die Prüfung den Wert der Variablen nicht kennt; im Lauf gilt der gesetzte Seed.</p>
+          <h2 id="run">Ausführen</h2><p>Im Ordner des Rezepts (PowerShell):</p>
+          <pre><code class="lang-bash" data-caption="PowerShell">Expand-Archive .\runnel-plugin-faker_&lt;version&gt;_windows_amd64.zip -DestinationPath .\plugins
+runnel plugins trust . --plugin faker
+$env:PSEUDONYM_SEED = &quot;…&quot;   # eine ganze Zahl
+runnel run workflows/generate.workflow.yaml
+runnel run --param COUNT=100000 pipelines/customers.pipeline.yaml</code></pre>
+          <h2 id="adapt">Anpassen</h2><ul><li>Felder wählt <code>kind</code>: Personen (<code>firstName</code>, <code>salutation</code> passend zum Vornamen), Adressen mit echten Städten und passender Postleitzahl, <code>iban</code>, <code>bic</code> und <code>vatId</code> mit gültiger Prüfziffer, Zahlen und Daten mit <code>min</code>/<code>max</code>, <code>pick</code> mit Gewichten und <code>pattern</code> wie <code>KD-#####</code>. <code>nullRate</code> erzeugt leere Werte, um Wege für fehlende Daten zu testen.</li><li><code>seed</code> macht Testdaten wiederholbar: gleiche Konfiguration, gleiche Daten auf jedem System. Ein neues Feld ändert die anderen nicht. <code>locale: en</code> erzeugt englische Daten.</li><li>Für einen einzelnen Wert im Workflow, etwa für einen Test: Action <code>faker.value</code> mit <code>kind: iban</code>; das Ergebnis steht in <code>results.&lt;id&gt;.output</code>.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/testdaten">Quellen auf GitHub: <code>_src/kochbuch/testdaten</code></a></p>
+          </article>
+
+          <article class="prose" data-lang-block="en" lang="en">
+          <p class="docs-eyebrow">User guide · Cookbook</p>
+          <h1>Test data (plugin)</h1>
+          <p class="docs-lead">Generates 1,000 test customers with names, addresses, IBAN and birth date and pseudonymizes real customer data: equal customer numbers get the same replacement, across tables and runs too. With the <code>faker</code> plugin.</p>
+          <dl class="recipe-meta"><dt>Plugin</dt><dd><a href="https://github.com/runnelhq/plugin-faker"><code>runnelhq/plugin-faker</code></a>: input <code>faker.rows</code>, transform <code>faker.fill</code>, action <code>faker.value</code>; built with the Rust SDK</dd><dt>Sign-in</dt><dd>none – computes locally only</dd><dt>Status</dt><dd>Checked on 2026-11-27 with the releases Runnel <code>v0.1.0-alpha.13</code> and plugin-faker 0.2.0: <code>runnel validate</code> and run completely; two runs with the same <code>PSEUDONYM_SEED</code> give the same files.</dd></dl>
+          <h2 id="prereq-en">Prerequisites</h2>
+          <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Kind</th><th>Meaning</th></tr></thead><tbody><tr><td><code>plugins/faker</code></td><td>Plugin</td><td>Unpack the archive from the <a href="https://github.com/runnelhq/plugin-faker/releases">releases</a> into <code>plugins/</code> and trust it with <code>runnel plugins trust</code> – see <a href="plugins.html#install">Installing plugins</a></td></tr><tr><td><code>PSEUDONYM_SEED</code></td><td>Variable</td><td>Key of the pseudonyms, a whole number – as an environment variable, never in the project</td></tr></tbody></table></div>
+          <h2 id="files-en">Files</h2>
+          {{snippet:../kochbuch/testdaten/project.yaml|project.yaml}}
+          {{snippet:../kochbuch/testdaten/data/customers.csv|data/customers.csv}}
+          {{snippet:../kochbuch/testdaten/pipelines/customers.pipeline.yaml|pipelines/customers.pipeline.yaml}}
+          {{snippet:../kochbuch/testdaten/pipelines/pseudonymize.pipeline.yaml|pipelines/pseudonymize.pipeline.yaml}}
+          {{snippet:../kochbuch/testdaten/workflows/generate.workflow.yaml|workflows/generate.workflow.yaml}}
+          <p>With <code>consistent: true</code> the replacement depends only on the input value, the field name and <code>seed</code>: customer number 4711 becomes the same number in every row and in every table with the same field name. Whoever knows the seed can trace replacements back by trying values – so it comes from an environment variable. Pseudonymizing replaces only the fields named; city and revenue stay, so the data is not anonymous. <code>runnel validate</code> warns “without seed, consistent uses seed 0” for <code>seed: ${PSEUDONYM_SEED}</code> because the check does not know the variable's value; the run uses the seed set.</p>
+          <h2 id="run-en">Running</h2><p>In the recipe folder (PowerShell):</p>
+          <pre><code class="lang-bash" data-caption="PowerShell">Expand-Archive .\runnel-plugin-faker_&lt;version&gt;_windows_amd64.zip -DestinationPath .\plugins
+runnel plugins trust . --plugin faker
+$env:PSEUDONYM_SEED = &quot;…&quot;   # eine ganze Zahl
+runnel run workflows/generate.workflow.yaml
+runnel run --param COUNT=100000 pipelines/customers.pipeline.yaml</code></pre>
+          <h2 id="adapt-en">Adapting</h2><ul><li><code>kind</code> chooses the fields: people (<code>firstName</code>, <code>salutation</code> matching the first name), addresses with real cities and matching postcodes, <code>iban</code>, <code>bic</code> and <code>vatId</code> with valid check digits, numbers and dates with <code>min</code>/<code>max</code>, <code>pick</code> with weights and <code>pattern</code> such as <code>KD-#####</code>. <code>nullRate</code> produces empty values to test paths for missing data.</li><li><code>seed</code> makes test data repeatable: same configuration, same data on every system. A new field does not change the others. <code>locale: en</code> produces English data.</li><li>For a single value in a workflow, e.g. for a test: action <code>faker.value</code> with <code>kind: iban</code>; the result is in <code>results.&lt;id&gt;.output</code>.</li></ul>
+          <p class="docs-source"><a href="https://github.com/runnelhq/runnelhq.github.io/tree/main/_src/kochbuch/testdaten">Sources on GitHub: <code>_src/kochbuch/testdaten</code></a></p>
+          </article>
+      </div>
+    </div>

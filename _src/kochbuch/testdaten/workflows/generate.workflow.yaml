@@ -1,0 +1,32 @@
+# Creates the output folder, generates test customers and pseudonymizes data/customers.csv.
+#   $env:PSEUDONYM_SEED = "…"
+#   runnel run workflows/generate.workflow.yaml
+kind: Workflow
+apiVersion: runnel/v1
+name: generate
+outputs:
+  - name: GENERATED
+    type: int
+    value: "{{ results.customers.output.transforms.write.written }}"
+  - name: PSEUDONYMIZED
+    type: int
+    value: "{{ results.pseudonymize.output.transforms.write.written }}"
+actions:
+  - id: start
+    type: core.start
+  - id: folder
+    type: file.mkdir
+    with:
+      path: out
+  - id: customers
+    type: core.run-pipeline
+    with:
+      pipeline: pipelines/customers.pipeline.yaml
+  - id: pseudonymize
+    type: core.run-pipeline
+    with:
+      pipeline: pipelines/pseudonymize.pipeline.yaml
+links:
+  - { from: start, to: folder }
+  - { from: folder, to: customers }
+  - { from: customers, to: pseudonymize }

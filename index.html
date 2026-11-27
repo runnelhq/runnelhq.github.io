@@ -351,14 +351,14 @@
       <div class="section-head">
         <span class="label" data-i18n="plugins.label">Erweitern</span>
         <h2 data-i18n="plugins.title">Plugins für alles, was nicht in die exe gehört</h2>
-        <p data-i18n="plugins.lead">Ein Plugin ist ein eigenes Programm im Projektordner – in Go, C#, Python oder jeder anderen Sprache. Runnel startet es als Kindprozess und spricht es über JSON-RPC auf stdin/stdout an: kein offener Port, keine Laufzeit im Kern. Seine Actions, Transforms und Connection-Typen stehen im Editor wie die eingebauten.</p>
+        <p data-i18n="plugins.lead">Ein Plugin ist ein eigenes Programm im Projektordner – in Go, Rust, C#, Python oder jeder anderen Sprache. Runnel startet es als Kindprozess und spricht es über JSON-RPC auf stdin/stdout an: kein offener Port, keine Laufzeit im Kern. Seine Actions, Transforms und Connection-Typen stehen im Editor wie die eingebauten.</p>
       </div>
       <div class="plugins">
         <article class="plugin-card">
-          <span class="plugin-kind" data-i18n="plugins.sdk">SDK</span>
-          <h3><a href="https://github.com/runnelhq/sdk-go">sdk-go</a></h3>
-          <p data-i18n="plugins.sdkgo">Plugins in Go schreiben: Konfiguration als Struct, Schema aus den Tags, Transforms als Strom mit Backpressure, Tests ohne Runnel mit <code>runneltest</code>. Nur die Standardbibliothek, MIT.</p>
-          <p class="plugin-types"><code>go get github.com/runnelhq/sdk-go</code></p>
+          <span class="plugin-kind" data-i18n="plugins.sdks">SDKs</span>
+          <h3><a href="https://github.com/runnelhq/sdk-go">sdk-go</a> · <a href="https://github.com/runnelhq/sdk-rust">sdk-rust</a></h3>
+          <p data-i18n="plugins.sdktext">Plugins in Go oder Rust schreiben: Konfiguration als Struct, Schema daraus, Transforms als Strom mit Backpressure, Tests ohne Runnel. Beide SDKs beantworten dieselben Transkripte des Protokolls.</p>
+          <p class="plugin-types"><code>package runnel</code> <code>crate runnel-plugin</code></p>
         </article>
         <article class="plugin-card">
           <span class="plugin-kind" data-i18n="plugins.official">Offizielles Plugin</span>
@@ -371,6 +371,12 @@
           <h3><a href="https://github.com/runnelhq/plugin-ldap">plugin-ldap</a></h3>
           <p data-i18n="plugins.ldap">Active Directory und OpenLDAP: suchen, Anmeldungen prüfen, Einträge ändern und als Datensätze lesen – mit eigenem Connection-Typ und „Test connection“.</p>
           <p class="plugin-types"><code>ldap.search</code> <code>ldap.authenticate</code> <code>ldap.input</code></p>
+        </article>
+        <article class="plugin-card">
+          <span class="plugin-kind" data-i18n="plugins.official">Offizielles Plugin</span>
+          <h3><a href="https://github.com/runnelhq/plugin-faker">plugin-faker</a></h3>
+          <p data-i18n="plugins.faker">Testdaten erzeugen – Personen, Adressen, IBANs, eigene Muster, wiederholbar per Seed – und echte Daten pseudonymisieren. In Rust gebaut.</p>
+          <p class="plugin-types"><code>faker.rows</code> <code>faker.fill</code> <code>faker.value</code></p>
         </article>
       </div>
       <p class="plugins-more"><a href="handbuch/plugins.html" data-i18n="plugins.guide">Plugins installieren und freigeben</a> · <a href="docs/plugins.html" data-i18n="plugins.dev">Eigene Plugins entwickeln</a></p>
