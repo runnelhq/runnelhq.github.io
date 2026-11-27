@@ -1,5 +1,5 @@
 {
- "version": "v0.1.0-alpha.12",
+ "version": "v0.1.0-alpha.13",
  "roots": [
   {
    "name": "params",
@@ -297,6 +297,22 @@
    "group": "Text"
   },
   {
+   "name": "hasPrefix",
+   "signature": "hasPrefix(text, prefix)",
+   "type": "bool",
+   "description": "Whether a text starts with another (also the operator startsWith)",
+   "example": "{{ hasPrefix('INV-4711', 'INV-') }}",
+   "group": "Text"
+  },
+  {
+   "name": "hasSuffix",
+   "signature": "hasSuffix(text, suffix)",
+   "type": "bool",
+   "description": "Whether a text ends with another (also the operator endsWith)",
+   "example": "{{ hasSuffix('orders.csv', '.csv') }}",
+   "group": "Text"
+  },
+  {
    "name": "split",
    "signature": "split(text, separator)",
    "type": "list",
@@ -385,6 +401,46 @@
    "group": "Paths"
   },
   {
+   "name": "int",
+   "signature": "int(value)",
+   "type": "integer",
+   "description": "Whole number from a number (cut off) or a text like '42'",
+   "example": "{{ int('42') + 1 }}",
+   "group": "Conversion"
+  },
+  {
+   "name": "float",
+   "signature": "float(value)",
+   "type": "number",
+   "description": "Number from a whole number or a text like '1.5' (with a decimal point)",
+   "example": "{{ float('1.5') * 2 }}",
+   "group": "Conversion"
+  },
+  {
+   "name": "string",
+   "signature": "string(value)",
+   "type": "string",
+   "description": "Any value as text, e.g. a number to join with text",
+   "example": "{{ string(42) + ' orders' }}",
+   "group": "Conversion"
+  },
+  {
+   "name": "toJSON",
+   "signature": "toJSON(value)",
+   "type": "string",
+   "description": "A value as JSON text, indented",
+   "example": "{{ toJSON({'id': 7}) }}",
+   "group": "Conversion"
+  },
+  {
+   "name": "fromJSON",
+   "signature": "fromJSON(text)",
+   "type": "any",
+   "description": "The value of a JSON text: map, list, number, text or bool",
+   "example": "{{ fromJSON('{\"id\": 7}').id }}",
+   "group": "Conversion"
+  },
+  {
    "name": "len",
    "signature": "len(value)",
    "type": "integer",
@@ -401,27 +457,51 @@
    "group": "Numbers and lists"
   },
   {
-   "name": "sum",
-   "signature": "sum(list)",
+   "name": "ceil",
+   "signature": "ceil(number)",
    "type": "number",
-   "description": "Sum of a list of numbers",
-   "example": "{{ sum([1, 2, 3]) }}",
+   "description": "Rounds up to a whole number",
+   "example": "{{ ceil(2.1) }}",
    "group": "Numbers and lists"
   },
   {
-   "name": "map",
-   "signature": "map(list, .field)",
-   "type": "list",
-   "description": "Takes a field of each entry, e.g. the sizes of files",
-   "example": "{{ map([{'size': 1}], .size) }}",
+   "name": "floor",
+   "signature": "floor(number)",
+   "type": "number",
+   "description": "Rounds down to a whole number",
+   "example": "{{ floor(2.9) }}",
    "group": "Numbers and lists"
   },
   {
-   "name": "filter",
-   "signature": "filter(list, condition)",
-   "type": "list",
-   "description": "Keeps the entries for which the condition is true",
-   "example": "{{ filter([1, 5, 9], # > 3) }}",
+   "name": "abs",
+   "signature": "abs(number)",
+   "type": "number",
+   "description": "The number without its sign",
+   "example": "{{ abs(-3) }}",
+   "group": "Numbers and lists"
+  },
+  {
+   "name": "min",
+   "signature": "min(a, b, …)",
+   "type": "number",
+   "description": "The smallest of the numbers or of a list",
+   "example": "{{ min(3, 1, 2) }}",
+   "group": "Numbers and lists"
+  },
+  {
+   "name": "max",
+   "signature": "max(a, b, …)",
+   "type": "number",
+   "description": "The largest of the numbers or of a list",
+   "example": "{{ max([3, 1, 2]) }}",
+   "group": "Numbers and lists"
+  },
+  {
+   "name": "sum",
+   "signature": "sum(list, value)",
+   "type": "number",
+   "description": "Sum of a list of numbers; with value, of a value of each entry",
+   "example": "{{ sum([{'size': 1}, {'size': 2}], .size) }}",
    "group": "Numbers and lists"
   },
   {
@@ -431,6 +511,142 @@
    "description": "Joins a list of texts",
    "example": "{{ join(['a', 'b'], ', ') }}",
    "group": "Numbers and lists"
+  },
+  {
+   "name": "first",
+   "signature": "first(list)",
+   "type": "any",
+   "description": "The first entry; nil for an empty list",
+   "example": "{{ first(['a', 'b']) }}",
+   "group": "Numbers and lists"
+  },
+  {
+   "name": "last",
+   "signature": "last(list)",
+   "type": "any",
+   "description": "The last entry; nil for an empty list",
+   "example": "{{ last(['a', 'b']) }}",
+   "group": "Numbers and lists"
+  },
+  {
+   "name": "keys",
+   "signature": "keys(map)",
+   "type": "list",
+   "description": "The keys of a map",
+   "example": "{{ keys({'a': 1}) }}",
+   "group": "Numbers and lists"
+  },
+  {
+   "name": "map",
+   "signature": "map(list, value)",
+   "type": "list",
+   "description": "A value of each entry, e.g. the sizes of files",
+   "example": "{{ map([{'size': 1}], .size) }}",
+   "group": "Lists with a condition"
+  },
+  {
+   "name": "filter",
+   "signature": "filter(list, condition)",
+   "type": "list",
+   "description": "Keeps the entries for which the condition is true; # is the entry",
+   "example": "{{ filter([1, 5, 9], # > 3) }}",
+   "group": "Lists with a condition"
+  },
+  {
+   "name": "all",
+   "signature": "all(list, condition)",
+   "type": "bool",
+   "description": "Whether the condition is true for every entry",
+   "example": "{{ all([1, 5], # > 0) }}",
+   "group": "Lists with a condition"
+  },
+  {
+   "name": "any",
+   "signature": "any(list, condition)",
+   "type": "bool",
+   "description": "Whether the condition is true for at least one entry",
+   "example": "{{ any([1, 5], # > 3) }}",
+   "group": "Lists with a condition"
+  },
+  {
+   "name": "none",
+   "signature": "none(list, condition)",
+   "type": "bool",
+   "description": "Whether the condition is true for no entry",
+   "example": "{{ none([1, 5], # > 9) }}",
+   "group": "Lists with a condition"
+  },
+  {
+   "name": "one",
+   "signature": "one(list, condition)",
+   "type": "bool",
+   "description": "Whether the condition is true for exactly one entry",
+   "example": "{{ one([1, 5], # > 3) }}",
+   "group": "Lists with a condition"
+  },
+  {
+   "name": "count",
+   "signature": "count(list, condition)",
+   "type": "integer",
+   "description": "Number of entries for which the condition is true",
+   "example": "{{ count([1, 5, 9], # > 3) }}",
+   "group": "Lists with a condition"
+  },
+  {
+   "name": "find",
+   "signature": "find(list, condition)",
+   "type": "any",
+   "description": "The first entry for which the condition is true; nil if none",
+   "example": "{{ find([1, 5, 9], # > 3) }}",
+   "group": "Lists with a condition"
+  },
+  {
+   "name": "findIndex",
+   "signature": "findIndex(list, condition)",
+   "type": "integer",
+   "description": "Position (from 0) of the first entry for which the condition is true; -1 if none",
+   "example": "{{ findIndex([1, 5, 9], # > 3) }}",
+   "group": "Lists with a condition"
+  },
+  {
+   "name": "findLast",
+   "signature": "findLast(list, condition)",
+   "type": "any",
+   "description": "The last entry for which the condition is true; nil if none",
+   "example": "{{ findLast([1, 5, 9], # > 3) }}",
+   "group": "Lists with a condition"
+  },
+  {
+   "name": "findLastIndex",
+   "signature": "findLastIndex(list, condition)",
+   "type": "integer",
+   "description": "Position (from 0) of the last entry for which the condition is true; -1 if none",
+   "example": "{{ findLastIndex([1, 5, 9], # > 3) }}",
+   "group": "Lists with a condition"
+  },
+  {
+   "name": "groupBy",
+   "signature": "groupBy(list, value)",
+   "type": "map",
+   "description": "The entries in lists by a value of each, e.g. orders by customer",
+   "example": "{{ groupBy([{'c': 'a'}, {'c': 'b'}], .c) }}",
+   "group": "Lists with a condition"
+  },
+  {
+   "name": "sortBy",
+   "signature": "sortBy(list, value, order)",
+   "type": "list",
+   "description": "The entries sorted by a value of each; order 'asc' (default) or 'desc'",
+   "example": "{{ sortBy([{'n': 2}, {'n': 1}], .n, 'desc') }}",
+   "group": "Lists with a condition"
+  },
+  {
+   "name": "reduce",
+   "signature": "reduce(list, value, initial)",
+   "type": "any",
+   "description": "Combines the entries to one value: #acc is the value so far (initial, else the first entry), # the entry",
+   "example": "{{ reduce([1, 2, 3], #acc + #, 0) }}",
+   "group": "Lists with a condition"
   },
   {
    "name": "coalesce",

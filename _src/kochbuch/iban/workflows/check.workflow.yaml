@@ -5,10 +5,10 @@ apiVersion: runnel/v1
 name: check
 outputs:
   - name: VALID
-    type: integer
+    type: int
     value: "{{ results.accounts.output.transforms.ok.written }}"
   - name: REJECTED
-    type: integer
+    type: int
     value: "{{ results.accounts.output.errors }}"
 actions:
   - id: start

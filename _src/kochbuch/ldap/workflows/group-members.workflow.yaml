@@ -8,7 +8,7 @@ parameters:
     required: true
 outputs:
   - name: MEMBERS
-    type: integer
+    type: int
     value: "{{ results.find.output.count }}"
 actions:
   - id: start

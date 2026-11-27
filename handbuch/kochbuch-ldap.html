@@ -95,14 +95,14 @@
           <p class="docs-eyebrow">Handbuch · Kochbuch</p>
           <h1>Active Directory (Plugin)</h1>
           <p class="docs-lead">Exportiert die aktiven Benutzer einer Organisationseinheit seitenweise als CSV-Datei und listet die Mitglieder einer Gruppe – mit dem Plugin <code>ldap</code> und seinem Connection-Typ.</p>
-          <dl class="recipe-meta"><dt>Plugin</dt><dd><a href="https://github.com/runnelhq/plugin-ldap"><code>runnelhq/plugin-ldap</code></a>: Connection-Typ <code>ldap</code>, Transform <code>ldap.input</code>, Action <code>ldap.search</code>; auch für OpenLDAP</dd><dt>Anmeldung</dt><dd>Dienstkonto mit Lesezugriff, über LDAPS (TLS)</dd><dt>Stand</dt><dd>Geprüft am 26.11.2026 mit den Releases Runnel <code>v0.1.0-alpha.12</code> und plugin-ldap 0.1.0: <code>runnel validate</code>; ausgeführt gegen OpenLDAP mit TLS und 1.200 Benutzern (Paging), dabei mit den Attributen von OpenLDAP statt <code>sAMAccountName</code>, <code>memberOf</code> und <code>objectGUID</code>. Gegen ein echtes Active Directory noch nicht ausgeführt.</dd></dl>
+          <dl class="recipe-meta"><dt>Plugin</dt><dd><a href="https://github.com/runnelhq/plugin-ldap"><code>runnelhq/plugin-ldap</code></a>: Connection-Typ <code>ldap</code>, Transform <code>ldap.input</code>, Action <code>ldap.search</code>; auch für OpenLDAP</dd><dt>Anmeldung</dt><dd>Dienstkonto mit Lesezugriff, über LDAPS (TLS)</dd><dt>Stand</dt><dd>Geprüft am 27.11.2026 mit den Releases Runnel <code>v0.1.0-alpha.13</code> und plugin-ldap 0.1.0: <code>runnel validate</code>; ausgeführt gegen OpenLDAP mit TLS und 1.200 Benutzern (Paging), dabei mit den Attributen von OpenLDAP statt <code>sAMAccountName</code>, <code>memberOf</code> und <code>objectGUID</code>. Gegen ein echtes Active Directory noch nicht ausgeführt.</dd></dl>
           <h2 id="prereq">Voraussetzungen</h2>
           <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Art</th><th>Bedeutung</th></tr></thead><tbody><tr><td><code>plugins/ldap</code></td><td>Plugin</td><td>Archiv von den <a href="https://github.com/runnelhq/plugin-ldap/releases">Releases</a> nach <code>plugins/</code> entpacken und mit <code>runnel plugins trust</code> freigeben</td></tr><tr><td><code>LDAP_URL, LDAP_USER, LDAP_BASE</code></td><td>Variable</td><td>Domänencontroller (<code>ldaps://…</code>), Dienstkonto (<code>user@domain</code>) und Basis der Suche</td></tr><tr><td><code>AD_PASSWORD</code></td><td>Secret</td><td>Passwort des Dienstkontos – als Umgebungsvariable</td></tr></tbody></table></div>
-          <p>Secrets kommen hier aus Umgebungsvariablen (<code>secretStore: env</code> in <code>project.yaml</code>). Für den Dienst die Variable beim Dienstkonto setzen.</p>
+          <p>Secrets kommen hier aus Umgebungsvariablen (<code>secretStore: env</code> in <code>project.yaml</code>); für den Dienst die Variable beim Dienstkonto setzen. Ohne diese Zeile liest Runnel sie aus dem <a href="projekt.html#secret-store">lokalen Secret-Store</a>: <code>runnel secret set NAME</code>.</p>
           <h2 id="files">Dateien</h2>
           <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-253"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-253"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-259"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-259"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: ldap
 <span class="tok-t">description</span>: Exports the users of an Active Directory with the plugin ldap
@@ -113,8 +113,8 @@
   <span class="tok-t">LDAP_BASE</span>: DC=example,DC=com</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>connections/ad.yaml</span><button class="copy-btn" type="button" data-copy-from="code-254"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-254"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+  <div class="code-head"><span>connections/ad.yaml</span><button class="copy-btn" type="button" data-copy-from="code-260"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-260"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: ad
 <span class="tok-t">description</span>: Active Directory, read only
@@ -127,8 +127,8 @@
   <span class="tok-c"># caFile: certs/company-ca.pem   # CA of the server, if this computer does not trust it</span></code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>pipelines/users.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-255"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-255"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
+  <div class="code-head"><span>pipelines/users.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-261"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-261"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: users
 <span class="tok-t">description</span>: Reads the active users of an OU page by page and writes them to a CSV file
@@ -167,8 +167,8 @@
   - { <span class="tok-t">from</span>: users, <span class="tok-t">to</span>: rejected, <span class="tok-t">type</span>: error }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/export.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-256"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-256"><code class="lang-yaml"><span class="tok-c"># Creates the output folder and exports the users.</span>
+  <div class="code-head"><span>workflows/export.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-262"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-262"><code class="lang-yaml"><span class="tok-c"># Creates the output folder and exports the users.</span>
 <span class="tok-c">#   runnel run workflows/export.workflow.yaml</span>
 <span class="tok-c">#   runnel run --param OU=OU=Sales,OU=Users workflows/export.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
@@ -179,7 +179,7 @@
     <span class="tok-t">default</span>: OU=Users
 <span class="tok-t">outputs</span>:
   - <span class="tok-t">name</span>: USERS
-    <span class="tok-t">type</span>: integer
+    <span class="tok-t">type</span>: int
     <span class="tok-t">value</span>: <span class="tok-s">"{{ results.users.output.transforms.write.written }}"</span>
 <span class="tok-t">actions</span>:
   - <span class="tok-t">id</span>: start
@@ -199,8 +199,8 @@
   - { <span class="tok-t">from</span>: folder, <span class="tok-t">to</span>: users }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/group-members.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-257"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-257"><code class="lang-yaml"><span class="tok-c"># Lists the members of a group, e.g. to check who may sign in to an application.</span>
+  <div class="code-head"><span>workflows/group-members.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-263"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-263"><code class="lang-yaml"><span class="tok-c"># Lists the members of a group, e.g. to check who may sign in to an application.</span>
 <span class="tok-c">#   runnel run --param GROUP=App-Users workflows/group-members.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
@@ -210,7 +210,7 @@
     <span class="tok-t">required</span>: true
 <span class="tok-t">outputs</span>:
   - <span class="tok-t">name</span>: MEMBERS
-    <span class="tok-t">type</span>: integer
+    <span class="tok-t">type</span>: int
     <span class="tok-t">value</span>: <span class="tok-s">"{{ results.find.output.count }}"</span>
 <span class="tok-t">actions</span>:
   - <span class="tok-t">id</span>: start
@@ -250,8 +250,8 @@
           <p>Das Plugin liest mit <code>pageSize</code> seitenweise; so liefert Active Directory auch mehr als 1.000 Einträge, und im Speicher liegt immer nur etwa eine Seite. Mehrere Werte eines Attributs (<code>memberOf</code>) verbindet es im Textfeld mit <code>; </code>, <code>objectGUID</code> kommt in der üblichen Schreibweise. Der Filter wählt nur aktive Konten: Bit 2 von <code>userAccountControl</code> (deaktiviert) ist nicht gesetzt.</p>
           <h2 id="run">Ausführen</h2><p>Im Ordner des Rezepts (PowerShell):</p>
           <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-263"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-263"><code class="lang-bash">$env:AD_PASSWORD = <span class="tok-s">"…"</span>
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-269"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-269"><code class="lang-bash">$env:AD_PASSWORD = <span class="tok-s">"…"</span>
 runnel run workflows/export.workflow.yaml
 runnel run --param OU=OU=Sales,OU=Users workflows/export.workflow.yaml
 runnel run --param GROUP=App-Users workflows/group-members.workflow.yaml</code></pre>
@@ -264,14 +264,14 @@ runnel run --param GROUP=App-Users workflows/group-members.workflow.yaml</code><
           <p class="docs-eyebrow">User guide · Cookbook</p>
           <h1>Active Directory (plugin)</h1>
           <p class="docs-lead">Exports the active users of an organizational unit page by page as a CSV file and lists the members of a group – with the <code>ldap</code> plugin and its connection type.</p>
-          <dl class="recipe-meta"><dt>Plugin</dt><dd><a href="https://github.com/runnelhq/plugin-ldap"><code>runnelhq/plugin-ldap</code></a>: connection type <code>ldap</code>, transform <code>ldap.input</code>, action <code>ldap.search</code>; also for OpenLDAP</dd><dt>Sign-in</dt><dd>Service account with read access, via LDAPS (TLS)</dd><dt>Status</dt><dd>Checked on 2026-11-26 with the releases Runnel <code>v0.1.0-alpha.12</code> and plugin-ldap 0.1.0: <code>runnel validate</code>; run against OpenLDAP with TLS and 1,200 users (paging), using OpenLDAP's attributes instead of <code>sAMAccountName</code>, <code>memberOf</code> and <code>objectGUID</code>. Not yet run against a real Active Directory.</dd></dl>
+          <dl class="recipe-meta"><dt>Plugin</dt><dd><a href="https://github.com/runnelhq/plugin-ldap"><code>runnelhq/plugin-ldap</code></a>: connection type <code>ldap</code>, transform <code>ldap.input</code>, action <code>ldap.search</code>; also for OpenLDAP</dd><dt>Sign-in</dt><dd>Service account with read access, via LDAPS (TLS)</dd><dt>Status</dt><dd>Checked on 2026-11-27 with the releases Runnel <code>v0.1.0-alpha.13</code> and plugin-ldap 0.1.0: <code>runnel validate</code>; run against OpenLDAP with TLS and 1,200 users (paging), using OpenLDAP's attributes instead of <code>sAMAccountName</code>, <code>memberOf</code> and <code>objectGUID</code>. Not yet run against a real Active Directory.</dd></dl>
           <h2 id="prereq-en">Prerequisites</h2>
           <div class="table-scroll"><table class="doc-table"><thead><tr><th>Name</th><th>Kind</th><th>Meaning</th></tr></thead><tbody><tr><td><code>plugins/ldap</code></td><td>Plugin</td><td>Unpack the archive from the <a href="https://github.com/runnelhq/plugin-ldap/releases">releases</a> into <code>plugins/</code> and trust it with <code>runnel plugins trust</code></td></tr><tr><td><code>LDAP_URL, LDAP_USER, LDAP_BASE</code></td><td>Variable</td><td>Domain controller (<code>ldaps://…</code>), service account (<code>user@domain</code>) and search base</td></tr><tr><td><code>AD_PASSWORD</code></td><td>Secret</td><td>Password of the service account – as an environment variable</td></tr></tbody></table></div>
-          <p>Secrets come from environment variables here (<code>secretStore: env</code> in <code>project.yaml</code>). For the service, set the variable for the service account.</p>
+          <p>Secrets come from environment variables here (<code>secretStore: env</code> in <code>project.yaml</code>); for the service, set the variable for the service account. Without this line Runnel reads them from the <a href="projekt.html#secret-store-en">local secret store</a>: <code>runnel secret set NAME</code>.</p>
           <h2 id="files-en">Files</h2>
           <div class="code">
-  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-258"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-258"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
+  <div class="code-head"><span>project.yaml</span><button class="copy-btn" type="button" data-copy-from="code-264"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-264"><code class="lang-yaml"><span class="tok-t">kind</span>: Project
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: ldap
 <span class="tok-t">description</span>: Exports the users of an Active Directory with the plugin ldap
@@ -282,8 +282,8 @@ runnel run --param GROUP=App-Users workflows/group-members.workflow.yaml</code><
   <span class="tok-t">LDAP_BASE</span>: DC=example,DC=com</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>connections/ad.yaml</span><button class="copy-btn" type="button" data-copy-from="code-259"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-259"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
+  <div class="code-head"><span>connections/ad.yaml</span><button class="copy-btn" type="button" data-copy-from="code-265"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-265"><code class="lang-yaml"><span class="tok-t">kind</span>: Connection
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: ad
 <span class="tok-t">description</span>: Active Directory, read only
@@ -296,8 +296,8 @@ runnel run --param GROUP=App-Users workflows/group-members.workflow.yaml</code><
   <span class="tok-c"># caFile: certs/company-ca.pem   # CA of the server, if this computer does not trust it</span></code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>pipelines/users.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-260"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-260"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
+  <div class="code-head"><span>pipelines/users.pipeline.yaml</span><button class="copy-btn" type="button" data-copy-from="code-266"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-266"><code class="lang-yaml"><span class="tok-t">kind</span>: Pipeline
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: users
 <span class="tok-t">description</span>: Reads the active users of an OU page by page and writes them to a CSV file
@@ -336,8 +336,8 @@ runnel run --param GROUP=App-Users workflows/group-members.workflow.yaml</code><
   - { <span class="tok-t">from</span>: users, <span class="tok-t">to</span>: rejected, <span class="tok-t">type</span>: error }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/export.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-261"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-261"><code class="lang-yaml"><span class="tok-c"># Creates the output folder and exports the users.</span>
+  <div class="code-head"><span>workflows/export.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-267"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-267"><code class="lang-yaml"><span class="tok-c"># Creates the output folder and exports the users.</span>
 <span class="tok-c">#   runnel run workflows/export.workflow.yaml</span>
 <span class="tok-c">#   runnel run --param OU=OU=Sales,OU=Users workflows/export.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
@@ -348,7 +348,7 @@ runnel run --param GROUP=App-Users workflows/group-members.workflow.yaml</code><
     <span class="tok-t">default</span>: OU=Users
 <span class="tok-t">outputs</span>:
   - <span class="tok-t">name</span>: USERS
-    <span class="tok-t">type</span>: integer
+    <span class="tok-t">type</span>: int
     <span class="tok-t">value</span>: <span class="tok-s">"{{ results.users.output.transforms.write.written }}"</span>
 <span class="tok-t">actions</span>:
   - <span class="tok-t">id</span>: start
@@ -368,8 +368,8 @@ runnel run --param GROUP=App-Users workflows/group-members.workflow.yaml</code><
   - { <span class="tok-t">from</span>: folder, <span class="tok-t">to</span>: users }</code></pre>
 </div>
           <div class="code">
-  <div class="code-head"><span>workflows/group-members.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-262"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-262"><code class="lang-yaml"><span class="tok-c"># Lists the members of a group, e.g. to check who may sign in to an application.</span>
+  <div class="code-head"><span>workflows/group-members.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-268"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-268"><code class="lang-yaml"><span class="tok-c"># Lists the members of a group, e.g. to check who may sign in to an application.</span>
 <span class="tok-c">#   runnel run --param GROUP=App-Users workflows/group-members.workflow.yaml</span>
 <span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
@@ -379,7 +379,7 @@ runnel run --param GROUP=App-Users workflows/group-members.workflow.yaml</code><
     <span class="tok-t">required</span>: true
 <span class="tok-t">outputs</span>:
   - <span class="tok-t">name</span>: MEMBERS
-    <span class="tok-t">type</span>: integer
+    <span class="tok-t">type</span>: int
     <span class="tok-t">value</span>: <span class="tok-s">"{{ results.find.output.count }}"</span>
 <span class="tok-t">actions</span>:
   - <span class="tok-t">id</span>: start
@@ -419,8 +419,8 @@ runnel run --param GROUP=App-Users workflows/group-members.workflow.yaml</code><
           <p>The plugin reads page by page with <code>pageSize</code>; this way Active Directory returns more than 1,000 entries too, and only about one page is in memory. Several values of an attribute (<code>memberOf</code>) are joined with <code>; </code> in a text field, <code>objectGUID</code> comes in its usual notation. The filter selects active accounts only: bit 2 of <code>userAccountControl</code> (disabled) is not set.</p>
           <h2 id="run-en">Running</h2><p>In the recipe folder (PowerShell):</p>
           <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-264"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-264"><code class="lang-bash">$env:AD_PASSWORD = <span class="tok-s">"…"</span>
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-270"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-270"><code class="lang-bash">$env:AD_PASSWORD = <span class="tok-s">"…"</span>
 runnel run workflows/export.workflow.yaml
 runnel run --param OU=OU=Sales,OU=Users workflows/export.workflow.yaml
 runnel run --param GROUP=App-Users workflows/group-members.workflow.yaml</code></pre>

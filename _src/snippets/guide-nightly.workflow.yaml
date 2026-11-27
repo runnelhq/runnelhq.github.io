@@ -7,7 +7,7 @@ parameters:
     default: "{{ formatDate(addDays(today(), -1), 'yyyy-MM-dd') }}"
 outputs:
   - name: IMPORTED
-    type: integer
+    type: int
     value: "{{ results.load.output.transforms.write.written }}"
 settings:
   timeout: 2h

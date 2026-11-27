@@ -95,7 +95,7 @@
           <p class="docs-eyebrow">Entwicklerdoku</p>
           <h1>Runnel entwickeln</h1>
           <p class="docs-lead">Runnel ist eine einzige <code>runnel.exe</code>: ein Go-Programm mit eingebettetem Editor in React. Diese Seiten richten sich an alle, die am Kern, am Editor oder an Bausteinen mitarbeiten – Menschen wie KI-Agenten.</p>
-          <p class="docs-source">Stand: <code>main</code> vom 25.11.2026 · Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/AGENTS.md">AGENTS.md</a> (verbindliche Regeln), <a href="https://github.com/runnelhq/runnel/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> (Ablauf). Bei Abweichungen gilt das Repository.</p>
+          <p class="docs-source">Stand: Runnel <code>v0.1.0-alpha.13</code> vom 27.11.2026 · Quelle: <a href="https://github.com/runnelhq/runnel/blob/main/AGENTS.md">AGENTS.md</a> (verbindliche Regeln), <a href="https://github.com/runnelhq/runnel/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> (Ablauf). Bei Abweichungen gilt das Repository.</p>
 
           <div class="docs-cards">
             <a class="docs-card" href="actions.html">
@@ -123,8 +123,8 @@
           <h2 id="schnellstart">Schnellstart</h2>
           <p>Voraussetzungen: <a href="https://go.dev/dl/">Go</a> in der Version aus <code>go.mod</code> (derzeit Go 1.26), <a href="https://golangci-lint.run/">golangci-lint</a> v2.15.0 für <code>make lint</code>, <a href="https://nodejs.org/">Node.js</a> 22 LTS für den Editor und <code>make</code> – unter Windows zum Beispiel über Git Bash. Ohne Node baut <code>make build-go</code> die exe ohne Editor.</p>
 <div class="code">
-  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-31"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-31"><code class="lang-bash">git clone https://github.com/runnelhq/runnel.git
+  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-35"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-35"><code class="lang-bash">git clone https://github.com/runnelhq/runnel.git
 cd runnel
 make build                    <span class="tok-c"># bin/runnel mit Editor</span>
 make test                     <span class="tok-c"># Tests mit Race-Detector</span>
@@ -156,7 +156,7 @@ bin/runnel serve examples/hello   <span class="tok-c"># Editor unter http://127.
             <thead><tr><th>Pfad</th><th>Inhalt</th></tr></thead>
             <tbody>
               <tr><td><code>cmd/runnel/</code></td><td>Einstiegspunkt, Signalbehandlung</td></tr>
-              <tr><td><code>internal/cli/</code></td><td>Befehle <code>version</code>, <code>validate</code>, <code>run</code>, <code>runs</code>, <code>catalog</code>, <code>schema</code>, <code>serve</code>, <code>triggers</code>, <code>service</code>, <code>plugins</code></td></tr>
+              <tr><td><code>internal/cli/</code></td><td>Befehle <code>version</code>, <code>init</code>, <code>validate</code>, <code>run</code>, <code>runs</code>, <code>catalog</code>, <code>schema</code>, <code>serve</code>, <code>health</code>, <code>triggers</code>, <code>service</code>, <code>plugins</code>, <code>secret</code></td></tr>
               <tr><td><code>internal/model/</code></td><td>Dateiformate (Workflow, Pipeline, Project, Environment, Trigger, Connection, Plugin), Laden, Prüfung, Namensräume</td></tr>
               <tr><td><code>internal/expr/</code></td><td>Ausdrücke <code>{{ … }}</code> (expr-lang), Funktionsbibliothek</td></tr>
               <tr><td><code>internal/schema/</code></td><td>JSON Schema aus Konfigurations-Structs und Dateiformaten (ADR 0014)</td></tr>
@@ -245,7 +245,7 @@ bin/runnel serve examples/hello   <span class="tok-c"># Editor unter http://127.
           <p class="docs-eyebrow">Developer docs</p>
           <h1>Developing Runnel</h1>
           <p class="docs-lead">Runnel is a single <code>runnel.exe</code>: a Go program with an embedded React editor. These pages are for everyone who works on the core, the editor or components – humans and AI agents alike.</p>
-          <p class="docs-source">As of <code>main</code> on 2026-11-25 · Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/AGENTS.md">AGENTS.md</a> (binding rules), <a href="https://github.com/runnelhq/runnel/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> (process). If anything differs, the repository is authoritative.</p>
+          <p class="docs-source">As of Runnel <code>v0.1.0-alpha.13</code> on 2026-11-27 · Source (German): <a href="https://github.com/runnelhq/runnel/blob/main/AGENTS.md">AGENTS.md</a> (binding rules), <a href="https://github.com/runnelhq/runnel/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> (process). If anything differs, the repository is authoritative.</p>
 
           <div class="docs-cards">
             <a class="docs-card" href="actions.html">
@@ -273,8 +273,8 @@ bin/runnel serve examples/hello   <span class="tok-c"># Editor unter http://127.
           <h2 id="quick-start">Quick start</h2>
           <p>Prerequisites: <a href="https://go.dev/dl/">Go</a> as specified in <code>go.mod</code> (currently Go 1.26), <a href="https://golangci-lint.run/">golangci-lint</a> v2.15.0 for <code>make lint</code>, <a href="https://nodejs.org/">Node.js</a> 22 LTS for the editor, and <code>make</code> – on Windows e.g. via Git Bash. Without Node, <code>make build-go</code> builds the executable without the editor.</p>
 <div class="code">
-  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-32"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-32"><code class="lang-bash">git clone https://github.com/runnelhq/runnel.git
+  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-36"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-36"><code class="lang-bash">git clone https://github.com/runnelhq/runnel.git
 cd runnel
 make build                    <span class="tok-c"># bin/runnel with editor</span>
 make test                     <span class="tok-c"># tests with race detector</span>
@@ -306,7 +306,7 @@ bin/runnel serve examples/hello   <span class="tok-c"># editor at http://127.0.0
             <thead><tr><th>Path</th><th>Contents</th></tr></thead>
             <tbody>
               <tr><td><code>cmd/runnel/</code></td><td>Entry point, signal handling</td></tr>
-              <tr><td><code>internal/cli/</code></td><td>Commands <code>version</code>, <code>validate</code>, <code>run</code>, <code>runs</code>, <code>catalog</code>, <code>schema</code>, <code>serve</code>, <code>triggers</code>, <code>service</code>, <code>plugins</code></td></tr>
+              <tr><td><code>internal/cli/</code></td><td>Commands <code>version</code>, <code>init</code>, <code>validate</code>, <code>run</code>, <code>runs</code>, <code>catalog</code>, <code>schema</code>, <code>serve</code>, <code>health</code>, <code>triggers</code>, <code>service</code>, <code>plugins</code>, <code>secret</code></td></tr>
               <tr><td><code>internal/model/</code></td><td>File formats (workflow, pipeline, project, environment, trigger, connection, plugin), loading, checks, namespaces</td></tr>
               <tr><td><code>internal/expr/</code></td><td>Expressions <code>{{ … }}</code> (expr-lang), function library</td></tr>
               <tr><td><code>internal/schema/</code></td><td>JSON Schema from configuration structs and file formats (ADR 0014)</td></tr>

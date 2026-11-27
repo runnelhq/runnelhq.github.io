@@ -100,8 +100,8 @@
           <h2 id="beispiel">Beispiel</h2>
           <p>Wartet auf die Kundendatei des Vortags, lädt sie über eine Pipeline, archiviert sie – und meldet einen Fehler, wenn die Datei nicht kommt oder der Import scheitert. Geprüft mit <code>runnel validate</code>.</p>
           <div class="code">
-  <div class="code-head"><span>workflows/nightly-import.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-353"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-353"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
+  <div class="code-head"><span>workflows/nightly-import.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-361"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-361"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: nightly-import
 <span class="tok-t">description</span>: Imports the customers of the previous day
@@ -110,7 +110,7 @@
     <span class="tok-t">default</span>: <span class="tok-s">"{{ formatDate(addDays(today(), -1), 'yyyy-MM-dd') }}"</span>
 <span class="tok-t">outputs</span>:
   - <span class="tok-t">name</span>: IMPORTED
-    <span class="tok-t">type</span>: integer
+    <span class="tok-t">type</span>: int
     <span class="tok-t">value</span>: <span class="tok-s">"{{ results.load.output.transforms.write.written }}"</span>
 <span class="tok-t">settings</span>:
   <span class="tok-t">timeout</span>: 2h
@@ -180,15 +180,15 @@
               <tr><td><code>retry</code></td><td><code>attempts</code> (Versuche insgesamt), <code>backoff</code> (Wartezeit vor dem zweiten Versuch), <code>strategy</code>: <code>fixed</code> oder <code>exponential</code></td></tr>
               <tr><td><code>continueOnError</code></td><td>ein Fehler gilt als Erfolg; der Workflow läuft auf den Erfolgs-Links weiter</td></tr>
               <tr><td><code>join</code>, <code>joinTimeout</code></td><td>Verhalten bei mehreren eingehenden Links – siehe <a href="#join">Join</a></td></tr>
-              <tr><td><code>forEach</code>, <code>parallel</code>, <code>stopOnError</code></td><td>Action je Eintrag einer Liste ausführen – siehe <a href="#foreach">Wiederholung</a></td></tr>
+              <tr><td><code>forEach</code>, <code>parallel</code>, <code>continueOnEntryError</code></td><td>Action je Eintrag einer Liste ausführen – siehe <a href="#foreach">Wiederholung</a></td></tr>
             </tbody>
           </table></div>
           <p>Jeder Workflow hat genau eine Action <code>core.start</code> ohne eingehende Links. <code>core.success</code> beendet ihn sofort erfolgreich, <code>core.abort</code> als fehlgeschlagen.</p>
 
           <h2 id="links">Links und Bedingungen</h2>
 <div class="code">
-  <div class="code-head"><span>links</span><button class="copy-btn" type="button" data-copy-from="code-357"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-357"><code class="lang-yaml"><span class="tok-t">links</span>:
+  <div class="code-head"><span>links</span><button class="copy-btn" type="button" data-copy-from="code-365"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-365"><code class="lang-yaml"><span class="tok-t">links</span>:
   - { <span class="tok-t">from</span>: start, <span class="tok-t">to</span>: fetch }                       <span class="tok-c"># when: success (Standard)</span>
   - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: report, <span class="tok-t">when</span>: failure }
   - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: cleanup, <span class="tok-t">when</span>: always }
@@ -224,7 +224,7 @@
               <tr><td><code>each</code></td><td>startet bei jedem eingehenden Link erneut</td></tr>
             </tbody>
           </table></div>
-          <p><code>joinTimeout</code> begrenzt bei <code>all</code> das Warten. Der Projektstandard steht in <code>project.yaml</code> unter <code>workflow.defaultJoin</code>. Als Sammelpunkt mehrerer Zweige eignet sich <code>core.dummy</code>. Beachte: <code>join: all</code> startet auch, wenn ein Zweig fehlgeschlagen ist – Fehlerpfade daher eigens modellieren.</p>
+          <p><code>joinTimeout</code> begrenzt bei <code>all</code> das Warten. Der Projektstandard steht in <code>project.yaml</code> unter <code>settings.defaultJoin</code>. Als Sammelpunkt mehrerer Zweige eignet sich <code>core.dummy</code>. Beachte: <code>join: all</code> startet auch, wenn ein Zweig fehlgeschlagen ist – Fehlerpfade daher eigens modellieren.</p>
 
           <h2 id="ergebnisse">Ergebnisse weiterverwenden</h2>
           <p>Viele Actions liefern Ausgabedaten, z. B. <code>file.list</code> die Dateien, <code>http.request</code> Status und Antwort, <code>core.run-pipeline</code> die Zähler der Transforms. In Ausdrücken:</p>
@@ -237,8 +237,8 @@
           <h2 id="foreach">Wiederholung je Eintrag (<code>forEach</code>)</h2>
           <p>Jede Action kann für jeden Eintrag einer Liste laufen – etwa eine Pipeline je Datei. Der aktuelle Eintrag heißt <code>row</code>.</p>
           <div class="code">
-  <div class="code-head"><span>workflows/each.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-354"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-354"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
+  <div class="code-head"><span>workflows/each.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-362"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-362"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: each-file
 <span class="tok-t">actions</span>:
@@ -253,7 +253,7 @@
     <span class="tok-t">type</span>: core.run-pipeline
     <span class="tok-t">forEach</span>: <span class="tok-s">"{{ results.list.output }}"</span>
     <span class="tok-t">parallel</span>: 2
-    <span class="tok-t">stopOnError</span>: false
+    <span class="tok-t">continueOnEntryError</span>: true
     <span class="tok-t">with</span>:
       <span class="tok-t">pipeline</span>: pipelines/customers.pipeline.yaml
       <span class="tok-t">params</span>:
@@ -269,14 +269,14 @@
 </div>
           <ul>
             <li><code>parallel</code>: so viele Einträge gleichzeitig (Standard 1).</li>
-            <li><code>stopOnError</code>: beim ersten Fehler aufhören (Standard) oder mit <code>false</code> alle Einträge versuchen.</li>
+            <li><code>continueOnEntryError</code>: mit <code>true</code> alle Einträge versuchen, auch wenn einer scheitert; Standard <code>false</code>: beim ersten Fehler aufhören.</li>
             <li>Ergebnis: <code>items</code> (je Eintrag <code>row</code>, <code>success</code>, <code>error</code>, <code>output</code>), <code>succeeded</code> und <code>failed</code>.</li>
           </ul>
 
           <h2 id="sub-workflows">Sub-Workflows und Pipelines aufrufen</h2>
           <ul>
             <li><code>core.run-workflow</code> startet einen anderen Workflow mit <code>params</code>; dessen <code>outputs</code> sind das Ergebnis. Sein Log erscheint bei der aufrufenden Action.</li>
-            <li><code>core.run-pipeline</code> startet eine Pipeline; Ergebnis sind die Zähler je Transform (<code>output.transforms.&lt;id&gt;.read/written/errors</code>) und <code>output.errors</code>. Mit <code>rows</code> gehen Datensätze hinein, mit <code>core.to-result</code> kommen sie als <code>output.rows</code> zurück.</li>
+            <li><code>core.run-pipeline</code> startet eine Pipeline; Ergebnis sind die Zähler je Transform (<code>output.transforms.&lt;id&gt;.read/written/errors</code>) und <code>output.errors</code>. Mit <code>records</code> gehen Datensätze hinein, mit <code>core.to-result</code> kommen sie als <code>output.records</code> zurück.</li>
             <li>Pfade sind relativ zum Projekt und dürfen es nicht verlassen. Ist der Pfad dynamisch (<code>${…}</code>), schränkt <code>allowedTargets</code> die erlaubten Ziele ein.</li>
             <li>Übergeben werden nur die genannten Parameter; der aufgerufene Workflow sieht seine eigenen Standardwerte und die Variablen des Projekts.</li>
           </ul>
@@ -291,8 +291,8 @@
           <h2 id="example">Example</h2>
           <p>Waits for the previous day's customer file, loads it through a pipeline, archives it – and reports an error if the file doesn't arrive or the import fails. Checked with <code>runnel validate</code>.</p>
           <div class="code">
-  <div class="code-head"><span>workflows/nightly-import.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-355"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-355"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
+  <div class="code-head"><span>workflows/nightly-import.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-363"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-363"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: nightly-import
 <span class="tok-t">description</span>: Imports the customers of the previous day
@@ -301,7 +301,7 @@
     <span class="tok-t">default</span>: <span class="tok-s">"{{ formatDate(addDays(today(), -1), 'yyyy-MM-dd') }}"</span>
 <span class="tok-t">outputs</span>:
   - <span class="tok-t">name</span>: IMPORTED
-    <span class="tok-t">type</span>: integer
+    <span class="tok-t">type</span>: int
     <span class="tok-t">value</span>: <span class="tok-s">"{{ results.load.output.transforms.write.written }}"</span>
 <span class="tok-t">settings</span>:
   <span class="tok-t">timeout</span>: 2h
@@ -371,15 +371,15 @@
               <tr><td><code>retry</code></td><td><code>attempts</code> (total attempts), <code>backoff</code> (wait before the second attempt), <code>strategy</code>: <code>fixed</code> or <code>exponential</code></td></tr>
               <tr><td><code>continueOnError</code></td><td>A failure counts as success; the workflow continues on the success links</td></tr>
               <tr><td><code>join</code>, <code>joinTimeout</code></td><td>Behavior with several incoming links – see <a href="#join-en">Join</a></td></tr>
-              <tr><td><code>forEach</code>, <code>parallel</code>, <code>stopOnError</code></td><td>Run the action per entry of a list – see <a href="#foreach-en">Repetition</a></td></tr>
+              <tr><td><code>forEach</code>, <code>parallel</code>, <code>continueOnEntryError</code></td><td>Run the action per entry of a list – see <a href="#foreach-en">Repetition</a></td></tr>
             </tbody>
           </table></div>
           <p>Every workflow has exactly one <code>core.start</code> action without incoming links. <code>core.success</code> ends it immediately as succeeded, <code>core.abort</code> as failed.</p>
 
           <h2 id="links-en">Links and conditions</h2>
 <div class="code">
-  <div class="code-head"><span>links</span><button class="copy-btn" type="button" data-copy-from="code-358"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-358"><code class="lang-yaml"><span class="tok-t">links</span>:
+  <div class="code-head"><span>links</span><button class="copy-btn" type="button" data-copy-from="code-366"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-366"><code class="lang-yaml"><span class="tok-t">links</span>:
   - { <span class="tok-t">from</span>: start, <span class="tok-t">to</span>: fetch }                       <span class="tok-c"># when: success (default)</span>
   - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: report, <span class="tok-t">when</span>: failure }
   - { <span class="tok-t">from</span>: fetch, <span class="tok-t">to</span>: cleanup, <span class="tok-t">when</span>: always }
@@ -415,7 +415,7 @@
               <tr><td><code>each</code></td><td>Starts again for every incoming link</td></tr>
             </tbody>
           </table></div>
-          <p><code>joinTimeout</code> limits the wait with <code>all</code>. The project default is <code>workflow.defaultJoin</code> in <code>project.yaml</code>. <code>core.dummy</code> works well as a collection point for several branches. Note: <code>join: all</code> also starts if a branch failed – model failure paths separately.</p>
+          <p><code>joinTimeout</code> limits the wait with <code>all</code>. The project default is <code>settings.defaultJoin</code> in <code>project.yaml</code>. <code>core.dummy</code> works well as a collection point for several branches. Note: <code>join: all</code> also starts if a branch failed – model failure paths separately.</p>
 
           <h2 id="results">Using results</h2>
           <p>Many actions return output data, e.g. <code>file.list</code> the files, <code>http.request</code> status and response, <code>core.run-pipeline</code> the transform counts. In expressions:</p>
@@ -428,8 +428,8 @@
           <h2 id="foreach-en">Repetition per entry (<code>forEach</code>)</h2>
           <p>Any action can run for each entry of a list – e.g. a pipeline per file. The current entry is called <code>row</code>.</p>
           <div class="code">
-  <div class="code-head"><span>workflows/each.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-356"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-356"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
+  <div class="code-head"><span>workflows/each.workflow.yaml</span><button class="copy-btn" type="button" data-copy-from="code-364"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-364"><code class="lang-yaml"><span class="tok-t">kind</span>: Workflow
 <span class="tok-t">apiVersion</span>: runnel/v1
 <span class="tok-t">name</span>: each-file
 <span class="tok-t">actions</span>:
@@ -444,7 +444,7 @@
     <span class="tok-t">type</span>: core.run-pipeline
     <span class="tok-t">forEach</span>: <span class="tok-s">"{{ results.list.output }}"</span>
     <span class="tok-t">parallel</span>: 2
-    <span class="tok-t">stopOnError</span>: false
+    <span class="tok-t">continueOnEntryError</span>: true
     <span class="tok-t">with</span>:
       <span class="tok-t">pipeline</span>: pipelines/customers.pipeline.yaml
       <span class="tok-t">params</span>:
@@ -460,14 +460,14 @@
 </div>
           <ul>
             <li><code>parallel</code>: this many entries at once (default 1).</li>
-            <li><code>stopOnError</code>: stop at the first error (default) or try all entries with <code>false</code>.</li>
+            <li><code>continueOnEntryError</code>: with <code>true</code> try all entries even if one fails; default <code>false</code>: stop at the first error.</li>
             <li>Result: <code>items</code> (per entry <code>row</code>, <code>success</code>, <code>error</code>, <code>output</code>), <code>succeeded</code> and <code>failed</code>.</li>
           </ul>
 
           <h2 id="sub-workflows-en">Calling sub-workflows and pipelines</h2>
           <ul>
             <li><code>core.run-workflow</code> starts another workflow with <code>params</code>; its <code>outputs</code> are the result. Its log appears with the calling action.</li>
-            <li><code>core.run-pipeline</code> starts a pipeline; the result is the counts per transform (<code>output.transforms.&lt;id&gt;.read/written/errors</code>) and <code>output.errors</code>. Records go in with <code>rows</code> and come back as <code>output.rows</code> via <code>core.to-result</code>.</li>
+            <li><code>core.run-pipeline</code> starts a pipeline; the result is the counts per transform (<code>output.transforms.&lt;id&gt;.read/written/errors</code>) and <code>output.errors</code>. Records go in with <code>records</code> and come back as <code>output.records</code> via <code>core.to-result</code>.</li>
             <li>Paths are relative to the project and must not leave it. If the path is dynamic (<code>${…}</code>), <code>allowedTargets</code> restricts the allowed targets.</li>
             <li>Only the named parameters are passed; the called workflow sees its own defaults and the project's variables.</li>
           </ul>

@@ -16,7 +16,7 @@ parameters:
     default: Köln
 outputs:
   - name: TEMPERATURE
-    type: number
+    type: float
     value: "{{ results.fetch.output.body.current.temperature_2m }}"
 actions:
   - id: start

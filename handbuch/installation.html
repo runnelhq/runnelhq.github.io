@@ -124,8 +124,8 @@
             <li>Optional den Ordner in den <code>PATH</code> aufnehmen, damit <code>runnel</code> überall aufrufbar ist.</li>
           </ol>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-207"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-207"><code class="lang-bash">Expand-Archive runnel_&lt;version&gt;_windows_amd64.zip -DestinationPath .
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-213"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-213"><code class="lang-bash">Expand-Archive runnel_&lt;version&gt;_windows_amd64.zip -DestinationPath .
 New-Item -ItemType Directory -Force C:\Tools\Runnel | Out-Null
 Copy-Item .\runnel_&lt;version&gt;_windows_amd64\* C:\Tools\Runnel
 cd C:\Tools\Runnel
@@ -141,8 +141,8 @@ cd C:\Tools\Runnel
 
           <h2 id="linux">Unter Linux einrichten</h2>
 <div class="code">
-  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-208"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-208"><code class="lang-bash">tar -xzf runnel_&lt;version&gt;_linux_amd64.tar.gz
+  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-214"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-214"><code class="lang-bash">tar -xzf runnel_&lt;version&gt;_linux_amd64.tar.gz
 sudo install -m 755 runnel_&lt;version&gt;_linux_amd64/runnel /usr/local/bin/runnel
 runnel version</code></pre>
 </div>
@@ -151,8 +151,8 @@ runnel version</code></pre>
           <h2 id="pruefen">Herkunft prüfen</h2>
           <p>Jedes Archiv hat eine Prüfsumme in <code>SHA256SUMS</code> und eine signierte Herkunftsbestätigung (SLSA Build Provenance), die belegt, dass es aus dem Repository von GitHub Actions gebaut wurde.</p>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-209"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-209"><code class="lang-bash">Get-FileHash .\runnel_&lt;version&gt;_windows_amd64.zip -Algorithm SHA256
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-215"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-215"><code class="lang-bash">Get-FileHash .\runnel_&lt;version&gt;_windows_amd64.zip -Algorithm SHA256
 <span class="tok-c"># mit der Zeile in SHA256SUMS vergleichen</span>
 
 <span class="tok-c"># Herkunft mit der GitHub CLI prüfen</span>
@@ -163,13 +163,13 @@ gh attestation verify runnel_&lt;version&gt;_windows_amd64.zip --repo runnelhq/r
           <p>Ein Update tauscht nur die <code>runnel.exe</code>; der Editor steckt in ihr. Projektordner, Run-Historie, Logs und Zertifikate bleiben, wo sie sind. Ein Befehl <code>runnel update</code> ist geplant, bis dahin geht es so:</p>
           <ol class="steps">
             <li><strong>Laden und prüfen:</strong> ZIP der neuen Version und <code>SHA256SUMS</code> laden, Prüfsumme und Herkunft prüfen (siehe oben).</li>
-            <li><strong>Vorher testen:</strong> das ZIP in einen eigenen Ordner entpacken und das Projekt mit der neuen Version prüfen, während die alte noch läuft. Neue Meldungen zeigen, was vor dem Wechsel anzupassen ist – bis Version 1.0 nennen sie bei umbenannten Feldern auch den neuen Namen.</li>
+            <li><strong>Vorher testen:</strong> das ZIP in einen eigenen Ordner entpacken und das Projekt mit der neuen Version prüfen, während die alte noch läuft. Neue Meldungen zeigen, was vor dem Wechsel anzupassen ist. Vor Version 1.0 ändern sich Namen noch ohne Übergang – was sich geändert hat, steht im <a href="https://github.com/runnelhq/runnel/blob/main/CHANGELOG.md">CHANGELOG</a>. Ab 1.0 nimmt Runnel umbenannte Felder weiter an und warnt mit dem neuen Namen (<a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0029-stabilitaet-versionen.md">ADR 0029</a>).</li>
             <li><strong>Tauschen</strong> (Konsole als Administrator): Dienst stoppen, die alte Datei als <code>runnel-old.exe</code> behalten, die neue an dieselbe Stelle kopieren, Dienst starten. Welche Datei der Dienst startet, zeigt <code>runnel service status</code> unter <code>Command</code>.</li>
             <li><strong>Kontrollieren:</strong> <code>runnel version</code> zeigt die neue Version, <code>runnel service status</code> den Zustand <code>running</code>; im Log beginnt der Start mit <code>Starting runnel v…</code>. Den Editor im Browser mit Strg+F5 neu laden.</li>
           </ol>
 <div class="code">
-  <div class="code-head"><span>PowerShell (als Administrator)</span><button class="copy-btn" type="button" data-copy-from="code-210"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-210"><code class="lang-bash">.\runnel_&lt;version&gt;_windows_amd64\runnel.exe validate D:\flows
+  <div class="code-head"><span>PowerShell (als Administrator)</span><button class="copy-btn" type="button" data-copy-from="code-216"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-216"><code class="lang-bash">.\runnel_&lt;version&gt;_windows_amd64\runnel.exe validate D:\flows
 runnel service stop
 Rename-Item C:\Tools\Runnel\runnel.exe runnel-old.exe
 Copy-Item .\runnel_&lt;version&gt;_windows_amd64\runnel.exe C:\Tools\Runnel\runnel.exe
@@ -227,8 +227,8 @@ C:\Tools\Runnel\runnel.exe version</code></pre>
             <li>Optionally add the folder to <code>PATH</code> so <code>runnel</code> works everywhere.</li>
           </ol>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-211"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-211"><code class="lang-bash">Expand-Archive runnel_&lt;version&gt;_windows_amd64.zip -DestinationPath .
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-217"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-217"><code class="lang-bash">Expand-Archive runnel_&lt;version&gt;_windows_amd64.zip -DestinationPath .
 New-Item -ItemType Directory -Force C:\Tools\Runnel | Out-Null
 Copy-Item .\runnel_&lt;version&gt;_windows_amd64\* C:\Tools\Runnel
 cd C:\Tools\Runnel
@@ -244,8 +244,8 @@ cd C:\Tools\Runnel
 
           <h2 id="linux-en">Setting up on Linux</h2>
 <div class="code">
-  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-212"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-212"><code class="lang-bash">tar -xzf runnel_&lt;version&gt;_linux_amd64.tar.gz
+  <div class="code-head"><span>Shell</span><button class="copy-btn" type="button" data-copy-from="code-218"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-218"><code class="lang-bash">tar -xzf runnel_&lt;version&gt;_linux_amd64.tar.gz
 sudo install -m 755 runnel_&lt;version&gt;_linux_amd64/runnel /usr/local/bin/runnel
 runnel version</code></pre>
 </div>
@@ -254,8 +254,8 @@ runnel version</code></pre>
           <h2 id="verify">Verifying the origin</h2>
           <p>Every archive has a checksum in <code>SHA256SUMS</code> and a signed provenance attestation (SLSA build provenance) proving it was built from the repository by GitHub Actions.</p>
 <div class="code">
-  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-213"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-213"><code class="lang-bash">Get-FileHash .\runnel_&lt;version&gt;_windows_amd64.zip -Algorithm SHA256
+  <div class="code-head"><span>PowerShell</span><button class="copy-btn" type="button" data-copy-from="code-219"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-219"><code class="lang-bash">Get-FileHash .\runnel_&lt;version&gt;_windows_amd64.zip -Algorithm SHA256
 <span class="tok-c"># compare with the line in SHA256SUMS</span>
 
 <span class="tok-c"># verify the provenance with the GitHub CLI</span>
@@ -266,13 +266,13 @@ gh attestation verify runnel_&lt;version&gt;_windows_amd64.zip --repo runnelhq/r
           <p>An update only replaces <code>runnel.exe</code>; the editor is inside it. Project folders, run history, logs and certificates stay where they are. A <code>runnel update</code> command is planned; until then:</p>
           <ol class="steps">
             <li><strong>Download and verify:</strong> get the new version's ZIP and <code>SHA256SUMS</code>, check checksum and origin (see above).</li>
-            <li><strong>Test first:</strong> unpack the ZIP into its own folder and validate the project with the new version while the old one keeps running. New messages show what to adapt before switching – until version 1.0 they also name the new name of renamed fields.</li>
+            <li><strong>Test first:</strong> unpack the ZIP into its own folder and validate the project with the new version while the old one keeps running. New messages show what to adapt before switching. Before version 1.0, names still change without a transition – what changed is in the <a href="https://github.com/runnelhq/runnel/blob/main/CHANGELOG.md">CHANGELOG</a>. From 1.0, Runnel keeps accepting renamed fields and warns with the new name (<a href="https://github.com/runnelhq/runnel/blob/main/docs/adr/0029-stabilitaet-versionen.md">ADR 0029</a>, German).</li>
             <li><strong>Swap</strong> (console as administrator): stop the service, keep the old file as <code>runnel-old.exe</code>, copy the new one to the same place, start the service. <code>runnel service status</code> shows which file the service starts under <code>Command</code>.</li>
             <li><strong>Check:</strong> <code>runnel version</code> shows the new version, <code>runnel service status</code> the state <code>running</code>; in the log the start begins with <code>Starting runnel v…</code>. Reload the editor in the browser with Ctrl+F5.</li>
           </ol>
 <div class="code">
-  <div class="code-head"><span>PowerShell (as administrator)</span><button class="copy-btn" type="button" data-copy-from="code-214"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
-<pre id="code-214"><code class="lang-bash">.\runnel_&lt;version&gt;_windows_amd64\runnel.exe validate D:\flows
+  <div class="code-head"><span>PowerShell (as administrator)</span><button class="copy-btn" type="button" data-copy-from="code-220"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ui.copy">Kopieren</span></button></div>
+<pre id="code-220"><code class="lang-bash">.\runnel_&lt;version&gt;_windows_amd64\runnel.exe validate D:\flows
 runnel service stop
 Rename-Item C:\Tools\Runnel\runnel.exe runnel-old.exe
 Copy-Item .\runnel_&lt;version&gt;_windows_amd64\runnel.exe C:\Tools\Runnel\runnel.exe

@@ -6,10 +6,10 @@ apiVersion: runnel/v1
 name: export
 outputs:
   - name: WRITTEN
-    type: integer
+    type: int
     value: "{{ results.orders.output.transforms.write.written }}"
   - name: REJECTED
-    type: integer
+    type: int
     value: "{{ results.orders.output.errors }}"
 actions:
   - id: start

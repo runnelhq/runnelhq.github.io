@@ -14,7 +14,7 @@ parameters:
     default: '["Exports/orders-north.zip", "Exports/orders-south.zip"]'
 outputs:
   - name: ROWS
-    type: integer
+    type: int
     value: "{{ sum(map(results.files.output.items, .output.ROWS)) }}"
 actions:
   - id: start

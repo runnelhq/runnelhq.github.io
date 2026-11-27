@@ -179,7 +179,8 @@ L10N = {
            "version": "Reference as of Runnel", "version_main": "built from <code>main</code>, not yet released",
            "error_link": "error link"},
 }
-GROUP_DE = {"Date": "Datum", "Empty values": "Leere Werte", "Numbers and lists": "Zahlen und Listen", "Text": "Text"}
+GROUP_DE = {"Date": "Datum", "Empty values": "Leere Werte", "Numbers and lists": "Zahlen und Listen", "Text": "Text",
+            "Lists with a condition": "Listen mit Bedingung", "Conversion": "Umwandeln", "Paths": "Pfade"}
 
 # Lesbare Typen wie helpType in runnel/web/src/help.ts (Hilfe des Editors, Mockup E15c)
 HELP_FORMAT_TYPES = {"runnel-field": "field", "runnel-info-field": "field", "runnel-connection": "connection",
